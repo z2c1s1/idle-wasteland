@@ -1,38 +1,74 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import { db } from "./db";
+import { gameStates, type GameState, type InsertGameState } from "@shared/schema";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  getGameState(): Promise<GameState>;
+  updateAction(action: "idle" | "woodcutting" | "mining"): Promise<GameState>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
+export class DatabaseStorage implements IStorage {
+  async getGameState(): Promise<GameState> {
+    // We only have one global state for the MVP
+    let [state] = await db.select().from(gameStates).limit(1);
 
-  constructor() {
-    this.users = new Map();
+    if (!state) {
+      const [newState] = await db.insert(gameStates).values({}).returning();
+      state = newState;
+    }
+
+    // Calculate offline progress
+    const now = new Date();
+    const elapsedSeconds = Math.floor((now.getTime() - new Date(state.actionUpdatedAt).getTime()) / 1000);
+
+    if (elapsedSeconds > 0 && state.activeAction !== "idle") {
+      const updates: Partial<GameState> = {
+        actionUpdatedAt: now,
+      };
+
+      if (state.activeAction === "woodcutting") {
+        updates.woodcuttingXp = state.woodcuttingXp + elapsedSeconds * 10; // 10 XP per second
+        updates.woodCount = state.woodCount + elapsedSeconds * 1; // 1 Wood per second
+      } else if (state.activeAction === "mining") {
+        updates.miningXp = state.miningXp + elapsedSeconds * 15; // 15 XP per second
+        updates.copperOreCount = state.copperOreCount + elapsedSeconds * 1; // 1 Copper per second
+      }
+
+      const [updatedState] = await db.update(gameStates)
+        .set(updates)
+        .where(eq(gameStates.id, state.id))
+        .returning();
+      
+      return updatedState;
+    }
+
+    // Even if idle, update the actionUpdatedAt to avoid massive jumps if we switch action later
+    if (elapsedSeconds > 0 && state.activeAction === "idle") {
+       const [updatedState] = await db.update(gameStates)
+        .set({ actionUpdatedAt: now })
+        .where(eq(gameStates.id, state.id))
+        .returning();
+      return updatedState;
+    }
+
+    return state;
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
-  }
+  async updateAction(action: "idle" | "woodcutting" | "mining"): Promise<GameState> {
+    // First apply any pending progress by getting the state
+    const currentState = await this.getGameState();
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
-  }
+    // Then update the action and reset the timer
+    const [updatedState] = await db.update(gameStates)
+      .set({
+        activeAction: action,
+        actionUpdatedAt: new Date(),
+      })
+      .where(eq(gameStates.id, currentState.id))
+      .returning();
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+    return updatedState;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
