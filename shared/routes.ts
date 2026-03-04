@@ -27,7 +27,7 @@ export const api = {
       method: 'POST' as const,
       path: '/api/game/action' as const,
       input: z.object({
-        action: z.enum(['idle', 'woodcutting', 'mining']),
+        action: z.string(),
       }),
       responses: {
         200: z.custom<typeof gameStates.$inferSelect>(),
