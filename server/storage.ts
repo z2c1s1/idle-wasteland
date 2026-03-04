@@ -67,9 +67,12 @@ export class DatabaseStorage implements IStorage {
             (updates as any)[key] = (state as any)[key] + completions;
           }
           
-          // Remaining time for next tick
+          // Use precise timestamp to avoid losing fractional progress on next tick
           const usedTime = completions * data.time;
           updates.actionUpdatedAt = new Date(new Date(state.actionUpdatedAt).getTime() + usedTime * 1000);
+        } else {
+          // Keep current progress, don't update actionUpdatedAt yet
+          delete updates.actionUpdatedAt;
         }
       }
 
