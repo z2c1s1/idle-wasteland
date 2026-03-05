@@ -47,6 +47,8 @@ export default function Woodcutting() {
               onToggle={() => startAction(isActive ? 'idle' : `woodcutting_${i}`)}
               isPending={isPending}
               disabled={!isUnlocked}
+              actionStartTime={state.actionUpdatedAt}
+              cycleTime={time}
             />
           );
         })}

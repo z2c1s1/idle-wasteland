@@ -14,6 +14,10 @@ import { Header } from "./components/layout/header";
 import Dashboard from "./pages/dashboard";
 import Woodcutting from "./pages/woodcutting";
 import Mining from "./pages/mining";
+import Smelting from "./pages/smelting";
+import Fishing from "./pages/fishing";
+import Hunting from "./pages/hunting";
+import Crafting from "./pages/crafting";
 
 function Router() {
   return (
@@ -21,6 +25,10 @@ function Router() {
       <Route path="/" component={Dashboard}/>
       <Route path="/woodcutting" component={Woodcutting}/>
       <Route path="/mining" component={Mining}/>
+      <Route path="/smelting" component={Smelting}/>
+      <Route path="/fishing" component={Fishing}/>
+      <Route path="/hunting" component={Hunting}/>
+      <Route path="/crafting" component={Crafting}/>
       <Route component={NotFound} />
     </Switch>
   );

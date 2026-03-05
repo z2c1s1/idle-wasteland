@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { calculateLevel, formatNumber, levelProgress, xpForLevel } from "@/lib/game-utils";
 import type { LucideIcon } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface SkillActionViewProps {
   title: string;
@@ -20,6 +20,8 @@ interface SkillActionViewProps {
   onToggle: () => void;
   isPending: boolean;
   disabled?: boolean;
+  actionStartTime?: string;
+  cycleTime: number;
 }
 
 export function SkillActionView({
@@ -37,9 +39,29 @@ export function SkillActionView({
   onToggle,
   isPending,
   disabled,
+  actionStartTime,
+  cycleTime,
 }: SkillActionViewProps) {
-  const progress = levelProgress(xp);
-  const nextXp = xpForLevel(level + 1);
+  const [visualCount, setVisualCount] = useState(resourceCount);
+
+  useEffect(() => {
+    setVisualCount(resourceCount);
+  }, [resourceCount]);
+
+  useEffect(() => {
+    if (!isActive || !actionStartTime) return;
+    
+    const interval = setInterval(() => {
+      const now = new Date();
+      const start = new Date(actionStartTime);
+      const elapsed = (now.getTime() - start.getTime()) / 1000;
+      const progress = (elapsed % cycleTime) / cycleTime;
+      const baseCompletions = Math.floor(elapsed / cycleTime);
+      setVisualCount(resourceCount + baseCompletions + progress);
+    }, 50);
+
+    return () => clearInterval(interval);
+  }, [isActive, actionStartTime, cycleTime, resourceCount]);
 
   return (
     <motion.div 
@@ -62,7 +84,9 @@ export function SkillActionView({
         
         <div className="flex flex-col items-center mb-4">
           <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Stockpile</span>
-          <span className="text-2xl font-display font-bold">{formatNumber(resourceCount)}</span>
+          <span className="text-2xl font-display font-bold">
+            {isActive ? visualCount.toFixed(2) : formatNumber(resourceCount)}
+          </span>
         </div>
 
         <Button

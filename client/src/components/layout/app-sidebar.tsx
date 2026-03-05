@@ -4,7 +4,10 @@ import {
   Pickaxe, 
   LayoutDashboard, 
   Swords, 
-  Flame 
+  Flame,
+  Waves,
+  PawPrint,
+  Hammer 
 } from "lucide-react";
 import {
   Sidebar,
@@ -22,6 +25,10 @@ const navItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Woodcutting", url: "/woodcutting", icon: Axe },
   { title: "Mining", url: "/mining", icon: Pickaxe },
+  { title: "Smelting", url: "/smelting", icon: Flame },
+  { title: "Fishing", url: "/fishing", icon: Waves },
+  { title: "Hunting", url: "/hunting", icon: PawPrint },
+  { title: "Crafting", url: "/crafting", icon: Hammer },
 ];
 
 export function AppSidebar() {
