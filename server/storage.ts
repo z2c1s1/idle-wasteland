@@ -74,12 +74,16 @@ export class DatabaseStorage implements IStorage {
           const usedTime = completions * data.time;
           updates.actionUpdatedAt = new Date(new Date(state.actionUpdatedAt).getTime() + usedTime * 1000);
         } else {
-          delete updates.actionUpdatedAt;
+          // No full completions yet, so nothing to update in the DB.
+          return state;
         }
       }
 
-      const [updatedState] = await db.update(gameStates).set(updates).where(eq(gameStates.id, state.id)).returning();
-      return updatedState;
+      // Only perform update if there are changes (Drizzle fails on empty set)
+      if (Object.keys(updates).length > 0) {
+        const [updatedState] = await db.update(gameStates).set(updates).where(eq(gameStates.id, state.id)).returning();
+        return updatedState;
+      }
     }
     return state;
   }
