@@ -93,9 +93,13 @@ export function SkillActionView({
           onClick={onToggle}
           disabled={isPending || (isGlobalActive && !isActive) || disabled}
           variant={isActive ? "destructive" : "default"}
-          className="w-full rounded-xl"
+          className={`w-full rounded-xl shadow-lg transition-all duration-300 ${
+            isActive 
+              ? 'bg-red-500 hover:bg-red-600 text-white border-none' 
+              : 'hover:scale-[1.02]'
+          }`}
         >
-          {isActive ? 'Stop' : disabled ? 'Locked' : 'Start'}
+          {isActive ? 'Stop Action' : disabled ? 'Locked' : 'Start Action'}
         </Button>
       </Card>
     </motion.div>
