@@ -85,7 +85,7 @@ export function SkillActionView({
         <div className="flex flex-col items-center mb-4">
           <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Stockpile</span>
           <span className="text-2xl font-display font-bold">
-            {isActive ? visualCount.toFixed(2) : formatNumber(resourceCount)}
+            {formatNumber(resourceCount)}
           </span>
         </div>
 

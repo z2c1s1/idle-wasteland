@@ -73,9 +73,6 @@ export class DatabaseStorage implements IStorage {
           (updates as any)[resourceKey] = (state[resourceKey] as number) + completions;
           const usedTime = completions * data.time;
           updates.actionUpdatedAt = new Date(new Date(state.actionUpdatedAt).getTime() + usedTime * 1000);
-        } else {
-          // No full completions yet, so nothing to update in the DB.
-          return state;
         }
       }
 
