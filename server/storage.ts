@@ -58,7 +58,7 @@ export class DatabaseStorage implements IStorage {
     const elapsedSeconds = Math.floor((now.getTime() - new Date(state.actionUpdatedAt).getTime()) / 1000);
 
     if (elapsedSeconds > 0 && state.activeAction !== "idle") {
-      const updates: Partial<GameState> = { actionUpdatedAt: now };
+      const updates: Partial<GameState> = {};
       const [skill, indexStr] = state.activeAction.split("_");
       const index = parseInt(indexStr);
       const skillData = SKILLS_DATA[skill];
@@ -72,11 +72,12 @@ export class DatabaseStorage implements IStorage {
           const resourceKey = `${data.prefix}_${index}` as keyof GameState;
           (updates as any)[resourceKey] = (state[resourceKey] as number) + completions;
           const usedTime = completions * data.time;
+          // Only advance actionUpdatedAt by the used time — preserving partial progress into next cycle
           updates.actionUpdatedAt = new Date(new Date(state.actionUpdatedAt).getTime() + usedTime * 1000);
         }
       }
 
-      // Only perform update if there are changes (Drizzle fails on empty set)
+      // Only write to DB when there are actual completions
       if (Object.keys(updates).length > 0) {
         const [updatedState] = await db.update(gameStates).set(updates).where(eq(gameStates.id, state.id)).returning();
         return updatedState;
