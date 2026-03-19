@@ -1,58 +1,32 @@
-import { useGameState, useStartAction } from "@/hooks/use-game";
-import { calculateLevel } from "@/lib/game-utils";
-import { SkillActionView } from "@/components/skill-action-view";
+import { useGameState } from "@/hooks/use-game";
+import { SkillPage } from "@/components/skill-page";
 import { Pickaxe } from "lucide-react";
 
-const ORES = [
-  "Copper", "Tin", "Iron", "Coal", "Mithril",
-  "Adamant", "Rune", "Dragon", "Obsidian", "Ether"
+const RESOURCES = [
+  { name: "Copper Ore", emoji: "🟤", time: 5, xp: 15, reqLevel: 1, resourceKey: "ore_0", actionKey: "mining_0" },
+  { name: "Tin Ore", emoji: "⬜", time: 10, xp: 35, reqLevel: 6, resourceKey: "ore_1", actionKey: "mining_1" },
+  { name: "Iron Ore", emoji: "🔩", time: 15, xp: 55, reqLevel: 11, resourceKey: "ore_2", actionKey: "mining_2" },
+  { name: "Coal", emoji: "⚫", time: 20, xp: 75, reqLevel: 16, resourceKey: "ore_3", actionKey: "mining_3" },
+  { name: "Mithril Ore", emoji: "🔵", time: 25, xp: 95, reqLevel: 21, resourceKey: "ore_4", actionKey: "mining_4" },
+  { name: "Adamant Ore", emoji: "🟢", time: 30, xp: 115, reqLevel: 26, resourceKey: "ore_5", actionKey: "mining_5" },
+  { name: "Rune Ore", emoji: "🔮", time: 35, xp: 135, reqLevel: 31, resourceKey: "ore_6", actionKey: "mining_6" },
+  { name: "Dragon Ore", emoji: "🐉", time: 40, xp: 155, reqLevel: 36, resourceKey: "ore_7", actionKey: "mining_7" },
+  { name: "Obsidian", emoji: "🖤", time: 45, xp: 175, reqLevel: 41, resourceKey: "ore_8", actionKey: "mining_8" },
+  { name: "Ether Ore", emoji: "💎", time: 50, xp: 195, reqLevel: 46, resourceKey: "ore_9", actionKey: "mining_9" },
 ];
 
 export default function Mining() {
   const { data: state } = useGameState();
-  const { mutate: startAction, isPending } = useStartAction();
-
   if (!state) return null;
 
-  const currentIdx = state.activeAction.startsWith('mining_') 
-    ? parseInt(state.activeAction.split('_')[1]) 
-    : -1;
-  
-  const level = calculateLevel(state.miningXp);
-
   return (
-    <div className="max-w-7xl mx-auto space-y-8 p-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {ORES.map((name, i) => {
-          const isActive = currentIdx === i;
-          const time = 5 + i * 5;
-          const reqLevel = i * 5 + 1;
-          const isUnlocked = level >= reqLevel;
-          const resourceCount = (state as any)[`ore_${i}`] || 0;
-
-          return (
-            <SkillActionView
-              key={name}
-              title={name}
-              description={`Takes ${time}s per ore. Requires Level ${reqLevel}.`}
-              level={level}
-              xp={state.miningXp}
-              resourceName={`${name} Ore`}
-              resourceCount={resourceCount}
-              isActive={isActive}
-              isGlobalActive={state.activeAction !== 'idle'}
-              icon={Pickaxe}
-              themeColorClass="text-amber-500"
-              themeGlowClass="shadow-amber-500/20"
-              onToggle={() => startAction(isActive ? 'idle' : `mining_${i}`)}
-              isPending={isPending}
-              disabled={!isUnlocked}
-              actionStartTime={state.actionUpdatedAt}
-              cycleTime={time}
-            />
-          );
-        })}
-      </div>
-    </div>
+    <SkillPage
+      skillName="Mining"
+      skillXp={state.miningXp}
+      icon={Pickaxe}
+      iconColor="text-yellow-400"
+      state={state}
+      resources={RESOURCES}
+    />
   );
 }

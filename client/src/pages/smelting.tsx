@@ -1,50 +1,32 @@
-import { useGameState, useStartAction } from "@/hooks/use-game";
-import { calculateLevel } from "@/lib/game-utils";
-import { SkillActionView } from "@/components/skill-action-view";
+import { useGameState } from "@/hooks/use-game";
+import { SkillPage } from "@/components/skill-page";
 import { Flame } from "lucide-react";
 
-const BARS = ["Bronze", "Iron", "Steel", "Silver", "Gold", "Mithril", "Adamant", "Rune", "Dragon", "Eternal"];
+const RESOURCES = [
+  { name: "Bronze Bar", emoji: "🟫", time: 5, xp: 20, reqLevel: 1, resourceKey: "bar_0", actionKey: "smelting_0" },
+  { name: "Iron Bar", emoji: "🔘", time: 10, xp: 45, reqLevel: 6, resourceKey: "bar_1", actionKey: "smelting_1" },
+  { name: "Steel Bar", emoji: "⚙️", time: 15, xp: 70, reqLevel: 11, resourceKey: "bar_2", actionKey: "smelting_2" },
+  { name: "Silver Bar", emoji: "🥈", time: 20, xp: 95, reqLevel: 16, resourceKey: "bar_3", actionKey: "smelting_3" },
+  { name: "Gold Bar", emoji: "🥇", time: 25, xp: 120, reqLevel: 21, resourceKey: "bar_4", actionKey: "smelting_4" },
+  { name: "Mithril Bar", emoji: "🔷", time: 30, xp: 145, reqLevel: 26, resourceKey: "bar_5", actionKey: "smelting_5" },
+  { name: "Adamant Bar", emoji: "🟩", time: 35, xp: 170, reqLevel: 31, resourceKey: "bar_6", actionKey: "smelting_6" },
+  { name: "Rune Bar", emoji: "🔹", time: 40, xp: 195, reqLevel: 36, resourceKey: "bar_7", actionKey: "smelting_7" },
+  { name: "Dragon Bar", emoji: "🐲", time: 45, xp: 220, reqLevel: 41, resourceKey: "bar_8", actionKey: "smelting_8" },
+  { name: "Eternal Bar", emoji: "⭐", time: 50, xp: 245, reqLevel: 46, resourceKey: "bar_9", actionKey: "smelting_9" },
+];
 
 export default function Smelting() {
   const { data: state } = useGameState();
-  const { mutate: startAction, isPending } = useStartAction();
   if (!state) return null;
 
-  const currentIdx = state.activeAction.startsWith('smelting_') ? parseInt(state.activeAction.split('_')[1]) : -1;
-  const level = calculateLevel(state.smeltingXp);
-
   return (
-    <div className="max-w-7xl mx-auto space-y-8 p-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {BARS.map((name, i) => {
-          const isActive = currentIdx === i;
-          const time = 5 + i * 5;
-          const reqLevel = i * 5 + 1;
-          const isUnlocked = level >= reqLevel;
-          const resourceCount = (state as any)[`bar_${i}`] || 0;
-          return (
-            <SkillActionView
-              key={name}
-              title={name}
-              description={`Takes ${time}s per bar. Requires Level ${reqLevel}.`}
-              level={level}
-              xp={state.smeltingXp}
-              resourceName={`${name} Bar`}
-              resourceCount={resourceCount}
-              isActive={isActive}
-              isGlobalActive={state.activeAction !== 'idle'}
-              icon={Flame}
-              themeColorClass="text-orange-500"
-              themeGlowClass="shadow-orange-500/20"
-              onToggle={() => startAction(isActive ? 'idle' : `smelting_${i}`)}
-              isPending={isPending}
-              disabled={!isUnlocked}
-              actionStartTime={state.actionUpdatedAt}
-              cycleTime={time}
-            />
-          );
-        })}
-      </div>
-    </div>
+    <SkillPage
+      skillName="Smelting"
+      skillXp={state.smeltingXp}
+      icon={Flame}
+      iconColor="text-orange-400"
+      state={state}
+      resources={RESOURCES}
+    />
   );
 }

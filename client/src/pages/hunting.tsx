@@ -1,50 +1,32 @@
-import { useGameState, useStartAction } from "@/hooks/use-game";
-import { calculateLevel } from "@/lib/game-utils";
-import { SkillActionView } from "@/components/skill-action-view";
+import { useGameState } from "@/hooks/use-game";
+import { SkillPage } from "@/components/skill-page";
 import { PawPrint } from "lucide-react";
 
-const HIDES = ["Rabbit", "Bird", "Fox", "Wolf", "Bear", "Boar", "Deer", "Tiger", "Dragon", "Phoenix"];
+const RESOURCES = [
+  { name: "Rabbit Hide", emoji: "🐇", time: 5, xp: 18, reqLevel: 1, resourceKey: "hide_0", actionKey: "hunting_0" },
+  { name: "Bird Feathers", emoji: "🦅", time: 10, xp: 40, reqLevel: 6, resourceKey: "hide_1", actionKey: "hunting_1" },
+  { name: "Fox Pelt", emoji: "🦊", time: 15, xp: 62, reqLevel: 11, resourceKey: "hide_2", actionKey: "hunting_2" },
+  { name: "Wolf Hide", emoji: "🐺", time: 20, xp: 84, reqLevel: 16, resourceKey: "hide_3", actionKey: "hunting_3" },
+  { name: "Bear Pelt", emoji: "🐻", time: 25, xp: 106, reqLevel: 21, resourceKey: "hide_4", actionKey: "hunting_4" },
+  { name: "Boar Hide", emoji: "🐗", time: 30, xp: 128, reqLevel: 26, resourceKey: "hide_5", actionKey: "hunting_5" },
+  { name: "Deer Antlers", emoji: "🦌", time: 35, xp: 150, reqLevel: 31, resourceKey: "hide_6", actionKey: "hunting_6" },
+  { name: "Tiger Pelt", emoji: "🐯", time: 40, xp: 172, reqLevel: 36, resourceKey: "hide_7", actionKey: "hunting_7" },
+  { name: "Dragon Scale", emoji: "🐉", time: 45, xp: 194, reqLevel: 41, resourceKey: "hide_8", actionKey: "hunting_8" },
+  { name: "Phoenix Feather", emoji: "🔥", time: 50, xp: 216, reqLevel: 46, resourceKey: "hide_9", actionKey: "hunting_9" },
+];
 
 export default function Hunting() {
   const { data: state } = useGameState();
-  const { mutate: startAction, isPending } = useStartAction();
   if (!state) return null;
 
-  const currentIdx = state.activeAction.startsWith('hunting_') ? parseInt(state.activeAction.split('_')[1]) : -1;
-  const level = calculateLevel(state.huntingXp);
-
   return (
-    <div className="max-w-7xl mx-auto space-y-8 p-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {HIDES.map((name, i) => {
-          const isActive = currentIdx === i;
-          const time = 5 + i * 5;
-          const reqLevel = i * 5 + 1;
-          const isUnlocked = level >= reqLevel;
-          const resourceCount = (state as any)[`hide_${i}`] || 0;
-          return (
-            <SkillActionView
-              key={name}
-              title={name}
-              description={`Takes ${time}s per hide. Requires Level ${reqLevel}.`}
-              level={level}
-              xp={state.huntingXp}
-              resourceName={`${name} Hide`}
-              resourceCount={resourceCount}
-              isActive={isActive}
-              isGlobalActive={state.activeAction !== 'idle'}
-              icon={PawPrint}
-              themeColorClass="text-red-500"
-              themeGlowClass="shadow-red-500/20"
-              onToggle={() => startAction(isActive ? 'idle' : `hunting_${i}`)}
-              isPending={isPending}
-              disabled={!isUnlocked}
-              actionStartTime={state.actionUpdatedAt}
-              cycleTime={time}
-            />
-          );
-        })}
-      </div>
-    </div>
+    <SkillPage
+      skillName="Hunting"
+      skillXp={state.huntingXp}
+      icon={PawPrint}
+      iconColor="text-red-400"
+      state={state}
+      resources={RESOURCES}
+    />
   );
 }

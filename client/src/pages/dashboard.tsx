@@ -1,78 +1,112 @@
 import { useGameState } from "@/hooks/use-game";
-import { calculateLevel, formatNumber } from "@/lib/game-utils";
-import { Card } from "@/components/ui/card";
-import { Axe, Pickaxe, TreePine, Gem, Activity, Flame, Waves, PawPrint, Hammer } from "lucide-react";
-import { motion } from "framer-motion";
+import { useStartAction } from "@/hooks/use-game";
+import { calculateLevel, levelProgress, xpForLevel, formatNumber } from "@/lib/game-utils";
+import { Axe, Pickaxe, Flame, Waves, PawPrint, Hammer, StopCircle } from "lucide-react";
 import { useLocation } from "wouter";
+
+const SKILLS = [
+  { title: "Woodcutting", xpKey: "woodcuttingXp" as const, icon: Axe, color: "text-green-400", bg: "bg-green-900/30", href: "/woodcutting", prefix: "woodcutting" },
+  { title: "Mining", xpKey: "miningXp" as const, icon: Pickaxe, color: "text-yellow-400", bg: "bg-yellow-900/30", href: "/mining", prefix: "mining" },
+  { title: "Smelting", xpKey: "smeltingXp" as const, icon: Flame, color: "text-orange-400", bg: "bg-orange-900/30", href: "/smelting", prefix: "smelting" },
+  { title: "Fishing", xpKey: "fishingXp" as const, icon: Waves, color: "text-blue-400", bg: "bg-blue-900/30", href: "/fishing", prefix: "fishing" },
+  { title: "Hunting", xpKey: "huntingXp" as const, icon: PawPrint, color: "text-red-400", bg: "bg-red-900/30", href: "/hunting", prefix: "hunting" },
+  { title: "Crafting", xpKey: "craftingXp" as const, icon: Hammer, color: "text-purple-400", bg: "bg-purple-900/30", href: "/crafting", prefix: "crafting" },
+];
 
 export default function Dashboard() {
   const { data: state } = useGameState();
+  const { mutate: startAction, isPending } = useStartAction();
   const [, setLocation] = useLocation();
 
   if (!state) return null;
 
-  const stats = [
-    { title: "Woodcutting", value: calculateLevel(state.woodcuttingXp), icon: Axe, color: "text-emerald-400", bg: "bg-emerald-400/10", border: "border-emerald-500/20", href: "/woodcutting" },
-    { title: "Mining", value: calculateLevel(state.miningXp), icon: Pickaxe, color: "text-amber-400", bg: "bg-amber-400/10", border: "border-amber-500/20", href: "/mining" },
-    { title: "Smelting", value: calculateLevel(state.smeltingXp), icon: Flame, color: "text-orange-400", bg: "bg-orange-400/10", border: "border-orange-500/20", href: "/smelting" },
-    { title: "Fishing", value: calculateLevel(state.fishingXp), icon: Waves, color: "text-blue-400", bg: "bg-blue-400/10", border: "border-blue-500/20", href: "/fishing" },
-    { title: "Hunting", value: calculateLevel(state.huntingXp), icon: PawPrint, color: "text-red-400", bg: "bg-red-400/10", border: "border-red-500/20", href: "/hunting" },
-    { title: "Crafting", value: calculateLevel(state.craftingXp), icon: Hammer, color: "text-purple-400", bg: "bg-purple-400/10", border: "border-purple-500/20", href: "/crafting" },
-  ];
+  const isActive = state.activeAction !== "idle";
+  const activeSkill = isActive ? state.activeAction.split("_")[0] : null;
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-4xl font-display font-bold text-foreground">Welcome Back</h1>
-        <p className="text-muted-foreground text-lg">Here is your current progress in the realm.</p>
+    <div className="p-4 max-w-4xl mx-auto">
+      <div className="mb-4 pb-4 border-b border-border">
+        <h1 className="font-display text-xl font-bold text-foreground mb-0.5">Overview</h1>
+        <p className="text-xs text-muted-foreground">Your skill progress at a glance</p>
       </div>
 
-      {state.activeAction !== 'idle' && (
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          onClick={() => {
-            const skill = state.activeAction.split('_')[0];
-            setLocation(`/${skill}`);
-          }}
-          className="bg-primary/5 border border-primary/20 rounded-3xl p-6 flex items-center justify-between shadow-lg shadow-primary/5 cursor-pointer hover:bg-primary/10 transition-colors"
-        >
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-primary/10 rounded-xl">
-              <Activity className="w-6 h-6 text-primary animate-pulse" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-foreground">Action in Progress</h3>
-              <p className="text-sm text-muted-foreground capitalize">Currently {state.activeAction.replace('_', ' ')} (Click to view)</p>
-            </div>
+      {isActive && (
+        <div className="mb-4 flex items-center justify-between bg-[hsl(217_50%_10%)] border border-primary/30 rounded px-4 py-2.5">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            <span className="text-sm text-foreground font-medium capitalize">
+              {state.activeAction.replace("_", " ")} in progress
+            </span>
           </div>
-        </motion.div>
+          <button
+            onClick={() => startAction("idle")}
+            disabled={isPending}
+            className="flex items-center gap-1.5 px-3 py-1 text-xs font-semibold bg-red-600 hover:bg-red-500 text-white rounded transition-colors disabled:opacity-50"
+          >
+            <StopCircle className="w-3.5 h-3.5" />
+            Stop
+          </button>
+        </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {stats.map((stat, i) => (
-          <motion.div
-            key={stat.title}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
-            onClick={() => setLocation(stat.href)}
-            className="cursor-pointer"
-          >
-            <Card className="p-6 bg-card border-white/5 hover:border-primary/30 transition-all shadow-xl rounded-3xl h-full flex flex-col justify-between hover-elevate">
-              <div className="flex items-start justify-between mb-6">
-                <div className={`p-3 rounded-2xl ${stat.bg} ${stat.border} border`}>
-                  <stat.icon className={`w-6 h-6 ${stat.color}`} />
-                </div>
-              </div>
-              
-              <div>
-                <p className="text-muted-foreground text-sm font-medium mb-1">{stat.title} Level</p>
-                <h4 className="text-4xl font-display font-bold text-foreground">{stat.value}</h4>
-              </div>
-            </Card>
-          </motion.div>
-        ))}
+      <div className="rounded border border-border overflow-hidden">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="bg-[hsl(220_13%_8%)] text-muted-foreground text-xs">
+              <th className="text-left px-4 py-2 font-semibold">Skill</th>
+              <th className="text-center px-4 py-2 font-semibold">Level</th>
+              <th className="text-left px-4 py-2 font-semibold w-48">Progress</th>
+              <th className="text-right px-4 py-2 font-semibold">Total XP</th>
+            </tr>
+          </thead>
+          <tbody>
+            {SKILLS.map((skill) => {
+              const xp = state[skill.xpKey];
+              const level = calculateLevel(xp);
+              const progress = levelProgress(xp);
+              const isSkillActive = activeSkill === skill.prefix;
+
+              return (
+                <tr
+                  key={skill.title}
+                  onClick={() => setLocation(skill.href)}
+                  className={`border-t border-border cursor-pointer transition-colors ${
+                    isSkillActive ? "active-row" : "skill-row-hover"
+                  }`}
+                >
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2.5">
+                      <skill.icon className={`w-4 h-4 ${skill.color}`} />
+                      <span className={`font-medium ${isSkillActive ? "text-primary" : "text-foreground"}`}>
+                        {skill.title}
+                      </span>
+                      {isSkillActive && (
+                        <span className="text-[10px] px-1.5 py-0.5 bg-primary/20 text-primary rounded font-semibold uppercase">
+                          Active
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <span className="font-display font-bold text-base text-foreground">{level}</span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="h-2.5 bg-[hsl(220_13%_8%)] rounded overflow-hidden border border-border">
+                      <div
+                        className="h-full xp-bar-fill rounded"
+                        style={{ width: `${progress}%` }}
+                      />
+                    </div>
+                    <div className="text-[10px] text-muted-foreground mt-0.5">{progress.toFixed(1)}%</div>
+                  </td>
+                  <td className="px-4 py-3 text-right tabular-nums text-muted-foreground text-xs">
+                    {formatNumber(xp)}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </div>
   );

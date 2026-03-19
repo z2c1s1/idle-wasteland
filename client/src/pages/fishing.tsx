@@ -1,50 +1,32 @@
-import { useGameState, useStartAction } from "@/hooks/use-game";
-import { calculateLevel } from "@/lib/game-utils";
-import { SkillActionView } from "@/components/skill-action-view";
+import { useGameState } from "@/hooks/use-game";
+import { SkillPage } from "@/components/skill-page";
 import { Waves } from "lucide-react";
 
-const FISH = ["Shrimp", "Sardine", "Herring", "Trout", "Salmon", "Tuna", "Lobster", "Swordfish", "Shark", "Whale"];
+const RESOURCES = [
+  { name: "Shrimp", emoji: "🦐", time: 5, xp: 12, reqLevel: 1, resourceKey: "fish_0", actionKey: "fishing_0" },
+  { name: "Sardine", emoji: "🐟", time: 10, xp: 30, reqLevel: 6, resourceKey: "fish_1", actionKey: "fishing_1" },
+  { name: "Herring", emoji: "🐠", time: 15, xp: 48, reqLevel: 11, resourceKey: "fish_2", actionKey: "fishing_2" },
+  { name: "Trout", emoji: "🎣", time: 20, xp: 66, reqLevel: 16, resourceKey: "fish_3", actionKey: "fishing_3" },
+  { name: "Salmon", emoji: "🍣", time: 25, xp: 84, reqLevel: 21, resourceKey: "fish_4", actionKey: "fishing_4" },
+  { name: "Tuna", emoji: "🐡", time: 30, xp: 102, reqLevel: 26, resourceKey: "fish_5", actionKey: "fishing_5" },
+  { name: "Lobster", emoji: "🦞", time: 35, xp: 120, reqLevel: 31, resourceKey: "fish_6", actionKey: "fishing_6" },
+  { name: "Swordfish", emoji: "⚔️", time: 40, xp: 138, reqLevel: 36, resourceKey: "fish_7", actionKey: "fishing_7" },
+  { name: "Shark", emoji: "🦈", time: 45, xp: 156, reqLevel: 41, resourceKey: "fish_8", actionKey: "fishing_8" },
+  { name: "Whale", emoji: "🐳", time: 50, xp: 174, reqLevel: 46, resourceKey: "fish_9", actionKey: "fishing_9" },
+];
 
 export default function Fishing() {
   const { data: state } = useGameState();
-  const { mutate: startAction, isPending } = useStartAction();
   if (!state) return null;
 
-  const currentIdx = state.activeAction.startsWith('fishing_') ? parseInt(state.activeAction.split('_')[1]) : -1;
-  const level = calculateLevel(state.fishingXp);
-
   return (
-    <div className="max-w-7xl mx-auto space-y-8 p-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {FISH.map((name, i) => {
-          const isActive = currentIdx === i;
-          const time = 5 + i * 5;
-          const reqLevel = i * 5 + 1;
-          const isUnlocked = level >= reqLevel;
-          const resourceCount = (state as any)[`fish_${i}`] || 0;
-          return (
-            <SkillActionView
-              key={name}
-              title={name}
-              description={`Takes ${time}s per fish. Requires Level ${reqLevel}.`}
-              level={level}
-              xp={state.fishingXp}
-              resourceName={name}
-              resourceCount={resourceCount}
-              isActive={isActive}
-              isGlobalActive={state.activeAction !== 'idle'}
-              icon={Waves}
-              themeColorClass="text-blue-500"
-              themeGlowClass="shadow-blue-500/20"
-              onToggle={() => startAction(isActive ? 'idle' : `fishing_${i}`)}
-              isPending={isPending}
-              disabled={!isUnlocked}
-              actionStartTime={state.actionUpdatedAt}
-              cycleTime={time}
-            />
-          );
-        })}
-      </div>
-    </div>
+    <SkillPage
+      skillName="Fishing"
+      skillXp={state.fishingXp}
+      icon={Waves}
+      iconColor="text-blue-400"
+      state={state}
+      resources={RESOURCES}
+    />
   );
 }
