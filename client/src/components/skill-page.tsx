@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { calculateLevel, levelProgress, xpForLevel, formatNumber } from "@/lib/game-utils";
 import { useStartAction } from "@/hooks/use-game";
 import type { GameState } from "@shared/schema";
@@ -24,37 +24,36 @@ interface SkillPageProps {
 }
 
 function ActiveProgressBar({
-  actionKey,
   resourceName,
   cycleTime,
-  actionUpdatedAt,
+  actionStartMs,
   onStop,
   isPending,
 }: {
-  actionKey: string;
   resourceName: string;
   cycleTime: number;
-  actionUpdatedAt: string;
+  actionStartMs: number;
   onStop: () => void;
   isPending: boolean;
 }) {
   const [progress, setProgress] = useState(0);
   const [timeLeft, setTimeLeft] = useState(cycleTime);
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const tick = () => {
-      const now = Date.now();
-      const start = new Date(actionUpdatedAt).getTime();
-      const elapsed = (now - start) / 1000;
+    function tick() {
+      const elapsed = (Date.now() - actionStartMs) / 1000;
       const cycleElapsed = elapsed % cycleTime;
-      const pct = (cycleElapsed / cycleTime) * 100;
-      setProgress(pct);
+      setProgress((cycleElapsed / cycleTime) * 100);
       setTimeLeft(Math.max(0, cycleTime - cycleElapsed));
+      rafRef.current = requestAnimationFrame(tick);
+    }
+
+    rafRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
     };
-    tick();
-    const id = setInterval(tick, 50);
-    return () => clearInterval(id);
-  }, [actionUpdatedAt, cycleTime]);
+  }, [actionStartMs, cycleTime]);
 
   return (
     <div className="bg-[hsl(217_50%_10%)] border border-primary/30 rounded p-3 mb-4">
@@ -64,7 +63,9 @@ function ActiveProgressBar({
           <div className="text-sm font-semibold text-foreground">{resourceName}</div>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-muted-foreground tabular-nums">{timeLeft.toFixed(1)}s</span>
+          <span className="text-xs text-muted-foreground tabular-nums w-10 text-right">
+            {timeLeft.toFixed(1)}s
+          </span>
           <button
             onClick={onStop}
             disabled={isPending}
@@ -76,7 +77,7 @@ function ActiveProgressBar({
       </div>
       <div className="h-4 bg-[hsl(220_13%_8%)] rounded overflow-hidden border border-border">
         <div
-          className="h-full progress-bar-fill rounded transition-none"
+          className="h-full progress-bar-fill rounded"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -94,8 +95,10 @@ export function SkillPage({ skillName, skillXp, icon: Icon, iconColor, state, re
   const xpNeeded = xpNext - xpCurrent;
 
   const isGlobalActive = state.activeAction !== "idle";
-
   const activeResource = resources.find((r) => state.activeAction === r.actionKey) ?? null;
+
+  // Convert actionUpdatedAt to a stable epoch number to avoid ref-equality issues with Date objects
+  const actionStartMs = new Date(state.actionUpdatedAt as unknown as string).getTime();
 
   return (
     <div className="h-full flex flex-col">
@@ -129,10 +132,9 @@ export function SkillPage({ skillName, skillXp, icon: Icon, iconColor, state, re
       <div className="flex-1 overflow-y-auto p-4">
         {activeResource && (
           <ActiveProgressBar
-            actionKey={activeResource.actionKey}
             resourceName={activeResource.name}
             cycleTime={activeResource.time}
-            actionUpdatedAt={state.actionUpdatedAt}
+            actionStartMs={actionStartMs}
             onStop={() => startAction("idle")}
             isPending={isPending}
           />
@@ -152,7 +154,7 @@ export function SkillPage({ skillName, skillXp, icon: Icon, iconColor, state, re
               </tr>
             </thead>
             <tbody>
-              {resources.map((res, i) => {
+              {resources.map((res) => {
                 const isActive = state.activeAction === res.actionKey;
                 const isUnlocked = level >= res.reqLevel;
                 const owned = (state as any)[res.resourceKey] ?? 0;
