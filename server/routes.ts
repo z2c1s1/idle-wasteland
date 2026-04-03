@@ -4,11 +4,7 @@ import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
 
-export async function registerRoutes(
-  httpServer: Server,
-  app: Express
-): Promise<Server> {
-  
+export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
   app.get(api.game.getState.path, async (req, res) => {
     try {
       const state = await storage.getGameState();
@@ -26,11 +22,30 @@ export async function registerRoutes(
       res.json(state);
     } catch (err) {
       if (err instanceof z.ZodError) {
-        return res.status(400).json({
-          message: err.errors[0].message,
-          field: err.errors[0].path.join('.'),
-        });
+        return res.status(400).json({ message: err.errors[0].message, field: err.errors[0].path.join('.') });
       }
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.post(api.game.equip.path, async (req, res) => {
+    try {
+      const input = api.game.equip.input.parse(req.body);
+      const state = await storage.equipItem(input.itemId);
+      res.json(state);
+    } catch (err) {
+      if (err instanceof Error) return res.status(400).json({ message: err.message });
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.post(api.game.unequip.path, async (req, res) => {
+    try {
+      const input = api.game.unequip.input.parse(req.body);
+      const state = await storage.unequipItem(input.slot);
+      res.json(state);
+    } catch (err) {
+      if (err instanceof Error) return res.status(400).json({ message: err.message });
       res.status(500).json({ message: "Internal server error" });
     }
   });

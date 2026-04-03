@@ -1,0 +1,194 @@
+Build a browser-based idle game similar to Melvor Idle using modular architecture. Each module should be independently implemented and connected through a central game loop.
+
+一、系统总体结构
+
+游戏为纯放置+数值驱动系统，核心由以下模块组成：
+
+玩家系统（Player）
+技能系统（Skills）
+资源系统（Resources）
+战斗系统（Combat）
+物品系统（Items & Equipment）
+生产系统（Crafting & Gathering）
+时间与离线收益系统（Idle System）
+UI状态系统（UI State / Navigation）
+存档系统（Save/Load）
+👤 二、玩家系统（Player Module）
+数据结构
+玩家等级（总等级，可选）
+当前生命值（HP）
+最大生命值
+攻击、防御、命中等基础属性
+当前选择的技能（activeSkill）
+装备列表（equipment slots）
+背包（inventory）
+核心逻辑
+玩家是所有行为的执行主体
+每次只能激活一个技能（战斗/采集/生产）
+属性受装备、技能等级影响
+🌿 三、技能系统（Skills Module）
+技能分类
+采集类：
+采矿（Mining）
+伐木（Woodcutting）
+钓鱼（Fishing）
+生产类：
+锻造（Smithing）
+烹饪（Cooking）
+战斗类：
+攻击（Attack）
+防御（Defense）
+生命（Hitpoints）
+每个技能的数据结构
+技能等级（level）
+当前经验（xp）
+升级所需经验（xpToNextLevel）
+核心机制
+每次行动 → 获得经验
+经验达到阈值 → 升级
+等级提升 → 解锁新资源或配方
+🪵 四、资源系统（Resources Module）
+资源类型
+木头
+矿石
+鱼
+食物
+金币
+数据结构
+资源ID
+名称
+数量
+获取方式
+技能产出（如伐木 → 木头）
+战斗掉落
+合成产出
+⚔️ 五、战斗系统（Combat Module）
+核心循环
+玩家 vs 敌人（自动战斗）
+按时间间隔（tick）进行攻击
+数据结构
+玩家
+攻击力
+命中率
+攻击间隔
+敌人
+名称
+HP
+攻击力
+掉落表（loot table）
+战斗逻辑
+每个tick：
+玩家攻击敌人
+敌人攻击玩家
+判断命中（概率）
+扣血
+敌人死亡：
+掉落资源
+获得经验
+玩家死亡：
+战斗结束（或自动恢复）
+🧱 六、物品与装备系统（Item Module）
+物品类型
+材料
+装备（武器/防具）
+消耗品（食物）
+数据结构
+itemId
+名称
+类型
+属性加成（攻击、防御等）
+是否可堆叠
+装备系统
+装备槽位（武器、头盔、身体等）
+装备影响玩家属性
+🔨 七、生产系统（Crafting Module）
+核心玩法
+
+将资源 → 转换为新物品
+
+示例
+矿石 → 锭（锻造）
+鱼 → 食物（烹饪）
+配方数据结构
+输入资源（input）
+输出物品（output）
+所需等级
+时间间隔
+执行逻辑
+玩家选择配方
+每tick消耗材料并生成产物
+同时获得经验
+⏱️ 八、放置与离线系统（Idle System）
+核心目标
+
+支持玩家离线仍然获得收益
+
+数据结构
+上次离线时间（timestamp）
+当前时间
+逻辑
+玩家重新上线：
+计算离线时长
+根据当前技能：
+模拟离线收益（资源/经验）
+设置上限（如最多8小时）
+🧭 九、UI状态系统（UI Module）
+页面结构
+技能页
+战斗页
+背包页
+制作页
+状态管理
+当前选中模块（activeTab）
+当前运行技能（activeSkill）
+💾 十、存档系统（Save/Load Module）
+存储内容
+玩家属性
+技能等级与经验
+背包
+装备
+当前技能
+时间戳
+逻辑
+自动保存（定时/操作时）
+启动时加载
+🔁 十一、核心循环（Game Loop）
+Tick机制
+每秒或固定时间执行一次
+每个Tick执行：
+判断当前技能
+执行对应逻辑：
+战斗 / 采集 / 制作
+增加资源
+增加经验
+检查升级
+更新UI
+🧠 十二、最小可实现版本（MVP建议）
+
+为了让Replit成功生成，建议第一版只做：
+
+✅ 技能：
+
+伐木
+采矿
+
+✅ 战斗：
+
+1种敌人
+
+✅ 资源：
+
+木头、矿石、金币
+
+✅ 系统：
+
+背包
+自动tick
+离线收益（简单版）
+🚀 可扩展方向（后续迭代）
+多敌人系统
+装备稀有度
+自动吃食物
+技能联动（如采矿→锻造）
+成就系统
+市场/交易系统

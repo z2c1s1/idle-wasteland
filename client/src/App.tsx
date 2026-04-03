@@ -3,19 +3,20 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/not-found";
-
 import { useGameState } from "./hooks/use-game";
 import { AppSidebar } from "./components/layout/app-sidebar";
 import { Header } from "./components/layout/header";
-
-import Dashboard from "./pages/dashboard";
-import Woodcutting from "./pages/woodcutting";
-import Mining from "./pages/mining";
-import Smelting from "./pages/smelting";
-import Fishing from "./pages/fishing";
-import Hunting from "./pages/hunting";
-import Crafting from "./pages/crafting";
+import NotFound from "@/pages/not-found";
+import Dashboard from "@/pages/dashboard";
+import Woodcutting from "@/pages/woodcutting";
+import Mining from "@/pages/mining";
+import Smelting from "@/pages/smelting";
+import Fishing from "@/pages/fishing";
+import Hunting from "@/pages/hunting";
+import Crafting from "@/pages/crafting";
+import Combat from "@/pages/combat";
+import Inventory from "@/pages/inventory";
+import Smithing from "@/pages/smithing-craft";
 
 function Router() {
   return (
@@ -27,6 +28,9 @@ function Router() {
       <Route path="/fishing" component={Fishing} />
       <Route path="/hunting" component={Hunting} />
       <Route path="/crafting" component={Crafting} />
+      <Route path="/combat" component={Combat} />
+      <Route path="/inventory" component={Inventory} />
+      <Route path="/smithing" component={Smithing} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -34,7 +38,6 @@ function Router() {
 
 function GameWrapper({ children }: { children: React.ReactNode }) {
   const { isLoading } = useGameState();
-
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
@@ -45,7 +48,6 @@ function GameWrapper({ children }: { children: React.ReactNode }) {
       </div>
     );
   }
-
   return <>{children}</>;
 }
 

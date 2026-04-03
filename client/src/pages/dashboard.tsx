@@ -1,17 +1,61 @@
 import { useGameState } from "@/hooks/use-game";
 import { useStartAction } from "@/hooks/use-game";
-import { calculateLevel, levelProgress, xpForLevel, formatNumber } from "@/lib/game-utils";
-import { Axe, Pickaxe, Flame, Waves, PawPrint, Hammer, StopCircle } from "lucide-react";
+import { calculateLevel, levelProgress, formatNumber, getCombatLevel } from "@/lib/game-utils";
+import {
+  Axe, Pickaxe, Flame, Waves, PawPrint, Hammer,
+  StopCircle, Skull, Shield,
+} from "lucide-react";
 import { useLocation } from "wouter";
+import type { GameState } from "@shared/schema";
 
-const SKILLS = [
-  { title: "Woodcutting", xpKey: "woodcuttingXp" as const, icon: Axe, color: "text-green-400", bg: "bg-green-900/30", href: "/woodcutting", prefix: "woodcutting" },
-  { title: "Mining", xpKey: "miningXp" as const, icon: Pickaxe, color: "text-yellow-400", bg: "bg-yellow-900/30", href: "/mining", prefix: "mining" },
-  { title: "Smelting", xpKey: "smeltingXp" as const, icon: Flame, color: "text-orange-400", bg: "bg-orange-900/30", href: "/smelting", prefix: "smelting" },
-  { title: "Fishing", xpKey: "fishingXp" as const, icon: Waves, color: "text-blue-400", bg: "bg-blue-900/30", href: "/fishing", prefix: "fishing" },
-  { title: "Hunting", xpKey: "huntingXp" as const, icon: PawPrint, color: "text-red-400", bg: "bg-red-900/30", href: "/hunting", prefix: "hunting" },
-  { title: "Crafting", xpKey: "craftingXp" as const, icon: Hammer, color: "text-purple-400", bg: "bg-purple-900/30", href: "/crafting", prefix: "crafting" },
+const GATHERING_SKILLS = [
+  { title: "Woodcutting", xpKey: "woodcuttingXp" as const, icon: Axe,      color: "text-green-400",  bg: "bg-green-900/30",  href: "/woodcutting" },
+  { title: "Mining",      xpKey: "miningXp"      as const, icon: Pickaxe,  color: "text-yellow-400", bg: "bg-yellow-900/30", href: "/mining"      },
+  { title: "Smelting",    xpKey: "smeltingXp"    as const, icon: Flame,    color: "text-orange-400", bg: "bg-orange-900/30", href: "/smelting"    },
+  { title: "Fishing",     xpKey: "fishingXp"     as const, icon: Waves,    color: "text-blue-400",   bg: "bg-blue-900/30",   href: "/fishing"     },
+  { title: "Hunting",     xpKey: "huntingXp"     as const, icon: PawPrint, color: "text-red-400",    bg: "bg-red-900/30",    href: "/hunting"     },
+  { title: "Crafting",    xpKey: "craftingXp"    as const, icon: Hammer,   color: "text-purple-400", bg: "bg-purple-900/30", href: "/crafting"    },
 ];
+
+const COMBAT_SKILLS = [
+  { title: "Attack",     xpKey: "attackXp"     as const, color: "text-red-400"    },
+  { title: "Defence",    xpKey: "defenceXp"    as const, color: "text-blue-400"   },
+  { title: "Hitpoints",  xpKey: "hitpointsXp"  as const, color: "text-green-400"  },
+];
+
+function SkillRow({ title, xp, icon: Icon, color, href, isActive, onClick }: {
+  title: string; xp: number; icon: React.ElementType; color: string;
+  href: string; isActive: boolean; onClick: () => void;
+}) {
+  const level = calculateLevel(xp);
+  const progress = levelProgress(xp);
+  return (
+    <tr onClick={onClick}
+      className={`border-t border-border cursor-pointer transition-colors ${isActive ? "active-row" : "skill-row-hover"}`}
+      data-testid={`skill-row-${title.toLowerCase()}`}
+    >
+      <td className="px-4 py-3">
+        <div className="flex items-center gap-2.5">
+          <Icon className={`w-4 h-4 ${color}`} />
+          <span className={`font-medium ${isActive ? "text-primary" : "text-foreground"}`}>{title}</span>
+          {isActive && (
+            <span className="text-[10px] px-1.5 py-0.5 bg-primary/20 text-primary rounded font-semibold uppercase">Active</span>
+          )}
+        </div>
+      </td>
+      <td className="px-4 py-3 text-center">
+        <span className="font-display font-bold text-base">{level}</span>
+      </td>
+      <td className="px-4 py-3">
+        <div className="h-2.5 bg-[hsl(220_13%_8%)] rounded overflow-hidden border border-border">
+          <div className="h-full xp-bar-fill rounded" style={{ width: `${progress}%` }} />
+        </div>
+        <div className="text-[10px] text-muted-foreground mt-0.5">{progress.toFixed(1)}%</div>
+      </td>
+      <td className="px-4 py-3 text-right tabular-nums text-muted-foreground text-xs">{formatNumber(xp)}</td>
+    </tr>
+  );
+}
 
 export default function Dashboard() {
   const { data: state } = useGameState();
@@ -19,92 +63,125 @@ export default function Dashboard() {
   const [, setLocation] = useLocation();
 
   if (!state) return null;
+  const gs = state as GameState;
 
-  const isActive = state.activeAction !== "idle";
-  const activeSkill = isActive ? state.activeAction.split("_")[0] : null;
+  const isActive = gs.activeAction !== "idle";
+  const activeSkill = isActive ? gs.activeAction.split("_")[0] : null;
+  const combatLevel = getCombatLevel(gs);
 
   return (
-    <div className="p-4 max-w-4xl mx-auto">
-      <div className="mb-4 pb-4 border-b border-border">
+    <div className="p-4 max-w-4xl mx-auto space-y-5">
+      <div className="pb-4 border-b border-border">
         <h1 className="font-display text-xl font-bold text-foreground mb-0.5">Overview</h1>
         <p className="text-xs text-muted-foreground">Your skill progress at a glance</p>
       </div>
 
       {isActive && (
-        <div className="mb-4 flex items-center justify-between bg-[hsl(217_50%_10%)] border border-primary/30 rounded px-4 py-2.5">
+        <div className="flex items-center justify-between bg-[hsl(217_50%_10%)] border border-primary/30 rounded px-4 py-2.5">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             <span className="text-sm text-foreground font-medium capitalize">
-              {state.activeAction.replace("_", " ")} in progress
+              {gs.activeAction.replace(/_/g, " ")} in progress
             </span>
           </div>
-          <button
-            onClick={() => startAction("idle")}
-            disabled={isPending}
+          <button onClick={() => startAction("idle")} disabled={isPending}
             className="flex items-center gap-1.5 px-3 py-1 text-xs font-semibold bg-red-600 hover:bg-red-500 text-white rounded transition-colors disabled:opacity-50"
-          >
-            <StopCircle className="w-3.5 h-3.5" />
-            Stop
+            data-testid="button-stop-all">
+            <StopCircle className="w-3.5 h-3.5" /> Stop
           </button>
         </div>
       )}
 
+      {/* Summary cards */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="bg-card border border-border rounded-lg px-3 py-2 text-center">
+          <Skull className="w-4 h-4 text-red-400 mx-auto mb-1" />
+          <p className="text-xs text-muted-foreground">Combat Lv</p>
+          <p className="text-xl font-bold">{combatLevel}</p>
+        </div>
+        <div className="bg-card border border-border rounded-lg px-3 py-2 text-center">
+          <span className="text-lg">💰</span>
+          <p className="text-xs text-muted-foreground">Gold</p>
+          <p className="text-xl font-bold text-yellow-400">{formatNumber(gs.gold)}</p>
+        </div>
+        <div className="bg-card border border-border rounded-lg px-3 py-2 text-center">
+          <Shield className="w-4 h-4 text-slate-400 mx-auto mb-1" />
+          <p className="text-xs text-muted-foreground">Smithing Lv</p>
+          <p className="text-xl font-bold">{calculateLevel(gs.smithingXp)}</p>
+        </div>
+      </div>
+
+      {/* Gathering skills */}
       <div className="rounded border border-border overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-[hsl(220_13%_8%)] text-muted-foreground text-xs">
-              <th className="text-left px-4 py-2 font-semibold">Skill</th>
+              <th className="text-left px-4 py-2 font-semibold">Gathering Skill</th>
               <th className="text-center px-4 py-2 font-semibold">Level</th>
               <th className="text-left px-4 py-2 font-semibold w-48">Progress</th>
               <th className="text-right px-4 py-2 font-semibold">Total XP</th>
             </tr>
           </thead>
           <tbody>
-            {SKILLS.map((skill) => {
-              const xp = state[skill.xpKey];
-              const level = calculateLevel(xp);
-              const progress = levelProgress(xp);
-              const isSkillActive = activeSkill === skill.prefix;
+            {GATHERING_SKILLS.map((skill) => (
+              <SkillRow
+                key={skill.title}
+                title={skill.title}
+                xp={gs[skill.xpKey]}
+                icon={skill.icon}
+                color={skill.color}
+                href={skill.href}
+                isActive={activeSkill === skill.href.slice(1)}
+                onClick={() => setLocation(skill.href)}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-              return (
-                <tr
-                  key={skill.title}
-                  onClick={() => setLocation(skill.href)}
-                  className={`border-t border-border cursor-pointer transition-colors ${
-                    isSkillActive ? "active-row" : "skill-row-hover"
-                  }`}
-                >
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2.5">
-                      <skill.icon className={`w-4 h-4 ${skill.color}`} />
-                      <span className={`font-medium ${isSkillActive ? "text-primary" : "text-foreground"}`}>
-                        {skill.title}
-                      </span>
-                      {isSkillActive && (
-                        <span className="text-[10px] px-1.5 py-0.5 bg-primary/20 text-primary rounded font-semibold uppercase">
-                          Active
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <span className="font-display font-bold text-base text-foreground">{level}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="h-2.5 bg-[hsl(220_13%_8%)] rounded overflow-hidden border border-border">
-                      <div
-                        className="h-full xp-bar-fill rounded"
-                        style={{ width: `${progress}%` }}
-                      />
-                    </div>
-                    <div className="text-[10px] text-muted-foreground mt-0.5">{progress.toFixed(1)}%</div>
-                  </td>
-                  <td className="px-4 py-3 text-right tabular-nums text-muted-foreground text-xs">
-                    {formatNumber(xp)}
-                  </td>
-                </tr>
-              );
-            })}
+      {/* Combat skills */}
+      <div className="rounded border border-border overflow-hidden">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="bg-[hsl(220_13%_8%)] text-muted-foreground text-xs">
+              <th className="text-left px-4 py-2 font-semibold">Combat Skill</th>
+              <th className="text-center px-4 py-2 font-semibold">Level</th>
+              <th className="text-left px-4 py-2 font-semibold w-48">Progress</th>
+              <th className="text-right px-4 py-2 font-semibold">Total XP</th>
+            </tr>
+          </thead>
+          <tbody>
+            {COMBAT_SKILLS.map((skill) => (
+              <SkillRow
+                key={skill.title}
+                title={skill.title}
+                xp={gs[skill.xpKey]}
+                icon={Skull}
+                color={skill.color}
+                href="/combat"
+                isActive={false}
+                onClick={() => setLocation("/combat")}
+              />
+            ))}
+            <tr className="border-t border-border cursor-pointer skill-row-hover transition-colors"
+              onClick={() => setLocation("/smithing")} data-testid="skill-row-smithing">
+              <td className="px-4 py-3">
+                <div className="flex items-center gap-2.5">
+                  <Shield className="w-4 h-4 text-slate-400" />
+                  <span className="font-medium">Smithing</span>
+                </div>
+              </td>
+              <td className="px-4 py-3 text-center">
+                <span className="font-display font-bold text-base">{calculateLevel(gs.smithingXp)}</span>
+              </td>
+              <td className="px-4 py-3">
+                <div className="h-2.5 bg-[hsl(220_13%_8%)] rounded overflow-hidden border border-border">
+                  <div className="h-full xp-bar-fill rounded" style={{ width: `${levelProgress(gs.smithingXp)}%` }} />
+                </div>
+                <div className="text-[10px] text-muted-foreground mt-0.5">{levelProgress(gs.smithingXp).toFixed(1)}%</div>
+              </td>
+              <td className="px-4 py-3 text-right tabular-nums text-muted-foreground text-xs">{formatNumber(gs.smithingXp)}</td>
+            </tr>
           </tbody>
         </table>
       </div>

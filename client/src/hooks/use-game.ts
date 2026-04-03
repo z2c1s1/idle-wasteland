@@ -1,46 +1,68 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api, type GameStateResponse, type StartActionInput } from "@shared/routes";
+import { api } from "@shared/routes";
+
+const QUERY_KEY = [api.game.getState.path];
+
+async function fetchGameState() {
+  const res = await fetch(api.game.getState.path, { credentials: "include" });
+  if (!res.ok) throw new Error("Failed to fetch game state");
+  return api.game.getState.responses[200].parse(await res.json());
+}
 
 export function useGameState() {
-  return useQuery({
-    queryKey: [api.game.getState.path],
-    queryFn: async () => {
-      const res = await fetch(api.game.getState.path, { credentials: "include" });
-      if (!res.ok) throw new Error("Failed to fetch game state");
-      const data = await res.json();
-      return api.game.getState.responses[200].parse(data);
-    },
-    // Required polling per specification
-    refetchInterval: 1000,
-  });
+  return useQuery({ queryKey: QUERY_KEY, queryFn: fetchGameState, refetchInterval: 1000 });
 }
 
 export function useStartAction() {
   const queryClient = useQueryClient();
-  
   return useMutation({
-    mutationFn: async (action: StartActionInput['action']) => {
-      const payload: StartActionInput = { action };
+    mutationFn: async (action: string) => {
       const res = await fetch(api.game.startAction.path, {
-        method: api.game.startAction.method,
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ action }),
         credentials: "include",
       });
-      
-      if (!res.ok) {
-        if (res.status === 400) {
-          const error = api.game.startAction.responses[400].parse(await res.json());
-          throw new Error(error.message);
-        }
-        throw new Error("Failed to update action");
-      }
-      
+      if (!res.ok) throw new Error("Failed to update action");
       return api.game.startAction.responses[200].parse(await res.json());
     },
-    onSuccess: (updatedState) => {
-      // Optimistically update the cache immediately
-      queryClient.setQueryData([api.game.getState.path], updatedState);
+    onSuccess: (state) => queryClient.setQueryData(QUERY_KEY, state),
+  });
+}
+
+export function useEquipItem() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (itemId: string) => {
+      const res = await fetch(api.game.equip.path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ itemId }),
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ message: "Failed to equip" }));
+        throw new Error(err.message);
+      }
+      return api.game.equip.responses[200].parse(await res.json());
     },
+    onSuccess: (state) => queryClient.setQueryData(QUERY_KEY, state),
+  });
+}
+
+export function useUnequipItem() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (slot: string) => {
+      const res = await fetch(api.game.unequip.path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slot }),
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to unequip");
+      return api.game.unequip.responses[200].parse(await res.json());
+    },
+    onSuccess: (state) => queryClient.setQueryData(QUERY_KEY, state),
   });
 }
