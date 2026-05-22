@@ -19,6 +19,7 @@ import Inventory from "@/pages/inventory";
 import Smithing from "@/pages/smithing-craft";
 import Leatherworking from "@/pages/leatherworking";
 import Jewelcrafting from "@/pages/jewelcrafting";
+import Gems from "@/pages/gems";
 
 function Router() {
   return (
@@ -35,6 +36,7 @@ function Router() {
       <Route path="/smithing" component={Smithing} />
       <Route path="/leatherworking" component={Leatherworking} />
       <Route path="/jewelcrafting" component={Jewelcrafting} />
+      <Route path="/gems" component={Gems} />
       <Route component={NotFound} />
     </Switch>
   );

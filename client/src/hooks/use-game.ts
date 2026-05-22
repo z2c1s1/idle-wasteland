@@ -18,10 +18,8 @@ export function useStartAction() {
   return useMutation({
     mutationFn: async (action: string) => {
       const res = await fetch(api.game.startAction.path, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action }),
-        credentials: "include",
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action }), credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to update action");
       return api.game.startAction.responses[200].parse(await res.json());
@@ -35,10 +33,8 @@ export function useEquipItem() {
   return useMutation({
     mutationFn: async (input: { instanceId?: string; itemId?: string }) => {
       const res = await fetch(api.game.equip.path, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(input),
-        credentials: "include",
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(input), credentials: "include",
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({ message: "Failed to equip" }));
@@ -55,10 +51,8 @@ export function useUnequipItem() {
   return useMutation({
     mutationFn: async (slot: string) => {
       const res = await fetch(api.game.unequip.path, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slot }),
-        credentials: "include",
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slot }), credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to unequip");
       return api.game.unequip.responses[200].parse(await res.json());
@@ -72,13 +66,29 @@ export function useDestroyLoot() {
   return useMutation({
     mutationFn: async (instanceId: string) => {
       const res = await fetch(api.game.destroyLoot.path, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ instanceId }),
-        credentials: "include",
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ instanceId }), credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to destroy item");
       return api.game.destroyLoot.responses[200].parse(await res.json());
+    },
+    onSuccess: (state) => queryClient.setQueryData(QUERY_KEY, state),
+  });
+}
+
+export function useSocketGem() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { instanceId: string; gemKey: string }) => {
+      const res = await fetch(api.game.socketGem.path, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(input), credentials: "include",
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ message: "Failed to socket gem" }));
+        throw new Error(err.message);
+      }
+      return api.game.socketGem.responses[200].parse(await res.json());
     },
     onSuccess: (state) => queryClient.setQueryData(QUERY_KEY, state),
   });

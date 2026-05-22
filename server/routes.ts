@@ -61,5 +61,16 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     }
   });
 
+  app.post(api.game.socketGem.path, async (req, res) => {
+    try {
+      const input = api.game.socketGem.input.parse(req.body);
+      const state = await storage.socketGem(input.instanceId, input.gemKey);
+      res.json(state);
+    } catch (err) {
+      if (err instanceof Error) return res.status(400).json({ message: err.message });
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   return httpServer;
 }

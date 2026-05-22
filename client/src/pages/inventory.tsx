@@ -3,8 +3,9 @@ import { useGameState, useEquipItem, useUnequipItem, useDestroyLoot } from "@/ho
 import {
   ALL_CRAFTABLE_ITEMS, ALL_SLOTS, SLOT_LABEL, SLOT_EMOJI,
   RARITY_COLOR, RARITY_BORDER, RARITY_BG, RARITY_LABEL,
-  AFFIX_LABEL, AFFIX_COLOR,
-  type GameItem, type EquipmentSlot,
+  AFFIX_LABEL, AFFIX_COLOR, GEM_EMOJI, SKILL_EMOJI, SKILL_COLOR,
+  getGemName, getGemBgClass,
+  type GameItem, type EquipmentSlot, type GemType,
 } from "@shared/game-data";
 import {
   parseCraftItems, parseEquipment, parseLootBag, formatNumber, getEquipmentStats,
@@ -58,6 +59,36 @@ function ItemCard({ item, onEquip, onDestroy, onUnequip, isEquipped }: {
         {item.critRating   > 0 && <span className="text-xs text-yellow-300">✦ +{item.critRating.toFixed(1)}% Crit</span>}
       </div>
 
+      {/* Gem sockets row */}
+      {(item.maxSockets ?? 0) > 0 && (
+        <div className="flex gap-1.5 items-center">
+          {Array.from({ length: item.maxSockets }).map((_, i) => {
+            const gk = item.socketedGems?.[i];
+            if (gk) {
+              const type = gk.split('_')[0] as GemType;
+              return (
+                <span key={i} className={`w-5 h-5 rounded-full border flex items-center justify-center text-[11px] ${getGemBgClass(gk)}`}
+                  title={getGemName(gk)}>{GEM_EMOJI[type]}</span>
+              );
+            }
+            return <span key={i} className="w-5 h-5 rounded-full border border-dashed border-muted-foreground/30 flex items-center justify-center text-[9px] text-muted-foreground/40">○</span>;
+          })}
+          <span className="text-[10px] text-muted-foreground">{(item.socketedGems?.length ?? 0)}/{item.maxSockets} 宝石孔</span>
+        </div>
+      )}
+
+      {/* Skills row */}
+      {(item.skills?.length ?? 0) > 0 && (
+        <div className="flex flex-wrap gap-1">
+          {item.skills.map((skill, i) => (
+            <span key={i} className={`text-[10px] px-1.5 py-0.5 rounded bg-muted/30 border border-border/50 font-medium ${SKILL_COLOR[skill.type]}`}
+              title={skill.description}>
+              {SKILL_EMOJI[skill.type]} {skill.name}
+            </span>
+          ))}
+        </div>
+      )}
+
       {/* Expanded affix detail */}
       {expanded && (
         <div className="border-t border-border/50 pt-2 space-y-1">
@@ -72,6 +103,15 @@ function ItemCard({ item, onEquip, onDestroy, onUnequip, isEquipped }: {
               </span>
             </div>
           ))}
+          {(item.skills?.length ?? 0) > 0 && (
+            <div className="mt-1 space-y-0.5">
+              {item.skills.map((skill, i) => (
+                <p key={i} className={`text-[10px] ${SKILL_COLOR[skill.type]}`}>
+                  {SKILL_EMOJI[skill.type]} <span className="font-semibold">{skill.name}:</span> {skill.description}
+                </p>
+              ))}
+            </div>
+          )}
           {item.source === 'smithed' && (
             <p className="text-[10px] text-muted-foreground mt-1">Crafted · Uncommon quality</p>
           )}

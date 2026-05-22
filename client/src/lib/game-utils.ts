@@ -22,6 +22,9 @@ export function parseCraftItems(raw: string): Record<string, number> {
 export function parseLootBag(raw: string): GameItem[] {
   try { return JSON.parse(raw) as GameItem[]; } catch { return []; }
 }
+export function parseGems(raw: string): Record<string, number> {
+  try { return JSON.parse(raw) as Record<string, number>; } catch { return {}; }
+}
 
 export function getPlayerMaxHp(state: GameState): number {
   const equipment = parseEquipment(state.equipment);

@@ -91,6 +91,141 @@ export interface ItemAffix {
   value: number;
 }
 
+// ─── Gem system ─────────────────────────────────────────────────────────────────
+export type GemType = 'ruby' | 'sapphire' | 'emerald' | 'topaz' | 'diamond';
+export type GemQuality = 'chipped' | 'flawed' | 'normal' | 'flawless' | 'perfect';
+
+export const GEM_EMOJI: Record<GemType, string> = {
+  ruby: '🔴', sapphire: '🔵', emerald: '💚', topaz: '💛', diamond: '💎',
+};
+export const GEM_TYPE_LABEL: Record<GemType, string> = {
+  ruby: '红宝石', sapphire: '蓝宝石', emerald: '翠玉', topaz: '黄晶', diamond: '钻石',
+};
+export const GEM_QUALITY_LABEL: Record<GemQuality, string> = {
+  chipped: '残缺', flawed: '瑕疵', normal: '普通', flawless: '无瑕', perfect: '完美',
+};
+export const GEM_TYPE_COLOR: Record<GemType, string> = {
+  ruby: 'text-red-400', sapphire: 'text-blue-400', emerald: 'text-green-400',
+  topaz: 'text-yellow-400', diamond: 'text-cyan-300',
+};
+export const GEM_QUALITY_COLOR: Record<GemQuality, string> = {
+  chipped: 'text-gray-400', flawed: 'text-green-400', normal: 'text-blue-400',
+  flawless: 'text-purple-400', perfect: 'text-orange-400',
+};
+export const GEM_TYPES: GemType[]    = ['ruby','sapphire','emerald','topaz','diamond'];
+export const GEM_QUALITIES: GemQuality[] = ['chipped','flawed','normal','flawless','perfect'];
+
+export function getGemName(gemKey: string): string {
+  const [type, quality] = gemKey.split('_') as [GemType, GemQuality];
+  return `${GEM_QUALITY_LABEL[quality] ?? ''}${GEM_TYPE_LABEL[type] ?? gemKey}`;
+}
+export function getGemBonus(gemKey: string): { attackBonus: number; defenceBonus: number; hpBonus: number; critRating: number } {
+  const [type, quality] = gemKey.split('_') as [GemType, GemQuality];
+  const mult = ({ chipped:1, flawed:2, normal:4, flawless:7, perfect:12 })[quality] ?? 1;
+  switch (type) {
+    case 'ruby':     return { attackBonus: 3*mult, defenceBonus: 0,     hpBonus: 0,      critRating: 0 };
+    case 'sapphire': return { attackBonus: 0,      defenceBonus: 3*mult, hpBonus: 0,     critRating: 0 };
+    case 'emerald':  return { attackBonus: 0,      defenceBonus: 0,     hpBonus: 15*mult, critRating: 0 };
+    case 'topaz':    return { attackBonus: 0,      defenceBonus: 0,     hpBonus: 0,      critRating: 1.5*mult };
+    case 'diamond':  return { attackBonus: 2*mult, defenceBonus: 2*mult, hpBonus: 10*mult, critRating: 0.5*mult };
+    default:         return { attackBonus: 0,      defenceBonus: 0,     hpBonus: 0,      critRating: 0 };
+  }
+}
+export function getGemBgClass(gemKey: string): string {
+  const type = gemKey.split('_')[0] as GemType;
+  return ({ ruby:'bg-red-500/20 border-red-500/50', sapphire:'bg-blue-500/20 border-blue-500/50',
+    emerald:'bg-green-500/20 border-green-500/50', topaz:'bg-yellow-500/20 border-yellow-500/50',
+    diamond:'bg-cyan-500/20 border-cyan-500/50' })[type] ?? 'bg-muted/20 border-border';
+}
+
+// Gem drop tables for mining and combat
+export const MINING_GEM_POOLS: { chance: number; pool: string[] }[] = [
+  { chance: 0.04, pool: ['ruby_chipped','sapphire_chipped','emerald_chipped','topaz_chipped'] },
+  { chance: 0.04, pool: ['ruby_chipped','sapphire_chipped','emerald_chipped','topaz_chipped'] },
+  { chance: 0.05, pool: ['ruby_chipped','sapphire_chipped','emerald_chipped','topaz_chipped','ruby_flawed','sapphire_flawed'] },
+  { chance: 0.05, pool: ['ruby_flawed','sapphire_flawed','emerald_flawed','topaz_flawed'] },
+  { chance: 0.06, pool: ['ruby_flawed','sapphire_flawed','emerald_flawed','topaz_flawed','ruby_normal'] },
+  { chance: 0.06, pool: ['ruby_normal','sapphire_normal','emerald_normal','topaz_normal'] },
+  { chance: 0.07, pool: ['ruby_normal','sapphire_normal','emerald_normal','topaz_normal','ruby_flawless','diamond_normal'] },
+  { chance: 0.07, pool: ['ruby_flawless','sapphire_flawless','emerald_flawless','topaz_flawless'] },
+  { chance: 0.08, pool: ['ruby_flawless','sapphire_flawless','emerald_flawless','topaz_flawless','diamond_flawless'] },
+  { chance: 0.09, pool: ['ruby_perfect','sapphire_perfect','emerald_perfect','topaz_perfect','diamond_perfect'] },
+];
+export const COMBAT_GEM_POOLS: { chance: number; pool: string[] }[] = [
+  { chance: 0.03, pool: ['ruby_chipped','sapphire_chipped','emerald_chipped','topaz_chipped'] },
+  { chance: 0.04, pool: ['ruby_chipped','sapphire_chipped','emerald_chipped','topaz_chipped','ruby_flawed'] },
+  { chance: 0.05, pool: ['ruby_flawed','sapphire_flawed','emerald_flawed','topaz_flawed'] },
+  { chance: 0.06, pool: ['ruby_flawed','sapphire_flawed','emerald_flawed','topaz_flawed','ruby_normal'] },
+  { chance: 0.08, pool: ['ruby_normal','sapphire_normal','emerald_normal','topaz_normal'] },
+  { chance: 0.09, pool: ['ruby_normal','sapphire_normal','emerald_normal','topaz_normal','ruby_flawless'] },
+  { chance: 0.11, pool: ['ruby_flawless','sapphire_flawless','emerald_flawless','topaz_flawless','diamond_normal'] },
+  { chance: 0.13, pool: ['ruby_flawless','sapphire_flawless','emerald_flawless','topaz_flawless','diamond_flawless','ruby_perfect'] },
+];
+
+// ─── Item skills (Diablo-style procs) ──────────────────────────────────────────
+export type SkillType = 'lifesteal' | 'thorns' | 'berserk' | 'doublestrike' | 'dodge' | 'poison' | 'spellblade' | 'vampiric';
+
+export interface ItemSkill {
+  type: SkillType;
+  name: string;
+  value: number;
+  description: string;
+}
+
+export const SKILL_EMOJI: Record<SkillType, string> = {
+  lifesteal:   '🩸', thorns: '🌵', berserk: '💢', doublestrike: '⚡',
+  dodge:       '💨', poison: '☠️', spellblade: '✨', vampiric: '🧛',
+};
+export const SKILL_COLOR: Record<SkillType, string> = {
+  lifesteal: 'text-red-300', thorns: 'text-green-300', berserk: 'text-orange-300',
+  doublestrike: 'text-yellow-300', dodge: 'text-blue-300', poison: 'text-purple-300',
+  spellblade: 'text-cyan-300', vampiric: 'text-pink-300',
+};
+
+const SKILL_POOL: { type: SkillType; name: string; minVal: number; maxVal: number; desc: (v: number) => string }[] = [
+  { type: 'lifesteal',   name: '吸血',   minVal: 3,  maxVal: 15, desc: v => `击中时吸取 ${v}% 伤害恢复生命` },
+  { type: 'thorns',      name: '荆棘',   minVal: 2,  maxVal: 20, desc: v => `被击中时反弹 ${v} 点伤害` },
+  { type: 'berserk',     name: '狂战',   minVal: 10, maxVal: 50, desc: v => `HP < 30% 时攻击力提升 ${v}%` },
+  { type: 'doublestrike',name: '双击',   minVal: 10, maxVal: 35, desc: v => `${v}% 概率每回合攻击两次` },
+  { type: 'dodge',       name: '闪避',   minVal: 5,  maxVal: 25, desc: v => `${v}% 概率闪避所有伤害` },
+  { type: 'poison',      name: '淬毒',   minVal: 2,  maxVal: 12, desc: v => `每次攻击追加 ${v} 点毒素伤害` },
+  { type: 'spellblade',  name: '剑术',   minVal: 5,  maxVal: 30, desc: v => `攻击力额外提升 ${v}%` },
+  { type: 'vampiric',    name: '嗜血',   minVal: 5,  maxVal: 20, desc: v => `击杀时恢复 ${v} 点生命` },
+];
+
+const RARITY_SKILL_COUNT: Record<Rarity, number> = {
+  common: 0, uncommon: 0, rare: 1, epic: 2, legendary: 3,
+};
+const RARITY_MAX_SOCKETS: Record<Rarity, number> = {
+  common: 0, uncommon: 1, rare: 2, epic: 3, legendary: 4,
+};
+
+function rollSkills(rarity: Rarity): ItemSkill[] {
+  const count = RARITY_SKILL_COUNT[rarity];
+  if (count === 0) return [];
+  const pool = [...SKILL_POOL];
+  const result: ItemSkill[] = [];
+  const used = new Set<SkillType>();
+  for (let i = 0; i < count; i++) {
+    const avail = pool.filter(s => !used.has(s.type));
+    if (!avail.length) break;
+    const s = avail[Math.floor(Math.random() * avail.length)];
+    used.add(s.type);
+    const value = Math.round(s.minVal + Math.random() * (s.maxVal - s.minVal));
+    result.push({ type: s.type, name: s.name, value, description: s.desc(value) });
+  }
+  return result;
+}
+
+function rollSockets(rarity: Rarity): number {
+  const max = RARITY_MAX_SOCKETS[rarity];
+  if (max === 0) return 0;
+  if (rarity === 'uncommon') return Math.random() < 0.5 ? 1 : 0;
+  if (rarity === 'rare') return 1 + Math.floor(Math.random() * 2);     // 1-2
+  if (rarity === 'epic') return 2 + Math.floor(Math.random() * 2);     // 2-3
+  return max; // legendary always max
+}
+
 // ─── Game item interface ────────────────────────────────────────────────────────
 export interface GameItem {
   instanceId: string;
@@ -106,6 +241,9 @@ export interface GameItem {
   critRating: number;
   source: 'smithed' | 'dropped';
   baseId?: string;
+  maxSockets: number;
+  socketedGems: string[];
+  skills: ItemSkill[];
 }
 
 export type EquipmentState = Partial<Record<EquipmentSlot, GameItem | null>>;
@@ -174,18 +312,12 @@ export function smithedToGameItem(itemId: string): GameItem | null {
   if (def.critRating && def.critRating > 0) affix.push({ type: 'agility', value: Math.round(def.critRating / 0.5) });
   return {
     instanceId: `smithed_${itemId}_${Date.now()}`,
-    name: def.name,
-    slot: def.slot,
-    emoji: def.emoji,
-    rarity: 'uncommon',
-    ilvl: def.ilvl,
-    affixes: affix,
-    attackBonus: def.attackBonus,
-    defenceBonus: def.defenceBonus,
-    hpBonus: def.hpBonus ?? 0,
-    critRating: def.critRating ?? 0,
-    source: 'smithed',
-    baseId: itemId,
+    name: def.name, slot: def.slot, emoji: def.emoji,
+    rarity: 'uncommon', ilvl: def.ilvl, affixes: affix,
+    attackBonus: def.attackBonus, defenceBonus: def.defenceBonus,
+    hpBonus: def.hpBonus ?? 0, critRating: def.critRating ?? 0,
+    source: 'smithed', baseId: itemId,
+    maxSockets: rollSockets('uncommon'), socketedGems: [], skills: [],
   };
 }
 
@@ -426,16 +558,9 @@ export function generateDroppedItem(enemyIndex: number): GameItem {
   return {
     instanceId: `drop_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
     name: `${prefix} ${base}`,
-    slot,
-    emoji: SLOT_EMOJI[slot],
-    rarity,
-    ilvl,
-    affixes,
-    attackBonus,
-    defenceBonus,
-    hpBonus,
-    critRating,
-    source: 'dropped',
+    slot, emoji: SLOT_EMOJI[slot], rarity, ilvl, affixes,
+    attackBonus, defenceBonus, hpBonus, critRating, source: 'dropped',
+    maxSockets: rollSockets(rarity), socketedGems: [], skills: rollSkills(rarity),
   };
 }
 
@@ -520,19 +645,14 @@ export function craftedToGameItem(itemId: string): GameItem | null {
   if (def.defenceBonus > 0) affix.push({ type: 'armour',   value: def.defenceBonus });
   if (def.hpBonus && def.hpBonus > 0) affix.push({ type: 'stamina', value: Math.round(def.hpBonus / 5) });
   if (def.critRating && def.critRating > 0) affix.push({ type: 'agility', value: Math.round(def.critRating / 0.5) });
+  const rarity: Rarity = 'uncommon';
   return {
     instanceId: `crafted_${itemId}_${Date.now()}`,
-    name: def.name,
-    slot: def.slot,
-    emoji: def.emoji,
-    rarity: 'uncommon',
-    ilvl: def.ilvl,
-    affixes: affix,
-    attackBonus: def.attackBonus,
-    defenceBonus: def.defenceBonus,
-    hpBonus: def.hpBonus ?? 0,
-    critRating: def.critRating ?? 0,
-    source: 'smithed',
-    baseId: itemId,
+    name: def.name, slot: def.slot, emoji: def.emoji,
+    rarity, ilvl: def.ilvl, affixes: affix,
+    attackBonus: def.attackBonus, defenceBonus: def.defenceBonus,
+    hpBonus: def.hpBonus ?? 0, critRating: def.critRating ?? 0,
+    source: 'smithed', baseId: itemId,
+    maxSockets: rollSockets(rarity), socketedGems: [], skills: [],
   };
 }

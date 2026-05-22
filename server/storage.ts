@@ -3,7 +3,8 @@ import { gameStates, type GameState } from "@shared/schema";
 import {
   ENEMIES, SMITHING_RECIPES, LEATHERWORKING_RECIPES, JEWELCRAFTING_RECIPES,
   getEquipmentBonuses, generateDroppedItem, getDropChance, craftedToGameItem,
-  type GameItem, type EquipmentState, type EquipmentSlot, type CraftingRecipe,
+  MINING_GEM_POOLS, COMBAT_GEM_POOLS, getGemBonus,
+  type GameItem, type EquipmentState, type EquipmentSlot, type CraftingRecipe, type ItemSkill,
 } from "@shared/game-data";
 import { eq } from "drizzle-orm";
 
@@ -47,6 +48,9 @@ function parseCraftItems(raw: string): Record<string, number> {
 function parseLootBag(raw: string): GameItem[] {
   try { return JSON.parse(raw) as GameItem[]; } catch { return []; }
 }
+function parseGems(raw: string): Record<string, number> {
+  try { return JSON.parse(raw) as Record<string, number>; } catch { return {}; }
+}
 
 function getPlayerMaxHp(state: GameState): number {
   const equipment = parseEquipment(state.equipment);
@@ -70,6 +74,24 @@ function getPlayerDefence(state: GameState): number {
 
 export function getCombatLevel(state: GameState): number {
   return Math.floor((calcLevel(state.attackXp) + calcLevel(state.defenceXp) + calcLevel(state.hitpointsXp)) / 3);
+}
+
+// Roll gems from a pool using expected-value distribution
+function rollGemDropsFromPool(completions: number, chance: number, pool: string[]): Record<string, number> {
+  const expected = completions * chance;
+  const total = Math.floor(expected) + (Math.random() < (expected % 1) ? 1 : 0);
+  const gems: Record<string, number> = {};
+  for (let i = 0; i < total; i++) {
+    const key = pool[Math.floor(Math.random() * pool.length)];
+    gems[key] = (gems[key] ?? 0) + 1;
+  }
+  return gems;
+}
+
+function mergeGems(a: Record<string, number>, b: Record<string, number>): Record<string, number> {
+  const out = { ...a };
+  for (const [k, v] of Object.entries(b)) out[k] = (out[k] ?? 0) + v;
+  return out;
 }
 
 // Generic production recipe handler
@@ -117,6 +139,7 @@ export interface IStorage {
   equipItem(instanceId?: string, itemId?: string): Promise<GameState>;
   unequipItem(slot: string): Promise<GameState>;
   destroyLoot(instanceId: string): Promise<GameState>;
+  socketGem(instanceId: string, gemKey: string): Promise<GameState>;
 }
 
 // ─── DatabaseStorage ───────────────────────────────────────────────────────────
@@ -151,18 +174,45 @@ export class DatabaseStorage implements IStorage {
 
       const playerAtk = getPlayerAttack(state);
       const playerDef = getPlayerDefence(state);
-      const dmgToEnemy  = Math.max(1, playerAtk - enemy.defence);
-      const dmgToPlayer = Math.max(0, enemy.attack - playerDef);
+
+      // Collect all equipped skills
+      const equipment = parseEquipment(state.equipment);
+      const allSkills: ItemSkill[] = Object.values(equipment).flatMap(item => item?.skills ?? []);
+      const getSkillVal = (type: ItemSkill['type']) =>
+        allSkills.filter(s => s.type === type).reduce((sum, s) => sum + s.value, 0);
+
+      const spellbladePct  = getSkillVal('spellblade');
+      const poisonDmg      = getSkillVal('poison');
+      const thornsDmg      = getSkillVal('thorns');
+      const lifeStealPct   = getSkillVal('lifesteal');
+      const vampiricHp     = getSkillVal('vampiric');
+      const berserkPct     = getSkillVal('berserk');
+      const doubleStrikePct= getSkillVal('doublestrike');
+      const dodgePct       = getSkillVal('dodge');
 
       let goldGained = 0, bonesGained = 0, dragonBonesGained = 0;
       let attackXpGained = 0, defenceXpGained = 0, hitpointsXpGained = 0;
       let playerDied = false;
       const newDrops: GameItem[] = [];
+      let gemsGained: Record<string, number> = {};
       const dropChance = getDropChance(enemyIndex);
+      const gemPool = COMBAT_GEM_POOLS[Math.min(enemyIndex, COMBAT_GEM_POOLS.length - 1)];
 
       for (let i = 0; i < ticks; i++) {
-        enemyHp -= dmgToEnemy;
-        attackXpGained += 4;
+        // Calculate effective attack
+        let effAtk = Math.max(1, playerAtk - enemy.defence);
+        if (spellbladePct > 0) effAtk = Math.floor(effAtk * (1 + spellbladePct / 100));
+        if (berserkPct > 0 && playerHp < playerMaxHp * 0.3) effAtk = Math.floor(effAtk * (1 + berserkPct / 100));
+        const strikes = (doubleStrikePct > 0 && Math.random() * 100 < doubleStrikePct) ? 2 : 1;
+        const totalDmgToEnemy = effAtk * strikes + poisonDmg;
+
+        enemyHp -= totalDmgToEnemy;
+        attackXpGained += 4 * strikes;
+
+        // Lifesteal
+        if (lifeStealPct > 0) {
+          playerHp = Math.min(playerMaxHp, playerHp + Math.floor(totalDmgToEnemy * lifeStealPct / 100));
+        }
 
         if (enemyHp <= 0) {
           goldGained        += enemy.drops.gold[0];
@@ -170,16 +220,26 @@ export class DatabaseStorage implements IStorage {
           dragonBonesGained += enemy.drops.dragonBones ?? 0;
           attackXpGained    += enemy.xp;
           hitpointsXpGained += Math.floor(enemy.xp / 3);
-          if (Math.random() < dropChance) {
-            newDrops.push(generateDroppedItem(enemyIndex));
+          if (Math.random() < dropChance) newDrops.push(generateDroppedItem(enemyIndex));
+          // Gem drop on kill
+          if (Math.random() < gemPool.chance) {
+            const gk = gemPool.pool[Math.floor(Math.random() * gemPool.pool.length)];
+            gemsGained[gk] = (gemsGained[gk] ?? 0) + 1;
           }
+          // Vampiric on kill
+          if (vampiricHp > 0) playerHp = Math.min(playerMaxHp, playerHp + vampiricHp);
           enemyHp = enemy.maxHp;
         }
 
-        if (dmgToPlayer > 0) {
+        // Incoming damage
+        const dmgToPlayer = Math.max(0, enemy.attack - playerDef);
+        const dodged = dodgePct > 0 && Math.random() * 100 < dodgePct;
+        if (!dodged && dmgToPlayer > 0) {
           playerHp -= dmgToPlayer;
           defenceXpGained   += 2;
           hitpointsXpGained += 1;
+          // Thorns
+          if (thornsDmg > 0) enemyHp -= thornsDmg;
         }
 
         if (playerHp <= 0) {
@@ -192,17 +252,18 @@ export class DatabaseStorage implements IStorage {
       const usedTime = playerDied ? elapsedSeconds : ticks * COMBAT_SPEED;
       const existingLoot = parseLootBag(state.lootBag);
       const combinedLoot = [...existingLoot, ...newDrops].slice(-50);
+      const existingGems = parseGems(state.gems);
 
       const updates: Partial<GameState> = {
-        playerHp,
-        enemyHp,
+        playerHp, enemyHp,
         gold:        state.gold        + goldGained,
         bones:       state.bones       + bonesGained,
         dragonBones: state.dragonBones + dragonBonesGained,
         attackXp:    state.attackXp    + attackXpGained,
         defenceXp:   state.defenceXp   + defenceXpGained,
         hitpointsXp: state.hitpointsXp + hitpointsXpGained,
-        lootBag:     JSON.stringify(combinedLoot),
+        lootBag: JSON.stringify(combinedLoot),
+        gems:    JSON.stringify(mergeGems(existingGems, gemsGained)),
         actionUpdatedAt: new Date(new Date(state.actionUpdatedAt).getTime() + usedTime * 1000),
         ...(playerDied ? { activeAction: "idle" } : {}),
       };
@@ -255,6 +316,16 @@ export class DatabaseStorage implements IStorage {
       [resourceKey]: (state[resourceKey] as number) + completions,
       actionUpdatedAt: new Date(new Date(state.actionUpdatedAt).getTime() + completions * data.time * 1000),
     };
+
+    // Mining gem drops
+    if (skill === 'mining') {
+      const gemConfig = MINING_GEM_POOLS[Math.min(index, MINING_GEM_POOLS.length - 1)];
+      const newGems = rollGemDropsFromPool(completions, gemConfig.chance, gemConfig.pool);
+      if (Object.keys(newGems).length > 0) {
+        const existingGems = parseGems(state.gems);
+        updates.gems = JSON.stringify(mergeGems(existingGems, newGems));
+      }
+    }
 
     const [updated] = await db.update(gameStates).set(updates).where(eq(gameStates.id, state.id)).returning();
     return updated;
@@ -340,6 +411,61 @@ export class DatabaseStorage implements IStorage {
     const [updated] = await db.update(gameStates)
       .set({ lootBag: JSON.stringify(lootBag) })
       .where(eq(gameStates.id, state.id)).returning();
+    return updated;
+  }
+
+  async socketGem(instanceId: string, gemKey: string): Promise<GameState> {
+    const state = await this.getGameState();
+    const gems = parseGems(state.gems);
+    if ((gems[gemKey] ?? 0) < 1) throw new Error("You don't have that gem");
+
+    const lootBag  = parseLootBag(state.lootBag);
+    const equipment = parseEquipment(state.equipment);
+
+    // Find item in lootBag first, then equipped
+    let item: GameItem | null = null;
+    let inLoot = false;
+    const lootIdx = lootBag.findIndex(i => i.instanceId === instanceId);
+    if (lootIdx >= 0) { item = lootBag[lootIdx]; inLoot = true; }
+    else {
+      for (const slot of Object.keys(equipment) as EquipmentSlot[]) {
+        if (equipment[slot]?.instanceId === instanceId) { item = equipment[slot]!; break; }
+      }
+    }
+
+    if (!item) throw new Error("Item not found");
+    const sockets = item.socketedGems ?? [];
+    const maxSockets = item.maxSockets ?? 0;
+    if (sockets.length >= maxSockets) throw new Error("No empty sockets");
+
+    // Apply gem bonus to item stats
+    const bonus = getGemBonus(gemKey);
+    const updatedItem: GameItem = {
+      ...item,
+      socketedGems: [...sockets, gemKey],
+      attackBonus:  item.attackBonus  + bonus.attackBonus,
+      defenceBonus: item.defenceBonus + bonus.defenceBonus,
+      hpBonus:      item.hpBonus      + bonus.hpBonus,
+      critRating:   item.critRating   + bonus.critRating,
+    };
+
+    // Update gem inventory
+    gems[gemKey]--;
+    if (gems[gemKey] <= 0) delete gems[gemKey];
+
+    // Put updated item back
+    if (inLoot) lootBag[lootIdx] = updatedItem;
+    else {
+      for (const slot of Object.keys(equipment) as EquipmentSlot[]) {
+        if (equipment[slot]?.instanceId === instanceId) { equipment[slot] = updatedItem; break; }
+      }
+    }
+
+    const [updated] = await db.update(gameStates).set({
+      gems:      JSON.stringify(gems),
+      lootBag:   JSON.stringify(lootBag),
+      equipment: JSON.stringify(equipment),
+    }).where(eq(gameStates.id, state.id)).returning();
     return updated;
   }
 }

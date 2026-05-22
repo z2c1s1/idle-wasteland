@@ -112,6 +112,10 @@ export function AppSidebar() {
             />
           );
         })}
+
+        <SectionLabel label="Items" />
+        <NavItem title="Gems" url="/gems" icon={Gem} level={null}
+          isActive={location === "/gems"} color="text-cyan-400" />
       </nav>
 
       <div className="px-3 py-3 border-t border-border">

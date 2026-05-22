@@ -39,6 +39,13 @@ export const api = {
       input: z.object({ instanceId: z.string() }),
       responses: { 200: z.custom<typeof gameStates.$inferSelect>() },
     },
+    socketGem: {
+      method: 'POST' as const,
+      path: '/api/game/socket-gem' as const,
+      // instanceId = item (in lootBag OR equipped), gemKey = gem to socket
+      input: z.object({ instanceId: z.string(), gemKey: z.string() }),
+      responses: { 200: z.custom<typeof gameStates.$inferSelect>() },
+    },
   },
 };
 

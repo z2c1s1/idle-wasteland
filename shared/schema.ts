@@ -35,6 +35,8 @@ export const gameStates = pgTable("game_states", {
   craftItems: text("craft_items").notNull().default("{}"),
   // lootBag: GameItem[] for randomly dropped items
   lootBag: text("loot_bag").notNull().default("[]"),
+  // gems: {gemKey: qty} gem inventory
+  gems: text("gems").notNull().default("{}"),
 
   wood_0: integer("wood_0").notNull().default(0),
   wood_1: integer("wood_1").notNull().default(0),
