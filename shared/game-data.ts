@@ -131,6 +131,8 @@ export interface SmithedItemDef {
   slot: EquipmentSlot;
   attackBonus: number;
   defenceBonus: number;
+  hpBonus?: number;
+  critRating?: number;
   ilvl: number;
 }
 
@@ -168,6 +170,8 @@ export function smithedToGameItem(itemId: string): GameItem | null {
   const affix: ItemAffix[] = [];
   if (def.attackBonus > 0)  affix.push({ type: 'strength', value: def.attackBonus });
   if (def.defenceBonus > 0) affix.push({ type: 'armour',   value: def.defenceBonus });
+  if (def.hpBonus && def.hpBonus > 0) affix.push({ type: 'stamina', value: Math.round(def.hpBonus / 5) });
+  if (def.critRating && def.critRating > 0) affix.push({ type: 'agility', value: Math.round(def.critRating / 0.5) });
   return {
     instanceId: `smithed_${itemId}_${Date.now()}`,
     name: def.name,
@@ -178,12 +182,148 @@ export function smithedToGameItem(itemId: string): GameItem | null {
     affixes: affix,
     attackBonus: def.attackBonus,
     defenceBonus: def.defenceBonus,
-    hpBonus: 0,
-    critRating: 0,
+    hpBonus: def.hpBonus ?? 0,
+    critRating: def.critRating ?? 0,
     source: 'smithed',
     baseId: itemId,
   };
 }
+
+// ─── Leather equipment items ───────────────────────────────────────────────────
+// Uses hides from Hunting (hide_0..9)
+export const LEATHER_ITEMS: Record<string, SmithedItemDef> = {
+  // Rabbit hide (hide_0) — Tier 1
+  leather_cap:       { id: 'leather_cap',       name: 'Leather Cap',          emoji: '🎩', slot: 'helmet',  attackBonus: 0,  defenceBonus: 3,   ilvl: 4  },
+  leather_vest:      { id: 'leather_vest',      name: 'Leather Vest',         emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 6,   ilvl: 4  },
+  leather_pants:     { id: 'leather_pants',     name: 'Leather Pants',        emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 4,   ilvl: 4  },
+  leather_gloves:    { id: 'leather_gloves',    name: 'Leather Gloves',       emoji: '🥊', slot: 'gloves',  attackBonus: 3,  defenceBonus: 2,   ilvl: 4  },
+  leather_boots:     { id: 'leather_boots',     name: 'Leather Boots',        emoji: '👢', slot: 'boots',   attackBonus: 0,  defenceBonus: 3,   ilvl: 4  },
+  // Fox hide (hide_2) — Tier 2
+  studded_cap:       { id: 'studded_cap',       name: 'Studded Cap',          emoji: '⛑️', slot: 'helmet',  attackBonus: 0,  defenceBonus: 10,  ilvl: 14 },
+  studded_vest:      { id: 'studded_vest',      name: 'Studded Vest',         emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 18,  ilvl: 14 },
+  studded_pants:     { id: 'studded_pants',     name: 'Studded Pants',        emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 13,  ilvl: 14 },
+  studded_gloves:    { id: 'studded_gloves',    name: 'Studded Gloves',       emoji: '🥊', slot: 'gloves',  attackBonus: 7,  defenceBonus: 5,   ilvl: 14 },
+  // Wolf hide (hide_3) — Tier 3
+  wolf_cap:          { id: 'wolf_cap',          name: 'Wolf Hide Cap',        emoji: '⛑️', slot: 'helmet',  attackBonus: 0,  defenceBonus: 15,  ilvl: 22 },
+  wolf_vest:         { id: 'wolf_vest',         name: 'Wolf Hide Vest',       emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 26,  ilvl: 22 },
+  wolf_pants:        { id: 'wolf_pants',        name: 'Wolf Hide Pants',      emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 20,  ilvl: 22 },
+  wolf_gloves:       { id: 'wolf_gloves',       name: 'Wolf Hide Gloves',     emoji: '🥊', slot: 'gloves',  attackBonus: 12, defenceBonus: 7,   ilvl: 22 },
+  // Bear hide (hide_4) — Tier 4
+  bear_vest:         { id: 'bear_vest',         name: 'Bear Hide Vest',       emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 38,  ilvl: 32 },
+  bear_pants:        { id: 'bear_pants',        name: 'Bear Hide Pants',      emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 28,  ilvl: 32 },
+  // Dragon hide (hide_8) — Tier 5
+  dragonhide_vest:   { id: 'dragonhide_vest',   name: 'Dragonhide Vest',      emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 72,  ilvl: 58 },
+  dragonhide_boots:  { id: 'dragonhide_boots',  name: 'Dragonhide Boots',     emoji: '👢', slot: 'boots',   attackBonus: 0,  defenceBonus: 38,  ilvl: 58 },
+  // Phoenix hide (hide_9) — Tier 6
+  phoenix_vest:      { id: 'phoenix_vest',      name: 'Phoenix Feather Vest', emoji: '🧥', slot: 'chest',   attackBonus: 5,  defenceBonus: 90,  ilvl: 72 },
+};
+
+// ─── Jewelry items ─────────────────────────────────────────────────────────────
+// Uses crafting items (item_0..9) from the Crafting skill
+export const JEWELRY_ITEMS: Record<string, SmithedItemDef> = {
+  // Cloth (item_0) — Tier 1
+  copper_ring:      { id: 'copper_ring',     name: 'Copper Ring',        emoji: '💍', slot: 'ring', attackBonus: 0, defenceBonus: 0, critRating: 1.5, ilvl: 3  },
+  leather_amulet:   { id: 'leather_amulet',  name: 'Leather Amulet',     emoji: '📿', slot: 'neck', attackBonus: 0, defenceBonus: 0, hpBonus: 10,     ilvl: 3  },
+  // Leather (item_1) — Tier 2
+  tin_band:         { id: 'tin_band',        name: 'Tin Band',           emoji: '💍', slot: 'ring', attackBonus: 0, defenceBonus: 0, critRating: 2.5, ilvl: 9  },
+  cord_pendant:     { id: 'cord_pendant',    name: 'Cord Pendant',       emoji: '📿', slot: 'neck', attackBonus: 0, defenceBonus: 0, hpBonus: 20,     ilvl: 9  },
+  // Jewelry (item_2) — Tier 3
+  bronze_signet:    { id: 'bronze_signet',   name: 'Bronze Signet',      emoji: '💍', slot: 'ring', attackBonus: 2, defenceBonus: 0, critRating: 3.0, ilvl: 15 },
+  iron_chain:       { id: 'iron_chain',      name: 'Iron Chain',         emoji: '📿', slot: 'neck', attackBonus: 0, defenceBonus: 0, hpBonus: 30,     ilvl: 15 },
+  // Armor (item_3) — Tier 4
+  silver_ring:      { id: 'silver_ring',     name: 'Silver Ring',        emoji: '💍', slot: 'ring', attackBonus: 0, defenceBonus: 0, critRating: 5.0, ilvl: 22 },
+  silver_chain:     { id: 'silver_chain',    name: 'Silver Chain',       emoji: '📿', slot: 'neck', attackBonus: 3, defenceBonus: 0, hpBonus: 35,     ilvl: 22 },
+  // Weapon (item_4) — Tier 5
+  gold_ring:        { id: 'gold_ring',       name: 'Gold Ring',          emoji: '💍', slot: 'ring', attackBonus: 5, defenceBonus: 0, critRating: 6.0, ilvl: 30 },
+  gold_locket:      { id: 'gold_locket',     name: 'Gold Locket',        emoji: '📿', slot: 'neck', attackBonus: 0, defenceBonus: 0, hpBonus: 50,     ilvl: 30 },
+  // Artifact (item_5) — Tier 6
+  mithril_signet:   { id: 'mithril_signet',  name: 'Mithril Signet',     emoji: '💍', slot: 'ring', attackBonus: 5, defenceBonus: 0, critRating: 8.0, ilvl: 38 },
+  runed_pendant:    { id: 'runed_pendant',   name: 'Runed Pendant',      emoji: '📿', slot: 'neck', attackBonus: 5, defenceBonus: 5, hpBonus: 65,     ilvl: 38 },
+  // Relic (item_6) — Tier 7
+  arcane_band:      { id: 'arcane_band',     name: 'Arcane Band',        emoji: '💍', slot: 'ring', attackBonus: 8, defenceBonus: 0, critRating: 10.5,ilvl: 48 },
+  arcane_locket:    { id: 'arcane_locket',   name: 'Arcane Locket',      emoji: '📿', slot: 'neck', attackBonus: 5, defenceBonus: 5, hpBonus: 80,     ilvl: 48 },
+  // Dragon ring (item_8) — Tier 8
+  dragon_ring:      { id: 'dragon_ring',     name: 'Dragon Fire Ring',   emoji: '💍', slot: 'ring', attackBonus:12, defenceBonus: 0, critRating: 13.0,ilvl: 62 },
+  dragon_pendant:   { id: 'dragon_pendant',  name: 'Dragon Scale Pendant',emoji: '📿',slot: 'neck', attackBonus: 8, defenceBonus: 8, hpBonus: 100,    ilvl: 62 },
+  // Divine (item_9) — Tier 9
+  eternal_ring:     { id: 'eternal_ring',    name: 'Eternal Ring',       emoji: '💍', slot: 'ring', attackBonus:18, defenceBonus: 0, critRating: 18.0,ilvl: 78 },
+  eternal_pendant:  { id: 'eternal_pendant', name: 'Eternal Pendant',    emoji: '📿', slot: 'neck', attackBonus:10, defenceBonus:10, hpBonus: 130,    ilvl: 78 },
+};
+
+// Merged lookup including smithed, leather, and jewelry
+export const ALL_CRAFTABLE_ITEMS: Record<string, SmithedItemDef> = {
+  ...EQUIPMENT_ITEMS,
+  ...LEATHER_ITEMS,
+  ...JEWELRY_ITEMS,
+};
+
+// ─── Leatherworking recipes ────────────────────────────────────────────────────
+export interface CraftingRecipe {
+  id: string;
+  output: string;
+  inputs: { resource: string; qty: number }[];
+  reqLevel: number;
+  xp: number;
+  time: number;
+}
+
+export const LEATHERWORKING_RECIPES: CraftingRecipe[] = [
+  // Rabbit hides (hide_0) — basic leather
+  { id: 'lw_leather_cap',     output: 'leather_cap',     inputs: [{ resource: 'hide_0', qty: 2 }], reqLevel: 1,  xp: 20,  time: 6  },
+  { id: 'lw_leather_vest',    output: 'leather_vest',    inputs: [{ resource: 'hide_0', qty: 4 }], reqLevel: 1,  xp: 40,  time: 12 },
+  { id: 'lw_leather_pants',   output: 'leather_pants',   inputs: [{ resource: 'hide_0', qty: 3 }], reqLevel: 1,  xp: 30,  time: 9  },
+  { id: 'lw_leather_gloves',  output: 'leather_gloves',  inputs: [{ resource: 'hide_0', qty: 2 }], reqLevel: 1,  xp: 20,  time: 6  },
+  { id: 'lw_leather_boots',   output: 'leather_boots',   inputs: [{ resource: 'hide_0', qty: 2 }], reqLevel: 1,  xp: 20,  time: 6  },
+  // Fox hides (hide_2) — studded leather
+  { id: 'lw_studded_cap',     output: 'studded_cap',     inputs: [{ resource: 'hide_2', qty: 2 }], reqLevel: 15, xp: 55,  time: 8  },
+  { id: 'lw_studded_vest',    output: 'studded_vest',    inputs: [{ resource: 'hide_2', qty: 4 }], reqLevel: 15, xp: 110, time: 15 },
+  { id: 'lw_studded_pants',   output: 'studded_pants',   inputs: [{ resource: 'hide_2', qty: 3 }], reqLevel: 15, xp: 82,  time: 12 },
+  { id: 'lw_studded_gloves',  output: 'studded_gloves',  inputs: [{ resource: 'hide_2', qty: 2 }], reqLevel: 15, xp: 55,  time: 8  },
+  // Wolf hides (hide_3) — wolf leather
+  { id: 'lw_wolf_cap',        output: 'wolf_cap',        inputs: [{ resource: 'hide_3', qty: 2 }], reqLevel: 25, xp: 85,  time: 8  },
+  { id: 'lw_wolf_vest',       output: 'wolf_vest',       inputs: [{ resource: 'hide_3', qty: 4 }], reqLevel: 25, xp: 170, time: 15 },
+  { id: 'lw_wolf_pants',      output: 'wolf_pants',      inputs: [{ resource: 'hide_3', qty: 3 }], reqLevel: 25, xp: 128, time: 12 },
+  { id: 'lw_wolf_gloves',     output: 'wolf_gloves',     inputs: [{ resource: 'hide_3', qty: 2 }], reqLevel: 25, xp: 85,  time: 8  },
+  // Bear hides (hide_4) — bear leather
+  { id: 'lw_bear_vest',       output: 'bear_vest',       inputs: [{ resource: 'hide_4', qty: 5 }], reqLevel: 35, xp: 230, time: 18 },
+  { id: 'lw_bear_pants',      output: 'bear_pants',      inputs: [{ resource: 'hide_4', qty: 4 }], reqLevel: 35, xp: 185, time: 15 },
+  // Dragon hides (hide_8) — dragonhide
+  { id: 'lw_dragonhide_vest', output: 'dragonhide_vest', inputs: [{ resource: 'hide_8', qty: 4 }], reqLevel: 60, xp: 480, time: 22 },
+  { id: 'lw_dragonhide_boots',output: 'dragonhide_boots',inputs: [{ resource: 'hide_8', qty: 3 }], reqLevel: 60, xp: 360, time: 18 },
+  // Phoenix hides (hide_9) — phoenix
+  { id: 'lw_phoenix_vest',    output: 'phoenix_vest',    inputs: [{ resource: 'hide_9', qty: 4 }], reqLevel: 70, xp: 650, time: 25 },
+];
+
+// ─── Jewelcrafting recipes ──────────────────────────────────────────────────────
+export const JEWELCRAFTING_RECIPES: CraftingRecipe[] = [
+  // Cloth items (item_0)
+  { id: 'jc_copper_ring',    output: 'copper_ring',    inputs: [{ resource: 'item_0', qty: 3 }], reqLevel: 1,  xp: 25,  time: 8  },
+  { id: 'jc_leather_amulet', output: 'leather_amulet', inputs: [{ resource: 'item_0', qty: 4 }], reqLevel: 1,  xp: 30,  time: 10 },
+  // Leather (item_1)
+  { id: 'jc_tin_band',       output: 'tin_band',       inputs: [{ resource: 'item_1', qty: 3 }], reqLevel: 10, xp: 45,  time: 8  },
+  { id: 'jc_cord_pendant',   output: 'cord_pendant',   inputs: [{ resource: 'item_1', qty: 4 }], reqLevel: 10, xp: 55,  time: 10 },
+  // Jewelry (item_2)
+  { id: 'jc_bronze_signet',  output: 'bronze_signet',  inputs: [{ resource: 'item_2', qty: 3 }], reqLevel: 20, xp: 70,  time: 9  },
+  { id: 'jc_iron_chain',     output: 'iron_chain',     inputs: [{ resource: 'item_2', qty: 4 }], reqLevel: 20, xp: 85,  time: 12 },
+  // Armor (item_3)
+  { id: 'jc_silver_ring',    output: 'silver_ring',    inputs: [{ resource: 'item_3', qty: 3 }], reqLevel: 28, xp: 100, time: 10 },
+  { id: 'jc_silver_chain',   output: 'silver_chain',   inputs: [{ resource: 'item_3', qty: 4 }], reqLevel: 28, xp: 120, time: 12 },
+  // Weapon (item_4)
+  { id: 'jc_gold_ring',      output: 'gold_ring',      inputs: [{ resource: 'item_4', qty: 3 }], reqLevel: 38, xp: 140, time: 10 },
+  { id: 'jc_gold_locket',    output: 'gold_locket',    inputs: [{ resource: 'item_4', qty: 4 }], reqLevel: 38, xp: 165, time: 12 },
+  // Artifact (item_5)
+  { id: 'jc_mithril_signet', output: 'mithril_signet', inputs: [{ resource: 'item_5', qty: 3 }], reqLevel: 48, xp: 200, time: 12 },
+  { id: 'jc_runed_pendant',  output: 'runed_pendant',  inputs: [{ resource: 'item_5', qty: 4 }], reqLevel: 48, xp: 240, time: 14 },
+  // Relic (item_6)
+  { id: 'jc_arcane_band',    output: 'arcane_band',    inputs: [{ resource: 'item_6', qty: 3 }], reqLevel: 55, xp: 270, time: 12 },
+  { id: 'jc_arcane_locket',  output: 'arcane_locket',  inputs: [{ resource: 'item_6', qty: 4 }], reqLevel: 55, xp: 320, time: 15 },
+  // Dragon (item_8)
+  { id: 'jc_dragon_ring',    output: 'dragon_ring',    inputs: [{ resource: 'item_8', qty: 2 }], reqLevel: 65, xp: 400, time: 14 },
+  { id: 'jc_dragon_pendant', output: 'dragon_pendant', inputs: [{ resource: 'item_8', qty: 3 }], reqLevel: 65, xp: 480, time: 16 },
+  // Divine (item_9)
+  { id: 'jc_eternal_ring',   output: 'eternal_ring',   inputs: [{ resource: 'item_9', qty: 2 }], reqLevel: 72, xp: 600, time: 16 },
+  { id: 'jc_eternal_pendant',output: 'eternal_pendant', inputs: [{ resource: 'item_9', qty: 3 }], reqLevel: 72, xp: 720, time: 20 },
+];
 
 // ─── Item generation (Diablo-style) ───────────────────────────────────────────
 const RARITY_PREFIXES: Record<Rarity, string[]> = {
@@ -370,3 +510,29 @@ export const SMITHING_RECIPES: SmithingRecipe[] = [
   // Rune (bar_6)
   { id: 'r_rune_sword',        output: 'rune_sword',        inputs: [{ resource: 'bar_6', qty: 2 }], reqLevel: 70, xp: 220, time: 10 },
 ];
+
+// ─── Universal item converter (smithed + leather + jewelry) ────────────────────
+export function craftedToGameItem(itemId: string): GameItem | null {
+  const def = ALL_CRAFTABLE_ITEMS[itemId];
+  if (!def) return null;
+  const affix: ItemAffix[] = [];
+  if (def.attackBonus > 0)  affix.push({ type: 'strength', value: def.attackBonus });
+  if (def.defenceBonus > 0) affix.push({ type: 'armour',   value: def.defenceBonus });
+  if (def.hpBonus && def.hpBonus > 0) affix.push({ type: 'stamina', value: Math.round(def.hpBonus / 5) });
+  if (def.critRating && def.critRating > 0) affix.push({ type: 'agility', value: Math.round(def.critRating / 0.5) });
+  return {
+    instanceId: `crafted_${itemId}_${Date.now()}`,
+    name: def.name,
+    slot: def.slot,
+    emoji: def.emoji,
+    rarity: 'uncommon',
+    ilvl: def.ilvl,
+    affixes: affix,
+    attackBonus: def.attackBonus,
+    defenceBonus: def.defenceBonus,
+    hpBonus: def.hpBonus ?? 0,
+    critRating: def.critRating ?? 0,
+    source: 'smithed',
+    baseId: itemId,
+  };
+}

@@ -19,6 +19,8 @@ export const gameStates = pgTable("game_states", {
   defenceXp: integer("defence_xp").notNull().default(0),
   hitpointsXp: integer("hitpoints_xp").notNull().default(0),
   smithingXp: integer("smithing_xp").notNull().default(0),
+  leatherworkingXp: integer("leatherworking_xp").notNull().default(0),
+  jewelcraftingXp: integer("jewelcrafting_xp").notNull().default(0),
 
   playerHp: integer("player_hp").notNull().default(-1),
   enemyHp: integer("enemy_hp").notNull().default(-1),

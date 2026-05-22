@@ -1,9 +1,9 @@
 import { db } from "./db";
 import { gameStates, type GameState } from "@shared/schema";
 import {
-  ENEMIES, EQUIPMENT_ITEMS, SMITHING_RECIPES,
-  getEquipmentBonuses, generateDroppedItem, getDropChance, smithedToGameItem,
-  type GameItem, type EquipmentState, type EquipmentSlot,
+  ENEMIES, SMITHING_RECIPES, LEATHERWORKING_RECIPES, JEWELCRAFTING_RECIPES,
+  getEquipmentBonuses, generateDroppedItem, getDropChance, craftedToGameItem,
+  type GameItem, type EquipmentState, type EquipmentSlot, type CraftingRecipe,
 } from "@shared/game-data";
 import { eq } from "drizzle-orm";
 
@@ -58,7 +58,6 @@ function getPlayerAttack(state: GameState): number {
   const equipment = parseEquipment(state.equipment);
   const { attackBonus, critRating } = getEquipmentBonuses(equipment);
   const baseAtk = Math.max(1, Math.floor(calcLevel(state.attackXp) * 1.2) + attackBonus);
-  // Crit: each 1% crit adds 0.5% to average damage
   const critMult = 1 + (critRating / 100) * 0.5;
   return Math.floor(baseAtk * critMult);
 }
@@ -71,6 +70,44 @@ function getPlayerDefence(state: GameState): number {
 
 export function getCombatLevel(state: GameState): number {
   return Math.floor((calcLevel(state.attackXp) + calcLevel(state.defenceXp) + calcLevel(state.hitpointsXp)) / 3);
+}
+
+// Generic production recipe handler
+async function handleProductionRecipe(
+  state: GameState,
+  recipes: CraftingRecipe[],
+  recipeIndex: number,
+  xpKey: keyof GameState,
+  now: Date,
+): Promise<{ updates: Partial<GameState>; updated?: GameState } | null> {
+  const recipe = recipes[recipeIndex];
+  if (!recipe) return null;
+
+  const elapsedSeconds = (now.getTime() - new Date(state.actionUpdatedAt).getTime()) / 1000;
+  const ticks = Math.floor(elapsedSeconds / recipe.time);
+  if (ticks <= 0) return null;
+
+  const craftItems = parseCraftItems(state.craftItems);
+  const tempRes: Record<string, number> = {};
+  for (const inp of recipe.inputs) tempRes[inp.resource] = ((state as Record<string, unknown>)[inp.resource] as number) ?? 0;
+
+  let actualTicks = 0;
+  for (let i = 0; i < ticks; i++) {
+    if (!recipe.inputs.every(inp => (tempRes[inp.resource] ?? 0) >= inp.qty)) break;
+    for (const inp of recipe.inputs) tempRes[inp.resource] -= inp.qty;
+    craftItems[recipe.output] = (craftItems[recipe.output] ?? 0) + 1;
+    actualTicks++;
+  }
+
+  const updates: Partial<GameState> = {
+    [xpKey]: (state[xpKey] as number) + actualTicks * recipe.xp,
+    craftItems: JSON.stringify(craftItems),
+    actionUpdatedAt: new Date(new Date(state.actionUpdatedAt).getTime() + actualTicks * recipe.time * 1000),
+  };
+  for (const inp of recipe.inputs) (updates as Record<string, unknown>)[inp.resource] = tempRes[inp.resource];
+  if (actualTicks === 0 || actualTicks < ticks) updates.activeAction = "idle";
+
+  return { updates };
 }
 
 // ─── Storage interface ─────────────────────────────────────────────────────────
@@ -133,7 +170,6 @@ export class DatabaseStorage implements IStorage {
           dragonBonesGained += enemy.drops.dragonBones ?? 0;
           attackXpGained    += enemy.xp;
           hitpointsXpGained += Math.floor(enemy.xp / 3);
-          // Roll for item drop
           if (Math.random() < dropChance) {
             newDrops.push(generateDroppedItem(enemyIndex));
           }
@@ -155,18 +191,18 @@ export class DatabaseStorage implements IStorage {
 
       const usedTime = playerDied ? elapsedSeconds : ticks * COMBAT_SPEED;
       const existingLoot = parseLootBag(state.lootBag);
-      const combinedLoot = [...existingLoot, ...newDrops].slice(-50); // cap at 50 items
+      const combinedLoot = [...existingLoot, ...newDrops].slice(-50);
 
       const updates: Partial<GameState> = {
         playerHp,
         enemyHp,
-        gold:         state.gold         + goldGained,
-        bones:        state.bones        + bonesGained,
-        dragonBones:  state.dragonBones  + dragonBonesGained,
-        attackXp:     state.attackXp     + attackXpGained,
-        defenceXp:    state.defenceXp    + defenceXpGained,
-        hitpointsXp:  state.hitpointsXp  + hitpointsXpGained,
-        lootBag:      JSON.stringify(combinedLoot),
+        gold:        state.gold        + goldGained,
+        bones:       state.bones       + bonesGained,
+        dragonBones: state.dragonBones + dragonBonesGained,
+        attackXp:    state.attackXp    + attackXpGained,
+        defenceXp:   state.defenceXp   + defenceXpGained,
+        hitpointsXp: state.hitpointsXp + hitpointsXpGained,
+        lootBag:     JSON.stringify(combinedLoot),
         actionUpdatedAt: new Date(new Date(state.actionUpdatedAt).getTime() + usedTime * 1000),
         ...(playerDied ? { activeAction: "idle" } : {}),
       };
@@ -178,40 +214,27 @@ export class DatabaseStorage implements IStorage {
     // ── Smithing ──────────────────────────────────────────────────────────────
     if (action.startsWith("smith_")) {
       const recipeIndex = parseInt(action.split("_")[1]);
-      const recipe = SMITHING_RECIPES[recipeIndex];
-      if (!recipe) return state;
+      const result = await handleProductionRecipe(state, SMITHING_RECIPES, recipeIndex, "smithingXp", now);
+      if (!result) return state;
+      const [updated] = await db.update(gameStates).set(result.updates).where(eq(gameStates.id, state.id)).returning();
+      return updated;
+    }
 
-      const ticks = Math.floor(elapsedSeconds / recipe.time);
-      if (ticks <= 0) return state;
+    // ── Leatherworking ────────────────────────────────────────────────────────
+    if (action.startsWith("leather_")) {
+      const recipeIndex = parseInt(action.split("_")[1]);
+      const result = await handleProductionRecipe(state, LEATHERWORKING_RECIPES, recipeIndex, "leatherworkingXp", now);
+      if (!result) return state;
+      const [updated] = await db.update(gameStates).set(result.updates).where(eq(gameStates.id, state.id)).returning();
+      return updated;
+    }
 
-      const craftItems = parseCraftItems(state.craftItems);
-      const tempRes: Record<string, number> = {};
-      for (const inp of recipe.inputs) tempRes[inp.resource] = ((state as Record<string, unknown>)[inp.resource] as number) ?? 0;
-
-      let actualTicks = 0;
-      for (let i = 0; i < ticks; i++) {
-        if (!recipe.inputs.every(inp => (tempRes[inp.resource] ?? 0) >= inp.qty)) break;
-        for (const inp of recipe.inputs) tempRes[inp.resource] -= inp.qty;
-        craftItems[recipe.output] = (craftItems[recipe.output] ?? 0) + 1;
-        actualTicks++;
-      }
-
-      if (actualTicks === 0 && ticks > 0) {
-        const [updated] = await db.update(gameStates)
-          .set({ activeAction: "idle", actionUpdatedAt: now })
-          .where(eq(gameStates.id, state.id)).returning();
-        return updated;
-      }
-
-      const updates: Partial<GameState> = {
-        smithingXp:  state.smithingXp + actualTicks * recipe.xp,
-        craftItems:  JSON.stringify(craftItems),
-        actionUpdatedAt: new Date(new Date(state.actionUpdatedAt).getTime() + actualTicks * recipe.time * 1000),
-      };
-      for (const inp of recipe.inputs) (updates as Record<string, unknown>)[inp.resource] = tempRes[inp.resource];
-      if (actualTicks < ticks) updates.activeAction = "idle";
-
-      const [updated] = await db.update(gameStates).set(updates).where(eq(gameStates.id, state.id)).returning();
+    // ── Jewelcrafting ─────────────────────────────────────────────────────────
+    if (action.startsWith("jewel_")) {
+      const recipeIndex = parseInt(action.split("_")[1]);
+      const result = await handleProductionRecipe(state, JEWELCRAFTING_RECIPES, recipeIndex, "jewelcraftingXp", now);
+      if (!result) return state;
+      const [updated] = await db.update(gameStates).set(result.updates).where(eq(gameStates.id, state.id)).returning();
       return updated;
     }
 
@@ -254,23 +277,20 @@ export class DatabaseStorage implements IStorage {
     let newItem: GameItem | null = null;
 
     if (instanceId) {
-      // Equip from lootBag (dropped item)
       const idx = lootBag.findIndex(i => i.instanceId === instanceId);
       if (idx < 0) throw new Error("Item not found in loot bag");
       newItem = lootBag[idx];
       lootBag.splice(idx, 1);
     } else if (itemId) {
-      // Equip from craftItems (smithed item)
       if ((craftItems[itemId] ?? 0) < 1) throw new Error("Item not in inventory");
       craftItems[itemId]--;
       if (craftItems[itemId] <= 0) delete craftItems[itemId];
-      newItem = smithedToGameItem(itemId);
-      if (!newItem) throw new Error("Unknown smithed item");
+      newItem = craftedToGameItem(itemId);
+      if (!newItem) throw new Error("Unknown item");
     } else {
       throw new Error("Must provide instanceId or itemId");
     }
 
-    // Return previously equipped item in same slot
     const prev = equipment[newItem.slot as EquipmentSlot] ?? null;
     if (prev) {
       if (prev.source === 'smithed' && prev.baseId) {

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useGameState, useEquipItem, useUnequipItem, useDestroyLoot } from "@/hooks/use-game";
 import {
-  EQUIPMENT_ITEMS, ALL_SLOTS, SLOT_LABEL, SLOT_EMOJI,
+  ALL_CRAFTABLE_ITEMS, ALL_SLOTS, SLOT_LABEL, SLOT_EMOJI,
   RARITY_COLOR, RARITY_BORDER, RARITY_BG, RARITY_LABEL,
   AFFIX_LABEL, AFFIX_COLOR,
   type GameItem, type EquipmentSlot,
@@ -296,11 +296,11 @@ export default function Inventory() {
       {/* Smithed items */}
       {Object.keys(craftItems).length > 0 && (
         <div className="bg-card border border-border rounded-xl p-4 space-y-3">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Smithed Equipment</h2>
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Crafted Equipment</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
             {Object.entries(craftItems).map(([itemId, qty]) => {
               if (qty <= 0) return null;
-              const def = EQUIPMENT_ITEMS[itemId];
+              const def = ALL_CRAFTABLE_ITEMS[itemId];
               if (!def) return null;
               return (
                 <div key={itemId} className="flex items-center gap-2 p-2 rounded-lg border border-green-500/30 bg-green-500/5"
