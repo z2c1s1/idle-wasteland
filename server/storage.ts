@@ -1,57 +1,66 @@
 import { db } from "./db";
 import { gameStates, type GameState } from "@shared/schema";
-import { ENEMIES, EQUIPMENT_ITEMS, SMITHING_RECIPES, getEquipmentBonuses, type EquipmentState } from "@shared/game-data";
+import {
+  ENEMIES, EQUIPMENT_ITEMS, SMITHING_RECIPES,
+  getEquipmentBonuses, generateDroppedItem, getDropChance, smithedToGameItem,
+  type GameItem, type EquipmentState, type EquipmentSlot,
+} from "@shared/game-data";
 import { eq } from "drizzle-orm";
 
-// ─── Skill data (gathering) ───────────────────────────────────────────────────
+// ─── Gathering skill data ──────────────────────────────────────────────────────
 export const SKILLS_DATA: Record<string, { name: string; time: number; xp: number; prefix: string }[]> = {
   woodcutting: Array.from({ length: 10 }, (_, i) => ({
-    name: ["Oak", "Willow", "Teak", "Maple", "Mahogany", "Yew", "Magic", "Elder", "Redwood", "Spirit"][i],
+    name: ["Oak","Willow","Teak","Maple","Mahogany","Yew","Magic","Elder","Redwood","Spirit"][i],
     time: 5 + i * 5, xp: 10 + i * 15, prefix: "wood",
   })),
   mining: Array.from({ length: 10 }, (_, i) => ({
-    name: ["Copper", "Tin", "Iron", "Coal", "Mithril", "Adamant", "Rune", "Dragon", "Obsidian", "Ether"][i],
+    name: ["Copper","Tin","Iron","Coal","Mithril","Adamant","Rune","Dragon","Obsidian","Ether"][i],
     time: 5 + i * 5, xp: 15 + i * 20, prefix: "ore",
   })),
   smelting: Array.from({ length: 10 }, (_, i) => ({
-    name: ["Bronze", "Iron", "Steel", "Silver", "Gold", "Mithril", "Adamant", "Rune", "Dragon", "Eternal"][i],
+    name: ["Bronze","Iron","Steel","Silver","Gold","Mithril","Adamant","Rune","Dragon","Eternal"][i],
     time: 5 + i * 5, xp: 20 + i * 25, prefix: "bar",
   })),
   fishing: Array.from({ length: 10 }, (_, i) => ({
-    name: ["Shrimp", "Sardine", "Herring", "Trout", "Salmon", "Tuna", "Lobster", "Swordfish", "Shark", "Whale"][i],
+    name: ["Shrimp","Sardine","Herring","Trout","Salmon","Tuna","Lobster","Swordfish","Shark","Whale"][i],
     time: 5 + i * 5, xp: 12 + i * 18, prefix: "fish",
   })),
   hunting: Array.from({ length: 10 }, (_, i) => ({
-    name: ["Rabbit", "Bird", "Fox", "Wolf", "Bear", "Boar", "Deer", "Tiger", "Dragon", "Phoenix"][i],
+    name: ["Rabbit","Bird","Fox","Wolf","Bear","Boar","Deer","Tiger","Dragon","Phoenix"][i],
     time: 5 + i * 5, xp: 18 + i * 22, prefix: "hide",
   })),
   crafting: Array.from({ length: 10 }, (_, i) => ({
-    name: ["Cloth", "Leather", "Jewelry", "Armor", "Weapon", "Artifact", "Relic", "Masterpiece", "Celestial", "Divine"][i],
+    name: ["Cloth","Leather","Jewelry","Armor","Weapon","Artifact","Relic","Masterpiece","Celestial","Divine"][i],
     time: 5 + i * 5, xp: 25 + i * 30, prefix: "item",
   })),
 };
 
-// ─── Player stat helpers ───────────────────────────────────────────────────────
-function calcLevel(xp: number): number {
-  return Math.floor(Math.sqrt(Math.max(0, xp))) + 1;
-}
+// ─── Helpers ───────────────────────────────────────────────────────────────────
+function calcLevel(xp: number): number { return Math.floor(Math.sqrt(Math.max(0, xp))) + 1; }
 
 function parseEquipment(raw: string): EquipmentState {
   try { return JSON.parse(raw) as EquipmentState; } catch { return {}; }
 }
-
 function parseCraftItems(raw: string): Record<string, number> {
   try { return JSON.parse(raw) as Record<string, number>; } catch { return {}; }
 }
+function parseLootBag(raw: string): GameItem[] {
+  try { return JSON.parse(raw) as GameItem[]; } catch { return []; }
+}
 
 function getPlayerMaxHp(state: GameState): number {
-  return 10 + (calcLevel(state.hitpointsXp) - 1) * 5;
+  const equipment = parseEquipment(state.equipment);
+  const { hpBonus } = getEquipmentBonuses(equipment);
+  return 10 + (calcLevel(state.hitpointsXp) - 1) * 5 + hpBonus;
 }
 
 function getPlayerAttack(state: GameState): number {
   const equipment = parseEquipment(state.equipment);
-  const { attackBonus } = getEquipmentBonuses(equipment);
-  return Math.max(1, Math.floor(calcLevel(state.attackXp) * 1.2) + attackBonus);
+  const { attackBonus, critRating } = getEquipmentBonuses(equipment);
+  const baseAtk = Math.max(1, Math.floor(calcLevel(state.attackXp) * 1.2) + attackBonus);
+  // Crit: each 1% crit adds 0.5% to average damage
+  const critMult = 1 + (critRating / 100) * 0.5;
+  return Math.floor(baseAtk * critMult);
 }
 
 function getPlayerDefence(state: GameState): number {
@@ -61,21 +70,19 @@ function getPlayerDefence(state: GameState): number {
 }
 
 export function getCombatLevel(state: GameState): number {
-  const atk = calcLevel(state.attackXp);
-  const def = calcLevel(state.defenceXp);
-  const hp  = calcLevel(state.hitpointsXp);
-  return Math.floor((atk + def + hp) / 3);
+  return Math.floor((calcLevel(state.attackXp) + calcLevel(state.defenceXp) + calcLevel(state.hitpointsXp)) / 3);
 }
 
-// ─── Storage interface ────────────────────────────────────────────────────────
+// ─── Storage interface ─────────────────────────────────────────────────────────
 export interface IStorage {
   getGameState(): Promise<GameState>;
   updateAction(action: string): Promise<GameState>;
-  equipItem(itemId: string): Promise<GameState>;
+  equipItem(instanceId?: string, itemId?: string): Promise<GameState>;
   unequipItem(slot: string): Promise<GameState>;
+  destroyLoot(instanceId: string): Promise<GameState>;
 }
 
-// ─── Database storage ─────────────────────────────────────────────────────────
+// ─── DatabaseStorage ───────────────────────────────────────────────────────────
 export class DatabaseStorage implements IStorage {
   async getGameState(): Promise<GameState> {
     let [state] = await db.select().from(gameStates).limit(1);
@@ -91,7 +98,7 @@ export class DatabaseStorage implements IStorage {
     const elapsedSeconds = (now.getTime() - new Date(state.actionUpdatedAt).getTime()) / 1000;
     if (elapsedSeconds <= 0) return state;
 
-    // ── Combat ──────────────────────────────────────────────────────────────
+    // ── Combat ────────────────────────────────────────────────────────────────
     if (action.startsWith("combat_")) {
       const enemyIndex = parseInt(action.split("_")[1]);
       const enemy = ENEMIES[enemyIndex];
@@ -113,9 +120,10 @@ export class DatabaseStorage implements IStorage {
       let goldGained = 0, bonesGained = 0, dragonBonesGained = 0;
       let attackXpGained = 0, defenceXpGained = 0, hitpointsXpGained = 0;
       let playerDied = false;
+      const newDrops: GameItem[] = [];
+      const dropChance = getDropChance(enemyIndex);
 
       for (let i = 0; i < ticks; i++) {
-        // Player attacks
         enemyHp -= dmgToEnemy;
         attackXpGained += 4;
 
@@ -125,10 +133,13 @@ export class DatabaseStorage implements IStorage {
           dragonBonesGained += enemy.drops.dragonBones ?? 0;
           attackXpGained    += enemy.xp;
           hitpointsXpGained += Math.floor(enemy.xp / 3);
-          enemyHp = enemy.maxHp; // respawn
+          // Roll for item drop
+          if (Math.random() < dropChance) {
+            newDrops.push(generateDroppedItem(enemyIndex));
+          }
+          enemyHp = enemy.maxHp;
         }
 
-        // Enemy attacks
         if (dmgToPlayer > 0) {
           playerHp -= dmgToPlayer;
           defenceXpGained   += 2;
@@ -142,9 +153,9 @@ export class DatabaseStorage implements IStorage {
         }
       }
 
-      const usedTime = playerDied
-        ? elapsedSeconds
-        : ticks * COMBAT_SPEED;
+      const usedTime = playerDied ? elapsedSeconds : ticks * COMBAT_SPEED;
+      const existingLoot = parseLootBag(state.lootBag);
+      const combinedLoot = [...existingLoot, ...newDrops].slice(-50); // cap at 50 items
 
       const updates: Partial<GameState> = {
         playerHp,
@@ -155,6 +166,7 @@ export class DatabaseStorage implements IStorage {
         attackXp:     state.attackXp     + attackXpGained,
         defenceXp:    state.defenceXp    + defenceXpGained,
         hitpointsXp:  state.hitpointsXp  + hitpointsXpGained,
+        lootBag:      JSON.stringify(combinedLoot),
         actionUpdatedAt: new Date(new Date(state.actionUpdatedAt).getTime() + usedTime * 1000),
         ...(playerDied ? { activeAction: "idle" } : {}),
       };
@@ -163,7 +175,7 @@ export class DatabaseStorage implements IStorage {
       return updated;
     }
 
-    // ── Smithing ─────────────────────────────────────────────────────────────
+    // ── Smithing ──────────────────────────────────────────────────────────────
     if (action.startsWith("smith_")) {
       const recipeIndex = parseInt(action.split("_")[1]);
       const recipe = SMITHING_RECIPES[recipeIndex];
@@ -174,21 +186,17 @@ export class DatabaseStorage implements IStorage {
 
       const craftItems = parseCraftItems(state.craftItems);
       const tempRes: Record<string, number> = {};
-      for (const inp of recipe.inputs) {
-        tempRes[inp.resource] = ((state as Record<string, unknown>)[inp.resource] as number) ?? 0;
-      }
+      for (const inp of recipe.inputs) tempRes[inp.resource] = ((state as Record<string, unknown>)[inp.resource] as number) ?? 0;
 
       let actualTicks = 0;
       for (let i = 0; i < ticks; i++) {
-        const canCraft = recipe.inputs.every(inp => (tempRes[inp.resource] ?? 0) >= inp.qty);
-        if (!canCraft) break;
+        if (!recipe.inputs.every(inp => (tempRes[inp.resource] ?? 0) >= inp.qty)) break;
         for (const inp of recipe.inputs) tempRes[inp.resource] -= inp.qty;
         craftItems[recipe.output] = (craftItems[recipe.output] ?? 0) + 1;
         actualTicks++;
       }
 
       if (actualTicks === 0 && ticks > 0) {
-        // Ran out of materials immediately — stop
         const [updated] = await db.update(gameStates)
           .set({ activeAction: "idle", actionUpdatedAt: now })
           .where(eq(gameStates.id, state.id)).returning();
@@ -207,7 +215,7 @@ export class DatabaseStorage implements IStorage {
       return updated;
     }
 
-    // ── Gathering (existing skills) ──────────────────────────────────────────
+    // ── Gathering ─────────────────────────────────────────────────────────────
     const [skill, indexStr] = action.split("_");
     const index = parseInt(indexStr);
     const skillData = SKILLS_DATA[skill];
@@ -233,52 +241,85 @@ export class DatabaseStorage implements IStorage {
     const currentState = await this.getGameState();
     const [updated] = await db.update(gameStates)
       .set({ activeAction: action, actionUpdatedAt: new Date() })
-      .where(eq(gameStates.id, currentState.id))
-      .returning();
+      .where(eq(gameStates.id, currentState.id)).returning();
     return updated;
   }
 
-  async equipItem(itemId: string): Promise<GameState> {
+  async equipItem(instanceId?: string, itemId?: string): Promise<GameState> {
     const state = await this.getGameState();
-    const item = EQUIPMENT_ITEMS[itemId];
-    if (!item) throw new Error("Unknown item");
-
-    const craftItems = parseCraftItems(state.craftItems);
-    if ((craftItems[itemId] ?? 0) < 1) throw new Error("Item not in inventory");
-
     const equipment = parseEquipment(state.equipment);
-    const prevItem = equipment[item.slot] ?? null;
+    const craftItems = parseCraftItems(state.craftItems);
+    const lootBag = parseLootBag(state.lootBag);
 
-    // Return previously equipped item to inventory
-    if (prevItem) craftItems[prevItem] = (craftItems[prevItem] ?? 0) + 1;
+    let newItem: GameItem | null = null;
 
-    // Consume the new item from inventory
-    craftItems[itemId] = (craftItems[itemId] ?? 0) - 1;
-    if (craftItems[itemId] <= 0) delete craftItems[itemId];
+    if (instanceId) {
+      // Equip from lootBag (dropped item)
+      const idx = lootBag.findIndex(i => i.instanceId === instanceId);
+      if (idx < 0) throw new Error("Item not found in loot bag");
+      newItem = lootBag[idx];
+      lootBag.splice(idx, 1);
+    } else if (itemId) {
+      // Equip from craftItems (smithed item)
+      if ((craftItems[itemId] ?? 0) < 1) throw new Error("Item not in inventory");
+      craftItems[itemId]--;
+      if (craftItems[itemId] <= 0) delete craftItems[itemId];
+      newItem = smithedToGameItem(itemId);
+      if (!newItem) throw new Error("Unknown smithed item");
+    } else {
+      throw new Error("Must provide instanceId or itemId");
+    }
 
-    equipment[item.slot] = itemId;
+    // Return previously equipped item in same slot
+    const prev = equipment[newItem.slot as EquipmentSlot] ?? null;
+    if (prev) {
+      if (prev.source === 'smithed' && prev.baseId) {
+        craftItems[prev.baseId] = (craftItems[prev.baseId] ?? 0) + 1;
+      } else {
+        lootBag.push(prev);
+      }
+    }
 
-    const [updated] = await db.update(gameStates)
-      .set({ equipment: JSON.stringify(equipment), craftItems: JSON.stringify(craftItems) })
-      .where(eq(gameStates.id, state.id))
-      .returning();
+    equipment[newItem.slot as EquipmentSlot] = newItem;
+
+    const [updated] = await db.update(gameStates).set({
+      equipment:  JSON.stringify(equipment),
+      craftItems: JSON.stringify(craftItems),
+      lootBag:    JSON.stringify(lootBag),
+    }).where(eq(gameStates.id, state.id)).returning();
     return updated;
   }
 
   async unequipItem(slot: string): Promise<GameState> {
     const state = await this.getGameState();
     const equipment = parseEquipment(state.equipment);
-    const itemId = equipment[slot as keyof typeof equipment] ?? null;
-    if (!itemId) throw new Error("Nothing equipped in that slot");
+    const item = equipment[slot as EquipmentSlot] ?? null;
+    if (!item) throw new Error("Nothing equipped in that slot");
 
     const craftItems = parseCraftItems(state.craftItems);
-    craftItems[itemId] = (craftItems[itemId] ?? 0) + 1;
-    delete equipment[slot as keyof typeof equipment];
+    const lootBag = parseLootBag(state.lootBag);
 
+    if (item.source === 'smithed' && item.baseId) {
+      craftItems[item.baseId] = (craftItems[item.baseId] ?? 0) + 1;
+    } else {
+      lootBag.push(item);
+    }
+    delete equipment[slot as EquipmentSlot];
+
+    const [updated] = await db.update(gameStates).set({
+      equipment:  JSON.stringify(equipment),
+      craftItems: JSON.stringify(craftItems),
+      lootBag:    JSON.stringify(lootBag),
+    }).where(eq(gameStates.id, state.id)).returning();
+    return updated;
+  }
+
+  async destroyLoot(instanceId: string): Promise<GameState> {
+    const state = await this.getGameState();
+    const lootBag = parseLootBag(state.lootBag).filter(i => i.instanceId !== instanceId);
     const [updated] = await db.update(gameStates)
-      .set({ equipment: JSON.stringify(equipment), craftItems: JSON.stringify(craftItems) })
-      .where(eq(gameStates.id, state.id))
-      .returning();
+      .set({ lootBag: JSON.stringify(lootBag) })
+      .where(eq(gameStates.id, state.id)).returning();
     return updated;
   }
 }

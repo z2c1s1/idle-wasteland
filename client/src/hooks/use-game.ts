@@ -33,11 +33,11 @@ export function useStartAction() {
 export function useEquipItem() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (itemId: string) => {
+    mutationFn: async (input: { instanceId?: string; itemId?: string }) => {
       const res = await fetch(api.game.equip.path, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ itemId }),
+        body: JSON.stringify(input),
         credentials: "include",
       });
       if (!res.ok) {
@@ -62,6 +62,23 @@ export function useUnequipItem() {
       });
       if (!res.ok) throw new Error("Failed to unequip");
       return api.game.unequip.responses[200].parse(await res.json());
+    },
+    onSuccess: (state) => queryClient.setQueryData(QUERY_KEY, state),
+  });
+}
+
+export function useDestroyLoot() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (instanceId: string) => {
+      const res = await fetch(api.game.destroyLoot.path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ instanceId }),
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to destroy item");
+      return api.game.destroyLoot.responses[200].parse(await res.json());
     },
     onSuccess: (state) => queryClient.setQueryData(QUERY_KEY, state),
   });

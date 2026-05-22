@@ -7,7 +7,6 @@ export const gameStates = pgTable("game_states", {
   activeAction: text("active_action").notNull().default("idle"),
   actionUpdatedAt: timestamp("action_updated_at").notNull().defaultNow(),
 
-  // === Gathering XP (6 skills) ===
   woodcuttingXp: integer("woodcutting_xp").notNull().default(0),
   miningXp: integer("mining_xp").notNull().default(0),
   smeltingXp: integer("smelting_xp").notNull().default(0),
@@ -15,29 +14,26 @@ export const gameStates = pgTable("game_states", {
   huntingXp: integer("hunting_xp").notNull().default(0),
   craftingXp: integer("crafting_xp").notNull().default(0),
 
-  // === Combat XP (4 skills) ===
   attackXp: integer("attack_xp").notNull().default(0),
   strengthXp: integer("strength_xp").notNull().default(0),
   defenceXp: integer("defence_xp").notNull().default(0),
   hitpointsXp: integer("hitpoints_xp").notNull().default(0),
-
-  // === Smithing XP ===
   smithingXp: integer("smithing_xp").notNull().default(0),
 
-  // === Combat State ===
-  playerHp: integer("player_hp").notNull().default(-1),  // -1 = full HP
-  enemyHp: integer("enemy_hp").notNull().default(-1),    // -1 = new enemy
+  playerHp: integer("player_hp").notNull().default(-1),
+  enemyHp: integer("enemy_hp").notNull().default(-1),
 
-  // === Loot drops ===
   gold: integer("gold").notNull().default(0),
   bones: integer("bones").notNull().default(0),
   dragonBones: integer("dragon_bones").notNull().default(0),
 
-  // === Equipment & Item Inventory (JSON as text) ===
-  equipment: text("equipment").notNull().default("{}"),   // {slot: itemId | null}
-  craftItems: text("craft_items").notNull().default("{}"), // {itemId: qty}
+  // equipment: {slot: GameItem} full item object per slot
+  equipment: text("equipment").notNull().default("{}"),
+  // craftItems: {itemId: qty} for smithed items
+  craftItems: text("craft_items").notNull().default("{}"),
+  // lootBag: GameItem[] for randomly dropped items
+  lootBag: text("loot_bag").notNull().default("[]"),
 
-  // === Woodcutting resources (10 tiers) ===
   wood_0: integer("wood_0").notNull().default(0),
   wood_1: integer("wood_1").notNull().default(0),
   wood_2: integer("wood_2").notNull().default(0),
@@ -49,7 +45,6 @@ export const gameStates = pgTable("game_states", {
   wood_8: integer("wood_8").notNull().default(0),
   wood_9: integer("wood_9").notNull().default(0),
 
-  // === Mining resources (10 tiers) ===
   ore_0: integer("ore_0").notNull().default(0),
   ore_1: integer("ore_1").notNull().default(0),
   ore_2: integer("ore_2").notNull().default(0),
@@ -61,7 +56,6 @@ export const gameStates = pgTable("game_states", {
   ore_8: integer("ore_8").notNull().default(0),
   ore_9: integer("ore_9").notNull().default(0),
 
-  // === Smelting resources (10 tiers) ===
   bar_0: integer("bar_0").notNull().default(0),
   bar_1: integer("bar_1").notNull().default(0),
   bar_2: integer("bar_2").notNull().default(0),
@@ -73,7 +67,6 @@ export const gameStates = pgTable("game_states", {
   bar_8: integer("bar_8").notNull().default(0),
   bar_9: integer("bar_9").notNull().default(0),
 
-  // === Fishing resources (10 tiers) ===
   fish_0: integer("fish_0").notNull().default(0),
   fish_1: integer("fish_1").notNull().default(0),
   fish_2: integer("fish_2").notNull().default(0),
@@ -85,7 +78,6 @@ export const gameStates = pgTable("game_states", {
   fish_8: integer("fish_8").notNull().default(0),
   fish_9: integer("fish_9").notNull().default(0),
 
-  // === Hunting resources (10 tiers) ===
   hide_0: integer("hide_0").notNull().default(0),
   hide_1: integer("hide_1").notNull().default(0),
   hide_2: integer("hide_2").notNull().default(0),
@@ -97,7 +89,6 @@ export const gameStates = pgTable("game_states", {
   hide_8: integer("hide_8").notNull().default(0),
   hide_9: integer("hide_9").notNull().default(0),
 
-  // === Crafting resources (10 tiers) ===
   item_0: integer("item_0").notNull().default(0),
   item_1: integer("item_1").notNull().default(0),
   item_2: integer("item_2").notNull().default(0),

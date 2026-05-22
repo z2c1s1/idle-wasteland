@@ -1,41 +1,39 @@
-import { EQUIPMENT_ITEMS, getEquipmentBonuses, type EquipmentState } from "@shared/game-data";
+import { getEquipmentBonuses, type EquipmentState, type GameItem } from "@shared/game-data";
 import type { GameState } from "@shared/schema";
 
-export const calculateLevel = (xp: number): number => {
-  if (xp < 0) return 1;
-  return Math.floor(Math.sqrt(xp)) + 1;
-};
-
+export const calculateLevel = (xp: number): number => Math.floor(Math.sqrt(Math.max(0, xp))) + 1;
 export const xpForLevel = (level: number): number => Math.pow(level - 1, 2);
-
 export const levelProgress = (xp: number): number => {
-  const currentLevel = calculateLevel(xp);
-  const currentLevelXp = xpForLevel(currentLevel);
-  const nextLevelXp = xpForLevel(currentLevel + 1);
-  const xpRequiredForNext = nextLevelXp - currentLevelXp;
-  if (xpRequiredForNext === 0) return 100;
-  return Math.min(100, Math.max(0, ((xp - currentLevelXp) / xpRequiredForNext) * 100));
+  const lv = calculateLevel(xp);
+  const cur = xpForLevel(lv);
+  const nxt = xpForLevel(lv + 1);
+  const range = nxt - cur;
+  return range === 0 ? 100 : Math.min(100, Math.max(0, ((xp - cur) / range) * 100));
 };
-
-export const formatNumber = (num: number): string =>
-  new Intl.NumberFormat('en-US').format(Math.floor(num));
+export const formatNumber = (n: number): string =>
+  new Intl.NumberFormat('en-US').format(Math.floor(n));
 
 export function parseEquipment(raw: string): EquipmentState {
   try { return JSON.parse(raw) as EquipmentState; } catch { return {}; }
 }
-
 export function parseCraftItems(raw: string): Record<string, number> {
   try { return JSON.parse(raw) as Record<string, number>; } catch { return {}; }
 }
+export function parseLootBag(raw: string): GameItem[] {
+  try { return JSON.parse(raw) as GameItem[]; } catch { return []; }
+}
 
 export function getPlayerMaxHp(state: GameState): number {
-  return 10 + (calculateLevel(state.hitpointsXp) - 1) * 5;
+  const equipment = parseEquipment(state.equipment);
+  const { hpBonus } = getEquipmentBonuses(equipment);
+  return 10 + (calculateLevel(state.hitpointsXp) - 1) * 5 + hpBonus;
 }
 
 export function getPlayerAttack(state: GameState): number {
   const equipment = parseEquipment(state.equipment);
-  const { attackBonus } = getEquipmentBonuses(equipment);
-  return Math.max(1, Math.floor(calculateLevel(state.attackXp) * 1.2) + attackBonus);
+  const { attackBonus, critRating } = getEquipmentBonuses(equipment);
+  const base = Math.max(1, Math.floor(calculateLevel(state.attackXp) * 1.2) + attackBonus);
+  return Math.floor(base * (1 + (critRating / 100) * 0.5));
 }
 
 export function getPlayerDefence(state: GameState): number {
@@ -45,14 +43,10 @@ export function getPlayerDefence(state: GameState): number {
 }
 
 export function getCombatLevel(state: GameState): number {
-  const atk = calculateLevel(state.attackXp);
-  const def = calculateLevel(state.defenceXp);
-  const hp  = calculateLevel(state.hitpointsXp);
-  return Math.floor((atk + def + hp) / 3);
+  return Math.floor((calculateLevel(state.attackXp) + calculateLevel(state.defenceXp) + calculateLevel(state.hitpointsXp)) / 3);
 }
 
-export function getEquippedItem(state: GameState, slot: string): typeof EQUIPMENT_ITEMS[string] | null {
-  const eq = parseEquipment(state.equipment);
-  const itemId = (eq as Record<string, string | null>)[slot];
-  return itemId ? (EQUIPMENT_ITEMS[itemId] ?? null) : null;
+export function getEquipmentStats(state: GameState) {
+  const equipment = parseEquipment(state.equipment);
+  return getEquipmentBonuses(equipment);
 }
