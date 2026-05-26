@@ -59,7 +59,7 @@ function ActiveProgressBar({
     <div className="bg-[hsl(217_50%_10%)] border border-primary/30 rounded p-3 mb-4">
       <div className="flex items-center justify-between mb-2">
         <div>
-          <span className="text-xs text-muted-foreground uppercase tracking-wider">Currently Active</span>
+          <span className="text-xs text-muted-foreground uppercase tracking-wider">当前进行中</span>
           <div className="text-sm font-semibold text-foreground">{resourceName}</div>
         </div>
         <div className="flex items-center gap-3">
@@ -71,7 +71,7 @@ function ActiveProgressBar({
             disabled={isPending}
             className="px-3 py-1 text-xs font-semibold bg-red-600 hover:bg-red-500 text-white rounded transition-colors disabled:opacity-50"
           >
-            Stop
+            停止
           </button>
         </div>
       </div>
@@ -97,7 +97,6 @@ export function SkillPage({ skillName, skillXp, icon: Icon, iconColor, state, re
   const isGlobalActive = state.activeAction !== "idle";
   const activeResource = resources.find((r) => state.activeAction === r.actionKey) ?? null;
 
-  // Convert actionUpdatedAt to a stable epoch number to avoid ref-equality issues with Date objects
   const actionStartMs = new Date(state.actionUpdatedAt as unknown as string).getTime();
 
   return (
@@ -107,12 +106,12 @@ export function SkillPage({ skillName, skillXp, icon: Icon, iconColor, state, re
           <Icon className={`w-6 h-6 ${iconColor}`} />
           <div>
             <h1 className="font-display text-lg font-bold text-foreground">{skillName}</h1>
-            <span className="text-xs text-muted-foreground">Skill</span>
+            <span className="text-xs text-muted-foreground">技能</span>
           </div>
           <div className="ml-auto text-right">
-            <div className="text-2xl font-display font-bold text-foreground">Level {level}</div>
+            <div className="text-2xl font-display font-bold text-foreground">{level} 级</div>
             <div className="text-xs text-muted-foreground">
-              {formatNumber(xpInLevel)} / {formatNumber(xpNeeded)} XP
+              {formatNumber(xpInLevel)} / {formatNumber(xpNeeded)} 经验
             </div>
           </div>
         </div>
@@ -124,7 +123,7 @@ export function SkillPage({ skillName, skillXp, icon: Icon, iconColor, state, re
           />
         </div>
         <div className="flex justify-between mt-1">
-          <span className="text-[10px] text-muted-foreground">XP: {formatNumber(skillXp)}</span>
+          <span className="text-[10px] text-muted-foreground">经验: {formatNumber(skillXp)}</span>
           <span className="text-[10px] text-muted-foreground">{progress.toFixed(1)}%</span>
         </div>
       </div>
@@ -145,11 +144,11 @@ export function SkillPage({ skillName, skillXp, icon: Icon, iconColor, state, re
             <thead>
               <tr className="bg-[hsl(220_13%_8%)] text-muted-foreground text-xs">
                 <th className="text-left px-3 py-2 font-semibold w-8"></th>
-                <th className="text-left px-3 py-2 font-semibold">Name</th>
-                <th className="text-center px-3 py-2 font-semibold">Level</th>
-                <th className="text-center px-3 py-2 font-semibold">XP</th>
-                <th className="text-center px-3 py-2 font-semibold">Time</th>
-                <th className="text-center px-3 py-2 font-semibold">Owned</th>
+                <th className="text-left px-3 py-2 font-semibold">名称</th>
+                <th className="text-center px-3 py-2 font-semibold">等级</th>
+                <th className="text-center px-3 py-2 font-semibold">经验</th>
+                <th className="text-center px-3 py-2 font-semibold">时间</th>
+                <th className="text-center px-3 py-2 font-semibold">持有</th>
                 <th className="px-3 py-2"></th>
               </tr>
             </thead>
@@ -194,7 +193,7 @@ export function SkillPage({ skillName, skillXp, icon: Icon, iconColor, state, re
                     <td className="px-3 py-2.5 text-right">
                       {!isUnlocked ? (
                         <span className="text-xs text-muted-foreground px-3 py-1 bg-accent rounded">
-                          Locked
+                          已锁定
                         </span>
                       ) : isActive ? (
                         <button
@@ -202,7 +201,7 @@ export function SkillPage({ skillName, skillXp, icon: Icon, iconColor, state, re
                           disabled={isPending}
                           className="px-3 py-1 text-xs font-semibold bg-red-600 hover:bg-red-500 text-white rounded transition-colors disabled:opacity-50"
                         >
-                          Stop
+                          停止
                         </button>
                       ) : (
                         <button
@@ -210,7 +209,7 @@ export function SkillPage({ skillName, skillXp, icon: Icon, iconColor, state, re
                           disabled={isPending || isOtherActive}
                           className="px-3 py-1 text-xs font-semibold bg-primary hover:bg-primary/80 text-primary-foreground rounded transition-colors disabled:opacity-40"
                         >
-                          Start
+                          开始
                         </button>
                       )}
                     </td>

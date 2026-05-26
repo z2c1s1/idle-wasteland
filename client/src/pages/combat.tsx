@@ -59,7 +59,7 @@ function CombatTimer({ actionUpdatedAt, speed }: { actionUpdatedAt: string; spee
   return (
     <div className="space-y-1">
       <div className="flex justify-between text-xs text-muted-foreground">
-        <span>Next attack</span>
+        <span>下次攻击</span>
         <span>{speed}s</span>
       </div>
       <div className="h-1.5 bg-muted/30 rounded-full overflow-hidden">
@@ -101,15 +101,15 @@ export default function Combat() {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-xl font-bold flex items-center gap-2">
-            <Skull className="w-5 h-5 text-red-400" /> Combat
+            <Skull className="w-5 h-5 text-red-400" /> 战斗
           </h1>
-          <p className="text-sm text-muted-foreground">Combat Level {combatLevel}</p>
+          <p className="text-sm text-muted-foreground">战斗等级 {combatLevel}</p>
         </div>
         {lootBag.length > 0 && (
           <Link href="/inventory">
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-yellow-500/40 bg-yellow-500/10 text-yellow-400 text-xs font-medium cursor-pointer hover:bg-yellow-500/20 transition-colors">
               <Star className="w-3.5 h-3.5" />
-              {lootBag.length} new item{lootBag.length !== 1 ? 's' : ''}
+              {lootBag.length} 件新物品
               <ChevronRight className="w-3 h-3" />
             </div>
           </Link>
@@ -118,30 +118,30 @@ export default function Combat() {
 
       {/* Player Stats */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
-        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Player Stats</h2>
-        <HpBar current={currentHp} max={playerMaxHp} label="Hitpoints" color="bg-green-500" />
+        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">玩家属性</h2>
+        <HpBar current={currentHp} max={playerMaxHp} label="生命值" color="bg-green-500" />
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          <StatBox icon={Sword}  label="Attack"   value={playerAtk}  color="text-red-400" sub={eqStats.attackBonus > 0 ? `+${eqStats.attackBonus} gear` : undefined} />
-          <StatBox icon={Shield} label="Defence"  value={playerDef}  color="text-blue-400" sub={eqStats.defenceBonus > 0 ? `+${eqStats.defenceBonus} gear` : undefined} />
-          <StatBox icon={Heart}  label="Max HP"   value={playerMaxHp} color="text-green-400" sub={eqStats.hpBonus > 0 ? `+${eqStats.hpBonus} gear` : undefined} />
-          <StatBox icon={Zap}    label="Crit"     value={`${eqStats.critRating.toFixed(1)}%`} color="text-yellow-400"
-            sub={eqStats.critRating > 0 ? "+50% bonus dmg" : "No crit"} />
+          <StatBox icon={Sword}  label="攻击"     value={playerAtk}  color="text-red-400" sub={eqStats.attackBonus > 0 ? `+${eqStats.attackBonus} 装备` : undefined} />
+          <StatBox icon={Shield} label="防御"     value={playerDef}  color="text-blue-400" sub={eqStats.defenceBonus > 0 ? `+${eqStats.defenceBonus} 装备` : undefined} />
+          <StatBox icon={Heart}  label="最大生命" value={playerMaxHp} color="text-green-400" sub={eqStats.hpBonus > 0 ? `+${eqStats.hpBonus} 装备` : undefined} />
+          <StatBox icon={Zap}    label="暴击"     value={`${eqStats.critRating.toFixed(1)}%`} color="text-yellow-400"
+            sub={eqStats.critRating > 0 ? "+50% 额外伤害" : "无暴击"} />
         </div>
 
         {/* Skill XP */}
         <div className="grid grid-cols-3 gap-3 pt-2 border-t border-border">
           {[
-            { label: "Attack",    xp: gs.attackXp,    lv: attackLevel    },
-            { label: "Defence",   xp: gs.defenceXp,   lv: defenceLevel   },
-            { label: "Hitpoints", xp: gs.hitpointsXp, lv: hitpointsLevel },
+            { label: "攻击", xp: gs.attackXp,    lv: attackLevel    },
+            { label: "防御", xp: gs.defenceXp,   lv: defenceLevel   },
+            { label: "生命", xp: gs.hitpointsXp, lv: hitpointsLevel },
           ].map(({ label, xp, lv }) => (
             <div key={label} className="space-y-1">
               <div className="flex justify-between text-xs">
                 <span className="text-muted-foreground">{label}</span>
-                <span className="font-bold">Lv {lv}</span>
+                <span className="font-bold">{lv} 级</span>
               </div>
               <Progress value={levelProgress(xp)} className="h-1" />
-              <p className="text-[10px] text-muted-foreground">{formatNumber(xp)} XP</p>
+              <p className="text-[10px] text-muted-foreground">{formatNumber(xp)} 经验</p>
             </div>
           ))}
         </div>
@@ -169,26 +169,26 @@ export default function Combat() {
           <div className="flex items-center justify-between">
             <h2 className="font-semibold flex items-center gap-2 text-red-300">
               <span className="text-3xl">{activeEnemy.emoji}</span>
-              Fighting: {activeEnemy.name}
+              战斗中：{activeEnemy.name}
             </h2>
             <Button variant="outline" size="sm" onClick={() => startAction.mutate("idle")} data-testid="button-stop-combat">
-              Flee
+              逃跑
             </Button>
           </div>
-          <HpBar current={currentEnemyHp} max={activeEnemy.maxHp} label="Enemy HP" color="bg-red-500" />
+          <HpBar current={currentEnemyHp} max={activeEnemy.maxHp} label="敌人生命" color="bg-red-500" />
           <CombatTimer actionUpdatedAt={gs.actionUpdatedAt as unknown as string} speed={3} />
           <div className="grid grid-cols-4 gap-2 text-xs text-muted-foreground">
-            <div><span className="text-foreground font-medium">Enemy ATK:</span> {activeEnemy.attack}</div>
-            <div><span className="text-foreground font-medium">Enemy DEF:</span> {activeEnemy.defence}</div>
-            <div><span className="text-foreground font-medium">Your DPS:</span> {Math.max(1, playerAtk - activeEnemy.defence)}/3s</div>
-            <div><span className="text-foreground font-medium">Drop %:</span> {Math.round((0.15 + ENEMIES.indexOf(activeEnemy) * 0.02) * 100)}%</div>
+            <div><span className="text-foreground font-medium">敌人攻击：</span>{activeEnemy.attack}</div>
+            <div><span className="text-foreground font-medium">敌人防御：</span>{activeEnemy.defence}</div>
+            <div><span className="text-foreground font-medium">我方伤害：</span>{Math.max(1, playerAtk - activeEnemy.defence)}/3s</div>
+            <div><span className="text-foreground font-medium">掉落率：</span>{Math.round((0.15 + ENEMIES.indexOf(activeEnemy) * 0.02) * 100)}%</div>
           </div>
         </div>
       )}
 
       {/* Enemy list */}
       <div>
-        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Select Enemy</h2>
+        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">选择敌人</h2>
         <div className="space-y-2">
           {ENEMIES.map((enemy, index) => {
             const locked    = combatLevel < enemy.reqCombatLevel;
@@ -208,30 +208,30 @@ export default function Combat() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-medium">{enemy.name}</span>
-                    <span className="text-[10px] text-yellow-500 border border-yellow-500/30 px-1 rounded">ilvl {index * 7 + 1}-{index * 7 + 6}</span>
-                    {locked && <span className="text-xs text-muted-foreground">(Combat {enemy.reqCombatLevel})</span>}
-                    {!locked && dmgToUs > currentHp && <span className="text-xs text-red-400 font-medium">⚠ Lethal</span>}
+                    <span className="text-[10px] text-yellow-500 border border-yellow-500/30 px-1 rounded">物品等级 {index * 7 + 1}-{index * 7 + 6}</span>
+                    {locked && <span className="text-xs text-muted-foreground">（战斗 {enemy.reqCombatLevel}）</span>}
+                    {!locked && dmgToUs > currentHp && <span className="text-xs text-red-400 font-medium">⚠ 致命</span>}
                   </div>
                   <div className="text-xs text-muted-foreground flex gap-3 mt-0.5 flex-wrap">
-                    <span>HP {enemy.maxHp}</span>
-                    <span>ATK {enemy.attack}</span>
-                    <span>DEF {enemy.defence}</span>
-                    <span className="text-yellow-500">{enemy.xp} XP/kill</span>
-                    <span>💰 {enemy.drops.gold[0]}+ gold</span>
-                    {enemy.drops.dragonBones && <span className="text-purple-400">🐲 dragon bones</span>}
+                    <span>生命 {enemy.maxHp}</span>
+                    <span>攻击 {enemy.attack}</span>
+                    <span>防御 {enemy.defence}</span>
+                    <span className="text-yellow-500">{enemy.xp} 经验/击杀</span>
+                    <span>💰 {enemy.drops.gold[0]}+ 金币</span>
+                    {enemy.drops.dragonBones && <span className="text-purple-400">🐲 龙骨</span>}
                   </div>
                   <div className="text-xs mt-0.5 flex gap-3">
-                    <span className="text-green-400">⚔ {dmgToThem}/hit</span>
-                    {dmgToUs > 0 ? <span className="text-red-400">💔 {dmgToUs}/hit</span> : <span className="text-blue-400">🛡 invincible</span>}
-                    <span className="text-yellow-400">📦 {Math.round((0.15 + index * 0.02) * 100)}% drop</span>
+                    <span className="text-green-400">⚔ {dmgToThem}/每击</span>
+                    {dmgToUs > 0 ? <span className="text-red-400">💔 {dmgToUs}/每击</span> : <span className="text-blue-400">🛡 无法受伤</span>}
+                    <span className="text-yellow-400">📦 {Math.round((0.15 + index * 0.02) * 100)}% 掉落</span>
                   </div>
                 </div>
                 <div className="flex-shrink-0">
                   {isActive ? (
-                    <Button size="sm" variant="destructive" onClick={() => startAction.mutate("idle")} data-testid={`button-stop-${enemy.id}`}>Flee</Button>
+                    <Button size="sm" variant="destructive" onClick={() => startAction.mutate("idle")} data-testid={`button-stop-${enemy.id}`}>逃跑</Button>
                   ) : (
                     <Button size="sm" disabled={locked} onClick={() => startAction.mutate(`combat_${index}`)} data-testid={`button-fight-${enemy.id}`}>
-                      {locked ? `Lv ${enemy.reqCombatLevel}` : "Fight"}
+                      {locked ? `${enemy.reqCombatLevel}级` : "战斗"}
                     </Button>
                   )}
                 </div>
@@ -243,17 +243,17 @@ export default function Combat() {
 
       {/* Drops summary */}
       <div className="bg-card border border-border rounded-xl p-4">
-        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Combat Loot</h2>
+        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">战斗战利品</h2>
         <div className="flex gap-4 text-sm flex-wrap">
-          <span>💰 <span className="font-bold text-yellow-400">{formatNumber(gs.gold)}</span> Gold</span>
-          <span>🦴 <span className="font-bold">{formatNumber(gs.bones)}</span> Bones</span>
-          {gs.dragonBones > 0 && <span>🐲 <span className="font-bold text-purple-400">{formatNumber(gs.dragonBones)}</span> Dragon Bones</span>}
+          <span>💰 <span className="font-bold text-yellow-400">{formatNumber(gs.gold)}</span> 金币</span>
+          <span>🦴 <span className="font-bold">{formatNumber(gs.bones)}</span> 骨头</span>
+          {gs.dragonBones > 0 && <span>🐲 <span className="font-bold text-purple-400">{formatNumber(gs.dragonBones)}</span> 龙骨</span>}
         </div>
         {lootBag.length > 0 && (
           <Link href="/inventory">
             <div className="mt-3 flex items-center gap-2 text-sm text-yellow-400 hover:text-yellow-300 cursor-pointer">
               <Star className="w-4 h-4" />
-              <span>{lootBag.length} item{lootBag.length !== 1 ? 's' : ''} waiting in loot bag</span>
+              <span>{lootBag.length} 件物品待收取</span>
               <ChevronRight className="w-4 h-4" />
             </div>
           </Link>

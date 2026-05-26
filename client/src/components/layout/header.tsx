@@ -17,7 +17,7 @@ export function Header() {
             <span className="text-foreground font-medium capitalize">{state.activeAction.replace("_", " ")}</span>
           </span>
         ) : (
-          "Idle — no action running"
+          "空闲 — 无任务运行"
         )}
       </span>
       {isActive && (
@@ -26,7 +26,7 @@ export function Header() {
           disabled={isPending}
           className="ml-auto px-2.5 py-0.5 text-xs font-semibold bg-red-600 hover:bg-red-500 text-white rounded transition-colors disabled:opacity-50"
         >
-          Stop
+          停止
         </button>
       )}
     </header>

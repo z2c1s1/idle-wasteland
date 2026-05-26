@@ -2,11 +2,11 @@
 export type Rarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 
 export const RARITY_LABEL: Record<Rarity, string> = {
-  common:    'Common',
-  uncommon:  'Uncommon',
-  rare:      'Rare',
-  epic:      'Epic',
-  legendary: 'Legendary',
+  common:    '普通',
+  uncommon:  '精良',
+  rare:      '稀有',
+  epic:      '史诗',
+  legendary: '传说',
 };
 
 export const RARITY_COLOR: Record<Rarity, string> = {
@@ -37,15 +37,15 @@ export const RARITY_BG: Record<Rarity, string> = {
 export type EquipmentSlot = 'weapon' | 'offhand' | 'helmet' | 'chest' | 'legs' | 'gloves' | 'boots' | 'neck' | 'ring';
 
 export const SLOT_LABEL: Record<EquipmentSlot, string> = {
-  weapon:  'Weapon',
-  offhand: 'Off-Hand',
-  helmet:  'Helmet',
-  chest:   'Chest',
-  legs:    'Legs',
-  gloves:  'Gloves',
-  boots:   'Boots',
-  neck:    'Neck',
-  ring:    'Ring',
+  weapon:  '武器',
+  offhand: '副手',
+  helmet:  '头盔',
+  chest:   '胸甲',
+  legs:    '护腿',
+  gloves:  '手套',
+  boots:   '靴子',
+  neck:    '项链',
+  ring:    '戒指',
 };
 
 export const SLOT_EMOJI: Record<EquipmentSlot, string> = {
@@ -66,10 +66,10 @@ export const ALL_SLOTS: EquipmentSlot[] = ['weapon','offhand','helmet','chest','
 export type AffixType = 'strength' | 'agility' | 'stamina' | 'armour';
 
 export const AFFIX_LABEL: Record<AffixType, string> = {
-  strength: 'Strength',
-  agility:  'Agility',
-  stamina:  'Stamina',
-  armour:   'Armour',
+  strength: '力量',
+  agility:  '敏捷',
+  stamina:  '体力',
+  armour:   '护甲',
 };
 
 export const AFFIX_COLOR: Record<AffixType, string> = {
@@ -80,10 +80,10 @@ export const AFFIX_COLOR: Record<AffixType, string> = {
 };
 
 export const AFFIX_EFFECT: Record<AffixType, string> = {
-  strength: '+1 Attack per point',
-  agility:  '+0.5% Crit per point',
-  stamina:  '+5 HP per point',
-  armour:   '+1 Defence per point',
+  strength: '+1 攻击/点',
+  agility:  '+0.5% 暴击/点',
+  stamina:  '+5 生命/点',
+  armour:   '+1 防御/点',
 };
 
 export interface ItemAffix {
@@ -275,31 +275,31 @@ export interface SmithedItemDef {
 }
 
 export const EQUIPMENT_ITEMS: Record<string, SmithedItemDef> = {
-  bronze_sword:     { id: 'bronze_sword',     name: 'Bronze Sword',      emoji: '🗡️', slot: 'weapon',  attackBonus: 9,  defenceBonus: 0,  ilvl: 5  },
-  iron_sword:       { id: 'iron_sword',       name: 'Iron Sword',        emoji: '⚔️', slot: 'weapon',  attackBonus: 17, defenceBonus: 0,  ilvl: 10 },
-  steel_sword:      { id: 'steel_sword',      name: 'Steel Sword',       emoji: '⚔️', slot: 'weapon',  attackBonus: 27, defenceBonus: 0,  ilvl: 15 },
-  mithril_sword:    { id: 'mithril_sword',    name: 'Mithril Sword',     emoji: '⚔️', slot: 'weapon',  attackBonus: 42, defenceBonus: 0,  ilvl: 25 },
-  adamant_sword:    { id: 'adamant_sword',    name: 'Adamant Sword',     emoji: '⚔️', slot: 'weapon',  attackBonus: 60, defenceBonus: 0,  ilvl: 35 },
-  rune_sword:       { id: 'rune_sword',       name: 'Rune Sword',        emoji: '⚔️', slot: 'weapon',  attackBonus: 82, defenceBonus: 0,  ilvl: 50 },
-  bronze_shield:    { id: 'bronze_shield',    name: 'Bronze Shield',     emoji: '🛡️', slot: 'offhand', attackBonus: 0,  defenceBonus: 6,  ilvl: 5  },
-  iron_shield:      { id: 'iron_shield',      name: 'Iron Shield',       emoji: '🛡️', slot: 'offhand', attackBonus: 0,  defenceBonus: 12, ilvl: 10 },
-  steel_shield:     { id: 'steel_shield',     name: 'Steel Shield',      emoji: '🛡️', slot: 'offhand', attackBonus: 0,  defenceBonus: 20, ilvl: 15 },
-  mithril_shield:   { id: 'mithril_shield',   name: 'Mithril Shield',    emoji: '🛡️', slot: 'offhand', attackBonus: 0,  defenceBonus: 32, ilvl: 25 },
-  bronze_helmet:    { id: 'bronze_helmet',    name: 'Bronze Helmet',     emoji: '⛑️', slot: 'helmet',  attackBonus: 0,  defenceBonus: 4,  ilvl: 5  },
-  iron_helmet:      { id: 'iron_helmet',      name: 'Iron Helmet',       emoji: '⛑️', slot: 'helmet',  attackBonus: 0,  defenceBonus: 8,  ilvl: 10 },
-  steel_helmet:     { id: 'steel_helmet',     name: 'Steel Helmet',      emoji: '⛑️', slot: 'helmet',  attackBonus: 0,  defenceBonus: 14, ilvl: 15 },
-  bronze_body:      { id: 'bronze_body',      name: 'Bronze Platebody',  emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 9,  ilvl: 5  },
-  iron_body:        { id: 'iron_body',        name: 'Iron Platebody',    emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 18, ilvl: 10 },
-  steel_body:       { id: 'steel_body',       name: 'Steel Platebody',   emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 30, ilvl: 15 },
-  bronze_legs:      { id: 'bronze_legs',      name: 'Bronze Platelegs',  emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 7,  ilvl: 5  },
-  iron_legs:        { id: 'iron_legs',        name: 'Iron Platelegs',    emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 14, ilvl: 10 },
-  steel_legs:       { id: 'steel_legs',       name: 'Steel Platelegs',   emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 23, ilvl: 15 },
-  bronze_gauntlets: { id: 'bronze_gauntlets', name: 'Bronze Gauntlets',  emoji: '🥊', slot: 'gloves',  attackBonus: 3,  defenceBonus: 3,  ilvl: 5  },
-  iron_gauntlets:   { id: 'iron_gauntlets',   name: 'Iron Gauntlets',    emoji: '🥊', slot: 'gloves',  attackBonus: 6,  defenceBonus: 6,  ilvl: 10 },
-  steel_gauntlets:  { id: 'steel_gauntlets',  name: 'Steel Gauntlets',   emoji: '🥊', slot: 'gloves',  attackBonus: 10, defenceBonus: 10, ilvl: 15 },
-  bronze_boots:     { id: 'bronze_boots',     name: 'Bronze Boots',      emoji: '👢', slot: 'boots',   attackBonus: 0,  defenceBonus: 5,  ilvl: 5  },
-  iron_boots:       { id: 'iron_boots',       name: 'Iron Boots',        emoji: '👢', slot: 'boots',   attackBonus: 0,  defenceBonus: 10, ilvl: 10 },
-  steel_boots:      { id: 'steel_boots',      name: 'Steel Boots',       emoji: '👢', slot: 'boots',   attackBonus: 0,  defenceBonus: 16, ilvl: 15 },
+  bronze_sword:     { id: 'bronze_sword',     name: '青铜剑',   emoji: '🗡️', slot: 'weapon',  attackBonus: 9,  defenceBonus: 0,  ilvl: 5  },
+  iron_sword:       { id: 'iron_sword',       name: '铁剑',     emoji: '⚔️', slot: 'weapon',  attackBonus: 17, defenceBonus: 0,  ilvl: 10 },
+  steel_sword:      { id: 'steel_sword',      name: '钢剑',     emoji: '⚔️', slot: 'weapon',  attackBonus: 27, defenceBonus: 0,  ilvl: 15 },
+  mithril_sword:    { id: 'mithril_sword',    name: '秘银剑',   emoji: '⚔️', slot: 'weapon',  attackBonus: 42, defenceBonus: 0,  ilvl: 25 },
+  adamant_sword:    { id: 'adamant_sword',    name: '精金剑',   emoji: '⚔️', slot: 'weapon',  attackBonus: 60, defenceBonus: 0,  ilvl: 35 },
+  rune_sword:       { id: 'rune_sword',       name: '符文剑',   emoji: '⚔️', slot: 'weapon',  attackBonus: 82, defenceBonus: 0,  ilvl: 50 },
+  bronze_shield:    { id: 'bronze_shield',    name: '青铜盾',   emoji: '🛡️', slot: 'offhand', attackBonus: 0,  defenceBonus: 6,  ilvl: 5  },
+  iron_shield:      { id: 'iron_shield',      name: '铁盾',     emoji: '🛡️', slot: 'offhand', attackBonus: 0,  defenceBonus: 12, ilvl: 10 },
+  steel_shield:     { id: 'steel_shield',     name: '钢盾',     emoji: '🛡️', slot: 'offhand', attackBonus: 0,  defenceBonus: 20, ilvl: 15 },
+  mithril_shield:   { id: 'mithril_shield',   name: '秘银盾',   emoji: '🛡️', slot: 'offhand', attackBonus: 0,  defenceBonus: 32, ilvl: 25 },
+  bronze_helmet:    { id: 'bronze_helmet',    name: '青铜头盔', emoji: '⛑️', slot: 'helmet',  attackBonus: 0,  defenceBonus: 4,  ilvl: 5  },
+  iron_helmet:      { id: 'iron_helmet',      name: '铁头盔',   emoji: '⛑️', slot: 'helmet',  attackBonus: 0,  defenceBonus: 8,  ilvl: 10 },
+  steel_helmet:     { id: 'steel_helmet',     name: '钢头盔',   emoji: '⛑️', slot: 'helmet',  attackBonus: 0,  defenceBonus: 14, ilvl: 15 },
+  bronze_body:      { id: 'bronze_body',      name: '青铜胸甲', emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 9,  ilvl: 5  },
+  iron_body:        { id: 'iron_body',        name: '铁胸甲',   emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 18, ilvl: 10 },
+  steel_body:       { id: 'steel_body',       name: '钢胸甲',   emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 30, ilvl: 15 },
+  bronze_legs:      { id: 'bronze_legs',      name: '青铜护腿', emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 7,  ilvl: 5  },
+  iron_legs:        { id: 'iron_legs',        name: '铁护腿',   emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 14, ilvl: 10 },
+  steel_legs:       { id: 'steel_legs',       name: '钢护腿',   emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 23, ilvl: 15 },
+  bronze_gauntlets: { id: 'bronze_gauntlets', name: '青铜护手', emoji: '🥊', slot: 'gloves',  attackBonus: 3,  defenceBonus: 3,  ilvl: 5  },
+  iron_gauntlets:   { id: 'iron_gauntlets',   name: '铁护手',   emoji: '🥊', slot: 'gloves',  attackBonus: 6,  defenceBonus: 6,  ilvl: 10 },
+  steel_gauntlets:  { id: 'steel_gauntlets',  name: '钢护手',   emoji: '🥊', slot: 'gloves',  attackBonus: 10, defenceBonus: 10, ilvl: 15 },
+  bronze_boots:     { id: 'bronze_boots',     name: '青铜靴',   emoji: '👢', slot: 'boots',   attackBonus: 0,  defenceBonus: 5,  ilvl: 5  },
+  iron_boots:       { id: 'iron_boots',       name: '铁靴',     emoji: '👢', slot: 'boots',   attackBonus: 0,  defenceBonus: 10, ilvl: 10 },
+  steel_boots:      { id: 'steel_boots',      name: '钢靴',     emoji: '👢', slot: 'boots',   attackBonus: 0,  defenceBonus: 16, ilvl: 15 },
 };
 
 export function smithedToGameItem(itemId: string): GameItem | null {
@@ -325,61 +325,61 @@ export function smithedToGameItem(itemId: string): GameItem | null {
 // Uses hides from Hunting (hide_0..9)
 export const LEATHER_ITEMS: Record<string, SmithedItemDef> = {
   // Rabbit hide (hide_0) — Tier 1
-  leather_cap:       { id: 'leather_cap',       name: 'Leather Cap',          emoji: '🎩', slot: 'helmet',  attackBonus: 0,  defenceBonus: 3,   ilvl: 4  },
-  leather_vest:      { id: 'leather_vest',      name: 'Leather Vest',         emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 6,   ilvl: 4  },
-  leather_pants:     { id: 'leather_pants',     name: 'Leather Pants',        emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 4,   ilvl: 4  },
-  leather_gloves:    { id: 'leather_gloves',    name: 'Leather Gloves',       emoji: '🥊', slot: 'gloves',  attackBonus: 3,  defenceBonus: 2,   ilvl: 4  },
-  leather_boots:     { id: 'leather_boots',     name: 'Leather Boots',        emoji: '👢', slot: 'boots',   attackBonus: 0,  defenceBonus: 3,   ilvl: 4  },
+  leather_cap:       { id: 'leather_cap',       name: '皮革帽',     emoji: '🎩', slot: 'helmet',  attackBonus: 0,  defenceBonus: 3,   ilvl: 4  },
+  leather_vest:      { id: 'leather_vest',      name: '皮革战衣',   emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 6,   ilvl: 4  },
+  leather_pants:     { id: 'leather_pants',     name: '皮革裤',     emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 4,   ilvl: 4  },
+  leather_gloves:    { id: 'leather_gloves',    name: '皮革手套',   emoji: '🥊', slot: 'gloves',  attackBonus: 3,  defenceBonus: 2,   ilvl: 4  },
+  leather_boots:     { id: 'leather_boots',     name: '皮革靴',     emoji: '👢', slot: 'boots',   attackBonus: 0,  defenceBonus: 3,   ilvl: 4  },
   // Fox hide (hide_2) — Tier 2
-  studded_cap:       { id: 'studded_cap',       name: 'Studded Cap',          emoji: '⛑️', slot: 'helmet',  attackBonus: 0,  defenceBonus: 10,  ilvl: 14 },
-  studded_vest:      { id: 'studded_vest',      name: 'Studded Vest',         emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 18,  ilvl: 14 },
-  studded_pants:     { id: 'studded_pants',     name: 'Studded Pants',        emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 13,  ilvl: 14 },
-  studded_gloves:    { id: 'studded_gloves',    name: 'Studded Gloves',       emoji: '🥊', slot: 'gloves',  attackBonus: 7,  defenceBonus: 5,   ilvl: 14 },
+  studded_cap:       { id: 'studded_cap',       name: '铆钉帽',     emoji: '⛑️', slot: 'helmet',  attackBonus: 0,  defenceBonus: 10,  ilvl: 14 },
+  studded_vest:      { id: 'studded_vest',      name: '铆钉战衣',   emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 18,  ilvl: 14 },
+  studded_pants:     { id: 'studded_pants',     name: '铆钉裤',     emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 13,  ilvl: 14 },
+  studded_gloves:    { id: 'studded_gloves',    name: '铆钉手套',   emoji: '🥊', slot: 'gloves',  attackBonus: 7,  defenceBonus: 5,   ilvl: 14 },
   // Wolf hide (hide_3) — Tier 3
-  wolf_cap:          { id: 'wolf_cap',          name: 'Wolf Hide Cap',        emoji: '⛑️', slot: 'helmet',  attackBonus: 0,  defenceBonus: 15,  ilvl: 22 },
-  wolf_vest:         { id: 'wolf_vest',         name: 'Wolf Hide Vest',       emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 26,  ilvl: 22 },
-  wolf_pants:        { id: 'wolf_pants',        name: 'Wolf Hide Pants',      emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 20,  ilvl: 22 },
-  wolf_gloves:       { id: 'wolf_gloves',       name: 'Wolf Hide Gloves',     emoji: '🥊', slot: 'gloves',  attackBonus: 12, defenceBonus: 7,   ilvl: 22 },
+  wolf_cap:          { id: 'wolf_cap',          name: '狼皮帽',     emoji: '⛑️', slot: 'helmet',  attackBonus: 0,  defenceBonus: 15,  ilvl: 22 },
+  wolf_vest:         { id: 'wolf_vest',         name: '狼皮战衣',   emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 26,  ilvl: 22 },
+  wolf_pants:        { id: 'wolf_pants',        name: '狼皮裤',     emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 20,  ilvl: 22 },
+  wolf_gloves:       { id: 'wolf_gloves',       name: '狼皮手套',   emoji: '🥊', slot: 'gloves',  attackBonus: 12, defenceBonus: 7,   ilvl: 22 },
   // Bear hide (hide_4) — Tier 4
-  bear_vest:         { id: 'bear_vest',         name: 'Bear Hide Vest',       emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 38,  ilvl: 32 },
-  bear_pants:        { id: 'bear_pants',        name: 'Bear Hide Pants',      emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 28,  ilvl: 32 },
+  bear_vest:         { id: 'bear_vest',         name: '熊皮战衣',   emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 38,  ilvl: 32 },
+  bear_pants:        { id: 'bear_pants',        name: '熊皮裤',     emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 28,  ilvl: 32 },
   // Dragon hide (hide_8) — Tier 5
-  dragonhide_vest:   { id: 'dragonhide_vest',   name: 'Dragonhide Vest',      emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 72,  ilvl: 58 },
-  dragonhide_boots:  { id: 'dragonhide_boots',  name: 'Dragonhide Boots',     emoji: '👢', slot: 'boots',   attackBonus: 0,  defenceBonus: 38,  ilvl: 58 },
+  dragonhide_vest:   { id: 'dragonhide_vest',   name: '龙皮战衣',   emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 72,  ilvl: 58 },
+  dragonhide_boots:  { id: 'dragonhide_boots',  name: '龙皮靴',     emoji: '👢', slot: 'boots',   attackBonus: 0,  defenceBonus: 38,  ilvl: 58 },
   // Phoenix hide (hide_9) — Tier 6
-  phoenix_vest:      { id: 'phoenix_vest',      name: 'Phoenix Feather Vest', emoji: '🧥', slot: 'chest',   attackBonus: 5,  defenceBonus: 90,  ilvl: 72 },
+  phoenix_vest:      { id: 'phoenix_vest',      name: '凤凰羽战衣', emoji: '🧥', slot: 'chest',   attackBonus: 5,  defenceBonus: 90,  ilvl: 72 },
 };
 
 // ─── Jewelry items ─────────────────────────────────────────────────────────────
 // Uses crafting items (item_0..9) from the Crafting skill
 export const JEWELRY_ITEMS: Record<string, SmithedItemDef> = {
   // Cloth (item_0) — Tier 1
-  copper_ring:      { id: 'copper_ring',     name: 'Copper Ring',        emoji: '💍', slot: 'ring', attackBonus: 0, defenceBonus: 0, critRating: 1.5, ilvl: 3  },
-  leather_amulet:   { id: 'leather_amulet',  name: 'Leather Amulet',     emoji: '📿', slot: 'neck', attackBonus: 0, defenceBonus: 0, hpBonus: 10,     ilvl: 3  },
+  copper_ring:      { id: 'copper_ring',     name: '铜戒指',     emoji: '💍', slot: 'ring', attackBonus: 0, defenceBonus: 0, critRating: 1.5, ilvl: 3  },
+  leather_amulet:   { id: 'leather_amulet',  name: '皮革护符',   emoji: '📿', slot: 'neck', attackBonus: 0, defenceBonus: 0, hpBonus: 10,     ilvl: 3  },
   // Leather (item_1) — Tier 2
-  tin_band:         { id: 'tin_band',        name: 'Tin Band',           emoji: '💍', slot: 'ring', attackBonus: 0, defenceBonus: 0, critRating: 2.5, ilvl: 9  },
-  cord_pendant:     { id: 'cord_pendant',    name: 'Cord Pendant',       emoji: '📿', slot: 'neck', attackBonus: 0, defenceBonus: 0, hpBonus: 20,     ilvl: 9  },
+  tin_band:         { id: 'tin_band',        name: '锡指环',     emoji: '💍', slot: 'ring', attackBonus: 0, defenceBonus: 0, critRating: 2.5, ilvl: 9  },
+  cord_pendant:     { id: 'cord_pendant',    name: '绳吊坠',     emoji: '📿', slot: 'neck', attackBonus: 0, defenceBonus: 0, hpBonus: 20,     ilvl: 9  },
   // Jewelry (item_2) — Tier 3
-  bronze_signet:    { id: 'bronze_signet',   name: 'Bronze Signet',      emoji: '💍', slot: 'ring', attackBonus: 2, defenceBonus: 0, critRating: 3.0, ilvl: 15 },
-  iron_chain:       { id: 'iron_chain',      name: 'Iron Chain',         emoji: '📿', slot: 'neck', attackBonus: 0, defenceBonus: 0, hpBonus: 30,     ilvl: 15 },
+  bronze_signet:    { id: 'bronze_signet',   name: '青铜印戒',   emoji: '💍', slot: 'ring', attackBonus: 2, defenceBonus: 0, critRating: 3.0, ilvl: 15 },
+  iron_chain:       { id: 'iron_chain',      name: '铁项链',     emoji: '📿', slot: 'neck', attackBonus: 0, defenceBonus: 0, hpBonus: 30,     ilvl: 15 },
   // Armor (item_3) — Tier 4
-  silver_ring:      { id: 'silver_ring',     name: 'Silver Ring',        emoji: '💍', slot: 'ring', attackBonus: 0, defenceBonus: 0, critRating: 5.0, ilvl: 22 },
-  silver_chain:     { id: 'silver_chain',    name: 'Silver Chain',       emoji: '📿', slot: 'neck', attackBonus: 3, defenceBonus: 0, hpBonus: 35,     ilvl: 22 },
+  silver_ring:      { id: 'silver_ring',     name: '银戒指',     emoji: '💍', slot: 'ring', attackBonus: 0, defenceBonus: 0, critRating: 5.0, ilvl: 22 },
+  silver_chain:     { id: 'silver_chain',    name: '银链',       emoji: '📿', slot: 'neck', attackBonus: 3, defenceBonus: 0, hpBonus: 35,     ilvl: 22 },
   // Weapon (item_4) — Tier 5
-  gold_ring:        { id: 'gold_ring',       name: 'Gold Ring',          emoji: '💍', slot: 'ring', attackBonus: 5, defenceBonus: 0, critRating: 6.0, ilvl: 30 },
-  gold_locket:      { id: 'gold_locket',     name: 'Gold Locket',        emoji: '📿', slot: 'neck', attackBonus: 0, defenceBonus: 0, hpBonus: 50,     ilvl: 30 },
+  gold_ring:        { id: 'gold_ring',       name: '金戒指',     emoji: '💍', slot: 'ring', attackBonus: 5, defenceBonus: 0, critRating: 6.0, ilvl: 30 },
+  gold_locket:      { id: 'gold_locket',     name: '金锁扣',     emoji: '📿', slot: 'neck', attackBonus: 0, defenceBonus: 0, hpBonus: 50,     ilvl: 30 },
   // Artifact (item_5) — Tier 6
-  mithril_signet:   { id: 'mithril_signet',  name: 'Mithril Signet',     emoji: '💍', slot: 'ring', attackBonus: 5, defenceBonus: 0, critRating: 8.0, ilvl: 38 },
-  runed_pendant:    { id: 'runed_pendant',   name: 'Runed Pendant',      emoji: '📿', slot: 'neck', attackBonus: 5, defenceBonus: 5, hpBonus: 65,     ilvl: 38 },
+  mithril_signet:   { id: 'mithril_signet',  name: '秘银印戒',   emoji: '💍', slot: 'ring', attackBonus: 5, defenceBonus: 0, critRating: 8.0, ilvl: 38 },
+  runed_pendant:    { id: 'runed_pendant',   name: '符文吊坠',   emoji: '📿', slot: 'neck', attackBonus: 5, defenceBonus: 5, hpBonus: 65,     ilvl: 38 },
   // Relic (item_6) — Tier 7
-  arcane_band:      { id: 'arcane_band',     name: 'Arcane Band',        emoji: '💍', slot: 'ring', attackBonus: 8, defenceBonus: 0, critRating: 10.5,ilvl: 48 },
-  arcane_locket:    { id: 'arcane_locket',   name: 'Arcane Locket',      emoji: '📿', slot: 'neck', attackBonus: 5, defenceBonus: 5, hpBonus: 80,     ilvl: 48 },
+  arcane_band:      { id: 'arcane_band',     name: '奥术指环',   emoji: '💍', slot: 'ring', attackBonus: 8, defenceBonus: 0, critRating: 10.5,ilvl: 48 },
+  arcane_locket:    { id: 'arcane_locket',   name: '奥术锁扣',   emoji: '📿', slot: 'neck', attackBonus: 5, defenceBonus: 5, hpBonus: 80,     ilvl: 48 },
   // Dragon ring (item_8) — Tier 8
-  dragon_ring:      { id: 'dragon_ring',     name: 'Dragon Fire Ring',   emoji: '💍', slot: 'ring', attackBonus:12, defenceBonus: 0, critRating: 13.0,ilvl: 62 },
-  dragon_pendant:   { id: 'dragon_pendant',  name: 'Dragon Scale Pendant',emoji: '📿',slot: 'neck', attackBonus: 8, defenceBonus: 8, hpBonus: 100,    ilvl: 62 },
+  dragon_ring:      { id: 'dragon_ring',     name: '龙火戒指',   emoji: '💍', slot: 'ring', attackBonus:12, defenceBonus: 0, critRating: 13.0,ilvl: 62 },
+  dragon_pendant:   { id: 'dragon_pendant',  name: '龙鳞吊坠',   emoji: '📿', slot: 'neck', attackBonus: 8, defenceBonus: 8, hpBonus: 100,    ilvl: 62 },
   // Divine (item_9) — Tier 9
-  eternal_ring:     { id: 'eternal_ring',    name: 'Eternal Ring',       emoji: '💍', slot: 'ring', attackBonus:18, defenceBonus: 0, critRating: 18.0,ilvl: 78 },
-  eternal_pendant:  { id: 'eternal_pendant', name: 'Eternal Pendant',    emoji: '📿', slot: 'neck', attackBonus:10, defenceBonus:10, hpBonus: 130,    ilvl: 78 },
+  eternal_ring:     { id: 'eternal_ring',    name: '永恒戒指',   emoji: '💍', slot: 'ring', attackBonus:18, defenceBonus: 0, critRating: 18.0,ilvl: 78 },
+  eternal_pendant:  { id: 'eternal_pendant', name: '永恒吊坠',   emoji: '📿', slot: 'neck', attackBonus:10, defenceBonus:10, hpBonus: 130,    ilvl: 78 },
 };
 
 // Merged lookup including smithed, leather, and jewelry
@@ -459,23 +459,23 @@ export const JEWELCRAFTING_RECIPES: CraftingRecipe[] = [
 
 // ─── Item generation (Diablo-style) ───────────────────────────────────────────
 const RARITY_PREFIXES: Record<Rarity, string[]> = {
-  common:    ['Battered', 'Worn', 'Crude', 'Old', 'Tattered'],
-  uncommon:  ['Sturdy', 'Fine', 'Polished', 'Reinforced', 'Honed'],
-  rare:      ['Masterwork', 'Enchanted', 'Refined', 'Superior', 'Tempered'],
-  epic:      ['Ancient', 'Arcane', 'Mythic', 'Runic', 'Hallowed'],
-  legendary: ['Legendary', 'Eternal', 'Godly', 'Infernal', 'Immortal'],
+  common:    ['破旧', '磨损', '粗制', '老旧', '残破'],
+  uncommon:  ['坚固', '精良', '光泽', '强化', '锋利'],
+  rare:      ['精工', '附魔', '精炼', '卓越', '淬火'],
+  epic:      ['远古', '奥术', '神话', '符文', '圣洁'],
+  legendary: ['传说', '永恒', '神赋', '炼狱', '不朽'],
 };
 
 const SLOT_BASE_NAMES: Record<EquipmentSlot, string[]> = {
-  weapon:  ['Sword', 'Blade', 'Axe', 'Mace', 'Warhammer', 'Greatsword', 'Spear', 'Halberd', 'Cleaver'],
-  offhand: ['Shield', 'Buckler', 'Tome', 'Orb', 'Dagger', 'Targe', 'Aegis', 'Barrier'],
-  helmet:  ['Helm', 'Crown', 'Hood', 'Cowl', 'Skullcap', 'Visor', 'Crest', 'Faceguard'],
-  chest:   ['Chestplate', 'Robe', 'Tunic', 'Hauberk', 'Breastplate', 'Chainmail', 'Vest'],
-  legs:    ['Legplates', 'Breeches', 'Leggings', 'Greaves', 'Cuisses', 'Pants'],
-  gloves:  ['Gauntlets', 'Gloves', 'Grips', 'Wraps', 'Handguards', 'Fists'],
-  boots:   ['Boots', 'Sabatons', 'Treads', 'Stompers', 'Greaves', 'Slippers'],
-  neck:    ['Necklace', 'Amulet', 'Pendant', 'Choker', 'Chain', 'Collar', 'Locket'],
-  ring:    ['Ring', 'Band', 'Signet', 'Loop', 'Circle', 'Seal', 'Coil'],
+  weapon:  ['剑', '刃', '斧', '锤', '战锤', '巨剑', '枪', '戟', '战刃'],
+  offhand: ['盾', '圆盾', '法典', '法球', '匕首', '标盾', '神盾', '护壁'],
+  helmet:  ['头盔', '王冠', '兜帽', '面罩', '颅盖', '护面', '头冠', '面甲'],
+  chest:   ['胸甲', '法袍', '上衣', '锁子甲', '胸铠', '链甲', '战衣'],
+  legs:    ['腿甲', '马裤', '护腿', '胫甲', '腿铠', '战裤'],
+  gloves:  ['护手', '手套', '握把', '缠带', '护腕', '拳套'],
+  boots:   ['靴子', '铁靴', '足甲', '重踏', '护靴', '软鞋'],
+  neck:    ['项链', '护身符', '吊坠', '颈环', '链条', '颈圈', '锁扣'],
+  ring:    ['戒指', '指环', '印戒', '环圈', '圆环', '封印', '线圈'],
 };
 
 // Slot-biased affix pools (slot favors certain stats but can roll anything)
@@ -582,14 +582,14 @@ export interface Enemy {
 }
 
 export const ENEMIES: Enemy[] = [
-  { id: 'chicken',    name: 'Chicken',      emoji: '🐔', maxHp: 15,   attack: 1,  defence: 0,  xp: 8,    drops: { gold: [1, 2] },               reqCombatLevel: 1  },
-  { id: 'cow',        name: 'Cow',          emoji: '🐄', maxHp: 35,   attack: 4,  defence: 0,  xp: 20,   drops: { gold: [2, 5],  bones: 1 },    reqCombatLevel: 5  },
-  { id: 'goblin',     name: 'Goblin',       emoji: '👺', maxHp: 70,   attack: 8,  defence: 2,  xp: 45,   drops: { gold: [4, 10], bones: 1 },    reqCombatLevel: 10 },
-  { id: 'skeleton',   name: 'Skeleton',     emoji: '💀', maxHp: 140,  attack: 15, defence: 5,  xp: 100,  drops: { gold: [8, 18], bones: 2 },    reqCombatLevel: 20 },
-  { id: 'troll',      name: 'Troll',        emoji: '👹', maxHp: 280,  attack: 26, defence: 10, xp: 200,  drops: { gold: [18, 40], bones: 3 },   reqCombatLevel: 35 },
-  { id: 'giant',      name: 'Giant',        emoji: '🦣', maxHp: 500,  attack: 42, defence: 18, xp: 380,  drops: { gold: [35, 75] },             reqCombatLevel: 50 },
-  { id: 'dragon',     name: 'Green Dragon', emoji: '🐲', maxHp: 850,  attack: 65, defence: 30, xp: 720,  drops: { gold: [70, 140], dragonBones: 1 }, reqCombatLevel: 65 },
-  { id: 'fire_dragon',name: 'Fire Dragon',  emoji: '🔥', maxHp: 1400, attack: 95, defence: 50, xp: 1400, drops: { gold: [140, 280], dragonBones: 2 }, reqCombatLevel: 80 },
+  { id: 'chicken',    name: '小鸡',   emoji: '🐔', maxHp: 15,   attack: 1,  defence: 0,  xp: 8,    drops: { gold: [1, 2] },               reqCombatLevel: 1  },
+  { id: 'cow',        name: '奶牛',   emoji: '🐄', maxHp: 35,   attack: 4,  defence: 0,  xp: 20,   drops: { gold: [2, 5],  bones: 1 },    reqCombatLevel: 5  },
+  { id: 'goblin',     name: '哥布林', emoji: '👺', maxHp: 70,   attack: 8,  defence: 2,  xp: 45,   drops: { gold: [4, 10], bones: 1 },    reqCombatLevel: 10 },
+  { id: 'skeleton',   name: '骷髅',   emoji: '💀', maxHp: 140,  attack: 15, defence: 5,  xp: 100,  drops: { gold: [8, 18], bones: 2 },    reqCombatLevel: 20 },
+  { id: 'troll',      name: '食人魔', emoji: '👹', maxHp: 280,  attack: 26, defence: 10, xp: 200,  drops: { gold: [18, 40], bones: 3 },   reqCombatLevel: 35 },
+  { id: 'giant',      name: '巨人',   emoji: '🦣', maxHp: 500,  attack: 42, defence: 18, xp: 380,  drops: { gold: [35, 75] },             reqCombatLevel: 50 },
+  { id: 'dragon',     name: '绿龙',   emoji: '🐲', maxHp: 850,  attack: 65, defence: 30, xp: 720,  drops: { gold: [70, 140], dragonBones: 1 }, reqCombatLevel: 65 },
+  { id: 'fire_dragon',name: '火龙',   emoji: '🔥', maxHp: 1400, attack: 95, defence: 50, xp: 1400, drops: { gold: [140, 280], dragonBones: 2 }, reqCombatLevel: 80 },
 ];
 
 // ─── Smithing recipes ──────────────────────────────────────────────────────────

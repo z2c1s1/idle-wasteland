@@ -8,18 +8,18 @@ import { calculateLevel, getCombatLevel, formatNumber } from "@/lib/game-utils";
 import type { GameState } from "@shared/schema";
 
 const GATHERING_SKILLS = [
-  { title: "Woodcutting", url: "/woodcutting", icon: Axe,      xpKey: "woodcuttingXp" as const, color: "text-green-400"  },
-  { title: "Mining",      url: "/mining",      icon: Pickaxe,  xpKey: "miningXp"      as const, color: "text-yellow-400" },
-  { title: "Smelting",    url: "/smelting",    icon: Flame,    xpKey: "smeltingXp"    as const, color: "text-orange-400" },
-  { title: "Fishing",     url: "/fishing",     icon: Waves,    xpKey: "fishingXp"     as const, color: "text-blue-400"   },
-  { title: "Hunting",     url: "/hunting",     icon: PawPrint, xpKey: "huntingXp"     as const, color: "text-red-400"    },
-  { title: "Crafting",    url: "/crafting",    icon: Hammer,   xpKey: "craftingXp"    as const, color: "text-purple-400" },
+  { title: "伐木", url: "/woodcutting", icon: Axe,      xpKey: "woodcuttingXp" as const, color: "text-green-400"  },
+  { title: "采矿", url: "/mining",      icon: Pickaxe,  xpKey: "miningXp"      as const, color: "text-yellow-400" },
+  { title: "冶炼", url: "/smelting",    icon: Flame,    xpKey: "smeltingXp"    as const, color: "text-orange-400" },
+  { title: "钓鱼", url: "/fishing",     icon: Waves,    xpKey: "fishingXp"     as const, color: "text-blue-400"   },
+  { title: "狩猎", url: "/hunting",     icon: PawPrint, xpKey: "huntingXp"     as const, color: "text-red-400"    },
+  { title: "制作", url: "/crafting",    icon: Hammer,   xpKey: "craftingXp"    as const, color: "text-purple-400" },
 ];
 
 const PRODUCTION_SKILLS = [
-  { title: "Smithing",      url: "/smithing",      icon: Shield, xpKey: "smithingXp"       as const, color: "text-slate-400"  },
-  { title: "Leatherworking",url: "/leatherworking",icon: PawPrint,xpKey: "leatherworkingXp"as const, color: "text-amber-400"  },
-  { title: "Jewelcrafting", url: "/jewelcrafting", icon: Gem,    xpKey: "jewelcraftingXp"  as const, color: "text-purple-400" },
+  { title: "锻造",     url: "/smithing",      icon: Shield, xpKey: "smithingXp"       as const, color: "text-slate-400"  },
+  { title: "皮革制作", url: "/leatherworking",icon: PawPrint,xpKey: "leatherworkingXp"as const, color: "text-amber-400"  },
+  { title: "珠宝制作", url: "/jewelcrafting", icon: Gem,    xpKey: "jewelcraftingXp"  as const, color: "text-purple-400" },
 ];
 
 function NavItem({ title, url, icon: Icon, color, level, isActive }: {
@@ -75,12 +75,12 @@ export function AppSidebar() {
       </div>
 
       <nav className="flex-1 py-1">
-        <SectionLabel label="General" />
-        <NavItem title="Dashboard" url="/" icon={LayoutDashboard} level={null} isActive={location === "/"} />
-        <NavItem title="Inventory" url="/inventory" icon={Package} level={null}
+        <SectionLabel label="常规" />
+        <NavItem title="总览" url="/" icon={LayoutDashboard} level={null} isActive={location === "/"} />
+        <NavItem title="背包" url="/inventory" icon={Package} level={null}
           isActive={location === "/inventory"} color="text-yellow-400" />
 
-        <SectionLabel label="Gathering" />
+        <SectionLabel label="采集" />
         {GATHERING_SKILLS.map(skill => (
           <NavItem
             key={skill.title}
@@ -93,11 +93,11 @@ export function AppSidebar() {
           />
         ))}
 
-        <SectionLabel label="Combat" />
-        <NavItem title="Combat" url="/combat" icon={Skull}
+        <SectionLabel label="战斗" />
+        <NavItem title="战斗" url="/combat" icon={Skull}
           level={combatLevel} isActive={location === "/combat"} color="text-red-400" />
 
-        <SectionLabel label="Production" />
+        <SectionLabel label="生产" />
         {PRODUCTION_SKILLS.map(skill => {
           const xp = gs ? ((gs as Record<string, unknown>)[skill.xpKey] as number | undefined) ?? 0 : null;
           return (
@@ -113,8 +113,8 @@ export function AppSidebar() {
           );
         })}
 
-        <SectionLabel label="Items" />
-        <NavItem title="Gems" url="/gems" icon={Gem} level={null}
+        <SectionLabel label="物品" />
+        <NavItem title="宝石" url="/gems" icon={Gem} level={null}
           isActive={location === "/gems"} color="text-cyan-400" />
       </nav>
 

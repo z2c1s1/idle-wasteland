@@ -11,27 +11,27 @@ import { eq } from "drizzle-orm";
 // ─── Gathering skill data ──────────────────────────────────────────────────────
 export const SKILLS_DATA: Record<string, { name: string; time: number; xp: number; prefix: string }[]> = {
   woodcutting: Array.from({ length: 10 }, (_, i) => ({
-    name: ["Oak","Willow","Teak","Maple","Mahogany","Yew","Magic","Elder","Redwood","Spirit"][i],
+    name: ["橡木","柳木","柚木","枫木","桃花心木","紫杉木","魔法木","古树木","红杉木","灵木"][i],
     time: 5 + i * 5, xp: 10 + i * 15, prefix: "wood",
   })),
   mining: Array.from({ length: 10 }, (_, i) => ({
-    name: ["Copper","Tin","Iron","Coal","Mithril","Adamant","Rune","Dragon","Obsidian","Ether"][i],
+    name: ["铜矿","锡矿","铁矿","煤矿","秘银矿","精金矿","符文矿","龙矿","黑曜矿","以太矿"][i],
     time: 5 + i * 5, xp: 15 + i * 20, prefix: "ore",
   })),
   smelting: Array.from({ length: 10 }, (_, i) => ({
-    name: ["Bronze","Iron","Steel","Silver","Gold","Mithril","Adamant","Rune","Dragon","Eternal"][i],
+    name: ["青铜锭","铁锭","钢锭","银锭","金锭","秘银锭","精金锭","符文锭","龙锭","永恒锭"][i],
     time: 5 + i * 5, xp: 20 + i * 25, prefix: "bar",
   })),
   fishing: Array.from({ length: 10 }, (_, i) => ({
-    name: ["Shrimp","Sardine","Herring","Trout","Salmon","Tuna","Lobster","Swordfish","Shark","Whale"][i],
+    name: ["虾","沙丁鱼","鲱鱼","鳟鱼","三文鱼","金枪鱼","龙虾","旗鱼","鲨鱼","鲸鱼"][i],
     time: 5 + i * 5, xp: 12 + i * 18, prefix: "fish",
   })),
   hunting: Array.from({ length: 10 }, (_, i) => ({
-    name: ["Rabbit","Bird","Fox","Wolf","Bear","Boar","Deer","Tiger","Dragon","Phoenix"][i],
+    name: ["兔皮","鸟羽","狐皮","狼皮","熊皮","野猪皮","鹿皮","虎皮","龙皮","凤凰羽"][i],
     time: 5 + i * 5, xp: 18 + i * 22, prefix: "hide",
   })),
   crafting: Array.from({ length: 10 }, (_, i) => ({
-    name: ["Cloth","Leather","Jewelry","Armor","Weapon","Artifact","Relic","Masterpiece","Celestial","Divine"][i],
+    name: ["布料","皮革","珠宝料","甲料","兵器料","神器料","遗物料","杰作料","天界料","神圣料"][i],
     time: 5 + i * 5, xp: 25 + i * 30, prefix: "item",
   })),
 };
