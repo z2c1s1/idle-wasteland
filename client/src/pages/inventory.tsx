@@ -360,15 +360,6 @@ export default function Inventory() {
         </p>
       </div>
 
-      {/* Loot + Gold */}
-      <div className="bg-card border border-border rounded-xl p-4">
-        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">战利品</h2>
-        <div className="flex gap-6 text-sm">
-          <span>💰 <span className="font-bold text-yellow-400">{formatNumber(gs.gold)}</span> 金币</span>
-          <span>🦴 <span className="font-bold">{formatNumber(gs.bones)}</span> 骨头</span>
-          {gs.dragonBones > 0 && <span>🐲 <span className="font-bold text-purple-400">{formatNumber(gs.dragonBones)}</span> 龙骨</span>}
-        </div>
-      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Character Equipment */}
@@ -519,33 +510,75 @@ export default function Inventory() {
         </div>
       )}
 
-      {/* Resources */}
-      <div className="space-y-4">
-        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">资源</h2>
-        {RESOURCE_SECTIONS.map(section => {
-          const items = Array.from({ length: 10 }, (_, i) => ({
-            name: section.names[i],
-            qty: ((gs as Record<string, unknown>)[`${section.prefix}_${i}`] as number) ?? 0,
-            key: `${section.prefix}_${i}`,
-          })).filter(it => it.qty > 0);
-
-          if (!items.length) return null;
-          return (
-            <div key={section.label} className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                {section.emoji} {section.label}
-              </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2">
-                {items.map(item => (
-                  <div key={item.key} className="bg-muted/20 rounded-lg p-2 text-center" data-testid={`resource-${item.key}`}>
-                    <p className="text-xs text-muted-foreground truncate">{item.name}</p>
-                    <p className="text-sm font-bold mt-0.5">{formatNumber(item.qty)}</p>
-                  </div>
-                ))}
+      {/* Resources — split into 采集类 / 战斗类 */}
+      <div className="space-y-6">
+        {/* ── 采集类 ── */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <span className="text-base">🌿</span>
+            <h2 className="text-sm font-semibold text-green-400 uppercase tracking-wider">采集类</h2>
+          </div>
+          {RESOURCE_SECTIONS.map(section => {
+            const items = Array.from({ length: 10 }, (_, i) => ({
+              name: section.names[i],
+              qty: ((gs as Record<string, unknown>)[`${section.prefix}_${i}`] as number) ?? 0,
+              key: `${section.prefix}_${i}`,
+            })).filter(it => it.qty > 0);
+            if (!items.length) return null;
+            return (
+              <div key={section.label} className="bg-card border border-border rounded-xl p-4">
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                  {section.emoji} {section.label}
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2">
+                  {items.map(item => (
+                    <div key={item.key} className="bg-muted/20 rounded-lg p-2 text-center" data-testid={`resource-${item.key}`}>
+                      <p className="text-xs text-muted-foreground truncate">{item.name}</p>
+                      <p className="text-sm font-bold mt-0.5">{formatNumber(item.qty)}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
+            );
+          })}
+          {RESOURCE_SECTIONS.every(section =>
+            Array.from({ length: 10 }, (_, i) => ((gs as Record<string, unknown>)[`${section.prefix}_${i}`] as number) ?? 0).every(q => q === 0)
+          ) && (
+            <p className="text-sm text-muted-foreground/50 pl-1">暂无采集资源，去采集技能页面开始吧！</p>
+          )}
+        </div>
+
+        {/* ── 战斗类 ── */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <span className="text-base">⚔️</span>
+            <h2 className="text-sm font-semibold text-red-400 uppercase tracking-wider">战斗类</h2>
+          </div>
+          <div className="bg-card border border-border rounded-xl p-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="bg-muted/20 rounded-lg p-3 text-center" data-testid="resource-gold">
+                <p className="text-lg mb-0.5">💰</p>
+                <p className="text-xs text-muted-foreground">金币</p>
+                <p className="text-sm font-bold text-yellow-400 mt-0.5">{formatNumber(gs.gold)}</p>
+              </div>
+              <div className="bg-muted/20 rounded-lg p-3 text-center" data-testid="resource-bones">
+                <p className="text-lg mb-0.5">🦴</p>
+                <p className="text-xs text-muted-foreground">骨头</p>
+                <p className="text-sm font-bold mt-0.5">{formatNumber(gs.bones)}</p>
+              </div>
+              {gs.dragonBones > 0 && (
+                <div className="bg-muted/20 rounded-lg p-3 text-center" data-testid="resource-dragon-bones">
+                  <p className="text-lg mb-0.5">🐲</p>
+                  <p className="text-xs text-muted-foreground">龙骨</p>
+                  <p className="text-sm font-bold text-purple-400 mt-0.5">{formatNumber(gs.dragonBones)}</p>
+                </div>
+              )}
             </div>
-          );
-        })}
+            {gs.gold === 0 && gs.bones === 0 && gs.dragonBones === 0 && (
+              <p className="text-sm text-muted-foreground/50 mt-2">暂无战斗资源，去战斗页面击败敌人吧！</p>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
