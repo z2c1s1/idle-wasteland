@@ -75,14 +75,14 @@ function SocketGemPanel({
               const type = gemKey.split('_')[0] as GemType;
               return (
                 <button key={gemKey} onClick={() => onSocket(gemKey)} disabled={isPending}
-                  className={`flex items-center gap-2 p-2 rounded-lg border text-left transition-all hover:opacity-90 disabled:opacity-50 ${getGemBgClass(gemKey)}`}
+                  className={`flex items-center gap-2 p-2 rounded-lg border text-left transition-all hover:brightness-110 hover:ring-1 hover:ring-white/20 disabled:opacity-50 ${getGemBgClass(gemKey)}`}
                   data-testid={`socket-gem-${gemKey}`}>
                   <span className="text-lg">{GEM_EMOJI[type]}</span>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium truncate">{getGemName(gemKey)}</p>
                     <GemStatLine gemKey={gemKey} />
                   </div>
-                  <span className="text-xs text-muted-foreground font-bold">×{qty}</span>
+                  <span className="text-xs font-bold text-white/80">库存 ×{qty}</span>
                 </button>
               );
             })}
@@ -144,7 +144,7 @@ function ItemRow({
           <Button size="sm" variant="outline" className="h-7 text-xs px-2 flex-shrink-0"
             onClick={() => setExpanded(e => !e)} data-testid={`button-socket-toggle-${item.instanceId}`}>
             <Gem className="w-3 h-3 mr-1" />
-            {filledSockets.length}/{maxSockets}
+            镶嵌 {filledSockets.length}/{maxSockets} 孔
           </Button>
         )}
       </div>
@@ -175,7 +175,9 @@ export default function GemsPage() {
   const equippedItems = Object.values(equipment).filter(Boolean) as GameItem[];
   const lootWithSockets = lootBag.filter(i => (i.maxSockets ?? 0) > 0);
 
-  const totalGems = Object.values(gems).reduce((a, b) => a + b, 0);
+  const totalGems = GEM_TYPES.flatMap(t =>
+    GEM_QUALITIES.map(q => gems[`${t}_${q}`] ?? 0)
+  ).reduce((a, b) => a + b, 0);
 
   function handleSocket(instanceId: string, gemKey: string) {
     socketGem.mutate({ instanceId, gemKey }, {
@@ -217,10 +219,12 @@ export default function GemsPage() {
                 .map(q => ({ key: `${type}_${q}`, qty: gems[`${type}_${q}`] ?? 0 }))
                 .filter(e => e.qty > 0);
               if (!entries.length) return null;
+              const typeTotal = entries.reduce((s, e) => s + e.qty, 0);
               return (
                 <div key={type}>
-                  <p className={`text-xs font-semibold mb-1.5 ${GEM_TYPE_COLOR[type]}`}>
+                  <p className={`text-xs font-semibold mb-1.5 flex items-center gap-1.5 ${GEM_TYPE_COLOR[type]}`}>
                     {GEM_EMOJI[type]} {GEM_TYPE_LABEL[type]}
+                    <span className="text-muted-foreground font-normal">共 {typeTotal} 颗</span>
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {entries.map(({ key, qty }) => {
@@ -232,9 +236,10 @@ export default function GemsPage() {
                           <span className="text-xl">{GEM_EMOJI[type]}</span>
                           <div>
                             <p className={`text-xs font-semibold ${GEM_QUALITY_COLOR[quality]}`}>
-                              {GEM_QUALITY_LABEL[quality]} · ×{qty}
+                              {GEM_QUALITY_LABEL[quality]} · <span className="text-white/90">×{qty}</span>
                             </p>
-                            <div className="text-[10px] space-x-1">
+                            <div className="text-[10px] space-x-1 text-muted-foreground">
+                              每颗：
                               {bonus.attackBonus  > 0 && <span className="text-red-300">⚔+{bonus.attackBonus}</span>}
                               {bonus.defenceBonus > 0 && <span className="text-blue-300">🛡+{bonus.defenceBonus}</span>}
                               {bonus.hpBonus      > 0 && <span className="text-green-300">❤+{bonus.hpBonus}</span>}
