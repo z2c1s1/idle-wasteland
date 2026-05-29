@@ -190,9 +190,12 @@ export class DatabaseStorage implements IStorage {
       const doubleStrikePct= getSkillVal('doublestrike');
       const dodgePct       = getSkillVal('dodge');
 
-      // Diablo-style equipment stats
-      const { enhancedDamage, lifeOnKill, crushingBlow, magicFind, lifeRegen, goldBonus, resistAll } =
-        getEquipmentBonuses(equipment);
+      // Diablo-style equipment stats (all 15 affix types)
+      const {
+        enhancedDamage, lifeOnKill, crushingBlow, magicFind,
+        lifeRegen, goldBonus, resistAll,
+        lifeLeech, deadlyStrike, attackSpeed, reflectDamage,
+      } = getEquipmentBonuses(equipment);
 
       let goldGained = 0, bonesGained = 0, dragonBonesGained = 0;
       let attackXpGained = 0, defenceXpGained = 0, hitpointsXpGained = 0;
@@ -211,8 +214,13 @@ export class DatabaseStorage implements IStorage {
         if (spellbladePct > 0)  effAtk = Math.floor(effAtk * (1 + spellbladePct / 100));
         if (enhancedDamage > 0) effAtk = Math.floor(effAtk * (1 + enhancedDamage / 100));
         if (berserkPct > 0 && playerHp < playerMaxHp * 0.3) effAtk = Math.floor(effAtk * (1 + berserkPct / 100));
+        // Attack Speed: % bonus damage per tick (simulates hitting faster in 3-sec intervals)
+        if (attackSpeed > 0) effAtk = Math.floor(effAtk * (1 + attackSpeed / 100));
+
+        // Deadly Strike (Diablo: % chance to double all damage for this strike)
+        const deadlyStrikeHit = deadlyStrike > 0 && Math.random() * 100 < deadlyStrike;
         const strikes = (doubleStrikePct > 0 && Math.random() * 100 < doubleStrikePct) ? 2 : 1;
-        let totalDmgToEnemy = effAtk * strikes + poisonDmg;
+        let totalDmgToEnemy = effAtk * strikes * (deadlyStrikeHit ? 2 : 1) + poisonDmg;
 
         // Crushing Blow (Diablo: % chance to deal 25% of enemy current HP)
         if (crushingBlow > 0 && Math.random() * 100 < crushingBlow) {
@@ -222,7 +230,12 @@ export class DatabaseStorage implements IStorage {
         enemyHp -= totalDmgToEnemy;
         attackXpGained += 4 * strikes;
 
-        // Lifesteal
+        // Life Leech (Diablo: % of damage dealt healed to player)
+        if (lifeLeech > 0) {
+          playerHp = Math.min(playerMaxHp, playerHp + Math.floor(totalDmgToEnemy * lifeLeech / 100));
+        }
+
+        // Lifesteal (skill-based)
         if (lifeStealPct > 0) {
           playerHp = Math.min(playerMaxHp, playerHp + Math.floor(totalDmgToEnemy * lifeStealPct / 100));
         }
@@ -256,8 +269,10 @@ export class DatabaseStorage implements IStorage {
           playerHp -= dmgToPlayer;
           defenceXpGained   += 2;
           hitpointsXpGained += 1;
-          // Thorns
+          // Thorns (skill)
           if (thornsDmg > 0) enemyHp -= thornsDmg;
+          // Reflect Damage (Diablo: flat damage returned to attacker per hit)
+          if (reflectDamage > 0) enemyHp -= reflectDamage;
         }
 
         if (playerHp <= 0) {

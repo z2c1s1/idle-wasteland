@@ -1,5 +1,5 @@
 import { useGameState, useStartAction } from "@/hooks/use-game";
-import { ENEMIES, ALL_SLOTS, SLOT_LABEL, SLOT_EMOJI, RARITY_COLOR, type GameItem } from "@shared/game-data";
+import { ENEMIES, ALL_SLOTS, SLOT_LABEL, SLOT_EMOJI, RARITY_COLOR, ITEM_SETS, type GameItem } from "@shared/game-data";
 import {
   calculateLevel, getCombatLevel, getPlayerMaxHp, getPlayerAttack,
   getPlayerDefence, parseEquipment, parseLootBag, formatNumber, levelProgress, getEquipmentStats,
@@ -128,9 +128,11 @@ export default function Combat() {
             sub={eqStats.critRating > 0 ? "+50% 额外伤害" : "无暴击"} />
         </div>
 
-        {/* Diablo-style advanced stats */}
+        {/* Diablo-style advanced stats (all 15 affix types) */}
         {(eqStats.enhancedDamage > 0 || eqStats.crushingBlow > 0 || eqStats.magicFind > 0 ||
-          eqStats.lifeOnKill > 0 || eqStats.lifeRegen > 0 || eqStats.goldBonus > 0 || eqStats.resistAll > 0) && (
+          eqStats.lifeOnKill > 0 || eqStats.lifeRegen > 0 || eqStats.goldBonus > 0 ||
+          eqStats.resistAll > 0 || eqStats.lifeLeech > 0 || eqStats.deadlyStrike > 0 ||
+          eqStats.attackSpeed > 0 || eqStats.reflectDamage > 0) && (
           <div className="flex flex-wrap gap-x-4 gap-y-1 bg-muted/15 rounded-lg px-3 py-2 text-xs border border-border/40">
             {eqStats.enhancedDamage > 0 && <span className="text-orange-300">🔥 +{eqStats.enhancedDamage}% 强化伤害</span>}
             {eqStats.crushingBlow   > 0 && <span className="text-red-400">💥 {eqStats.crushingBlow}% 重击</span>}
@@ -139,6 +141,32 @@ export default function Combat() {
             {eqStats.magicFind      > 0 && <span className="text-purple-300">✨ +{eqStats.magicFind}% 魔法发现</span>}
             {eqStats.goldBonus      > 0 && <span className="text-yellow-400">💰 +{eqStats.goldBonus}% 金币</span>}
             {eqStats.resistAll      > 0 && <span className="text-cyan-300">🔵 -{eqStats.resistAll} 受伤</span>}
+            {eqStats.lifeLeech      > 0 && <span className="text-rose-300">🩸 {eqStats.lifeLeech}% 吸血</span>}
+            {eqStats.deadlyStrike   > 0 && <span className="text-amber-300">⚡ {eqStats.deadlyStrike}% 致命一击</span>}
+            {eqStats.attackSpeed    > 0 && <span className="text-sky-300">⚡ +{eqStats.attackSpeed}% 攻速</span>}
+            {eqStats.reflectDamage  > 0 && <span className="text-lime-300">🌵 {eqStats.reflectDamage} 反伤</span>}
+          </div>
+        )}
+
+        {/* Active set bonuses */}
+        {eqStats.activeSets && Object.keys(eqStats.activeSets).length > 0 && (
+          <div className="bg-teal-500/8 border border-teal-400/30 rounded-lg px-3 py-2 space-y-1">
+            <div className="text-[10px] text-teal-400 uppercase tracking-wider font-semibold">激活套装</div>
+            {Object.entries(eqStats.activeSets).map(([setId, count]) => {
+              const setDef = ITEM_SETS.find(s => s.id === setId);
+              if (!setDef) return null;
+              return (
+                <div key={setId} className="space-y-0.5">
+                  <div className="text-xs text-teal-300 font-medium">{setDef.name} ({count}/{setDef.pieces.length})</div>
+                  {setDef.bonuses.filter(b => count >= b.count).map((b, i) => (
+                    <div key={i} className="text-[10px] text-teal-200/70">✦ {b.count}件: {b.description}</div>
+                  ))}
+                  {setDef.bonuses.filter(b => count < b.count).map((b, i) => (
+                    <div key={i} className="text-[10px] text-muted-foreground/40">◇ {b.count}件: {b.description}</div>
+                  ))}
+                </div>
+              );
+            })}
           </div>
         )}
 

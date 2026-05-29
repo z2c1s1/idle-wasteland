@@ -1,1 +1,2 @@
-- [Diablo affix system](diablo-affixes.md) — 11 affix types; new types need zero defaults in craftedToGameItem/smithedToGameItem and must be aggregated in getEquipmentBonuses.
+- [Diablo affix system](diablo-affixes.md) — 15 affix types with prefix/suffix split; any new type needs updates in 8 places.
+- [Diablo item systems](diablo-item-systems.md) — SLOT_BASES, UNIQUE_ITEMS (22), ITEM_SETS (3), set bonus detection in getEquipmentBonuses.

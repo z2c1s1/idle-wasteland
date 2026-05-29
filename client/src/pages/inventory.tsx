@@ -4,6 +4,7 @@ import {
   ALL_CRAFTABLE_ITEMS, ALL_SLOTS, SLOT_LABEL, SLOT_EMOJI,
   RARITY_COLOR, RARITY_BORDER, RARITY_BG, RARITY_LABEL,
   AFFIX_LABEL, AFFIX_COLOR, GEM_EMOJI, SKILL_EMOJI, SKILL_COLOR,
+  ITEM_SETS, UNIQUE_ITEMS,
   getGemName, getGemBgClass,
   type GameItem, type EquipmentSlot, type GemType,
 } from "@shared/game-data";
@@ -25,31 +26,82 @@ function ItemCard({ item, onEquip, onDestroy, onUnequip, isEquipped }: {
 }) {
   const [expanded, setExpanded] = useState(false);
 
+  const isUnique = item.source === 'unique';
+  const isSet    = !!item.setId;
+  const setDef   = isSet ? ITEM_SETS.find(s => s.id === item.setId) : undefined;
+  const uniqueDef= isUnique ? UNIQUE_ITEMS.find(u => u.id === item.uniqueId) : undefined;
+
+  const borderClass = isUnique
+    ? 'border-amber-400/70 shadow-amber-400/20 shadow-md'
+    : isSet
+    ? 'border-teal-400/70 shadow-teal-400/15 shadow-sm'
+    : RARITY_BORDER[item.rarity];
+  const bgClass = isUnique
+    ? 'bg-amber-500/10'
+    : isSet
+    ? 'bg-teal-500/8'
+    : RARITY_BG[item.rarity];
+  const nameClass = isUnique
+    ? 'text-amber-300 font-bold'
+    : isSet
+    ? 'text-teal-300 font-bold'
+    : `font-semibold ${RARITY_COLOR[item.rarity]}`;
+
   return (
-    <div className={`rounded-lg border p-3 flex flex-col gap-2 transition-all ${RARITY_BORDER[item.rarity]} ${RARITY_BG[item.rarity]}`}
+    <div className={`rounded-lg border p-3 flex flex-col gap-2 transition-all ${borderClass} ${bgClass}`}
       data-testid={`item-card-${item.instanceId}`}>
       <div className="flex items-start gap-2">
         <span className="text-2xl leading-none mt-0.5">{item.emoji}</span>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className={`font-semibold text-sm leading-tight ${RARITY_COLOR[item.rarity]}`}>
+            <span className={`text-sm leading-tight ${nameClass}`}>
               {item.name}
             </span>
-            <span className={`text-[10px] px-1 py-0.5 rounded font-semibold uppercase border ${RARITY_BORDER[item.rarity]} ${RARITY_COLOR[item.rarity]}`}>
-              {RARITY_LABEL[item.rarity]}
-            </span>
+            {isUnique && (
+              <span className="text-[10px] px-1 py-0.5 rounded font-semibold uppercase border border-amber-400/50 text-amber-300 bg-amber-400/10">
+                传说独特
+              </span>
+            )}
+            {!isUnique && isSet && setDef && (
+              <span className="text-[10px] px-1 py-0.5 rounded font-semibold uppercase border border-teal-400/50 text-teal-300 bg-teal-400/10">
+                套装
+              </span>
+            )}
+            {!isUnique && !isSet && (
+              <span className={`text-[10px] px-1 py-0.5 rounded font-semibold uppercase border ${RARITY_BORDER[item.rarity]} ${RARITY_COLOR[item.rarity]}`}>
+                {RARITY_LABEL[item.rarity]}
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-2 mt-0.5">
             <span className="text-xs text-muted-foreground">{SLOT_LABEL[item.slot]}</span>
+            {item.baseType && <><span className="text-xs text-muted-foreground">·</span><span className="text-xs text-muted-foreground/60">{item.baseType}</span></>}
             <span className="text-xs text-muted-foreground">·</span>
             <span className="text-xs text-yellow-500 font-medium">物品等级 {item.ilvl}</span>
           </div>
+          {/* Weapon damage range */}
+          {(item.maxDamage ?? 0) > 0 && (
+            <div className="text-xs text-orange-200 mt-0.5">⚔ 武器伤害：{item.minDamage}–{item.maxDamage}</div>
+          )}
+          {/* Flavor text for uniques */}
+          {(uniqueDef?.flavorText || item.flavorText) && (
+            <div className="text-[10px] text-amber-200/60 italic mt-0.5 leading-tight">
+              "{uniqueDef?.flavorText ?? item.flavorText}"
+            </div>
+          )}
         </div>
         <button className="text-muted-foreground hover:text-foreground p-0.5 transition-colors flex-shrink-0"
           onClick={() => setExpanded(e => !e)}>
           {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
         </button>
       </div>
+
+      {/* Set name badge */}
+      {setDef && (
+        <div className="text-[10px] text-teal-300 font-semibold tracking-wide">
+          ◆ {setDef.name} — {setDef.pieces.length}件套
+        </div>
+      )}
 
       {/* Quick stat summary */}
       <div className="flex flex-wrap gap-x-3 gap-y-0.5">
@@ -64,6 +116,10 @@ function ItemCard({ item, onEquip, onDestroy, onUnequip, isEquipped }: {
         {(item.lifeRegen ?? 0)      > 0 && <span className="text-xs text-emerald-300">🌿 +{item.lifeRegen} 回复/回合</span>}
         {(item.goldBonus ?? 0)      > 0 && <span className="text-xs text-yellow-400">💰 +{item.goldBonus}% 金币</span>}
         {(item.resistAll ?? 0)      > 0 && <span className="text-xs text-cyan-300">🔵 -{item.resistAll} 受伤</span>}
+        {(item.lifeLeech ?? 0)      > 0 && <span className="text-xs text-rose-300">🩸 {item.lifeLeech}% 吸血</span>}
+        {(item.deadlyStrike ?? 0)   > 0 && <span className="text-xs text-amber-300">⚡ {item.deadlyStrike}% 致命一击</span>}
+        {(item.attackSpeed ?? 0)    > 0 && <span className="text-xs text-sky-300">⚡ +{item.attackSpeed}% 攻速</span>}
+        {(item.reflectDamage ?? 0)  > 0 && <span className="text-xs text-lime-300">🌵 {item.reflectDamage} 反伤</span>}
       </div>
 
       {/* Gem sockets row */}
@@ -114,6 +170,10 @@ function ItemCard({ item, onEquip, onDestroy, onUnequip, isEquipped }: {
                 {affix.type === 'life_regen'      && `(每回合恢复 ${affix.value} 生命)`}
                 {affix.type === 'gold_bonus'      && `(金币获取 +${affix.value}%)`}
                 {affix.type === 'resist_all'      && `(所有伤害减免 ${affix.value} 点)`}
+                {affix.type === 'life_leech'      && `(造成伤害的 ${affix.value}% 恢复生命)`}
+                {affix.type === 'deadly_strike'   && `(${affix.value}% 概率本次攻击伤害翻倍)`}
+                {affix.type === 'attack_speed'    && `(攻击伤害 +${affix.value}%，模拟快速出击)`}
+                {affix.type === 'reflect_damage'  && `(被击时对攻击者反弹 ${affix.value} 伤害)`}
               </span>
             </div>
           ))}
