@@ -53,10 +53,17 @@ function ItemCard({ item, onEquip, onDestroy, onUnequip, isEquipped }: {
 
       {/* Quick stat summary */}
       <div className="flex flex-wrap gap-x-3 gap-y-0.5">
-        {item.attackBonus  > 0 && <span className="text-xs text-red-300">⚔ +{item.attackBonus} 攻击</span>}
-        {item.defenceBonus > 0 && <span className="text-xs text-blue-300">🛡 +{item.defenceBonus} 防御</span>}
-        {item.hpBonus      > 0 && <span className="text-xs text-green-300">❤ +{item.hpBonus} 生命</span>}
-        {item.critRating   > 0 && <span className="text-xs text-yellow-300">✦ +{item.critRating.toFixed(1)}% 暴击</span>}
+        {item.attackBonus    > 0 && <span className="text-xs text-red-300">⚔ +{item.attackBonus} 攻击</span>}
+        {item.defenceBonus   > 0 && <span className="text-xs text-blue-300">🛡 +{item.defenceBonus} 防御</span>}
+        {item.hpBonus        > 0 && <span className="text-xs text-green-300">❤ +{item.hpBonus} 生命</span>}
+        {item.critRating     > 0 && <span className="text-xs text-yellow-300">✦ +{item.critRating.toFixed(1)}% 暴击</span>}
+        {(item.enhancedDamage ?? 0) > 0 && <span className="text-xs text-orange-300">🔥 +{item.enhancedDamage}% 伤害</span>}
+        {(item.lifeOnKill ?? 0)     > 0 && <span className="text-xs text-pink-300">💗 +{item.lifeOnKill} 击杀回血</span>}
+        {(item.crushingBlow ?? 0)   > 0 && <span className="text-xs text-red-400">💥 {item.crushingBlow}% 重击</span>}
+        {(item.magicFind ?? 0)      > 0 && <span className="text-xs text-purple-300">✨ +{item.magicFind}% 魔法发现</span>}
+        {(item.lifeRegen ?? 0)      > 0 && <span className="text-xs text-emerald-300">🌿 +{item.lifeRegen} 回复/回合</span>}
+        {(item.goldBonus ?? 0)      > 0 && <span className="text-xs text-yellow-400">💰 +{item.goldBonus}% 金币</span>}
+        {(item.resistAll ?? 0)      > 0 && <span className="text-xs text-cyan-300">🔵 -{item.resistAll} 受伤</span>}
       </div>
 
       {/* Gem sockets row */}
@@ -96,10 +103,17 @@ function ItemCard({ item, onEquip, onDestroy, onUnequip, isEquipped }: {
             <div key={i} className={`text-xs flex items-center gap-1.5 ${AFFIX_COLOR[affix.type]}`}>
               <span className="font-semibold">+{affix.value} {AFFIX_LABEL[affix.type]}</span>
               <span className="text-muted-foreground text-[10px]">
-                {affix.type === 'strength' && `(+${affix.value} 攻击)`}
-                {affix.type === 'armour'   && `(+${affix.value} 防御)`}
-                {affix.type === 'stamina'  && `(+${affix.value * 5} 生命)`}
-                {affix.type === 'agility'  && `(+${(affix.value * 0.5).toFixed(1)}% 暴击)`}
+                {affix.type === 'strength'        && `(+${affix.value} 攻击)`}
+                {affix.type === 'armour'          && `(+${affix.value} 防御)`}
+                {affix.type === 'stamina'         && `(+${affix.value * 5} 生命)`}
+                {affix.type === 'agility'         && `(+${(affix.value * 0.5).toFixed(1)}% 暴击)`}
+                {affix.type === 'enhanced_damage' && `(所有伤害 +${affix.value}%)`}
+                {affix.type === 'life_on_kill'    && `(击杀恢复 ${affix.value} 生命)`}
+                {affix.type === 'crushing_blow'   && `(${affix.value}% 概率造成敌方当前 25% 生命伤害)`}
+                {affix.type === 'magic_find'      && `(掉落品质 +${affix.value}%)`}
+                {affix.type === 'life_regen'      && `(每回合恢复 ${affix.value} 生命)`}
+                {affix.type === 'gold_bonus'      && `(金币获取 +${affix.value}%)`}
+                {affix.type === 'resist_all'      && `(所有伤害减免 ${affix.value} 点)`}
               </span>
             </div>
           ))}

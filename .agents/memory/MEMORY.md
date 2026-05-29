@@ -1,0 +1,1 @@
+- [Diablo affix system](diablo-affixes.md) — 11 affix types; new types need zero defaults in craftedToGameItem/smithedToGameItem and must be aggregated in getEquipmentBonuses.

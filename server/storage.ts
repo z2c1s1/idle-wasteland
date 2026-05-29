@@ -190,6 +190,10 @@ export class DatabaseStorage implements IStorage {
       const doubleStrikePct= getSkillVal('doublestrike');
       const dodgePct       = getSkillVal('dodge');
 
+      // Diablo-style equipment stats
+      const { enhancedDamage, lifeOnKill, crushingBlow, magicFind, lifeRegen, goldBonus, resistAll } =
+        getEquipmentBonuses(equipment);
+
       let goldGained = 0, bonesGained = 0, dragonBonesGained = 0;
       let attackXpGained = 0, defenceXpGained = 0, hitpointsXpGained = 0;
       let playerDied = false;
@@ -199,12 +203,21 @@ export class DatabaseStorage implements IStorage {
       const gemPool = COMBAT_GEM_POOLS[Math.min(enemyIndex, COMBAT_GEM_POOLS.length - 1)];
 
       for (let i = 0; i < ticks; i++) {
+        // Life Regeneration (Diablo: passive HP regen per tick)
+        if (lifeRegen > 0) playerHp = Math.min(playerMaxHp, playerHp + lifeRegen);
+
         // Calculate effective attack
         let effAtk = Math.max(1, playerAtk - enemy.defence);
-        if (spellbladePct > 0) effAtk = Math.floor(effAtk * (1 + spellbladePct / 100));
+        if (spellbladePct > 0)  effAtk = Math.floor(effAtk * (1 + spellbladePct / 100));
+        if (enhancedDamage > 0) effAtk = Math.floor(effAtk * (1 + enhancedDamage / 100));
         if (berserkPct > 0 && playerHp < playerMaxHp * 0.3) effAtk = Math.floor(effAtk * (1 + berserkPct / 100));
         const strikes = (doubleStrikePct > 0 && Math.random() * 100 < doubleStrikePct) ? 2 : 1;
-        const totalDmgToEnemy = effAtk * strikes + poisonDmg;
+        let totalDmgToEnemy = effAtk * strikes + poisonDmg;
+
+        // Crushing Blow (Diablo: % chance to deal 25% of enemy current HP)
+        if (crushingBlow > 0 && Math.random() * 100 < crushingBlow) {
+          totalDmgToEnemy += Math.max(1, Math.floor(enemyHp * 0.25));
+        }
 
         enemyHp -= totalDmgToEnemy;
         attackXpGained += 4 * strikes;
@@ -215,24 +228,29 @@ export class DatabaseStorage implements IStorage {
         }
 
         if (enemyHp <= 0) {
-          goldGained        += enemy.drops.gold[0];
+          const rawGold = enemy.drops.gold[0];
+          const bonusGold = goldBonus > 0 ? Math.floor(rawGold * goldBonus / 100) : 0;
+          goldGained        += rawGold + bonusGold;
           bonesGained       += enemy.drops.bones ?? 0;
           dragonBonesGained += enemy.drops.dragonBones ?? 0;
           attackXpGained    += enemy.xp;
           hitpointsXpGained += Math.floor(enemy.xp / 3);
-          if (Math.random() < dropChance) newDrops.push(generateDroppedItem(enemyIndex));
+          if (Math.random() < dropChance) newDrops.push(generateDroppedItem(enemyIndex, magicFind));
           // Gem drop on kill
           if (Math.random() < gemPool.chance) {
             const gk = gemPool.pool[Math.floor(Math.random() * gemPool.pool.length)];
             gemsGained[gk] = (gemsGained[gk] ?? 0) + 1;
           }
+          // Life on Kill (Diablo)
+          if (lifeOnKill > 0) playerHp = Math.min(playerMaxHp, playerHp + lifeOnKill);
           // Vampiric on kill
           if (vampiricHp > 0) playerHp = Math.min(playerMaxHp, playerHp + vampiricHp);
           enemyHp = enemy.maxHp;
         }
 
-        // Incoming damage
-        const dmgToPlayer = Math.max(0, enemy.attack - playerDef);
+        // Incoming damage — Resist All reduces flat damage
+        const rawDmg = Math.max(0, enemy.attack - playerDef);
+        const dmgToPlayer = Math.max(0, rawDmg - resistAll);
         const dodged = dodgePct > 0 && Math.random() * 100 < dodgePct;
         if (!dodged && dmgToPlayer > 0) {
           playerHp -= dmgToPlayer;

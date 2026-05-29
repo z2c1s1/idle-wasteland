@@ -63,27 +63,51 @@ export const SLOT_EMOJI: Record<EquipmentSlot, string> = {
 export const ALL_SLOTS: EquipmentSlot[] = ['weapon','offhand','helmet','chest','legs','gloves','boots','neck','ring'];
 
 // ─── Affix types ────────────────────────────────────────────────────────────────
-export type AffixType = 'strength' | 'agility' | 'stamina' | 'armour';
+export type AffixType =
+  | 'strength' | 'agility' | 'stamina' | 'armour'
+  | 'enhanced_damage' | 'life_on_kill' | 'crushing_blow'
+  | 'magic_find' | 'life_regen' | 'gold_bonus' | 'resist_all';
 
 export const AFFIX_LABEL: Record<AffixType, string> = {
-  strength: '力量',
-  agility:  '敏捷',
-  stamina:  '体力',
-  armour:   '护甲',
+  strength:        '力量',
+  agility:         '敏捷',
+  stamina:         '体力',
+  armour:          '护甲',
+  enhanced_damage: '强化伤害',
+  life_on_kill:    '击杀回血',
+  crushing_blow:   '重击',
+  magic_find:      '魔法发现',
+  life_regen:      '生命回复',
+  gold_bonus:      '黄金加成',
+  resist_all:      '全抗性',
 };
 
 export const AFFIX_COLOR: Record<AffixType, string> = {
-  strength: 'text-red-300',
-  agility:  'text-yellow-300',
-  stamina:  'text-green-300',
-  armour:   'text-blue-300',
+  strength:        'text-red-300',
+  agility:         'text-yellow-300',
+  stamina:         'text-green-300',
+  armour:          'text-blue-300',
+  enhanced_damage: 'text-orange-300',
+  life_on_kill:    'text-pink-300',
+  crushing_blow:   'text-red-400',
+  magic_find:      'text-purple-300',
+  life_regen:      'text-emerald-300',
+  gold_bonus:      'text-yellow-400',
+  resist_all:      'text-cyan-300',
 };
 
 export const AFFIX_EFFECT: Record<AffixType, string> = {
-  strength: '+1 攻击/点',
-  agility:  '+0.5% 暴击/点',
-  stamina:  '+5 生命/点',
-  armour:   '+1 防御/点',
+  strength:        '+1 攻击/点',
+  agility:         '+0.5% 暴击/点',
+  stamina:         '+5 生命/点',
+  armour:          '+1 防御/点',
+  enhanced_damage: '+1% 伤害加成/点',
+  life_on_kill:    '+1 生命/击杀',
+  crushing_blow:   '+1% 重击概率/点',
+  magic_find:      '+1% 掉落品质/点',
+  life_regen:      '+1 生命回复/战斗回合',
+  gold_bonus:      '+1% 金币加成/点',
+  resist_all:      '+1 伤害减免/点',
 };
 
 export interface ItemAffix {
@@ -239,6 +263,14 @@ export interface GameItem {
   defenceBonus: number;
   hpBonus: number;
   critRating: number;
+  // Diablo-style advanced stats
+  enhancedDamage: number;  // % bonus to all damage dealt
+  lifeOnKill: number;       // HP gained per kill
+  crushingBlow: number;     // % chance to deal 25% of enemy current HP as bonus
+  magicFind: number;        // % bonus to drop item rarity
+  lifeRegen: number;        // HP regenerated each combat tick
+  goldBonus: number;        // % bonus gold from kills
+  resistAll: number;        // flat damage reduction from all hits
   source: 'smithed' | 'dropped';
   baseId?: string;
   maxSockets: number;
@@ -251,14 +283,23 @@ export type EquipmentState = Partial<Record<EquipmentSlot, GameItem | null>>;
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 export function getEquipmentBonuses(equipment: EquipmentState) {
   let attackBonus = 0, defenceBonus = 0, hpBonus = 0, critRating = 0;
+  let enhancedDamage = 0, lifeOnKill = 0, crushingBlow = 0, magicFind = 0;
+  let lifeRegen = 0, goldBonus = 0, resistAll = 0;
   for (const item of Object.values(equipment)) {
     if (!item) continue;
-    attackBonus  += item.attackBonus;
-    defenceBonus += item.defenceBonus;
-    hpBonus      += item.hpBonus;
-    critRating   += item.critRating;
+    attackBonus    += item.attackBonus;
+    defenceBonus   += item.defenceBonus;
+    hpBonus        += item.hpBonus;
+    critRating     += item.critRating;
+    enhancedDamage += item.enhancedDamage ?? 0;
+    lifeOnKill     += item.lifeOnKill ?? 0;
+    crushingBlow   += item.crushingBlow ?? 0;
+    magicFind      += item.magicFind ?? 0;
+    lifeRegen      += item.lifeRegen ?? 0;
+    goldBonus      += item.goldBonus ?? 0;
+    resistAll      += item.resistAll ?? 0;
   }
-  return { attackBonus, defenceBonus, hpBonus, critRating };
+  return { attackBonus, defenceBonus, hpBonus, critRating, enhancedDamage, lifeOnKill, crushingBlow, magicFind, lifeRegen, goldBonus, resistAll };
 }
 
 // ─── Smithed equipment items ───────────────────────────────────────────────────
@@ -316,6 +357,8 @@ export function smithedToGameItem(itemId: string): GameItem | null {
     rarity: 'uncommon', ilvl: def.ilvl, affixes: affix,
     attackBonus: def.attackBonus, defenceBonus: def.defenceBonus,
     hpBonus: def.hpBonus ?? 0, critRating: def.critRating ?? 0,
+    enhancedDamage: 0, lifeOnKill: 0, crushingBlow: 0,
+    magicFind: 0, lifeRegen: 0, goldBonus: 0, resistAll: 0,
     source: 'smithed', baseId: itemId,
     maxSockets: rollSockets('uncommon'), socketedGems: [], skills: [],
   };
@@ -478,17 +521,17 @@ const SLOT_BASE_NAMES: Record<EquipmentSlot, string[]> = {
   ring:    ['戒指', '指环', '印戒', '环圈', '圆环', '封印', '线圈'],
 };
 
-// Slot-biased affix pools (slot favors certain stats but can roll anything)
+// Slot-biased affix pools (Diablo-style slot affinity)
 const SLOT_AFFIX_POOL: Record<EquipmentSlot, AffixType[]> = {
-  weapon:  ['strength', 'agility', 'strength', 'strength', 'agility', 'stamina'],
-  offhand: ['armour', 'stamina', 'armour', 'armour', 'agility', 'strength'],
-  helmet:  ['stamina', 'armour', 'agility', 'stamina', 'armour', 'strength'],
-  chest:   ['stamina', 'armour', 'armour', 'stamina', 'strength', 'agility'],
-  legs:    ['armour', 'stamina', 'agility', 'armour', 'strength', 'stamina'],
-  gloves:  ['strength', 'agility', 'strength', 'agility', 'armour', 'stamina'],
-  boots:   ['agility', 'stamina', 'armour', 'agility', 'strength', 'armour'],
-  neck:    ['strength', 'agility', 'stamina', 'armour', 'agility', 'strength'],
-  ring:    ['strength', 'agility', 'stamina', 'armour', 'strength', 'agility'],
+  weapon:  ['strength', 'strength', 'agility', 'enhanced_damage', 'enhanced_damage', 'crushing_blow', 'agility', 'stamina'],
+  offhand: ['armour', 'armour', 'stamina', 'resist_all', 'resist_all', 'agility', 'strength', 'life_regen'],
+  helmet:  ['stamina', 'stamina', 'armour', 'agility', 'magic_find', 'life_regen', 'resist_all'],
+  chest:   ['stamina', 'armour', 'armour', 'resist_all', 'life_regen', 'stamina', 'agility'],
+  legs:    ['armour', 'stamina', 'agility', 'resist_all', 'armour', 'stamina'],
+  gloves:  ['strength', 'agility', 'enhanced_damage', 'crushing_blow', 'agility', 'armour', 'strength'],
+  boots:   ['agility', 'agility', 'stamina', 'gold_bonus', 'magic_find', 'armour', 'resist_all'],
+  neck:    ['magic_find', 'life_on_kill', 'gold_bonus', 'life_regen', 'stamina', 'agility', 'strength'],
+  ring:    ['magic_find', 'life_on_kill', 'gold_bonus', 'enhanced_damage', 'agility', 'strength', 'stamina'],
 };
 
 const RARITY_AFFIX_COUNT: Record<Rarity, number> = {
@@ -500,27 +543,35 @@ const RARITY_MULTIPLIER: Record<Rarity, number> = {
 };
 
 const AFFIX_SCALING: Record<AffixType, number> = {
-  strength: 1.2,
-  agility:  0.8,
-  stamina:  0.7,
-  armour:   1.3,
+  strength:        1.2,
+  agility:         0.8,
+  stamina:         0.7,
+  armour:          1.3,
+  enhanced_damage: 0.6,
+  life_on_kill:    0.9,
+  crushing_blow:   0.35,
+  magic_find:      0.55,
+  life_regen:      0.5,
+  gold_bonus:      0.6,
+  resist_all:      0.45,
 };
 
 function rand<T>(arr: T[]): T { return arr[Math.floor(Math.random() * arr.length)]; }
 function randInt(min: number, max: number): number { return min + Math.floor(Math.random() * (max - min + 1)); }
 
-export function generateDroppedItem(enemyIndex: number): GameItem {
-  const enemy = ENEMIES[enemyIndex];
+export function generateDroppedItem(enemyIndex: number, playerMagicFind = 0): GameItem {
   const ilvlBase = enemyIndex * 7 + 1;
   const ilvl = ilvlBase + randInt(0, 5);
 
-  // Rarity weighting by enemy tier
+  // Rarity weighting by enemy tier + player magic find bonus
+  const mfBonus = Math.min(playerMagicFind, 200); // cap at 200%
+  const mfMult  = 1 + mfBonus / 100;
   const weights = [
-    Math.max(10, 60 - enemyIndex * 7),   // common
-    Math.min(40, 20 + enemyIndex * 3),    // uncommon
-    Math.min(25, enemyIndex * 3),         // rare
-    Math.min(10, Math.floor(enemyIndex * 1.2)), // epic
-    enemyIndex >= 6 ? 2 : 0,             // legendary (dragons only)
+    Math.max(5, 60 - enemyIndex * 7),                                     // common
+    Math.min(40, 20 + enemyIndex * 3),                                     // uncommon
+    Math.min(25, Math.floor((enemyIndex * 3) * mfMult)),                   // rare
+    Math.min(15, Math.floor(enemyIndex * 1.2 * mfMult)),                   // epic
+    enemyIndex >= 5 ? Math.max(1, Math.floor(1.5 * mfMult)) : 0,          // legendary
   ];
   const pool: Rarity[] = [];
   (['common', 'uncommon', 'rare', 'epic', 'legendary'] as Rarity[]).forEach((r, i) => {
@@ -533,11 +584,17 @@ export function generateDroppedItem(enemyIndex: number): GameItem {
   const mult = RARITY_MULTIPLIER[rarity];
   const slotPool = SLOT_AFFIX_POOL[slot];
 
+  const allTypes: AffixType[] = [
+    'strength', 'agility', 'stamina', 'armour',
+    'enhanced_damage', 'life_on_kill', 'crushing_blow',
+    'magic_find', 'life_regen', 'gold_bonus', 'resist_all',
+  ];
+
   const usedTypes = new Set<AffixType>();
   const affixes: ItemAffix[] = [];
-  const allTypes: AffixType[] = ['strength', 'agility', 'stamina', 'armour'];
 
   for (let i = 0; i < numAffixes; i++) {
+    // Pick from slot pool first, fall back to any unused type
     const available = allTypes.filter(t => !usedTypes.has(t));
     if (!available.length) break;
     const candidate = rand(slotPool);
@@ -547,10 +604,17 @@ export function generateDroppedItem(enemyIndex: number): GameItem {
     affixes.push({ type, value });
   }
 
-  const attackBonus  = affixes.filter(a => a.type === 'strength').reduce((s, a) => s + a.value, 0);
-  const defenceBonus = affixes.filter(a => a.type === 'armour').reduce((s, a) => s + a.value, 0);
-  const hpBonus      = affixes.filter(a => a.type === 'stamina').reduce((s, a) => s + a.value, 0) * 5;
-  const critRating   = affixes.filter(a => a.type === 'agility').reduce((s, a) => s + a.value * 0.5, 0);
+  const attackBonus    = affixes.filter(a => a.type === 'strength').reduce((s, a) => s + a.value, 0);
+  const defenceBonus   = affixes.filter(a => a.type === 'armour').reduce((s, a) => s + a.value, 0);
+  const hpBonus        = affixes.filter(a => a.type === 'stamina').reduce((s, a) => s + a.value, 0) * 5;
+  const critRating     = affixes.filter(a => a.type === 'agility').reduce((s, a) => s + a.value * 0.5, 0);
+  const enhancedDamage = affixes.filter(a => a.type === 'enhanced_damage').reduce((s, a) => s + a.value, 0);
+  const lifeOnKill     = affixes.filter(a => a.type === 'life_on_kill').reduce((s, a) => s + a.value, 0);
+  const crushingBlow   = affixes.filter(a => a.type === 'crushing_blow').reduce((s, a) => s + a.value, 0);
+  const magicFind      = affixes.filter(a => a.type === 'magic_find').reduce((s, a) => s + a.value, 0);
+  const lifeRegen      = affixes.filter(a => a.type === 'life_regen').reduce((s, a) => s + a.value, 0);
+  const goldBonus      = affixes.filter(a => a.type === 'gold_bonus').reduce((s, a) => s + a.value, 0);
+  const resistAll      = affixes.filter(a => a.type === 'resist_all').reduce((s, a) => s + a.value, 0);
 
   const prefix = rand(RARITY_PREFIXES[rarity]);
   const base   = rand(SLOT_BASE_NAMES[slot]);
@@ -559,7 +623,9 @@ export function generateDroppedItem(enemyIndex: number): GameItem {
     instanceId: `drop_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
     name: `${prefix} ${base}`,
     slot, emoji: SLOT_EMOJI[slot], rarity, ilvl, affixes,
-    attackBonus, defenceBonus, hpBonus, critRating, source: 'dropped',
+    attackBonus, defenceBonus, hpBonus, critRating,
+    enhancedDamage, lifeOnKill, crushingBlow, magicFind, lifeRegen, goldBonus, resistAll,
+    source: 'dropped',
     maxSockets: rollSockets(rarity), socketedGems: [], skills: rollSkills(rarity),
   };
 }
@@ -652,6 +718,8 @@ export function craftedToGameItem(itemId: string): GameItem | null {
     rarity, ilvl: def.ilvl, affixes: affix,
     attackBonus: def.attackBonus, defenceBonus: def.defenceBonus,
     hpBonus: def.hpBonus ?? 0, critRating: def.critRating ?? 0,
+    enhancedDamage: 0, lifeOnKill: 0, crushingBlow: 0,
+    magicFind: 0, lifeRegen: 0, goldBonus: 0, resistAll: 0,
     source: 'smithed', baseId: itemId,
     maxSockets: rollSockets(rarity), socketedGems: [], skills: [],
   };

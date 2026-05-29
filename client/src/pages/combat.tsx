@@ -128,6 +128,20 @@ export default function Combat() {
             sub={eqStats.critRating > 0 ? "+50% 额外伤害" : "无暴击"} />
         </div>
 
+        {/* Diablo-style advanced stats */}
+        {(eqStats.enhancedDamage > 0 || eqStats.crushingBlow > 0 || eqStats.magicFind > 0 ||
+          eqStats.lifeOnKill > 0 || eqStats.lifeRegen > 0 || eqStats.goldBonus > 0 || eqStats.resistAll > 0) && (
+          <div className="flex flex-wrap gap-x-4 gap-y-1 bg-muted/15 rounded-lg px-3 py-2 text-xs border border-border/40">
+            {eqStats.enhancedDamage > 0 && <span className="text-orange-300">🔥 +{eqStats.enhancedDamage}% 强化伤害</span>}
+            {eqStats.crushingBlow   > 0 && <span className="text-red-400">💥 {eqStats.crushingBlow}% 重击</span>}
+            {eqStats.lifeOnKill     > 0 && <span className="text-pink-300">💗 +{eqStats.lifeOnKill} 击杀回血</span>}
+            {eqStats.lifeRegen      > 0 && <span className="text-emerald-300">🌿 +{eqStats.lifeRegen}/回合 回复</span>}
+            {eqStats.magicFind      > 0 && <span className="text-purple-300">✨ +{eqStats.magicFind}% 魔法发现</span>}
+            {eqStats.goldBonus      > 0 && <span className="text-yellow-400">💰 +{eqStats.goldBonus}% 金币</span>}
+            {eqStats.resistAll      > 0 && <span className="text-cyan-300">🔵 -{eqStats.resistAll} 受伤</span>}
+          </div>
+        )}
+
         {/* Skill XP */}
         <div className="grid grid-cols-3 gap-3 pt-2 border-t border-border">
           {[
