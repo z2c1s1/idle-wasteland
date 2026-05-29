@@ -62,20 +62,20 @@ function ItemCard({ item, onEquip, onDestroy, onUnequip, isEquipped }: {
   const setDef   = isSet ? ITEM_SETS.find(s => s.id === item.setId) : undefined;
   const uniqueDef= isUnique ? UNIQUE_ITEMS.find(u => u.id === item.uniqueId) : undefined;
 
-  const borderClass = isUnique
-    ? 'border-amber-400/70 shadow-amber-400/20 shadow-md'
-    : isSet
+  const borderClass = isSet
     ? 'border-teal-400/70 shadow-teal-400/15 shadow-sm'
+    : isUnique
+    ? 'border-amber-400/70 shadow-amber-400/20 shadow-md'
     : RARITY_BORDER[item.rarity];
-  const bgClass = isUnique
-    ? 'bg-amber-500/10'
-    : isSet
+  const bgClass = isSet
     ? 'bg-teal-500/8'
+    : isUnique
+    ? 'bg-amber-500/10'
     : RARITY_BG[item.rarity];
-  const nameClass = isUnique
-    ? 'text-amber-300 font-bold'
-    : isSet
+  const nameClass = isSet
     ? 'text-teal-300 font-bold'
+    : isUnique
+    ? 'text-amber-300 font-bold'
     : `font-semibold ${RARITY_COLOR[item.rarity]}`;
 
   return (
@@ -88,17 +88,17 @@ function ItemCard({ item, onEquip, onDestroy, onUnequip, isEquipped }: {
             <span className={`text-sm leading-tight ${nameClass}`}>
               {item.name}
             </span>
-            {isUnique && (
-              <span className="text-[10px] px-1 py-0.5 rounded font-semibold uppercase border border-amber-400/50 text-amber-300 bg-amber-400/10">
-                传说独特
-              </span>
-            )}
-            {!isUnique && isSet && setDef && (
+            {isSet && setDef && (
               <span className="text-[10px] px-1 py-0.5 rounded font-semibold uppercase border border-teal-400/50 text-teal-300 bg-teal-400/10">
                 套装
               </span>
             )}
-            {!isUnique && !isSet && (
+            {!isSet && isUnique && (
+              <span className="text-[10px] px-1 py-0.5 rounded font-semibold uppercase border border-amber-400/50 text-amber-300 bg-amber-400/10">
+                传说独特
+              </span>
+            )}
+            {!isSet && !isUnique && (
               <span className={`text-[10px] px-1 py-0.5 rounded font-semibold uppercase border ${RARITY_BORDER[item.rarity]} ${RARITY_COLOR[item.rarity]}`}>
                 {RARITY_LABEL[item.rarity]}
               </span>

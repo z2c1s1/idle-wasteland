@@ -148,11 +148,11 @@ export default function Combat() {
           </div>
         )}
 
-        {/* Active set bonuses */}
-        {eqStats.activeSets && Object.keys(eqStats.activeSets).length > 0 && (
+        {/* Active set bonuses — only show sets with 2+ pieces equipped */}
+        {eqStats.activeSets && Object.entries(eqStats.activeSets).some(([, c]) => c >= 2) && (
           <div className="bg-teal-500/8 border border-teal-400/30 rounded-lg px-3 py-2 space-y-1">
             <div className="text-[10px] text-teal-400 uppercase tracking-wider font-semibold">激活套装</div>
-            {Object.entries(eqStats.activeSets).map(([setId, count]) => {
+            {Object.entries(eqStats.activeSets).filter(([, c]) => c >= 2).map(([setId, count]) => {
               const setDef = ITEM_SETS.find(s => s.id === setId);
               if (!setDef) return null;
               return (
