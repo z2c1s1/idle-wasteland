@@ -36,7 +36,7 @@ function AffixRow({ affix, tint }: { affix: { type: string; value: number }; tin
     life_leech: `造成伤害的 ${affix.value}% 恢复生命`,
     deadly_strike: `${affix.value}% 概率本次攻击伤害翻倍`,
     attack_speed: `攻击伤害 +${affix.value}%，模拟快速出击`,
-    reflect_damage: `被击时对攻击者反弹 ${affix.value} 伤害`,
+    thorns: `被击时对攻击者反弹 ${affix.value} 伤害`,
   };
   const hint = hints[affix.type];
   return (

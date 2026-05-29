@@ -67,7 +67,7 @@ export type AffixType =
   | 'strength' | 'agility' | 'stamina' | 'armour'
   | 'enhanced_damage' | 'life_on_kill' | 'crushing_blow'
   | 'magic_find' | 'life_regen' | 'gold_bonus' | 'resist_all'
-  | 'life_leech' | 'deadly_strike' | 'attack_speed' | 'reflect_damage';
+  | 'life_leech' | 'deadly_strike' | 'attack_speed' | 'thorns';
 
 export const AFFIX_LABEL: Record<AffixType, string> = {
   strength:        '力量',
@@ -84,7 +84,7 @@ export const AFFIX_LABEL: Record<AffixType, string> = {
   life_leech:      '吸血',
   deadly_strike:   '致命一击',
   attack_speed:    '攻击速度',
-  reflect_damage:  '荆棘反伤',
+  thorns:          '荆棘反伤',
 };
 
 export const AFFIX_COLOR: Record<AffixType, string> = {
@@ -102,7 +102,7 @@ export const AFFIX_COLOR: Record<AffixType, string> = {
   life_leech:      'text-rose-300',
   deadly_strike:   'text-amber-300',
   attack_speed:    'text-sky-300',
-  reflect_damage:  'text-lime-300',
+  thorns:          'text-lime-300',
 };
 
 export const AFFIX_EFFECT: Record<AffixType, string> = {
@@ -120,7 +120,7 @@ export const AFFIX_EFFECT: Record<AffixType, string> = {
   life_leech:      '+1% 吸血率/点',
   deadly_strike:   '+1% 致命一击概率/点',
   attack_speed:    '+1% 攻击速度加成/点',
-  reflect_damage:  '+1 被击反伤/点',
+  thorns:          '+1 被击反伤/点',
 };
 
 export interface ItemAffix {
@@ -387,7 +387,7 @@ export const UNIQUE_ITEMS: UniqueItemDef[] = [
   {
     id:'tyrant_shield', name:'暴君之盾', emoji:'🛡️', slot:'offhand', ilvl:35, minEnemyIndex:4,
     flavorText:'这面盾牌见证了无数霸主的统治，本身也承载着无上的威严。',
-    affixes:[{type:'armour',value:30},{type:'resist_all',value:12},{type:'reflect_damage',value:15},{type:'stamina',value:10}],
+    affixes:[{type:'armour',value:30},{type:'resist_all',value:12},{type:'thorns',value:15},{type:'stamina',value:10}],
   },
   {
     id:'shadow_blade', name:'影刃', emoji:'🗡️', slot:'weapon', ilvl:38, minEnemyIndex:4,
@@ -426,7 +426,7 @@ export const UNIQUE_ITEMS: UniqueItemDef[] = [
   {
     id:'dragonblood_plate', name:'龙血甲', emoji:'🧥', slot:'chest', ilvl:55, minEnemyIndex:6,
     flavorText:'以真龙之血淬炼而成，坚若磐石，防御无双。',
-    affixes:[{type:'armour',value:55},{type:'stamina',value:30},{type:'resist_all',value:20},{type:'reflect_damage',value:20}],
+    affixes:[{type:'armour',value:55},{type:'stamina',value:30},{type:'resist_all',value:20},{type:'thorns',value:20}],
     skills:[{type:'thorns',name:'龙鳞',value:20,description:'被击中时反弹 20 点伤害'}],
   },
   {
@@ -449,7 +449,7 @@ export const UNIQUE_ITEMS: UniqueItemDef[] = [
   {
     id:'hellfire_plate', name:'炼狱铠甲', emoji:'🧥', slot:'chest', ilvl:65, minEnemyIndex:7,
     flavorText:'地狱烈火锻造，穿戴者如站在炼狱核心，烈焰护体。',
-    affixes:[{type:'armour',value:70},{type:'stamina',value:35},{type:'reflect_damage',value:25},{type:'resist_all',value:25},{type:'life_regen',value:15}],
+    affixes:[{type:'armour',value:70},{type:'stamina',value:35},{type:'thorns',value:25},{type:'resist_all',value:25},{type:'life_regen',value:15}],
     skills:[{type:'thorns',name:'地狱之焰',value:30,description:'被击中时反弹 30 点伤害'}],
   },
   {
@@ -473,7 +473,7 @@ export const UNIQUE_ITEMS: UniqueItemDef[] = [
   {
     id:'eternity_shield', name:'永恒之盾', emoji:'🛡️', slot:'offhand', ilvl:70, minEnemyIndex:7,
     flavorText:'护佑者永恒不灭的意志铸成此盾，任何攻击都无法将其击碎。',
-    affixes:[{type:'armour',value:80},{type:'stamina',value:40},{type:'resist_all',value:30},{type:'reflect_damage',value:30},{type:'life_regen',value:20}],
+    affixes:[{type:'armour',value:80},{type:'stamina',value:40},{type:'resist_all',value:30},{type:'thorns',value:30},{type:'life_regen',value:20}],
   },
 ];
 
@@ -652,7 +652,7 @@ export function getEquipmentBonuses(equipment: EquipmentState) {
           case 'life_leech':      lifeLeech      += a.value; break;
           case 'deadly_strike':   deadlyStrike   += a.value; break;
           case 'attack_speed':    attackSpeed    += a.value; break;
-          case 'reflect_damage':  reflectDamage  += a.value; break;
+          case 'thorns':          reflectDamage  += a.value; break;
         }
       }
     }
@@ -904,11 +904,11 @@ const SLOT_PREFIX_POOL: Record<EquipmentSlot, AffixType[]> = {
 // Slot-biased SUFFIX pools (defensive/utility affixes)
 const SLOT_SUFFIX_POOL: Record<EquipmentSlot, AffixType[]> = {
   weapon:  ['life_on_kill', 'crushing_blow', 'stamina'],
-  offhand: ['armour', 'armour', 'stamina', 'resist_all', 'resist_all', 'life_regen', 'reflect_damage'],
+  offhand: ['armour', 'armour', 'stamina', 'resist_all', 'resist_all', 'life_regen', 'thorns'],
   helmet:  ['armour', 'stamina', 'stamina', 'magic_find', 'life_regen', 'resist_all', 'life_on_kill'],
-  chest:   ['armour', 'armour', 'stamina', 'resist_all', 'life_regen', 'reflect_damage'],
-  legs:    ['armour', 'armour', 'stamina', 'resist_all', 'life_regen', 'reflect_damage'],
-  gloves:  ['armour', 'life_on_kill', 'reflect_damage', 'stamina'],
+  chest:   ['armour', 'armour', 'stamina', 'resist_all', 'life_regen', 'thorns'],
+  legs:    ['armour', 'armour', 'stamina', 'resist_all', 'life_regen', 'thorns'],
+  gloves:  ['armour', 'life_on_kill', 'thorns', 'stamina'],
   boots:   ['armour', 'stamina', 'gold_bonus', 'magic_find', 'resist_all', 'life_on_kill'],
   neck:    ['magic_find', 'life_on_kill', 'gold_bonus', 'life_regen', 'stamina', 'resist_all'],
   ring:    ['magic_find', 'life_on_kill', 'gold_bonus', 'life_regen', 'stamina', 'resist_all'],
@@ -945,7 +945,7 @@ const AFFIX_SCALING: Record<AffixType, number> = {
   life_leech:      0.25,
   deadly_strike:   0.3,
   attack_speed:    0.35,
-  reflect_damage:  0.5,
+  thorns:          0.5,
 };
 
 function rand<T>(arr: T[]): T { return arr[Math.floor(Math.random() * arr.length)]; }
@@ -968,7 +968,7 @@ function computeItemStats(affixes: ItemAffix[]) {
     lifeLeech:      sum('life_leech'),
     deadlyStrike:   sum('deadly_strike'),
     attackSpeed:    sum('attack_speed'),
-    reflectDamage:  sum('reflect_damage'),
+    reflectDamage:  sum('thorns'),
   };
 }
 
@@ -988,11 +988,35 @@ const ENEMY_ILVL_BANDS: [number, number][] = [
 function getRarityAffixCounts(rarity: Rarity): { numPrefix: number; numSuffix: number } {
   switch (rarity) {
     case 'common':    return { numPrefix: 0, numSuffix: 0 };
-    case 'uncommon':  return { numPrefix: 1, numSuffix: 0 };
+    // Uncommon: randomly one prefix OR one suffix (not always prefix)
+    case 'uncommon':  return Math.random() < 0.5 ? { numPrefix: 1, numSuffix: 0 } : { numPrefix: 0, numSuffix: 1 };
     case 'rare':      return { numPrefix: randInt(1, 2), numSuffix: randInt(1, 2) };
     case 'epic':      return { numPrefix: 2, numSuffix: 2 }; // + implicit
     case 'legendary': return { numPrefix: 3, numSuffix: 3 };
   }
+}
+
+// ── Unique item builder (shared by early roll + legendary rarity path) ────────
+function buildUniqueGameItem(def: UniqueItemDef): GameItem {
+  const affixes = def.affixes;
+  const setId = UNIQUE_SET_MAP[def.id];
+  const stats = computeItemStats(affixes);
+  const eligibleForUnique = SLOT_BASES[def.slot].filter(b => b.reqIlvl <= def.ilvl);
+  const base = eligibleForUnique.length
+    ? eligibleForUnique[eligibleForUnique.length - 1]
+    : SLOT_BASES[def.slot][0];
+  return {
+    instanceId: `unique_${def.id}_${Date.now()}`,
+    name: def.name,
+    slot: def.slot, emoji: def.emoji, rarity: 'legendary', ilvl: def.ilvl,
+    affixes, prefixes: [], suffixes: affixes,
+    minDamage: base.minDamage, maxDamage: base.maxDamage,
+    ...stats,
+    source: 'unique', uniqueId: def.id, setId,
+    flavorText: def.flavorText,
+    maxSockets: 2, socketedGems: [],
+    skills: (def.skills ?? []).map(s => ({ ...s })),
+  };
 }
 
 export function generateDroppedItem(enemyIndex: number, playerMagicFind = 0): GameItem {
@@ -1003,27 +1027,7 @@ export function generateDroppedItem(enemyIndex: number, playerMagicFind = 0): Ga
   const eligibleUniques = UNIQUE_ITEMS.filter(u => u.minEnemyIndex <= enemyIndex && u.ilvl <= ilvl + 10);
   const uniqueDropChance = 0.02 + enemyIndex * 0.005; // 2%–5.5%
   if (eligibleUniques.length && Math.random() < uniqueDropChance) {
-    const def = rand(eligibleUniques);
-    const affixes = def.affixes;
-    const setId = UNIQUE_SET_MAP[def.id];
-    const stats = computeItemStats(affixes);
-    // Pick ilvl-eligible base for this unique (prevents low-ilvl uniques with endgame weapon ranges)
-    const eligibleForUnique = SLOT_BASES[def.slot].filter(b => b.reqIlvl <= def.ilvl);
-    const base = eligibleForUnique.length
-      ? eligibleForUnique[eligibleForUnique.length - 1]
-      : SLOT_BASES[def.slot][0];
-    return {
-      instanceId: `unique_${def.id}_${Date.now()}`,
-      name: def.name,
-      slot: def.slot, emoji: def.emoji, rarity: 'legendary', ilvl: def.ilvl,
-      affixes, prefixes: [], suffixes: affixes,
-      minDamage: base.minDamage, maxDamage: base.maxDamage,
-      ...stats,
-      source: 'unique', uniqueId: def.id, setId,
-      flavorText: def.flavorText,
-      maxSockets: 2, socketedGems: [],
-      skills: (def.skills ?? []).map(s => ({ ...s })),
-    };
+    return buildUniqueGameItem(rand(eligibleUniques));
   }
 
   // Rarity weighting by enemy tier + player magic find bonus
@@ -1036,8 +1040,9 @@ export function generateDroppedItem(enemyIndex: number, playerMagicFind = 0): Ga
     Math.min(15, Math.floor(enemyIndex * 1.2 * mfMult)),
     enemyIndex >= 5 ? Math.max(1, Math.floor(1.5 * mfMult)) : 0,
   ];
+  // Legendaries are always unique named items — exclude from procedural rarity pool
   const pool: Rarity[] = [];
-  (['common', 'uncommon', 'rare', 'epic', 'legendary'] as Rarity[]).forEach((r, i) => {
+  (['common', 'uncommon', 'rare', 'epic'] as Rarity[]).forEach((r, i) => {
     for (let w = 0; w < weights[i]; w++) pool.push(r);
   });
   const rarity = rand(pool);
@@ -1056,7 +1061,7 @@ export function generateDroppedItem(enemyIndex: number, playerMagicFind = 0): Ga
     'strength','agility','stamina','armour',
     'enhanced_damage','life_on_kill','crushing_blow','magic_find',
     'life_regen','gold_bonus','resist_all',
-    'life_leech','deadly_strike','attack_speed','reflect_damage',
+    'life_leech','deadly_strike','attack_speed','thorns',
   ];
 
   function pickAffixes(pool: AffixType[], count: number, used: Set<AffixType>): ItemAffix[] {
