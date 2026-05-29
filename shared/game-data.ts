@@ -972,12 +972,35 @@ function computeItemStats(affixes: ItemAffix[]) {
   };
 }
 
-export function generateDroppedItem(enemyIndex: number, playerMagicFind = 0): GameItem {
-  const ilvlBase = enemyIndex * 7 + 1;
-  const ilvl = ilvlBase + randInt(0, 5);
+// Enemy-tier ilvl drop bands (explicit, not formulaic)
+const ENEMY_ILVL_BANDS: [number, number][] = [
+  [1,  8],  // 0: chicken
+  [5,  15], // 1: cow
+  [10, 22], // 2: goblin
+  [18, 32], // 3: skeleton
+  [28, 45], // 4: troll
+  [38, 55], // 5: giant
+  [48, 65], // 6: dragon
+  [58, 75], // 7: fire_dragon
+];
 
-  // ── Unique drop check (rare extra roll by enemy tier) ─────────────────────────
-  const eligibleUniques = UNIQUE_ITEMS.filter(u => u.minEnemyIndex <= enemyIndex);
+// Prefix/suffix counts per rarity (Diablo-style rarity template)
+function getRarityAffixCounts(rarity: Rarity): { numPrefix: number; numSuffix: number } {
+  switch (rarity) {
+    case 'common':    return { numPrefix: 0, numSuffix: 0 };
+    case 'uncommon':  return { numPrefix: 1, numSuffix: 0 };
+    case 'rare':      return { numPrefix: randInt(1, 2), numSuffix: randInt(1, 2) };
+    case 'epic':      return { numPrefix: 2, numSuffix: 2 }; // + implicit
+    case 'legendary': return { numPrefix: 3, numSuffix: 3 };
+  }
+}
+
+export function generateDroppedItem(enemyIndex: number, playerMagicFind = 0): GameItem {
+  const band = ENEMY_ILVL_BANDS[Math.min(enemyIndex, ENEMY_ILVL_BANDS.length - 1)];
+  const ilvl = band[0] + randInt(0, band[1] - band[0]);
+
+  // ── Unique drop check (enemy tier + ilvl gate) ───────────────────────────────
+  const eligibleUniques = UNIQUE_ITEMS.filter(u => u.minEnemyIndex <= enemyIndex && u.ilvl <= ilvl + 10);
   const uniqueDropChance = 0.02 + enemyIndex * 0.005; // 2%–5.5%
   if (eligibleUniques.length && Math.random() < uniqueDropChance) {
     const def = rand(eligibleUniques);
@@ -1021,11 +1044,9 @@ export function generateDroppedItem(enemyIndex: number, playerMagicFind = 0): Ga
   const eligibleBases = SLOT_BASES[slot].filter(b => b.reqIlvl <= ilvl);
   const base = eligibleBases.length ? eligibleBases[eligibleBases.length - 1] : SLOT_BASES[slot][0];
 
-  // ── Prefix/suffix split ───────────────────────────────────────────────────────
-  const numTotal  = RARITY_AFFIX_COUNT[rarity];
-  const numPrefix = Math.ceil(numTotal / 2);
-  const numSuffix = Math.floor(numTotal / 2);
-  const mult      = RARITY_MULTIPLIER[rarity];
+  // ── Prefix/suffix split (Diablo rarity template) ─────────────────────────────
+  const { numPrefix, numSuffix } = getRarityAffixCounts(rarity);
+  const mult = RARITY_MULTIPLIER[rarity];
 
   const ALL_TYPES: AffixType[] = [
     'strength','agility','stamina','armour',

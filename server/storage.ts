@@ -192,10 +192,17 @@ export class DatabaseStorage implements IStorage {
 
       // Diablo-style equipment stats (all 15 affix types)
       const {
+        attackBonus: eqAttackBonus,
         enhancedDamage, lifeOnKill, crushingBlow, magicFind,
         lifeRegen, goldBonus, resistAll,
         lifeLeech, deadlyStrike, attackSpeed, reflectDamage,
       } = getEquipmentBonuses(equipment);
+
+      // Weapon damage: per-hit roll from equipped weapon's min/max range (Diablo-style)
+      const weaponItem = equipment.weapon ?? null;
+      const hasWeaponRange = weaponItem && (weaponItem.maxDamage ?? 0) > 0;
+      // Level-based base damage (attack level × 1.2), excluding equipment attack bonus
+      const levelBaseDmg = Math.max(1, playerAtk - eqAttackBonus);
 
       let goldGained = 0, bonesGained = 0, dragonBonesGained = 0;
       let attackXpGained = 0, defenceXpGained = 0, hitpointsXpGained = 0;
@@ -209,8 +216,15 @@ export class DatabaseStorage implements IStorage {
         // Life Regeneration (Diablo: passive HP regen per tick)
         if (lifeRegen > 0) playerHp = Math.min(playerMaxHp, playerHp + lifeRegen);
 
+        // Per-hit weapon damage roll (Diablo-style: random from weapon min–max range)
+        const weaponRoll = hasWeaponRange && weaponItem
+          ? (weaponItem.minDamage ?? 0) + Math.floor(Math.random() * ((weaponItem.maxDamage ?? 0) - (weaponItem.minDamage ?? 0) + 1))
+          : levelBaseDmg;
+        // Total base = rolled weapon damage + affix attack bonus
+        const perHitBase = Math.max(1, weaponRoll + eqAttackBonus);
+
         // Calculate effective attack
-        let effAtk = Math.max(1, playerAtk - enemy.defence);
+        let effAtk = Math.max(1, perHitBase - enemy.defence);
         if (spellbladePct > 0)  effAtk = Math.floor(effAtk * (1 + spellbladePct / 100));
         if (enhancedDamage > 0) effAtk = Math.floor(effAtk * (1 + enhancedDamage / 100));
         if (berserkPct > 0 && playerHp < playerMaxHp * 0.3) effAtk = Math.floor(effAtk * (1 + berserkPct / 100));

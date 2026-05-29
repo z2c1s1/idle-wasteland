@@ -16,6 +16,37 @@ import { Button } from "@/components/ui/button";
 import { Package, Shield, Sword, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+// ─── Shared affix row with optional blue/gold tint ───────────────────────────
+function AffixRow({ affix, tint }: { affix: { type: string; value: number }; tint?: 'blue' | 'gold' }) {
+  const baseColor = AFFIX_COLOR[affix.type as keyof typeof AFFIX_COLOR] ?? 'text-foreground';
+  const labelColor = tint === 'blue' ? 'text-blue-300' : tint === 'gold' ? 'text-yellow-300' : baseColor;
+  const label = AFFIX_LABEL[affix.type as keyof typeof AFFIX_LABEL] ?? affix.type;
+  const hints: Record<string, string> = {
+    strength: `+${affix.value} 攻击`,
+    armour: `+${affix.value} 防御`,
+    stamina: `+${affix.value * 5} 生命`,
+    agility: `+${(affix.value * 0.5).toFixed(1)}% 暴击`,
+    enhanced_damage: `所有伤害 +${affix.value}%`,
+    life_on_kill: `击杀恢复 ${affix.value} 生命`,
+    crushing_blow: `${affix.value}% 概率造成敌方当前 25% 生命伤害`,
+    magic_find: `掉落品质 +${affix.value}%`,
+    life_regen: `每回合恢复 ${affix.value} 生命`,
+    gold_bonus: `金币获取 +${affix.value}%`,
+    resist_all: `所有伤害减免 ${affix.value} 点`,
+    life_leech: `造成伤害的 ${affix.value}% 恢复生命`,
+    deadly_strike: `${affix.value}% 概率本次攻击伤害翻倍`,
+    attack_speed: `攻击伤害 +${affix.value}%，模拟快速出击`,
+    reflect_damage: `被击时对攻击者反弹 ${affix.value} 伤害`,
+  };
+  const hint = hints[affix.type];
+  return (
+    <div className={`text-xs flex items-center gap-1.5 ${labelColor}`}>
+      <span className="font-semibold">+{affix.value} {label}</span>
+      {hint && <span className="text-muted-foreground text-[10px]">({hint})</span>}
+    </div>
+  );
+}
+
 // ─── Item tooltip card ────────────────────────────────────────────────────────
 function ItemCard({ item, onEquip, onDestroy, onUnequip, isEquipped }: {
   item: GameItem;
@@ -152,33 +183,45 @@ function ItemCard({ item, onEquip, onDestroy, onUnequip, isEquipped }: {
         </div>
       )}
 
-      {/* Expanded affix detail */}
+      {/* Expanded affix detail — prefix/suffix split (Diablo-style) */}
       {expanded && (
-        <div className="border-t border-border/50 pt-2 space-y-1">
-          {item.affixes.map((affix, i) => (
-            <div key={i} className={`text-xs flex items-center gap-1.5 ${AFFIX_COLOR[affix.type]}`}>
-              <span className="font-semibold">+{affix.value} {AFFIX_LABEL[affix.type]}</span>
-              <span className="text-muted-foreground text-[10px]">
-                {affix.type === 'strength'        && `(+${affix.value} 攻击)`}
-                {affix.type === 'armour'          && `(+${affix.value} 防御)`}
-                {affix.type === 'stamina'         && `(+${affix.value * 5} 生命)`}
-                {affix.type === 'agility'         && `(+${(affix.value * 0.5).toFixed(1)}% 暴击)`}
-                {affix.type === 'enhanced_damage' && `(所有伤害 +${affix.value}%)`}
-                {affix.type === 'life_on_kill'    && `(击杀恢复 ${affix.value} 生命)`}
-                {affix.type === 'crushing_blow'   && `(${affix.value}% 概率造成敌方当前 25% 生命伤害)`}
-                {affix.type === 'magic_find'      && `(掉落品质 +${affix.value}%)`}
-                {affix.type === 'life_regen'      && `(每回合恢复 ${affix.value} 生命)`}
-                {affix.type === 'gold_bonus'      && `(金币获取 +${affix.value}%)`}
-                {affix.type === 'resist_all'      && `(所有伤害减免 ${affix.value} 点)`}
-                {affix.type === 'life_leech'      && `(造成伤害的 ${affix.value}% 恢复生命)`}
-                {affix.type === 'deadly_strike'   && `(${affix.value}% 概率本次攻击伤害翻倍)`}
-                {affix.type === 'attack_speed'    && `(攻击伤害 +${affix.value}%，模拟快速出击)`}
-                {affix.type === 'reflect_damage'  && `(被击时对攻击者反弹 ${affix.value} 伤害)`}
-              </span>
+        <div className="border-t border-border/50 pt-2 space-y-1.5">
+          {/* Implicit affix (from item base) */}
+          {(() => {
+            const prefixTypes = new Set(item.prefixes?.map(a => a.type) ?? []);
+            const suffixTypes = new Set(item.suffixes?.map(a => a.type) ?? []);
+            const implicits = item.affixes.filter(a => !prefixTypes.has(a.type) && !suffixTypes.has(a.type));
+            return implicits.length > 0 && (
+              <div className="space-y-0.5">
+                <div className="text-[9px] text-muted-foreground/50 uppercase tracking-widest font-semibold">固有属性</div>
+                {implicits.map((affix, i) => <AffixRow key={i} affix={affix} />)}
+              </div>
+            );
+          })()}
+
+          {/* Prefixes (offensive, blue) */}
+          {(item.prefixes?.length ?? 0) > 0 && (
+            <div className="space-y-0.5">
+              <div className="text-[9px] text-blue-400/70 uppercase tracking-widest font-semibold">前缀</div>
+              {item.prefixes!.map((affix, i) => <AffixRow key={i} affix={affix} tint="blue" />)}
             </div>
+          )}
+
+          {/* Suffixes (defensive/utility, gold) */}
+          {(item.suffixes?.length ?? 0) > 0 && (
+            <div className="space-y-0.5">
+              <div className="text-[9px] text-yellow-400/70 uppercase tracking-widest font-semibold">后缀</div>
+              {item.suffixes!.map((affix, i) => <AffixRow key={i} affix={affix} tint="gold" />)}
+            </div>
+          )}
+
+          {/* Fallback for smithed/unique items with no prefix/suffix split */}
+          {((item.prefixes?.length ?? 0) === 0 && (item.suffixes?.length ?? 0) === 0) && item.affixes.map((affix, i) => (
+            <AffixRow key={i} affix={affix} />
           ))}
+
           {(item.skills?.length ?? 0) > 0 && (
-            <div className="mt-1 space-y-0.5">
+            <div className="mt-1 space-y-0.5 border-t border-border/30 pt-1">
               {item.skills.map((skill, i) => (
                 <p key={i} className={`text-[10px] ${SKILL_COLOR[skill.type]}`}>
                   {SKILL_EMOJI[skill.type]} <span className="font-semibold">{skill.name}：</span>{skill.description}
