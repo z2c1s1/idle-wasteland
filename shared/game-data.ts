@@ -74,12 +74,12 @@ export const AFFIX_LABEL: Record<AffixType, string> = {
   agility:         '敏捷',
   stamina:         '体力',
   armour:          '护甲',
-  enhanced_damage: '强化伤害',
-  life_on_kill:    '击杀回血',
-  crushing_blow:   '重击',
+  enhanced_damage: '增强伤害',
+  life_on_kill:    '击杀回复',
+  crushing_blow:   '粉碎打击',
   magic_find:      '魔法发现',
   life_regen:      '生命回复',
-  gold_bonus:      '黄金加成',
+  gold_bonus:      '黄金发现',
   resist_all:      '全抗性',
   life_leech:      '吸血',
   deadly_strike:   '致命一击',
@@ -107,7 +107,7 @@ export const AFFIX_COLOR: Record<AffixType, string> = {
 
 export const AFFIX_EFFECT: Record<AffixType, string> = {
   strength:        '+1 攻击/点',
-  agility:         '+0.5% 暴击/点',
+  agility:         '+0.5 攻击 +0.3 防御/点',
   stamina:         '+5 生命/点',
   armour:          '+1 防御/点',
   enhanced_damage: '+1% 伤害加成/点',
@@ -641,7 +641,7 @@ export function getEquipmentBonuses(equipment: EquipmentState) {
           case 'strength':        attackBonus    += a.value; break;
           case 'armour':          defenceBonus   += a.value; break;
           case 'stamina':         hpBonus        += a.value * 5; break;
-          case 'agility':         critRating     += a.value * 0.5; break;
+          case 'agility':         attackBonus    += Math.floor(a.value * 0.5); defenceBonus += Math.floor(a.value * 0.3); break;
           case 'enhanced_damage': enhancedDamage += a.value; break;
           case 'life_on_kill':    lifeOnKill     += a.value; break;
           case 'crushing_blow':   crushingBlow   += a.value; break;
@@ -954,10 +954,10 @@ function randInt(min: number, max: number): number { return min + Math.floor(Mat
 function computeItemStats(affixes: ItemAffix[]) {
   const sum = (type: AffixType) => affixes.filter(a => a.type === type).reduce((s, a) => s + a.value, 0);
   return {
-    attackBonus:    sum('strength'),
-    defenceBonus:   sum('armour'),
+    attackBonus:    sum('strength') + Math.floor(sum('agility') * 0.5),
+    defenceBonus:   sum('armour')   + Math.floor(sum('agility') * 0.3),
     hpBonus:        sum('stamina') * 5,
-    critRating:     sum('agility') * 0.5,
+    critRating:     0,
     enhancedDamage: sum('enhanced_damage'),
     lifeOnKill:     sum('life_on_kill'),
     crushingBlow:   sum('crushing_blow'),
@@ -1034,8 +1034,8 @@ export function generateDroppedItem(enemyIndex: number, playerMagicFind = 0): Ga
   const mfBonus = Math.min(playerMagicFind, 200);
   const mfMult  = 1 + mfBonus / 100;
   const weights = [
-    Math.max(5, 60 - enemyIndex * 7),
-    Math.min(40, 20 + enemyIndex * 3),
+    0,  // common — 打怪最低掉落蓝色（uncommon）
+    Math.max(15, 60 - enemyIndex * 7),
     Math.min(25, Math.floor((enemyIndex * 3) * mfMult)),
     Math.min(15, Math.floor(enemyIndex * 1.2 * mfMult)),
     enemyIndex >= 5 ? Math.max(1, Math.floor(1.5 * mfMult)) : 0,

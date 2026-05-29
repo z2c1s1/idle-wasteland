@@ -25,7 +25,7 @@ function AffixRow({ affix, tint }: { affix: { type: string; value: number }; tin
     strength: `+${affix.value} 攻击`,
     armour: `+${affix.value} 防御`,
     stamina: `+${affix.value * 5} 生命`,
-    agility: `+${(affix.value * 0.5).toFixed(1)}% 暴击`,
+    agility: `+${Math.floor(affix.value * 0.5)} 攻击 +${Math.floor(affix.value * 0.3)} 防御`,
     enhanced_damage: `所有伤害 +${affix.value}%`,
     life_on_kill: `击杀恢复 ${affix.value} 生命`,
     crushing_blow: `${affix.value}% 概率造成敌方当前 25% 生命伤害`,
@@ -141,11 +141,11 @@ function ItemCard({ item, onEquip, onDestroy, onUnequip, isEquipped }: {
         {item.hpBonus        > 0 && <span className="text-xs text-green-300">❤ +{item.hpBonus} 生命</span>}
         {item.critRating     > 0 && <span className="text-xs text-yellow-300">✦ +{item.critRating.toFixed(1)}% 暴击</span>}
         {(item.enhancedDamage ?? 0) > 0 && <span className="text-xs text-orange-300">🔥 +{item.enhancedDamage}% 伤害</span>}
-        {(item.lifeOnKill ?? 0)     > 0 && <span className="text-xs text-pink-300">💗 +{item.lifeOnKill} 击杀回血</span>}
-        {(item.crushingBlow ?? 0)   > 0 && <span className="text-xs text-red-400">💥 {item.crushingBlow}% 重击</span>}
+        {(item.lifeOnKill ?? 0)     > 0 && <span className="text-xs text-pink-300">💗 +{item.lifeOnKill} 击杀回复</span>}
+        {(item.crushingBlow ?? 0)   > 0 && <span className="text-xs text-red-400">💥 {item.crushingBlow}% 粉碎打击</span>}
         {(item.magicFind ?? 0)      > 0 && <span className="text-xs text-purple-300">✨ +{item.magicFind}% 魔法发现</span>}
         {(item.lifeRegen ?? 0)      > 0 && <span className="text-xs text-emerald-300">🌿 +{item.lifeRegen} 回复/回合</span>}
-        {(item.goldBonus ?? 0)      > 0 && <span className="text-xs text-yellow-400">💰 +{item.goldBonus}% 金币</span>}
+        {(item.goldBonus ?? 0)      > 0 && <span className="text-xs text-yellow-400">💰 +{item.goldBonus}% 黄金发现</span>}
         {(item.resistAll ?? 0)      > 0 && <span className="text-xs text-cyan-300">🔵 -{item.resistAll} 受伤</span>}
         {(item.lifeLeech ?? 0)      > 0 && <span className="text-xs text-rose-300">🩸 {item.lifeLeech}% 吸血</span>}
         {(item.deadlyStrike ?? 0)   > 0 && <span className="text-xs text-amber-300">⚡ {item.deadlyStrike}% 致命一击</span>}
@@ -355,7 +355,6 @@ export default function Inventory() {
         </h1>
         <p className="text-sm text-muted-foreground">
           战利品袋中有 {lootBag.length} 件物品
-          {equipStats.critRating > 0 && ` · ${equipStats.critRating.toFixed(1)}% 暴击`}
           {equipStats.hpBonus > 0 && ` · +${equipStats.hpBonus} 生命`}
         </p>
       </div>
@@ -370,12 +369,11 @@ export default function Inventory() {
           </div>
 
           {/* Stat summary */}
-          {(equipStats.attackBonus > 0 || equipStats.defenceBonus > 0 || equipStats.hpBonus > 0 || equipStats.critRating > 0) && (
+          {(equipStats.attackBonus > 0 || equipStats.defenceBonus > 0 || equipStats.hpBonus > 0) && (
             <div className="flex flex-wrap gap-x-4 gap-y-1 bg-muted/20 rounded-lg px-3 py-2 text-xs">
               {equipStats.attackBonus > 0  && <span className="text-red-300">⚔ +{equipStats.attackBonus} 攻击</span>}
               {equipStats.defenceBonus > 0 && <span className="text-blue-300">🛡 +{equipStats.defenceBonus} 防御</span>}
               {equipStats.hpBonus > 0      && <span className="text-green-300">❤ +{equipStats.hpBonus} 生命</span>}
-              {equipStats.critRating > 0   && <span className="text-yellow-300">✦ +{equipStats.critRating.toFixed(1)}% 暴击</span>}
             </div>
           )}
 
