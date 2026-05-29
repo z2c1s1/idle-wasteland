@@ -3,33 +3,33 @@ export type Rarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 
 export const RARITY_LABEL: Record<Rarity, string> = {
   common:    '普通',
-  uncommon:  '精良',
+  uncommon:  '魔法',
   rare:      '稀有',
-  epic:      '史诗',
-  legendary: '传说',
+  epic:      '神圣',
+  legendary: '独特',
 };
 
 export const RARITY_COLOR: Record<Rarity, string> = {
-  common:    'text-gray-300',
-  uncommon:  'text-green-400',
-  rare:      'text-blue-400',
-  epic:      'text-purple-400',
+  common:    'text-gray-400',
+  uncommon:  'text-blue-400',
+  rare:      'text-yellow-400',
+  epic:      'text-amber-300',
   legendary: 'text-orange-400',
 };
 
 export const RARITY_BORDER: Record<Rarity, string> = {
   common:    'border-gray-500/40',
-  uncommon:  'border-green-500/40',
-  rare:      'border-blue-500/40',
-  epic:      'border-purple-500/50',
+  uncommon:  'border-blue-500/40',
+  rare:      'border-yellow-500/40',
+  epic:      'border-amber-400/60',
   legendary: 'border-orange-500/60',
 };
 
 export const RARITY_BG: Record<Rarity, string> = {
   common:    'bg-gray-500/5',
-  uncommon:  'bg-green-500/8',
-  rare:      'bg-blue-500/10',
-  epic:      'bg-purple-500/12',
+  uncommon:  'bg-blue-500/8',
+  rare:      'bg-yellow-500/10',
+  epic:      'bg-amber-500/12',
   legendary: 'bg-orange-500/15',
 };
 
@@ -62,65 +62,65 @@ export const SLOT_EMOJI: Record<EquipmentSlot, string> = {
 
 export const ALL_SLOTS: EquipmentSlot[] = ['weapon','offhand','helmet','chest','legs','gloves','boots','neck','ring'];
 
-// ─── Affix types ────────────────────────────────────────────────────────────────
+// ─── Affix types (Diablo 4 style) ───────────────────────────────────────────────
 export type AffixType =
-  | 'strength' | 'agility' | 'stamina' | 'armour'
-  | 'enhanced_damage' | 'life_on_kill' | 'crushing_blow'
-  | 'magic_find' | 'life_regen' | 'gold_bonus' | 'resist_all'
-  | 'life_leech' | 'deadly_strike' | 'attack_speed' | 'thorns';
+  | 'strength' | 'dexterity' | 'vitality' | 'intelligence' | 'armour'
+  | 'damage_percent' | 'life_on_hit' | 'overpower'
+  | 'lucky_hit' | 'life_regen' | 'resist_all'
+  | 'life_leech' | 'crit_damage' | 'attack_speed' | 'thorns';
 
 export const AFFIX_LABEL: Record<AffixType, string> = {
-  strength:        '力量',
-  agility:         '敏捷',
-  stamina:         '体力',
-  armour:          '护甲',
-  enhanced_damage: '增强伤害',
-  life_on_kill:    '击杀回复',
-  crushing_blow:   '粉碎打击',
-  magic_find:      '魔法发现',
-  life_regen:      '生命回复',
-  gold_bonus:      '黄金发现',
-  resist_all:      '全抗性',
-  life_leech:      '吸血',
-  deadly_strike:   '致命一击',
-  attack_speed:    '攻击速度',
-  thorns:          '荆棘反伤',
+  strength:      '力量',
+  dexterity:     '敏捷',
+  vitality:      '活力',
+  intelligence:  '智慧',
+  armour:        '护甲',
+  damage_percent:'伤害加成',
+  life_on_hit:   '命中回血',
+  overpower:     '强击',
+  lucky_hit:     '幸运命中',
+  life_regen:    '生命回复',
+  resist_all:    '全系抗性',
+  life_leech:    '吸血',
+  crit_damage:   '暴击伤害',
+  attack_speed:  '攻击速度',
+  thorns:        '荆棘',
 };
 
 export const AFFIX_COLOR: Record<AffixType, string> = {
-  strength:        'text-red-300',
-  agility:         'text-yellow-300',
-  stamina:         'text-green-300',
-  armour:          'text-blue-300',
-  enhanced_damage: 'text-orange-300',
-  life_on_kill:    'text-pink-300',
-  crushing_blow:   'text-red-400',
-  magic_find:      'text-purple-300',
-  life_regen:      'text-emerald-300',
-  gold_bonus:      'text-yellow-400',
-  resist_all:      'text-cyan-300',
-  life_leech:      'text-rose-300',
-  deadly_strike:   'text-amber-300',
-  attack_speed:    'text-sky-300',
-  thorns:          'text-lime-300',
+  strength:      'text-red-400',
+  dexterity:     'text-yellow-300',
+  vitality:      'text-green-300',
+  intelligence:  'text-blue-300',
+  armour:        'text-slate-300',
+  damage_percent:'text-orange-300',
+  life_on_hit:   'text-pink-300',
+  overpower:     'text-red-500',
+  lucky_hit:     'text-purple-300',
+  life_regen:    'text-emerald-300',
+  resist_all:    'text-cyan-300',
+  life_leech:    'text-rose-300',
+  crit_damage:   'text-amber-300',
+  attack_speed:  'text-sky-300',
+  thorns:        'text-lime-300',
 };
 
 export const AFFIX_EFFECT: Record<AffixType, string> = {
-  strength:        '+1 攻击/点',
-  agility:         '+0.5 攻击 +0.3 防御/点',
-  stamina:         '+5 生命/点',
-  armour:          '+1 防御/点',
-  enhanced_damage: '+1% 伤害加成/点',
-  life_on_kill:    '+1 生命/击杀',
-  crushing_blow:   '+1% 重击概率/点',
-  magic_find:      '+1% 掉落品质/点',
-  life_regen:      '+1 生命回复/战斗回合',
-  gold_bonus:      '+1% 金币加成/点',
-  resist_all:      '+1 伤害减免/点',
-  life_leech:      '+1% 吸血率/点',
-  deadly_strike:   '+1% 致命一击概率/点',
-  attack_speed:    '+1% 攻击速度加成/点',
-  thorns:          '+1 被击反伤/点',
+  strength:      '+1 攻击/点',
+  dexterity:     '+0.5% 暴击率/点',
+  vitality:      '+5 生命/点',
+  intelligence:  '+0.5% 技能伤害/点',
+  armour:        '+1 防御/点',
+  damage_percent:'+1% 所有伤害/点',
+  life_on_hit:   '+1 生命/命中',
+  overpower:     '+1% 强击概率 — 额外伤害等于最大生命 1%',
+  lucky_hit:     '+1% 幸运命中 — 触发时恢复少量生命',
+  life_regen:    '+1 生命回复/战斗回合',
+  resist_all:    '+1 伤害减免/点',
+  life_leech:    '+1% 吸血率/点',
+  crit_damage:   '+1% 暴击伤害加成',
+  attack_speed:  '+1% 攻击速度加成/点',
+  thorns:        '+1 被击反伤/点',
 };
 
 export interface ItemAffix {
@@ -200,7 +200,7 @@ export const COMBAT_GEM_POOLS: { chance: number; pool: string[] }[] = [
 ];
 
 // ─── Item skills (Diablo-style procs) ──────────────────────────────────────────
-export type SkillType = 'lifesteal' | 'thorns' | 'berserk' | 'doublestrike' | 'dodge' | 'poison' | 'spellblade' | 'vampiric';
+export type SkillType = 'lifesteal' | 'thorns' | 'berserk' | 'doublestrike' | 'dodge' | 'poison' | 'spellblade' | 'vampiric' | 'skill_rank';
 
 export interface ItemSkill {
   type: SkillType;
@@ -212,22 +212,25 @@ export interface ItemSkill {
 export const SKILL_EMOJI: Record<SkillType, string> = {
   lifesteal:   '🩸', thorns: '🌵', berserk: '💢', doublestrike: '⚡',
   dodge:       '💨', poison: '☠️', spellblade: '✨', vampiric: '🧛',
+  skill_rank:  '📖',
 };
 export const SKILL_COLOR: Record<SkillType, string> = {
   lifesteal: 'text-red-300', thorns: 'text-green-300', berserk: 'text-orange-300',
   doublestrike: 'text-yellow-300', dodge: 'text-blue-300', poison: 'text-purple-300',
   spellblade: 'text-cyan-300', vampiric: 'text-pink-300',
+  skill_rank: 'text-violet-300',
 };
 
 const SKILL_POOL: { type: SkillType; name: string; minVal: number; maxVal: number; desc: (v: number) => string }[] = [
-  { type: 'lifesteal',   name: '吸血',   minVal: 3,  maxVal: 15, desc: v => `击中时吸取 ${v}% 伤害恢复生命` },
-  { type: 'thorns',      name: '荆棘',   minVal: 2,  maxVal: 20, desc: v => `被击中时反弹 ${v} 点伤害` },
-  { type: 'berserk',     name: '狂战',   minVal: 10, maxVal: 50, desc: v => `HP < 30% 时攻击力提升 ${v}%` },
-  { type: 'doublestrike',name: '双击',   minVal: 10, maxVal: 35, desc: v => `${v}% 概率每回合攻击两次` },
-  { type: 'dodge',       name: '闪避',   minVal: 5,  maxVal: 25, desc: v => `${v}% 概率闪避所有伤害` },
-  { type: 'poison',      name: '淬毒',   minVal: 2,  maxVal: 12, desc: v => `每次攻击追加 ${v} 点毒素伤害` },
-  { type: 'spellblade',  name: '剑术',   minVal: 5,  maxVal: 30, desc: v => `攻击力额外提升 ${v}%` },
-  { type: 'vampiric',    name: '嗜血',   minVal: 5,  maxVal: 20, desc: v => `击杀时恢复 ${v} 点生命` },
+  { type: 'lifesteal',   name: '吸血',       minVal: 3,  maxVal: 15, desc: v => `击中时吸取 ${v}% 伤害恢复生命` },
+  { type: 'thorns',      name: '荆棘',       minVal: 2,  maxVal: 20, desc: v => `被击中时反弹 ${v} 点伤害` },
+  { type: 'berserk',     name: '狂战',       minVal: 10, maxVal: 50, desc: v => `HP < 30% 时攻击力提升 ${v}%` },
+  { type: 'doublestrike',name: '双击',       minVal: 10, maxVal: 35, desc: v => `${v}% 概率每回合攻击两次` },
+  { type: 'dodge',       name: '闪避',       minVal: 5,  maxVal: 25, desc: v => `${v}% 概率闪避所有伤害` },
+  { type: 'poison',      name: '淬毒',       minVal: 2,  maxVal: 12, desc: v => `每次攻击追加 ${v} 点毒素伤害` },
+  { type: 'spellblade',  name: '剑术',       minVal: 5,  maxVal: 30, desc: v => `攻击力额外提升 ${v}%` },
+  { type: 'vampiric',    name: '嗜血',       minVal: 5,  maxVal: 20, desc: v => `击杀时恢复 ${v} 点生命` },
+  { type: 'skill_rank',  name: '+技能等级',  minVal: 1,  maxVal: 3,  desc: v => `所有技能等级 +${v}（提升 ${v * 5}% 战斗效能）` },
 ];
 
 const RARITY_SKILL_COUNT: Record<Rarity, number> = {
@@ -323,15 +326,15 @@ export const SLOT_BASES: Record<EquipmentSlot, ItemBase[]> = {
   ],
   neck: [
     { id:'pendant',     name:'吊坠',   emoji:'📿', slot:'neck', reqIlvl:1,  minDamage:0, maxDamage:0, baseDefence:0 },
-    { id:'amulet',      name:'护身符', emoji:'📿', slot:'neck', reqIlvl:20, minDamage:0, maxDamage:0, baseDefence:0, implicit:{type:'stamina',value:5} },
-    { id:'torc',        name:'颈圈',   emoji:'📿', slot:'neck', reqIlvl:40, minDamage:0, maxDamage:0, baseDefence:0, implicit:{type:'stamina',value:12} },
-    { id:'rune_amulet', name:'符文坠', emoji:'📿', slot:'neck', reqIlvl:60, minDamage:0, maxDamage:0, baseDefence:0, implicit:{type:'stamina',value:20} },
+    { id:'amulet',      name:'护身符', emoji:'📿', slot:'neck', reqIlvl:20, minDamage:0, maxDamage:0, baseDefence:0, implicit:{type:'vitality',value:5} },
+    { id:'torc',        name:'颈圈',   emoji:'📿', slot:'neck', reqIlvl:40, minDamage:0, maxDamage:0, baseDefence:0, implicit:{type:'vitality',value:12} },
+    { id:'rune_amulet', name:'符文坠', emoji:'📿', slot:'neck', reqIlvl:60, minDamage:0, maxDamage:0, baseDefence:0, implicit:{type:'vitality',value:20} },
   ],
   ring: [
     { id:'copper_ring', name:'铜戒指', emoji:'💍', slot:'ring', reqIlvl:1,  minDamage:0, maxDamage:0, baseDefence:0 },
-    { id:'silver_ring', name:'银戒指', emoji:'💍', slot:'ring', reqIlvl:20, minDamage:0, maxDamage:0, baseDefence:0, implicit:{type:'agility',value:3} },
-    { id:'gold_ring',   name:'金戒指', emoji:'💍', slot:'ring', reqIlvl:38, minDamage:0, maxDamage:0, baseDefence:0, implicit:{type:'agility',value:6} },
-    { id:'rune_ring',   name:'符文戒', emoji:'💍', slot:'ring', reqIlvl:60, minDamage:0, maxDamage:0, baseDefence:0, implicit:{type:'agility',value:12} },
+    { id:'silver_ring', name:'银戒指', emoji:'💍', slot:'ring', reqIlvl:20, minDamage:0, maxDamage:0, baseDefence:0, implicit:{type:'dexterity',value:3} },
+    { id:'gold_ring',   name:'金戒指', emoji:'💍', slot:'ring', reqIlvl:38, minDamage:0, maxDamage:0, baseDefence:0, implicit:{type:'dexterity',value:6} },
+    { id:'rune_ring',   name:'符文戒', emoji:'💍', slot:'ring', reqIlvl:60, minDamage:0, maxDamage:0, baseDefence:0, implicit:{type:'dexterity',value:12} },
   ],
 };
 
@@ -352,128 +355,128 @@ export const UNIQUE_ITEMS: UniqueItemDef[] = [
   {
     id:'frost_fang', name:'冰霜之牙', emoji:'⚔️', slot:'weapon', ilvl:8, minEnemyIndex:1,
     flavorText:'寒意从刀身渗入每一个伤口，令敌人冻僵战栗。',
-    affixes:[{type:'strength',value:8},{type:'agility',value:6},{type:'enhanced_damage',value:15}],
+    affixes:[{type:'strength',value:8},{type:'dexterity',value:6},{type:'damage_percent',value:15}],
     skills:[{type:'poison',name:'寒毒',value:4,description:'每次攻击追加 4 点冰毒伤害'}],
   },
   {
     id:'goblin_lucky_ring', name:'哥布林幸运戒', emoji:'💍', slot:'ring', ilvl:12, minEnemyIndex:2,
     flavorText:'哥布林囤积一生的幸运，随戒指归你所有。',
-    affixes:[{type:'magic_find',value:25},{type:'gold_bonus',value:30},{type:'agility',value:4}],
+    affixes:[{type:'lucky_hit',value:25},{type:'intelligence',value:30},{type:'dexterity',value:4}],
   },
   {
     id:'skeletal_crown', name:'骷髅王冠', emoji:'👑', slot:'helmet', ilvl:22, minEnemyIndex:3,
     flavorText:'骷髅王的意志令黑暗力量加身，令弱者闻风丧胆。',
-    affixes:[{type:'stamina',value:12},{type:'armour',value:15},{type:'life_regen',value:5},{type:'resist_all',value:8}],
+    affixes:[{type:'vitality',value:12},{type:'armour',value:15},{type:'life_regen',value:5},{type:'resist_all',value:8}],
     skills:[{type:'thorns',name:'骸骨',value:10,description:'被击中时反弹 10 点伤害'}],
   },
   {
     id:'phantom_steps', name:'幽灵之踪', emoji:'👢', slot:'boots', ilvl:22, minEnemyIndex:3,
     flavorText:'步伐如鬼魅，触地无声，敌人难以追踪。',
-    affixes:[{type:'agility',value:10},{type:'magic_find',value:20},{type:'gold_bonus',value:15}],
+    affixes:[{type:'dexterity',value:10},{type:'lucky_hit',value:20},{type:'intelligence',value:15}],
     skills:[{type:'dodge',name:'幻影',value:18,description:'18% 概率闪避所有伤害'}],
   },
   {
     id:'berserker_gloves', name:'狂战士之拳', emoji:'🥊', slot:'gloves', ilvl:28, minEnemyIndex:4,
     flavorText:'佩戴此手套后，战士体内涌现出原始的暴怒。',
-    affixes:[{type:'strength',value:14},{type:'enhanced_damage',value:20},{type:'deadly_strike',value:12},{type:'crushing_blow',value:8}],
+    affixes:[{type:'strength',value:14},{type:'damage_percent',value:20},{type:'crit_damage',value:12},{type:'overpower',value:8}],
     skills:[{type:'berserk',name:'暴怒',value:35,description:'HP < 30% 时攻击力提升 35%'}],
   },
   {
     id:'andariel_visage', name:'安达里尔的凝视', emoji:'⛑️', slot:'helmet', ilvl:35, minEnemyIndex:4,
     flavorText:'毁灭之女神的目光令所有人恐惧战栗，她的力量注入其中。',
-    affixes:[{type:'stamina',value:18},{type:'life_leech',value:8},{type:'deadly_strike',value:15},{type:'enhanced_damage',value:15}],
+    affixes:[{type:'vitality',value:18},{type:'life_leech',value:8},{type:'crit_damage',value:15},{type:'damage_percent',value:15}],
     skills:[{type:'poison',name:'安达里尔毒液',value:8,description:'每次攻击追加 8 点毒素伤害'}],
   },
   {
     id:'tyrant_shield', name:'暴君之盾', emoji:'🛡️', slot:'offhand', ilvl:35, minEnemyIndex:4,
     flavorText:'这面盾牌见证了无数霸主的统治，本身也承载着无上的威严。',
-    affixes:[{type:'armour',value:30},{type:'resist_all',value:12},{type:'thorns',value:15},{type:'stamina',value:10}],
+    affixes:[{type:'armour',value:30},{type:'resist_all',value:12},{type:'thorns',value:15},{type:'vitality',value:10}],
   },
   {
     id:'shadow_blade', name:'影刃', emoji:'🗡️', slot:'weapon', ilvl:38, minEnemyIndex:4,
     flavorText:'此刃生于黑暗，游走于光影之间，致命而隐秘。',
-    affixes:[{type:'agility',value:16},{type:'deadly_strike',value:20},{type:'life_leech',value:10},{type:'attack_speed',value:15}],
+    affixes:[{type:'dexterity',value:16},{type:'crit_damage',value:20},{type:'life_leech',value:10},{type:'attack_speed',value:15}],
     skills:[{type:'doublestrike',name:'影分身',value:25,description:'25% 概率每回合攻击两次'}],
   },
   {
     id:'giant_smash_axe', name:'巨人粉碎斧', emoji:'🪓', slot:'weapon', ilvl:42, minEnemyIndex:5,
     flavorText:'锻造自巨人骨骼，一击足以粉碎磐石。',
-    affixes:[{type:'strength',value:22},{type:'crushing_blow',value:20},{type:'enhanced_damage',value:25}],
+    affixes:[{type:'strength',value:22},{type:'overpower',value:20},{type:'damage_percent',value:25}],
     skills:[{type:'berserk',name:'巨怒',value:30,description:'HP < 30% 时攻击力提升 30%'}],
   },
   {
     id:'hellhound_boots', name:'地狱猎犬靴', emoji:'👢', slot:'boots', ilvl:42, minEnemyIndex:5,
     flavorText:'穿上此靴，战士的速度媲美地狱犬的追猎。',
-    affixes:[{type:'agility',value:14},{type:'attack_speed',value:20},{type:'life_on_kill',value:12}],
+    affixes:[{type:'dexterity',value:14},{type:'attack_speed',value:20},{type:'life_on_hit',value:12}],
     skills:[{type:'vampiric',name:'猎杀',value:15,description:'击杀时恢复 15 点生命'}],
   },
   {
     id:'vampire_ring', name:'吸血鬼戒指', emoji:'💍', slot:'ring', ilvl:45, minEnemyIndex:5,
     flavorText:'戴上此戒，战士可汲取敌人的生命维系自身。',
-    affixes:[{type:'life_leech',value:12},{type:'life_on_kill',value:15},{type:'agility',value:8}],
+    affixes:[{type:'life_leech',value:12},{type:'life_on_hit',value:15},{type:'dexterity',value:8}],
     skills:[{type:'lifesteal',name:'吸血鬼',value:10,description:'击中时吸取 10% 伤害恢复生命'}],
   },
   {
     id:'giant_chest', name:'巨人铠甲', emoji:'🧥', slot:'chest', ilvl:45, minEnemyIndex:5,
     flavorText:'只有最强壮的战士才能穿戴此甲，但同时力量也会倍增。',
-    affixes:[{type:'stamina',value:24},{type:'armour',value:35},{type:'resist_all',value:15},{type:'life_regen',value:8}],
+    affixes:[{type:'vitality',value:24},{type:'armour',value:35},{type:'resist_all',value:15},{type:'life_regen',value:8}],
   },
   {
     id:'dragon_eye_necklace', name:'龙眼项链', emoji:'📿', slot:'neck', ilvl:55, minEnemyIndex:6,
     flavorText:'龙之眼珠注入其中，佩戴者可感知一切宝物的气息。',
-    affixes:[{type:'magic_find',value:40},{type:'gold_bonus',value:35},{type:'stamina',value:15},{type:'life_on_kill',value:20}],
+    affixes:[{type:'lucky_hit',value:40},{type:'intelligence',value:35},{type:'vitality',value:15},{type:'life_on_hit',value:20}],
   },
   {
     id:'dragonblood_plate', name:'龙血甲', emoji:'🧥', slot:'chest', ilvl:55, minEnemyIndex:6,
     flavorText:'以真龙之血淬炼而成，坚若磐石，防御无双。',
-    affixes:[{type:'armour',value:55},{type:'stamina',value:30},{type:'resist_all',value:20},{type:'thorns',value:20}],
+    affixes:[{type:'armour',value:55},{type:'vitality',value:30},{type:'resist_all',value:20},{type:'thorns',value:20}],
     skills:[{type:'thorns',name:'龙鳞',value:20,description:'被击中时反弹 20 点伤害'}],
   },
   {
     id:'dragonblood_legs', name:'龙血护腿', emoji:'👖', slot:'legs', ilvl:55, minEnemyIndex:6,
     flavorText:'龙血注入护腿，坚不可摧，让穿戴者屹立不倒。',
-    affixes:[{type:'armour',value:42},{type:'stamina',value:22},{type:'resist_all',value:15},{type:'life_regen',value:10}],
+    affixes:[{type:'armour',value:42},{type:'vitality',value:22},{type:'resist_all',value:15},{type:'life_regen',value:10}],
   },
   {
     id:'touch_of_darkness', name:'黑暗之触', emoji:'🥊', slot:'gloves', ilvl:58, minEnemyIndex:6,
     flavorText:'黑暗本身化为双手，所及之处皆为虚无。',
-    affixes:[{type:'strength',value:20},{type:'deadly_strike',value:25},{type:'life_leech',value:15},{type:'attack_speed',value:20}],
+    affixes:[{type:'strength',value:20},{type:'crit_damage',value:25},{type:'life_leech',value:15},{type:'attack_speed',value:20}],
     skills:[{type:'doublestrike',name:'黑暗双击',value:30,description:'30% 概率每回合攻击两次'}],
   },
   {
     id:'flame_tongue_sword', name:'炎语之剑', emoji:'⚔️', slot:'weapon', ilvl:58, minEnemyIndex:6,
     flavorText:'剑身常燃烈焰，斩出的每一剑都灼烧敌人的灵魂。',
-    affixes:[{type:'enhanced_damage',value:35},{type:'strength',value:24},{type:'deadly_strike',value:18},{type:'life_leech',value:10}],
+    affixes:[{type:'damage_percent',value:35},{type:'strength',value:24},{type:'crit_damage',value:18},{type:'life_leech',value:10}],
     skills:[{type:'spellblade',name:'炎语',value:25,description:'攻击力额外提升 25%'}],
   },
   {
     id:'hellfire_plate', name:'炼狱铠甲', emoji:'🧥', slot:'chest', ilvl:65, minEnemyIndex:7,
     flavorText:'地狱烈火锻造，穿戴者如站在炼狱核心，烈焰护体。',
-    affixes:[{type:'armour',value:70},{type:'stamina',value:35},{type:'thorns',value:25},{type:'resist_all',value:25},{type:'life_regen',value:15}],
+    affixes:[{type:'armour',value:70},{type:'vitality',value:35},{type:'thorns',value:25},{type:'resist_all',value:25},{type:'life_regen',value:15}],
     skills:[{type:'thorns',name:'地狱之焰',value:30,description:'被击中时反弹 30 点伤害'}],
   },
   {
     id:'inferno_crown', name:'炼狱王冠', emoji:'👑', slot:'helmet', ilvl:65, minEnemyIndex:7,
     flavorText:'戴上此冠，战士的意志如炼狱之火，永不熄灭。',
-    affixes:[{type:'stamina',value:28},{type:'life_leech',value:18},{type:'magic_find',value:30},{type:'life_on_kill',value:25}],
+    affixes:[{type:'vitality',value:28},{type:'life_leech',value:18},{type:'lucky_hit',value:30},{type:'life_on_hit',value:25}],
     skills:[{type:'vampiric',name:'火龙嗜血',value:20,description:'击杀时恢复 20 点生命'}],
   },
   {
     id:'time_keeper_ring', name:'时间守护戒', emoji:'💍', slot:'ring', ilvl:65, minEnemyIndex:7,
     flavorText:'时间的主宰，万物皆在其掌控之中。',
-    affixes:[{type:'attack_speed',value:30},{type:'agility',value:20},{type:'deadly_strike',value:20},{type:'magic_find',value:25}],
+    affixes:[{type:'attack_speed',value:30},{type:'dexterity',value:20},{type:'crit_damage',value:20},{type:'lucky_hit',value:25}],
     skills:[{type:'doublestrike',name:'时之双击',value:35,description:'35% 概率每回合攻击两次'}],
   },
   {
     id:'eternity_blade', name:'永恒之刃', emoji:'⚔️', slot:'weapon', ilvl:70, minEnemyIndex:7,
     flavorText:'自混沌之初便存在的神器，凡持有者皆无敌于天下。',
-    affixes:[{type:'strength',value:35},{type:'enhanced_damage',value:50},{type:'deadly_strike',value:25},{type:'crushing_blow',value:20},{type:'life_leech',value:15}],
+    affixes:[{type:'strength',value:35},{type:'damage_percent',value:50},{type:'crit_damage',value:25},{type:'overpower',value:20},{type:'life_leech',value:15}],
     skills:[{type:'spellblade',name:'永恒剑意',value:30,description:'攻击力额外提升 30%'}],
   },
   {
     id:'eternity_shield', name:'永恒之盾', emoji:'🛡️', slot:'offhand', ilvl:70, minEnemyIndex:7,
     flavorText:'护佑者永恒不灭的意志铸成此盾，任何攻击都无法将其击碎。',
-    affixes:[{type:'armour',value:80},{type:'stamina',value:40},{type:'resist_all',value:30},{type:'thorns',value:30},{type:'life_regen',value:20}],
+    affixes:[{type:'armour',value:80},{type:'vitality',value:40},{type:'resist_all',value:30},{type:'thorns',value:30},{type:'life_regen',value:20}],
   },
 ];
 
@@ -499,7 +502,7 @@ export const ITEM_SETS: ItemSetDef[] = [
       {
         count: 3,
         description: '+80 最大生命，+20% 强化伤害，+10 生命回复',
-        affixes: [{type:'stamina',value:16},{type:'enhanced_damage',value:20},{type:'life_regen',value:10}],
+        affixes: [{type:'vitality',value:16},{type:'damage_percent',value:20},{type:'life_regen',value:10}],
       },
     ],
   },
@@ -511,17 +514,17 @@ export const ITEM_SETS: ItemSetDef[] = [
       {
         count: 2,
         description: '+20% 强化伤害',
-        affixes: [{type:'enhanced_damage',value:20}],
+        affixes: [{type:'damage_percent',value:20}],
       },
       {
         count: 3,
         description: '+15% 重击，+15% 致命一击',
-        affixes: [{type:'crushing_blow',value:15},{type:'deadly_strike',value:15}],
+        affixes: [{type:'overpower',value:15},{type:'crit_damage',value:15}],
       },
       {
         count: 4,
         description: '+40% 魔法发现，+20% 攻击速度',
-        affixes: [{type:'magic_find',value:40},{type:'attack_speed',value:20}],
+        affixes: [{type:'lucky_hit',value:40},{type:'attack_speed',value:20}],
       },
     ],
   },
@@ -533,12 +536,12 @@ export const ITEM_SETS: ItemSetDef[] = [
       {
         count: 2,
         description: '+30% 魔法发现，+25% 黄金加成',
-        affixes: [{type:'magic_find',value:30},{type:'gold_bonus',value:25}],
+        affixes: [{type:'lucky_hit',value:30},{type:'intelligence',value:25}],
       },
       {
         count: 3,
         description: '+15% 吸血，+20 击杀回血',
-        affixes: [{type:'life_leech',value:15},{type:'life_on_kill',value:20}],
+        affixes: [{type:'life_leech',value:15},{type:'life_on_hit',value:20}],
       },
       {
         count: 4,
@@ -640,17 +643,17 @@ export function getEquipmentBonuses(equipment: EquipmentState) {
         switch (a.type) {
           case 'strength':        attackBonus    += a.value; break;
           case 'armour':          defenceBonus   += a.value; break;
-          case 'stamina':         hpBonus        += a.value * 5; break;
-          case 'agility':         attackBonus    += Math.floor(a.value * 0.5); defenceBonus += Math.floor(a.value * 0.3); break;
-          case 'enhanced_damage': enhancedDamage += a.value; break;
-          case 'life_on_kill':    lifeOnKill     += a.value; break;
-          case 'crushing_blow':   crushingBlow   += a.value; break;
-          case 'magic_find':      magicFind      += a.value; break;
-          case 'life_regen':      lifeRegen      += a.value; break;
-          case 'gold_bonus':      goldBonus      += a.value; break;
+          case 'vitality':    hpBonus    += a.value * 5; break;
+          case 'dexterity':   critRating += a.value * 0.5; break;
+          case 'intelligence': enhancedDamage += Math.floor(a.value * 0.5); break;
+          case 'damage_percent': enhancedDamage += a.value; break;
+          case 'life_on_hit':    lifeOnKill     += a.value; break;
+          case 'overpower':      crushingBlow   += a.value; break;
+          case 'lucky_hit':      magicFind      += a.value; break;
+          case 'life_regen':     lifeRegen      += a.value; break;
           case 'resist_all':      resistAll      += a.value; break;
           case 'life_leech':      lifeLeech      += a.value; break;
-          case 'deadly_strike':   deadlyStrike   += a.value; break;
+          case 'crit_damage':   deadlyStrike   += a.value; break;
           case 'attack_speed':    attackSpeed    += a.value; break;
           case 'thorns':          reflectDamage  += a.value; break;
         }
@@ -714,8 +717,8 @@ export function smithedToGameItem(itemId: string): GameItem | null {
   const affix: ItemAffix[] = [];
   if (def.attackBonus > 0)  affix.push({ type: 'strength', value: def.attackBonus });
   if (def.defenceBonus > 0) affix.push({ type: 'armour',   value: def.defenceBonus });
-  if (def.hpBonus && def.hpBonus > 0) affix.push({ type: 'stamina', value: Math.round(def.hpBonus / 5) });
-  if (def.critRating && def.critRating > 0) affix.push({ type: 'agility', value: Math.round(def.critRating / 0.5) });
+  if (def.hpBonus && def.hpBonus > 0) affix.push({ type: 'vitality', value: Math.round(def.hpBonus / 5) });
+  if (def.critRating && def.critRating > 0) affix.push({ type: 'dexterity', value: Math.round(def.critRating / 0.5) });
   return {
     instanceId: `smithed_${itemId}_${Date.now()}`,
     name: def.name, slot: def.slot, emoji: def.emoji,
@@ -890,28 +893,28 @@ const SLOT_BASE_NAMES: Record<EquipmentSlot, string[]> = {
 
 // Slot-biased PREFIX pools (offensive affixes, go in item name prefix slot)
 const SLOT_PREFIX_POOL: Record<EquipmentSlot, AffixType[]> = {
-  weapon:  ['strength', 'strength', 'enhanced_damage', 'enhanced_damage', 'deadly_strike', 'attack_speed', 'life_leech', 'agility'],
-  offhand: ['strength', 'agility', 'enhanced_damage', 'deadly_strike', 'attack_speed'],
-  helmet:  ['strength', 'agility', 'stamina', 'enhanced_damage', 'deadly_strike'],
-  chest:   ['strength', 'agility', 'stamina', 'enhanced_damage'],
-  legs:    ['strength', 'agility', 'stamina'],
-  gloves:  ['strength', 'strength', 'enhanced_damage', 'deadly_strike', 'attack_speed', 'life_leech', 'crushing_blow'],
-  boots:   ['agility', 'agility', 'attack_speed', 'deadly_strike', 'enhanced_damage'],
-  neck:    ['enhanced_damage', 'life_leech', 'deadly_strike', 'attack_speed', 'agility', 'strength'],
-  ring:    ['enhanced_damage', 'life_leech', 'deadly_strike', 'attack_speed', 'agility', 'strength'],
+  weapon:  ['strength', 'strength', 'damage_percent', 'damage_percent', 'crit_damage', 'attack_speed', 'life_leech', 'dexterity'],
+  offhand: ['strength', 'dexterity', 'damage_percent', 'crit_damage', 'attack_speed'],
+  helmet:  ['strength', 'dexterity', 'vitality', 'damage_percent', 'crit_damage'],
+  chest:   ['strength', 'dexterity', 'vitality', 'damage_percent'],
+  legs:    ['strength', 'dexterity', 'vitality'],
+  gloves:  ['strength', 'strength', 'damage_percent', 'crit_damage', 'attack_speed', 'life_leech', 'overpower'],
+  boots:   ['dexterity', 'dexterity', 'attack_speed', 'crit_damage', 'damage_percent'],
+  neck:    ['damage_percent', 'life_leech', 'crit_damage', 'attack_speed', 'dexterity', 'strength'],
+  ring:    ['damage_percent', 'life_leech', 'crit_damage', 'attack_speed', 'dexterity', 'strength'],
 };
 
 // Slot-biased SUFFIX pools (defensive/utility affixes)
 const SLOT_SUFFIX_POOL: Record<EquipmentSlot, AffixType[]> = {
-  weapon:  ['life_on_kill', 'crushing_blow', 'stamina'],
-  offhand: ['armour', 'armour', 'stamina', 'resist_all', 'resist_all', 'life_regen', 'thorns'],
-  helmet:  ['armour', 'stamina', 'stamina', 'magic_find', 'life_regen', 'resist_all', 'life_on_kill'],
-  chest:   ['armour', 'armour', 'stamina', 'resist_all', 'life_regen', 'thorns'],
-  legs:    ['armour', 'armour', 'stamina', 'resist_all', 'life_regen', 'thorns'],
-  gloves:  ['armour', 'life_on_kill', 'thorns', 'stamina'],
-  boots:   ['armour', 'stamina', 'gold_bonus', 'magic_find', 'resist_all', 'life_on_kill'],
-  neck:    ['magic_find', 'life_on_kill', 'gold_bonus', 'life_regen', 'stamina', 'resist_all'],
-  ring:    ['magic_find', 'life_on_kill', 'gold_bonus', 'life_regen', 'stamina', 'resist_all'],
+  weapon:  ['life_on_hit', 'overpower', 'vitality'],
+  offhand: ['armour', 'armour', 'vitality', 'resist_all', 'resist_all', 'life_regen', 'thorns'],
+  helmet:  ['armour', 'vitality', 'vitality', 'lucky_hit', 'life_regen', 'resist_all', 'life_on_hit'],
+  chest:   ['armour', 'armour', 'vitality', 'resist_all', 'life_regen', 'thorns'],
+  legs:    ['armour', 'armour', 'vitality', 'resist_all', 'life_regen', 'thorns'],
+  gloves:  ['armour', 'life_on_hit', 'thorns', 'vitality'],
+  boots:   ['armour', 'vitality', 'intelligence', 'lucky_hit', 'resist_all', 'life_on_hit'],
+  neck:    ['lucky_hit', 'life_on_hit', 'intelligence', 'life_regen', 'vitality', 'resist_all'],
+  ring:    ['lucky_hit', 'life_on_hit', 'intelligence', 'life_regen', 'vitality', 'resist_all'],
 };
 
 // Legacy unified pool for backward compat
@@ -931,21 +934,21 @@ const RARITY_MULTIPLIER: Record<Rarity, number> = {
 };
 
 const AFFIX_SCALING: Record<AffixType, number> = {
-  strength:        1.2,
-  agility:         0.8,
-  stamina:         0.7,
-  armour:          1.3,
-  enhanced_damage: 0.6,
-  life_on_kill:    0.9,
-  crushing_blow:   0.35,
-  magic_find:      0.55,
-  life_regen:      0.5,
-  gold_bonus:      0.6,
-  resist_all:      0.45,
-  life_leech:      0.25,
-  deadly_strike:   0.3,
-  attack_speed:    0.35,
-  thorns:          0.5,
+  strength:       1.2,
+  dexterity:      0.8,
+  vitality:       0.7,
+  intelligence:   0.6,
+  armour:         1.3,
+  damage_percent: 0.6,
+  life_on_hit:    0.9,
+  overpower:      0.35,
+  lucky_hit:      0.55,
+  life_regen:     0.5,
+  resist_all:     0.45,
+  life_leech:     0.25,
+  crit_damage:    0.3,
+  attack_speed:   0.35,
+  thorns:         0.5,
 };
 
 function rand<T>(arr: T[]): T { return arr[Math.floor(Math.random() * arr.length)]; }
@@ -954,19 +957,19 @@ function randInt(min: number, max: number): number { return min + Math.floor(Mat
 function computeItemStats(affixes: ItemAffix[]) {
   const sum = (type: AffixType) => affixes.filter(a => a.type === type).reduce((s, a) => s + a.value, 0);
   return {
-    attackBonus:    sum('strength') + Math.floor(sum('agility') * 0.5),
-    defenceBonus:   sum('armour')   + Math.floor(sum('agility') * 0.3),
-    hpBonus:        sum('stamina') * 5,
-    critRating:     0,
-    enhancedDamage: sum('enhanced_damage'),
-    lifeOnKill:     sum('life_on_kill'),
-    crushingBlow:   sum('crushing_blow'),
-    magicFind:      sum('magic_find'),
+    attackBonus:    sum('strength'),
+    defenceBonus:   sum('armour'),
+    hpBonus:        sum('vitality') * 5,
+    critRating:     sum('dexterity') * 0.5,
+    enhancedDamage: sum('damage_percent') + Math.floor(sum('intelligence') * 0.5),
+    lifeOnKill:     sum('life_on_hit'),
+    crushingBlow:   sum('overpower'),
+    magicFind:      sum('lucky_hit'),
     lifeRegen:      sum('life_regen'),
-    goldBonus:      sum('gold_bonus'),
+    goldBonus:      0,
     resistAll:      sum('resist_all'),
     lifeLeech:      sum('life_leech'),
-    deadlyStrike:   sum('deadly_strike'),
+    deadlyStrike:   sum('crit_damage'),
     attackSpeed:    sum('attack_speed'),
     reflectDamage:  sum('thorns'),
   };
@@ -1058,10 +1061,10 @@ export function generateDroppedItem(enemyIndex: number, playerMagicFind = 0): Ga
   const mult = RARITY_MULTIPLIER[rarity];
 
   const ALL_TYPES: AffixType[] = [
-    'strength','agility','stamina','armour',
-    'enhanced_damage','life_on_kill','crushing_blow','magic_find',
-    'life_regen','gold_bonus','resist_all',
-    'life_leech','deadly_strike','attack_speed','thorns',
+    'strength','dexterity','vitality','armour',
+    'damage_percent','life_on_hit','overpower','lucky_hit',
+    'life_regen','intelligence','resist_all',
+    'life_leech','crit_damage','attack_speed','thorns',
   ];
 
   function pickAffixes(pool: AffixType[], count: number, used: Set<AffixType>): ItemAffix[] {
@@ -1186,8 +1189,8 @@ export function craftedToGameItem(itemId: string): GameItem | null {
   const affix: ItemAffix[] = [];
   if (def.attackBonus > 0)  affix.push({ type: 'strength', value: def.attackBonus });
   if (def.defenceBonus > 0) affix.push({ type: 'armour',   value: def.defenceBonus });
-  if (def.hpBonus && def.hpBonus > 0) affix.push({ type: 'stamina', value: Math.round(def.hpBonus / 5) });
-  if (def.critRating && def.critRating > 0) affix.push({ type: 'agility', value: Math.round(def.critRating / 0.5) });
+  if (def.hpBonus && def.hpBonus > 0) affix.push({ type: 'vitality', value: Math.round(def.hpBonus / 5) });
+  if (def.critRating && def.critRating > 0) affix.push({ type: 'dexterity', value: Math.round(def.critRating / 0.5) });
   const rarity: Rarity = 'uncommon';
   return {
     instanceId: `crafted_${itemId}_${Date.now()}`,

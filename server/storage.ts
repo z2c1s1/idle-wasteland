@@ -238,9 +238,9 @@ export class DatabaseStorage implements IStorage {
         const strikes = (doubleStrikePct > 0 && Math.random() * 100 < doubleStrikePct) ? 2 : 1;
         let totalDmgToEnemy = effAtk * strikes * (deadlyStrikeHit ? 2 : 1) + poisonDmg;
 
-        // Crushing Blow (Diablo: % chance to deal 25% of enemy current HP)
+        // Overpower (D4: % chance to deal bonus damage equal to 1% of player max HP)
         if (crushingBlow > 0 && Math.random() * 100 < crushingBlow) {
-          totalDmgToEnemy += Math.max(1, Math.floor(enemyHp * 0.25));
+          totalDmgToEnemy += Math.max(1, Math.floor(playerMaxHp * 0.01));
         }
 
         enemyHp -= totalDmgToEnemy;
@@ -251,6 +251,14 @@ export class DatabaseStorage implements IStorage {
           playerHp = Math.min(playerMaxHp, playerHp + Math.floor(totalDmgToEnemy * lifeLeech / 100));
         }
 
+        // Life on Hit — D4: triggers on every hit (not just kills)
+        if (lifeOnKill > 0) playerHp = Math.min(playerMaxHp, playerHp + lifeOnKill);
+
+        // Lucky Hit — D4: % chance on hit to recover a small amount of life
+        if (magicFind > 0 && Math.random() * 100 < magicFind) {
+          playerHp = Math.min(playerMaxHp, playerHp + Math.max(1, Math.floor(playerMaxHp * 0.02)));
+        }
+
         // Lifesteal (skill-based)
         if (lifeStealPct > 0) {
           playerHp = Math.min(playerMaxHp, playerHp + Math.floor(totalDmgToEnemy * lifeStealPct / 100));
@@ -258,8 +266,7 @@ export class DatabaseStorage implements IStorage {
 
         if (enemyHp <= 0) {
           const rawGold = enemy.drops.gold[0];
-          const bonusGold = goldBonus > 0 ? Math.floor(rawGold * goldBonus / 100) : 0;
-          goldGained        += rawGold + bonusGold;
+          goldGained        += rawGold;
           bonesGained       += enemy.drops.bones ?? 0;
           dragonBonesGained += enemy.drops.dragonBones ?? 0;
           attackXpGained    += enemy.xp;
@@ -270,8 +277,6 @@ export class DatabaseStorage implements IStorage {
             const gk = gemPool.pool[Math.floor(Math.random() * gemPool.pool.length)];
             gemsGained[gk] = (gemsGained[gk] ?? 0) + 1;
           }
-          // Life on Kill (Diablo)
-          if (lifeOnKill > 0) playerHp = Math.min(playerMaxHp, playerHp + lifeOnKill);
           // Vampiric on kill
           if (vampiricHp > 0) playerHp = Math.min(playerMaxHp, playerHp + vampiricHp);
           enemyHp = enemy.maxHp;

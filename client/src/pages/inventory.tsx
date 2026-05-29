@@ -22,21 +22,22 @@ function AffixRow({ affix, tint }: { affix: { type: string; value: number }; tin
   const labelColor = tint === 'blue' ? 'text-blue-300' : tint === 'gold' ? 'text-yellow-300' : baseColor;
   const label = AFFIX_LABEL[affix.type as keyof typeof AFFIX_LABEL] ?? affix.type;
   const hints: Record<string, string> = {
-    strength: `+${affix.value} 攻击`,
-    armour: `+${affix.value} 防御`,
-    stamina: `+${affix.value * 5} 生命`,
-    agility: `+${Math.floor(affix.value * 0.5)} 攻击 +${Math.floor(affix.value * 0.3)} 防御`,
-    enhanced_damage: `所有伤害 +${affix.value}%`,
-    life_on_kill: `击杀恢复 ${affix.value} 生命`,
-    crushing_blow: `${affix.value}% 概率造成敌方当前 25% 生命伤害`,
-    magic_find: `掉落品质 +${affix.value}%`,
-    life_regen: `每回合恢复 ${affix.value} 生命`,
-    gold_bonus: `金币获取 +${affix.value}%`,
-    resist_all: `所有伤害减免 ${affix.value} 点`,
-    life_leech: `造成伤害的 ${affix.value}% 恢复生命`,
-    deadly_strike: `${affix.value}% 概率本次攻击伤害翻倍`,
-    attack_speed: `攻击伤害 +${affix.value}%，模拟快速出击`,
-    thorns: `被击时对攻击者反弹 ${affix.value} 伤害`,
+    strength:       `+${affix.value} 攻击力`,
+    armour:         `+${affix.value} 防御`,
+    dexterity:      `+${(affix.value * 0.5).toFixed(1)}% 暴击率`,
+    vitality:       `+${affix.value * 5} 最大生命`,
+    intelligence:   `所有技能伤害 +${Math.floor(affix.value * 0.5)}%`,
+    damage_percent: `所有伤害 +${affix.value}%`,
+    life_on_hit:    `每次命中恢复 ${affix.value} 生命`,
+    overpower:      `${affix.value}% 概率触发强击（额外造成最大 HP 1% 伤害）`,
+    lucky_hit:      `${affix.value}% 概率幸运命中（触发时恢复生命）`,
+    life_regen:     `每回合恢复 ${affix.value} 生命`,
+    resist_all:     `所有伤害减免 ${affix.value} 点`,
+    life_leech:     `造成伤害的 ${affix.value}% 恢复生命`,
+    crit_damage:    `暴击伤害 +${affix.value}%`,
+    attack_speed:   `攻击间隔缩短 ${affix.value}%`,
+    thorns:         `被击时对攻击者反弹 ${affix.value} 伤害`,
+    skill_rank:     `所有技能等级 +${affix.value}（提升 ${affix.value * 5}% 战斗效能）`,
   };
   const hint = hints[affix.type];
   return (
@@ -141,14 +142,13 @@ function ItemCard({ item, onEquip, onDestroy, onUnequip, isEquipped }: {
         {item.hpBonus        > 0 && <span className="text-xs text-green-300">❤ +{item.hpBonus} 生命</span>}
         {item.critRating     > 0 && <span className="text-xs text-yellow-300">✦ +{item.critRating.toFixed(1)}% 暴击</span>}
         {(item.enhancedDamage ?? 0) > 0 && <span className="text-xs text-orange-300">🔥 +{item.enhancedDamage}% 伤害</span>}
-        {(item.lifeOnKill ?? 0)     > 0 && <span className="text-xs text-pink-300">💗 +{item.lifeOnKill} 击杀回复</span>}
-        {(item.crushingBlow ?? 0)   > 0 && <span className="text-xs text-red-400">💥 {item.crushingBlow}% 粉碎打击</span>}
-        {(item.magicFind ?? 0)      > 0 && <span className="text-xs text-purple-300">✨ +{item.magicFind}% 魔法发现</span>}
-        {(item.lifeRegen ?? 0)      > 0 && <span className="text-xs text-emerald-300">🌿 +{item.lifeRegen} 回复/回合</span>}
-        {(item.goldBonus ?? 0)      > 0 && <span className="text-xs text-yellow-400">💰 +{item.goldBonus}% 黄金发现</span>}
+        {(item.lifeOnKill ?? 0)     > 0 && <span className="text-xs text-pink-300">💗 +{item.lifeOnKill} 命中回血</span>}
+        {(item.crushingBlow ?? 0)   > 0 && <span className="text-xs text-red-500">💥 {item.crushingBlow}% 强击</span>}
+        {(item.magicFind ?? 0)      > 0 && <span className="text-xs text-purple-300">🍀 {item.magicFind}% 幸运命中</span>}
+        {(item.lifeRegen ?? 0)      > 0 && <span className="text-xs text-emerald-300">🌿 +{item.lifeRegen} 生命回复/回合</span>}
         {(item.resistAll ?? 0)      > 0 && <span className="text-xs text-cyan-300">🔵 -{item.resistAll} 受伤</span>}
         {(item.lifeLeech ?? 0)      > 0 && <span className="text-xs text-rose-300">🩸 {item.lifeLeech}% 吸血</span>}
-        {(item.deadlyStrike ?? 0)   > 0 && <span className="text-xs text-amber-300">⚡ {item.deadlyStrike}% 致命一击</span>}
+        {(item.deadlyStrike ?? 0)   > 0 && <span className="text-xs text-amber-300">⚡ {item.deadlyStrike}% 暴击伤害</span>}
         {(item.attackSpeed ?? 0)    > 0 && <span className="text-xs text-sky-300">⚡ +{item.attackSpeed}% 攻速</span>}
         {(item.reflectDamage ?? 0)  > 0 && <span className="text-xs text-lime-300">🌵 {item.reflectDamage} 反伤</span>}
       </div>
