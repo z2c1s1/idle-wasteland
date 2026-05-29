@@ -4,7 +4,7 @@ import {
   ALL_CRAFTABLE_ITEMS, ALL_SLOTS, SLOT_LABEL, SLOT_EMOJI,
   RARITY_COLOR, RARITY_BORDER, RARITY_BG, RARITY_LABEL,
   AFFIX_LABEL, AFFIX_COLOR, GEM_EMOJI, SKILL_EMOJI, SKILL_COLOR,
-  ITEM_SETS, UNIQUE_ITEMS,
+  ITEM_SETS, UNIQUE_ITEMS, getEquipmentBonuses,
   getGemName, getGemBgClass,
   type GameItem, type EquipmentSlot, type GemType,
 } from "@shared/game-data";
@@ -318,6 +318,8 @@ export default function Inventory() {
   const lootBag    = parseLootBag(gs.lootBag);
 
   const equipStats = getEquipmentStats(gs);
+  const eqBonuses  = getEquipmentBonuses(equipment);
+  const activeSets = eqBonuses.activeSets ?? {};
 
   function handleEquipDropped(instanceId: string) {
     equipItem.mutate({ instanceId }, {
@@ -396,6 +398,43 @@ export default function Inventory() {
               />
             ))}
           </div>
+
+          {/* Set progress panel */}
+          {ITEM_SETS.filter(s => {
+            const count = activeSets[s.id] ?? 0;
+            // Show any set where player has at least 1 piece equipped
+            return count > 0;
+          }).map(set => {
+            const count = activeSets[set.id] ?? 0;
+            const total = set.pieces.length;
+            return (
+              <div key={set.id} className="mt-2 rounded-lg border border-teal-500/30 bg-teal-500/5 p-3 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-teal-300">{set.name}</span>
+                  <span className="text-[10px] text-teal-400/70 bg-teal-500/10 px-1.5 py-0.5 rounded">
+                    {count}/{total} 件已穿戴
+                  </span>
+                </div>
+                <div className="w-full h-1 bg-muted/30 rounded-full overflow-hidden">
+                  <div className="h-full bg-teal-400 rounded-full transition-all" style={{ width: `${(count / total) * 100}%` }} />
+                </div>
+                <div className="space-y-0.5">
+                  {set.bonuses.map((bonus, i) => {
+                    const active = count >= bonus.count;
+                    return (
+                      <div key={i} className={`text-[10px] flex items-center gap-1.5 ${active ? 'text-teal-300' : 'text-muted-foreground/40'}`}>
+                        <span className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center text-[8px] flex-shrink-0 ${active ? 'border-teal-400 bg-teal-400/20 text-teal-300' : 'border-border/40'}`}>
+                          {active ? '✓' : bonus.count}
+                        </span>
+                        <span className="font-medium">{bonus.count}件套：</span>
+                        <span>{bonus.affixes.map(a => `+${a.value} ${AFFIX_LABEL[a.type] ?? a.type}`).join('，')}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         {/* Loot Bag — dropped items */}

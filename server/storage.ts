@@ -164,22 +164,19 @@ export class DatabaseStorage implements IStorage {
       const enemy = ENEMIES[enemyIndex];
       if (!enemy) return state;
 
-      const COMBAT_SPEED = 3;
-      const ticks = Math.floor(elapsedSeconds / COMBAT_SPEED);
-      if (ticks <= 0) return state;
-
-      const playerMaxHp = getPlayerMaxHp(state);
-      let playerHp = state.playerHp < 0 ? playerMaxHp : state.playerHp;
-      let enemyHp  = state.enemyHp  < 0 ? enemy.maxHp  : state.enemyHp;
-
-      const playerAtk = getPlayerAttack(state);
-      const playerDef = getPlayerDefence(state);
-
-      // Collect all equipped skills
+      // Parse equipment early so attack_speed can shorten the combat cycle
       const equipment = parseEquipment(state.equipment);
       const allSkills: ItemSkill[] = Object.values(equipment).flatMap(item => item?.skills ?? []);
       const getSkillVal = (type: ItemSkill['type']) =>
         allSkills.filter(s => s.type === type).reduce((sum, s) => sum + s.value, 0);
+
+      // Diablo-style equipment stats (all 15 affix types)
+      const {
+        attackBonus: eqAttackBonus,
+        enhancedDamage, lifeOnKill, crushingBlow, magicFind,
+        lifeRegen, goldBonus, resistAll,
+        lifeLeech, deadlyStrike, attackSpeed, reflectDamage,
+      } = getEquipmentBonuses(equipment);
 
       const spellbladePct  = getSkillVal('spellblade');
       const poisonDmg      = getSkillVal('poison');
@@ -190,13 +187,19 @@ export class DatabaseStorage implements IStorage {
       const doubleStrikePct= getSkillVal('doublestrike');
       const dodgePct       = getSkillVal('dodge');
 
-      // Diablo-style equipment stats (all 15 affix types)
-      const {
-        attackBonus: eqAttackBonus,
-        enhancedDamage, lifeOnKill, crushingBlow, magicFind,
-        lifeRegen, goldBonus, resistAll,
-        lifeLeech, deadlyStrike, attackSpeed, reflectDamage,
-      } = getEquipmentBonuses(equipment);
+      // Attack Speed: reduces combat cycle time (true interval reduction, not DPS multiplier)
+      // Each % of attack speed shrinks the 3-second round by 0.5%, capped at 50% reduction (1.5s min)
+      const BASE_COMBAT_SPEED = 3;
+      const effectiveCombatSpeed = Math.max(1.5, BASE_COMBAT_SPEED * (1 - attackSpeed / 200));
+      const ticks = Math.floor(elapsedSeconds / effectiveCombatSpeed);
+      if (ticks <= 0) return state;
+
+      const playerMaxHp = getPlayerMaxHp(state);
+      let playerHp = state.playerHp < 0 ? playerMaxHp : state.playerHp;
+      let enemyHp  = state.enemyHp  < 0 ? enemy.maxHp  : state.enemyHp;
+
+      const playerAtk = getPlayerAttack(state);
+      const playerDef = getPlayerDefence(state);
 
       // Weapon damage: per-hit roll from equipped weapon's min/max range (Diablo-style)
       const weaponItem = equipment.weapon ?? null;
@@ -228,8 +231,7 @@ export class DatabaseStorage implements IStorage {
         if (spellbladePct > 0)  effAtk = Math.floor(effAtk * (1 + spellbladePct / 100));
         if (enhancedDamage > 0) effAtk = Math.floor(effAtk * (1 + enhancedDamage / 100));
         if (berserkPct > 0 && playerHp < playerMaxHp * 0.3) effAtk = Math.floor(effAtk * (1 + berserkPct / 100));
-        // Attack Speed: % bonus damage per tick (simulates hitting faster in 3-sec intervals)
-        if (attackSpeed > 0) effAtk = Math.floor(effAtk * (1 + attackSpeed / 100));
+        // (Attack speed is handled via cycle-time reduction above, not a per-tick multiplier)
 
         // Deadly Strike (Diablo: % chance to double all damage for this strike)
         const deadlyStrikeHit = deadlyStrike > 0 && Math.random() * 100 < deadlyStrike;
@@ -296,7 +298,7 @@ export class DatabaseStorage implements IStorage {
         }
       }
 
-      const usedTime = playerDied ? elapsedSeconds : ticks * COMBAT_SPEED;
+      const usedTime = playerDied ? elapsedSeconds : ticks * effectiveCombatSpeed;
       const existingLoot = parseLootBag(state.lootBag);
       const combinedLoot = [...existingLoot, ...newDrops].slice(-50);
       const existingGems = parseGems(state.gems);

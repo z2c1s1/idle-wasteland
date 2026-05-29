@@ -1007,7 +1007,11 @@ export function generateDroppedItem(enemyIndex: number, playerMagicFind = 0): Ga
     const affixes = def.affixes;
     const setId = UNIQUE_SET_MAP[def.id];
     const stats = computeItemStats(affixes);
-    const base = SLOT_BASES[def.slot][SLOT_BASES[def.slot].length - 1]; // highest base for visual
+    // Pick ilvl-eligible base for this unique (prevents low-ilvl uniques with endgame weapon ranges)
+    const eligibleForUnique = SLOT_BASES[def.slot].filter(b => b.reqIlvl <= def.ilvl);
+    const base = eligibleForUnique.length
+      ? eligibleForUnique[eligibleForUnique.length - 1]
+      : SLOT_BASES[def.slot][0];
     return {
       instanceId: `unique_${def.id}_${Date.now()}`,
       name: def.name,
