@@ -93,3 +93,21 @@ export function useSocketGem() {
     onSuccess: (state) => queryClient.setQueryData(QUERY_KEY, state),
   });
 }
+
+export function useEnterDungeon() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (dungeonIndex: number) => {
+      const res = await fetch(api.game.enterDungeon.path, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dungeonIndex }), credentials: "include",
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ message: "进入副本失败" }));
+        throw new Error(err.message);
+      }
+      return api.game.enterDungeon.responses[200].parse(await res.json());
+    },
+    onSuccess: (state) => queryClient.setQueryData(QUERY_KEY, state),
+  });
+}

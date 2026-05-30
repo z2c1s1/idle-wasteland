@@ -478,6 +478,80 @@ export const UNIQUE_ITEMS: UniqueItemDef[] = [
     flavorText:'护佑者永恒不灭的意志铸成此盾，任何攻击都无法将其击碎。',
     affixes:[{type:'armour',value:80},{type:'vitality',value:40},{type:'resist_all',value:30},{type:'thorns',value:30},{type:'life_regen',value:20}],
   },
+  // ── Dungeon-exclusive unique items ─────────────────────────────────────────
+  // Dungeon 1: 腐化矿穴
+  {
+    id:'d_rotten_core', name:'腐核护甲', emoji:'🪨', slot:'chest', ilvl:15, minEnemyIndex:99,
+    flavorText:'深渊矿脉中提炼的腐化结晶铸造而成，穿戴者散发出令敌人恐惧的腐臭。',
+    affixes:[{type:'armour',value:18},{type:'vitality',value:10},{type:'life_regen',value:4},{type:'resist_all',value:6}],
+  },
+  {
+    id:'d_corrosion_pick', name:'腐蚀鹤嘴锄', emoji:'⛏️', slot:'weapon', ilvl:13, minEnemyIndex:99,
+    flavorText:'每次击中都会在敌人体内注入腐化毒素，令其溃烂至死。',
+    affixes:[{type:'strength',value:10},{type:'damage_percent',value:12}],
+    skills:[{type:'poison',name:'腐化毒液',value:6,description:'每次攻击追加 6 点腐化伤害'}],
+  },
+  // Dungeon 2: 幽影迷宫
+  {
+    id:'d_specter_cloak', name:'幽灵披风', emoji:'🌑', slot:'chest', ilvl:25, minEnemyIndex:99,
+    flavorText:'由亡灵的幽光编织而成，穿戴者如同幽灵般难以捕捉。',
+    affixes:[{type:'armour',value:22},{type:'dexterity',value:14},{type:'life_leech',value:6}],
+    skills:[{type:'dodge',name:'幻影步',value:22,description:'22% 概率闪避所有伤害'}],
+  },
+  {
+    id:'d_shadow_sigil', name:'暗影符印', emoji:'🔮', slot:'ring', ilvl:23, minEnemyIndex:99,
+    flavorText:'刻有古老幽影印记的戒指，令持有者行动如鬼魅迅疾。',
+    affixes:[{type:'lucky_hit',value:30},{type:'dexterity',value:12},{type:'attack_speed',value:12}],
+  },
+  // Dungeon 3: 裂焰神殿
+  {
+    id:'d_flame_crown', name:'裂焰王冠', emoji:'👑', slot:'helmet', ilvl:40, minEnemyIndex:99,
+    flavorText:'神殿祭司用千年焰火淬炼而成，冠上的烈焰永不熄灭。',
+    affixes:[{type:'vitality',value:20},{type:'damage_percent',value:22},{type:'crit_damage',value:18}],
+    skills:[{type:'poison',name:'裂焰灼烧',value:10,description:'每次攻击追加 10 点灼烧伤害'}],
+  },
+  {
+    id:'d_ember_ring', name:'余烬戒环', emoji:'💍', slot:'ring', ilvl:38, minEnemyIndex:99,
+    flavorText:'神殿深处永燃的余烬凝结成戒，赋予佩戴者炽热的战斗意志。',
+    affixes:[{type:'dexterity',value:18},{type:'attack_speed',value:18},{type:'intelligence',value:20}],
+    skills:[{type:'spellblade',name:'裂焰剑气',value:18,description:'攻击力额外提升 18%'}],
+  },
+  // Dungeon 4: 虚空要塞
+  {
+    id:'d_void_blade', name:'虚空裂剑', emoji:'🗡️', slot:'weapon', ilvl:55, minEnemyIndex:99,
+    flavorText:'由虚空之力锻造，斩击时会撕裂空间本身，造成无法抵御的伤害。',
+    affixes:[{type:'strength',value:28},{type:'damage_percent',value:35},{type:'crit_damage',value:22},{type:'overpower',value:18}],
+    skills:[{type:'doublestrike',name:'虚空双裂',value:30,description:'30% 概率每回合攻击两次'}],
+  },
+  {
+    id:'d_nullity_plate', name:'虚无重甲', emoji:'🛡️', slot:'chest', ilvl:58, minEnemyIndex:99,
+    flavorText:'以虚空金属锻造，能够吸收来自任何维度的攻击。',
+    affixes:[{type:'armour',value:55},{type:'vitality',value:30},{type:'resist_all',value:18},{type:'life_regen',value:12}],
+  },
+  // Dungeon 5: 龙冢秘境
+  {
+    id:'d_bone_dragon_shield', name:'龙骸圣盾', emoji:'🦴', slot:'offhand', ilvl:68, minEnemyIndex:99,
+    flavorText:'以古龙骸骨铸成，每次受击都会让攻击者付出痛苦的代价。',
+    affixes:[{type:'armour',value:65},{type:'resist_all',value:22},{type:'thorns',value:25}],
+    skills:[{type:'vampiric',name:'骨血汲取',value:20,description:'击杀时恢复 20 点生命'}],
+  },
+  {
+    id:'d_dracolich_mantle', name:'龙灵战甲', emoji:'🧥', slot:'chest', ilvl:72, minEnemyIndex:99,
+    flavorText:'龙冢中沉睡的龙灵将自身力量灌注其中，赋予佩戴者近乎不死的生命力。',
+    affixes:[{type:'vitality',value:40},{type:'armour',value:50},{type:'life_leech',value:14},{type:'crit_damage',value:20}],
+  },
+  // Dungeon 6: 混沌熔炉
+  {
+    id:'d_chaos_edge', name:'混沌熔刃', emoji:'⚔️', slot:'weapon', ilvl:85, minEnemyIndex:99,
+    flavorText:'混沌熔炉中诞生的终极之刃，集所有破坏力量于一身，斩断一切存在。',
+    affixes:[{type:'strength',value:45},{type:'damage_percent',value:55},{type:'crit_damage',value:30},{type:'overpower',value:25},{type:'attack_speed',value:20}],
+    skills:[{type:'spellblade',name:'混沌剑意',value:35,description:'攻击力额外提升 35%'},{type:'doublestrike',name:'混沌双裂',value:30,description:'30% 概率每回合攻击两次'}],
+  },
+  {
+    id:'d_primal_forge_armor', name:'原始熔炉甲', emoji:'🔱', slot:'chest', ilvl:88, minEnemyIndex:99,
+    flavorText:'混沌熔炉最终产物，集混沌能量与宇宙秩序于一身，堪称神器之首。',
+    affixes:[{type:'armour',value:90},{type:'vitality',value:55},{type:'resist_all',value:35},{type:'life_regen',value:25},{type:'life_leech',value:18}],
+  },
 ];
 
 // ─── Item sets (Diablo-style) ───────────────────────────────────────────────────
@@ -1137,6 +1211,113 @@ export const ENEMIES: Enemy[] = [
   { id: 'dragon',     name: '绿龙',   emoji: '🐲', maxHp: 850,  attack: 65, defence: 30, xp: 720,  drops: { gold: [70, 140], dragonBones: 1 }, reqCombatLevel: 65 },
   { id: 'fire_dragon',name: '火龙',   emoji: '🔥', maxHp: 1400, attack: 95, defence: 50, xp: 1400, drops: { gold: [140, 280], dragonBones: 2 }, reqCombatLevel: 80 },
 ];
+
+// ─── Dungeon system ────────────────────────────────────────────────────────────
+export interface DungeonBoss {
+  name: string;
+  emoji: string;
+  maxHp: number;
+  attack: number;
+  defence: number;
+  xp: number;
+}
+
+export interface Dungeon {
+  id: string;
+  name: string;
+  emoji: string;
+  theme: string;
+  reqCombatLevel: number;
+  cost: { gold: number; bones?: number; dragonBones?: number };
+  boss: DungeonBoss;
+  uniqueDropIds: string[];
+  dropChance: number; // 0-1 chance each unique drops on boss kill
+}
+
+export const DUNGEONS: Dungeon[] = [
+  {
+    id: 'corrupted_mine',
+    name: '腐化矿穴',
+    emoji: '⛏️',
+    theme: '地下矿洞中滋生的腐化怪物统治着这片黑暗领域，矿工们再也无法入内。',
+    reqCombatLevel: 10,
+    cost: { gold: 100 },
+    boss: { name: '矿坑蠕变怪', emoji: '🦠', maxHp: 500, attack: 14, defence: 4, xp: 200 },
+    uniqueDropIds: ['d_rotten_core', 'd_corrosion_pick'],
+    dropChance: 0.6,
+  },
+  {
+    id: 'shadow_maze',
+    name: '幽影迷宫',
+    emoji: '🌑',
+    theme: '无尽的黑暗走廊中，幽魂在迷宫深处永无止境地游荡，等待活人进入。',
+    reqCombatLevel: 20,
+    cost: { gold: 400, bones: 10 },
+    boss: { name: '幽魂领主', emoji: '👻', maxHp: 1100, attack: 26, defence: 9, xp: 450 },
+    uniqueDropIds: ['d_specter_cloak', 'd_shadow_sigil'],
+    dropChance: 0.55,
+  },
+  {
+    id: 'flame_sanctum',
+    name: '裂焰神殿',
+    emoji: '🔥',
+    theme: '炽热的熔岩在神殿中流淌，祭司们用永恒的焰火维系着古老神明的意志。',
+    reqCombatLevel: 35,
+    cost: { gold: 1200, bones: 35 },
+    boss: { name: '炎核祭司', emoji: '🧙', maxHp: 2400, attack: 44, defence: 17, xp: 900 },
+    uniqueDropIds: ['d_flame_crown', 'd_ember_ring'],
+    dropChance: 0.5,
+  },
+  {
+    id: 'void_fortress',
+    name: '虚空要塞',
+    emoji: '🌌',
+    theme: '漂浮于虚空之中的要塞，守卫着通往另一个维度的裂口，一切逻辑在此失效。',
+    reqCombatLevel: 50,
+    cost: { gold: 4000, bones: 80 },
+    boss: { name: '虚空铁卫', emoji: '🤖', maxHp: 4500, attack: 68, defence: 28, xp: 1800 },
+    uniqueDropIds: ['d_void_blade', 'd_nullity_plate'],
+    dropChance: 0.45,
+  },
+  {
+    id: 'dragon_tomb',
+    name: '龙冢秘境',
+    emoji: '🐲',
+    theme: '远古龙族的最后安息之地，亡龙的灵魂守护着传说中的神器，非强者莫入。',
+    reqCombatLevel: 65,
+    cost: { gold: 10000, dragonBones: 8 },
+    boss: { name: '古龙亡灵', emoji: '💀', maxHp: 8000, attack: 100, defence: 44, xp: 3500 },
+    uniqueDropIds: ['d_bone_dragon_shield', 'd_dracolich_mantle'],
+    dropChance: 0.4,
+  },
+  {
+    id: 'chaos_forge',
+    name: '混沌熔炉',
+    emoji: '⚗️',
+    theme: '宇宙尽头的熔炉，混沌能量在此汇聚，锻造出超越神器的传说装备，唯有最强者方能通关。',
+    reqCombatLevel: 80,
+    cost: { gold: 25000, dragonBones: 20 },
+    boss: { name: '混沌熔魂', emoji: '😈', maxHp: 16000, attack: 160, defence: 70, xp: 8000 },
+    uniqueDropIds: ['d_chaos_edge', 'd_primal_forge_armor'],
+    dropChance: 0.35,
+  },
+];
+
+// Build dungeon unique item lookup: uniqueId → dungeonIndex
+export const DUNGEON_UNIQUE_MAP: Record<string, number> = {};
+for (let i = 0; i < DUNGEONS.length; i++) {
+  for (const uid of DUNGEONS[i].uniqueDropIds) DUNGEON_UNIQUE_MAP[uid] = i;
+}
+
+export function generateDungeonDrop(dungeonIndex: number): GameItem | null {
+  const dungeon = DUNGEONS[dungeonIndex];
+  if (!dungeon) return null;
+  if (Math.random() > dungeon.dropChance) return null;
+  const id = dungeon.uniqueDropIds[Math.floor(Math.random() * dungeon.uniqueDropIds.length)];
+  const def = UNIQUE_ITEMS.find(u => u.id === id);
+  if (!def) return null;
+  return buildUniqueGameItem(def);
+}
 
 // ─── Smithing recipes ──────────────────────────────────────────────────────────
 export interface SmithingRecipe {

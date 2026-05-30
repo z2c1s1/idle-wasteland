@@ -1,7 +1,7 @@
 import { db } from "./db";
 import { gameStates, type GameState } from "@shared/schema";
 import {
-  ENEMIES, SMITHING_RECIPES, LEATHERWORKING_RECIPES, JEWELCRAFTING_RECIPES,
+  ENEMIES, DUNGEONS, generateDungeonDrop, SMITHING_RECIPES, LEATHERWORKING_RECIPES, JEWELCRAFTING_RECIPES,
   getEquipmentBonuses, generateDroppedItem, getDropChance, craftedToGameItem,
   MINING_GEM_POOLS, COMBAT_GEM_POOLS, getGemBonus,
   type GameItem, type EquipmentState, type EquipmentSlot, type CraftingRecipe, type ItemSkill,
@@ -136,6 +136,7 @@ async function handleProductionRecipe(
 export interface IStorage {
   getGameState(): Promise<GameState>;
   updateAction(action: string): Promise<GameState>;
+  enterDungeon(dungeonIndex: number): Promise<GameState>;
   equipItem(instanceId?: string, itemId?: string): Promise<GameState>;
   unequipItem(slot: string): Promise<GameState>;
   destroyLoot(instanceId: string): Promise<GameState>;
@@ -326,6 +327,131 @@ export class DatabaseStorage implements IStorage {
       return updated;
     }
 
+    // ── Dungeon combat ────────────────────────────────────────────────────────
+    if (action.startsWith("dungeon_")) {
+      const dungeonIndex = parseInt(action.split("_")[1]);
+      const dungeon = DUNGEONS[dungeonIndex];
+      if (!dungeon) return state;
+
+      const equipment = parseEquipment(state.equipment);
+      const allSkills: ItemSkill[] = Object.values(equipment).flatMap(item => item?.skills ?? []);
+      const getSkillVal = (type: ItemSkill['type']) =>
+        allSkills.filter(s => s.type === type).reduce((sum, s) => sum + s.value, 0);
+
+      const {
+        attackBonus: eqAttackBonus,
+        enhancedDamage, lifeOnKill, crushingBlow, magicFind,
+        lifeRegen, resistAll, lifeLeech, deadlyStrike, attackSpeed, reflectDamage,
+      } = getEquipmentBonuses(equipment);
+
+      const spellbladePct   = getSkillVal('spellblade');
+      const poisonDmg       = getSkillVal('poison');
+      const thornsDmg       = getSkillVal('thorns');
+      const lifeStealPct    = getSkillVal('lifesteal');
+      const vampiricHp      = getSkillVal('vampiric');
+      const berserkPct      = getSkillVal('berserk');
+      const doubleStrikePct = getSkillVal('doublestrike');
+      const dodgePct        = getSkillVal('dodge');
+
+      const BASE_COMBAT_SPEED = 3;
+      const effectiveCombatSpeed = Math.max(1.5, BASE_COMBAT_SPEED * (1 - attackSpeed / 200));
+      const ticks = Math.floor(elapsedSeconds / effectiveCombatSpeed);
+      if (ticks <= 0) return state;
+
+      const playerMaxHp = getPlayerMaxHp(state);
+      let playerHp = state.playerHp < 0 ? playerMaxHp : state.playerHp;
+      let enemyHp  = state.enemyHp  < 0 ? dungeon.boss.maxHp : state.enemyHp;
+
+      const boss = dungeon.boss;
+      const weaponItem = equipment.weapon ?? null;
+      const hasWeaponRange = weaponItem && (weaponItem.maxDamage ?? 0) > 0;
+      const levelBaseDmg = Math.max(1, getPlayerAttack(state) - eqAttackBonus);
+
+      let goldGained = 0, attackXpGained = 0, defenceXpGained = 0, hitpointsXpGained = 0;
+      let playerDied = false;
+      let bossKilled = false;
+      const newDrops: GameItem[] = [];
+
+      for (let i = 0; i < ticks; i++) {
+        if (lifeRegen > 0) playerHp = Math.min(playerMaxHp, playerHp + lifeRegen);
+
+        const weaponRoll = hasWeaponRange && weaponItem
+          ? (weaponItem.minDamage ?? 0) + Math.floor(Math.random() * ((weaponItem.maxDamage ?? 0) - (weaponItem.minDamage ?? 0) + 1))
+          : levelBaseDmg;
+        const perHitBase = Math.max(1, weaponRoll + eqAttackBonus);
+
+        let effAtk = Math.max(1, perHitBase - boss.defence);
+        if (spellbladePct  > 0) effAtk = Math.floor(effAtk * (1 + spellbladePct / 100));
+        if (enhancedDamage > 0) effAtk = Math.floor(effAtk * (1 + enhancedDamage / 100));
+        if (berserkPct > 0 && playerHp < playerMaxHp * 0.3) effAtk = Math.floor(effAtk * (1 + berserkPct / 100));
+
+        const deadlyStrikeHit = deadlyStrike > 0 && Math.random() * 100 < deadlyStrike;
+        const strikes = (doubleStrikePct > 0 && Math.random() * 100 < doubleStrikePct) ? 2 : 1;
+        let totalDmgToEnemy = effAtk * strikes * (deadlyStrikeHit ? 2 : 1) + poisonDmg;
+
+        if (crushingBlow > 0 && Math.random() * 100 < crushingBlow) {
+          totalDmgToEnemy += Math.max(1, Math.floor(playerMaxHp * 0.01));
+        }
+
+        enemyHp -= totalDmgToEnemy;
+        attackXpGained += 4 * strikes;
+
+        if (lifeLeech > 0)    playerHp = Math.min(playerMaxHp, playerHp + Math.floor(totalDmgToEnemy * lifeLeech / 100));
+        if (lifeOnKill > 0)   playerHp = Math.min(playerMaxHp, playerHp + lifeOnKill);
+        if (magicFind > 0 && Math.random() * 100 < magicFind)
+          playerHp = Math.min(playerMaxHp, playerHp + Math.max(1, Math.floor(playerMaxHp * 0.02)));
+        if (lifeStealPct > 0) playerHp = Math.min(playerMaxHp, playerHp + Math.floor(totalDmgToEnemy * lifeStealPct / 100));
+
+        if (enemyHp <= 0) {
+          // Boss killed — drop rewards and end dungeon
+          goldGained        += boss.xp * 2;
+          attackXpGained    += boss.xp;
+          hitpointsXpGained += Math.floor(boss.xp / 3);
+          const drop = generateDungeonDrop(dungeonIndex);
+          if (drop) newDrops.push(drop);
+          if (vampiricHp > 0) playerHp = Math.min(playerMaxHp, playerHp + vampiricHp);
+          bossKilled = true;
+          break;
+        }
+
+        const rawDmg = Math.max(0, boss.attack - getPlayerDefence(state));
+        const dmgToPlayer = Math.max(0, rawDmg - resistAll);
+        const dodged = dodgePct > 0 && Math.random() * 100 < dodgePct;
+        if (!dodged && dmgToPlayer > 0) {
+          playerHp -= dmgToPlayer;
+          defenceXpGained   += 2;
+          hitpointsXpGained += 1;
+          if (thornsDmg > 0)    enemyHp -= thornsDmg;
+          if (reflectDamage > 0) enemyHp -= reflectDamage;
+        }
+
+        if (playerHp <= 0) {
+          playerDied = true;
+          playerHp = Math.floor(playerMaxHp * 0.5);
+          break;
+        }
+      }
+
+      const usedTime = (playerDied || bossKilled) ? elapsedSeconds : ticks * effectiveCombatSpeed;
+      const existingLoot = parseLootBag(state.lootBag);
+      const combinedLoot = [...existingLoot, ...newDrops].slice(-50);
+
+      const updates: Partial<GameState> = {
+        playerHp,
+        enemyHp: bossKilled ? dungeon.boss.maxHp : enemyHp,
+        gold:        state.gold        + goldGained,
+        attackXp:    state.attackXp    + attackXpGained,
+        defenceXp:   state.defenceXp   + defenceXpGained,
+        hitpointsXp: state.hitpointsXp + hitpointsXpGained,
+        lootBag: JSON.stringify(combinedLoot),
+        actionUpdatedAt: new Date(new Date(state.actionUpdatedAt).getTime() + usedTime * 1000),
+        ...(bossKilled || playerDied ? { activeAction: "idle", enemyHp: -1 } : {}),
+      };
+
+      const [updated] = await db.update(gameStates).set(updates).where(eq(gameStates.id, state.id)).returning();
+      return updated;
+    }
+
     // ── Smithing ──────────────────────────────────────────────────────────────
     if (action.startsWith("smith_")) {
       const recipeIndex = parseInt(action.split("_")[1]);
@@ -390,6 +516,38 @@ export class DatabaseStorage implements IStorage {
     const [updated] = await db.update(gameStates)
       .set({ activeAction: action, actionUpdatedAt: new Date() })
       .where(eq(gameStates.id, currentState.id)).returning();
+    return updated;
+  }
+
+  async enterDungeon(dungeonIndex: number): Promise<GameState> {
+    const state = await this.getGameState();
+    const dungeon = DUNGEONS[dungeonIndex];
+    if (!dungeon) throw new Error("副本不存在");
+
+    const combatLevel = getCombatLevel(state);
+    if (combatLevel < dungeon.reqCombatLevel) {
+      throw new Error(`需要战斗等级 ${dungeon.reqCombatLevel}（当前 ${combatLevel}）`);
+    }
+    if (state.gold < dungeon.cost.gold) {
+      throw new Error(`金币不足（需要 ${dungeon.cost.gold}，当前 ${state.gold}）`);
+    }
+    if (dungeon.cost.bones && state.bones < dungeon.cost.bones) {
+      throw new Error(`骨头不足（需要 ${dungeon.cost.bones}，当前 ${state.bones}）`);
+    }
+    if (dungeon.cost.dragonBones && state.dragonBones < dungeon.cost.dragonBones) {
+      throw new Error(`龙骨不足（需要 ${dungeon.cost.dragonBones}，当前 ${state.dragonBones}）`);
+    }
+
+    const [updated] = await db.update(gameStates)
+      .set({
+        activeAction: `dungeon_${dungeonIndex}`,
+        actionUpdatedAt: new Date(),
+        enemyHp: -1,
+        gold:        state.gold        - dungeon.cost.gold,
+        bones:       state.bones       - (dungeon.cost.bones ?? 0),
+        dragonBones: state.dragonBones - (dungeon.cost.dragonBones ?? 0),
+      })
+      .where(eq(gameStates.id, state.id)).returning();
     return updated;
   }
 

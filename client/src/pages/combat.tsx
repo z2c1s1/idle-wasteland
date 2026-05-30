@@ -1,5 +1,5 @@
-import { useGameState, useStartAction } from "@/hooks/use-game";
-import { ENEMIES, ALL_SLOTS, SLOT_LABEL, SLOT_EMOJI, RARITY_COLOR, ITEM_SETS, type GameItem } from "@shared/game-data";
+import { useGameState, useStartAction, useEnterDungeon } from "@/hooks/use-game";
+import { ENEMIES, DUNGEONS, ALL_SLOTS, RARITY_COLOR, ITEM_SETS, type GameItem } from "@shared/game-data";
 import {
   calculateLevel, getCombatLevel, getPlayerMaxHp, getPlayerAttack,
   getPlayerDefence, parseEquipment, parseLootBag, formatNumber, levelProgress, getEquipmentStats,
@@ -8,8 +8,9 @@ import type { GameState } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useEffect, useRef, useState } from "react";
-import { Skull, Sword, Shield, Heart, Zap, Star, ChevronRight } from "lucide-react";
+import { Skull, Sword, Shield, Heart, Zap, Star, ChevronRight, Lock, Swords } from "lucide-react";
 import { Link } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 
 function HpBar({ current, max, label, color }: { current: number; max: number; label: string; color: string }) {
   const pct = max > 0 ? Math.max(0, Math.min(100, (current / max) * 100)) : 0;
@@ -72,6 +73,9 @@ function CombatTimer({ actionUpdatedAt, speed }: { actionUpdatedAt: string; spee
 export default function Combat() {
   const { data: state }   = useGameState();
   const startAction       = useStartAction();
+  const enterDungeon      = useEnterDungeon();
+  const { toast }         = useToast();
+  const [activeTab, setActiveTab] = useState<'enemies' | 'dungeons'>('enemies');
 
   if (!state) return null;
   const gs = state as GameState;
@@ -86,15 +90,23 @@ export default function Combat() {
   const lootBag      = parseLootBag(gs.lootBag);
 
   const isCombat      = gs.activeAction.startsWith("combat_");
+  const isDungeon     = gs.activeAction.startsWith("dungeon_");
   const activeIdx     = isCombat ? parseInt(gs.activeAction.split("_")[1]) : -1;
+  const activeDungIdx = isDungeon ? parseInt(gs.activeAction.split("_")[1]) : -1;
   const activeEnemy   = activeIdx >= 0 ? ENEMIES[activeIdx] : null;
-  const currentEnemyHp = activeEnemy
-    ? (gs.enemyHp < 0 ? activeEnemy.maxHp : gs.enemyHp)
-    : 0;
+  const activeDungeon = activeDungIdx >= 0 ? DUNGEONS[activeDungIdx] : null;
+  const currentEnemyHp = activeEnemy ? (gs.enemyHp < 0 ? activeEnemy.maxHp : gs.enemyHp) : 0;
+  const currentBossHp  = activeDungeon ? (gs.enemyHp < 0 ? activeDungeon.boss.maxHp : gs.enemyHp) : 0;
 
   const attackLevel    = calculateLevel(gs.attackXp);
   const defenceLevel   = calculateLevel(gs.defenceXp);
   const hitpointsLevel = calculateLevel(gs.hitpointsXp);
+
+  function handleEnterDungeon(index: number) {
+    enterDungeon.mutate(index, {
+      onError: (err) => toast({ title: "无法进入副本", description: err.message, variant: "destructive" }),
+    });
+  }
 
   return (
     <div className="p-4 max-w-4xl mx-auto space-y-5">
@@ -128,7 +140,7 @@ export default function Combat() {
             sub={eqStats.critRating > 0 ? "+50% 额外伤害" : "无暴击"} />
         </div>
 
-        {/* Diablo-style advanced stats (all 15 affix types) */}
+        {/* Advanced stats */}
         {(eqStats.enhancedDamage > 0 || eqStats.crushingBlow > 0 || eqStats.magicFind > 0 ||
           eqStats.lifeOnKill > 0 || eqStats.lifeRegen > 0 || eqStats.goldBonus > 0 ||
           eqStats.resistAll > 0 || eqStats.lifeLeech > 0 || eqStats.deadlyStrike > 0 ||
@@ -148,7 +160,7 @@ export default function Combat() {
           </div>
         )}
 
-        {/* Active set bonuses — only show sets with 2+ pieces equipped */}
+        {/* Active set bonuses */}
         {eqStats.activeSets && Object.entries(eqStats.activeSets).some(([, c]) => c >= 2) && (
           <div className="bg-teal-500/8 border border-teal-400/30 rounded-lg px-3 py-2 space-y-1">
             <div className="text-[10px] text-teal-400 uppercase tracking-wider font-semibold">激活套装</div>
@@ -205,7 +217,7 @@ export default function Combat() {
         )}
       </div>
 
-      {/* Active combat */}
+      {/* Active combat — normal enemy */}
       {isCombat && activeEnemy && (
         <div className="bg-card border border-red-500/30 rounded-xl p-4 space-y-4">
           <div className="flex items-center justify-between">
@@ -228,60 +240,232 @@ export default function Combat() {
         </div>
       )}
 
-      {/* Enemy list */}
-      <div>
-        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">选择敌人</h2>
-        <div className="space-y-2">
-          {ENEMIES.map((enemy, index) => {
-            const locked    = combatLevel < enemy.reqCombatLevel;
-            const isActive  = activeIdx === index;
-            const dmgToUs   = Math.max(0, enemy.attack - playerDef);
-            const dmgToThem = Math.max(1, playerAtk - enemy.defence);
-
-            return (
-              <div key={enemy.id}
-                className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${
-                  locked   ? "border-border bg-muted/10 opacity-50" :
-                  isActive ? "border-red-400/50 bg-red-500/10" :
-                             "border-border bg-card hover:border-primary/40"
-                }`}
-                data-testid={`enemy-row-${enemy.id}`}>
-                <span className="text-2xl">{enemy.emoji}</span>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-medium">{enemy.name}</span>
-                    <span className="text-[10px] text-yellow-500 border border-yellow-500/30 px-1 rounded">物品等级 {index * 7 + 1}-{index * 7 + 6}</span>
-                    {locked && <span className="text-xs text-muted-foreground">（战斗 {enemy.reqCombatLevel}）</span>}
-                    {!locked && dmgToUs > currentHp && <span className="text-xs text-red-400 font-medium">⚠ 致命</span>}
-                  </div>
-                  <div className="text-xs text-muted-foreground flex gap-3 mt-0.5 flex-wrap">
-                    <span>生命 {enemy.maxHp}</span>
-                    <span>攻击 {enemy.attack}</span>
-                    <span>防御 {enemy.defence}</span>
-                    <span className="text-yellow-500">{enemy.xp} 经验/击杀</span>
-                    <span>💰 {enemy.drops.gold[0]}+ 金币</span>
-                    {enemy.drops.dragonBones && <span className="text-purple-400">🐲 龙骨</span>}
-                  </div>
-                  <div className="text-xs mt-0.5 flex gap-3">
-                    <span className="text-green-400">⚔ {dmgToThem}/每击</span>
-                    {dmgToUs > 0 ? <span className="text-red-400">💔 {dmgToUs}/每击</span> : <span className="text-blue-400">🛡 无法受伤</span>}
-                    <span className="text-yellow-400">📦 {Math.round((0.15 + index * 0.02) * 100)}% 掉落</span>
-                  </div>
-                </div>
-                <div className="flex-shrink-0">
-                  {isActive ? (
-                    <Button size="sm" variant="destructive" onClick={() => startAction.mutate("idle")} data-testid={`button-stop-${enemy.id}`}>逃跑</Button>
-                  ) : (
-                    <Button size="sm" disabled={locked} onClick={() => startAction.mutate(`combat_${index}`)} data-testid={`button-fight-${enemy.id}`}>
-                      {locked ? `${enemy.reqCombatLevel}级` : "战斗"}
-                    </Button>
-                  )}
-                </div>
+      {/* Active dungeon combat */}
+      {isDungeon && activeDungeon && (
+        <div className="bg-card border border-purple-500/40 rounded-xl p-4 space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">{activeDungeon.emoji}</span>
+              <div>
+                <h2 className="font-bold text-purple-300">{activeDungeon.name} — Boss 战</h2>
+                <p className="text-xs text-muted-foreground">击败 Boss 以获得专属传奇装备</p>
               </div>
-            );
-          })}
+            </div>
+            <Button variant="outline" size="sm" onClick={() => startAction.mutate("idle")} data-testid="button-escape-dungeon">
+              撤退
+            </Button>
+          </div>
+          <div className="bg-purple-500/10 border border-purple-400/30 rounded-lg p-3 space-y-3">
+            <div className="flex items-center gap-2 text-purple-200 font-semibold">
+              <span className="text-2xl">{activeDungeon.boss.emoji}</span>
+              <span>{activeDungeon.boss.name}</span>
+              <span className="ml-auto text-xs px-2 py-0.5 rounded border border-purple-400/40 bg-purple-500/20 text-purple-300">BOSS</span>
+            </div>
+            <HpBar current={currentBossHp} max={activeDungeon.boss.maxHp} label="Boss 生命" color="bg-purple-500" />
+            <CombatTimer actionUpdatedAt={gs.actionUpdatedAt as unknown as string} speed={3} />
+            <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground">
+              <div><span className="text-foreground font-medium">Boss 攻击：</span>{activeDungeon.boss.attack}</div>
+              <div><span className="text-foreground font-medium">Boss 防御：</span>{activeDungeon.boss.defence}</div>
+              <div><span className="text-foreground font-medium">我方伤害：</span>{Math.max(1, playerAtk - activeDungeon.boss.defence)}/3s</div>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-1.5 items-center">
+            <span className="text-[11px] text-muted-foreground">专属掉落：</span>
+            {activeDungeon.uniqueDropIds.map(uid => (
+              <span key={uid} className="text-[11px] px-1.5 py-0.5 rounded border border-orange-400/40 text-orange-300 bg-orange-400/10">✦ 传奇</span>
+            ))}
+            <span className="text-[11px] text-purple-300">掉率 {Math.round(activeDungeon.dropChance * 100)}%</span>
+          </div>
         </div>
+      )}
+
+      {/* Tab switcher */}
+      <div className="flex gap-1 bg-muted/20 rounded-lg p-1">
+        <button
+          className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-sm font-medium transition-colors ${
+            activeTab === 'enemies' ? 'bg-card shadow text-foreground' : 'text-muted-foreground hover:text-foreground'
+          }`}
+          onClick={() => setActiveTab('enemies')}
+          data-testid="tab-enemies"
+        >
+          <Swords className="w-4 h-4" /> 普通战斗
+        </button>
+        <button
+          className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-sm font-medium transition-colors ${
+            activeTab === 'dungeons' ? 'bg-card shadow text-foreground' : 'text-muted-foreground hover:text-foreground'
+          }`}
+          onClick={() => setActiveTab('dungeons')}
+          data-testid="tab-dungeons"
+        >
+          <Skull className="w-4 h-4" /> 副本挑战
+        </button>
       </div>
+
+      {/* Enemy list */}
+      {activeTab === 'enemies' && (
+        <div>
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">选择敌人</h2>
+          <div className="space-y-2">
+            {ENEMIES.map((enemy, index) => {
+              const locked    = combatLevel < enemy.reqCombatLevel;
+              const isActive  = activeIdx === index;
+              const dmgToUs   = Math.max(0, enemy.attack - playerDef);
+              const dmgToThem = Math.max(1, playerAtk - enemy.defence);
+
+              return (
+                <div key={enemy.id}
+                  className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${
+                    locked   ? "border-border bg-muted/10 opacity-50" :
+                    isActive ? "border-red-400/50 bg-red-500/10" :
+                               "border-border bg-card hover:border-primary/40"
+                  }`}
+                  data-testid={`enemy-row-${enemy.id}`}>
+                  <span className="text-2xl">{enemy.emoji}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-medium">{enemy.name}</span>
+                      <span className="text-[10px] text-yellow-500 border border-yellow-500/30 px-1 rounded">物品等级 {index * 7 + 1}-{index * 7 + 6}</span>
+                      {locked && <span className="text-xs text-muted-foreground">（战斗 {enemy.reqCombatLevel}）</span>}
+                      {!locked && dmgToUs > currentHp && <span className="text-xs text-red-400 font-medium">⚠ 致命</span>}
+                    </div>
+                    <div className="text-xs text-muted-foreground flex gap-3 mt-0.5 flex-wrap">
+                      <span>生命 {enemy.maxHp}</span>
+                      <span>攻击 {enemy.attack}</span>
+                      <span>防御 {enemy.defence}</span>
+                      <span className="text-yellow-500">{enemy.xp} 经验/击杀</span>
+                      <span>💰 {enemy.drops.gold[0]}+ 金币</span>
+                      {enemy.drops.dragonBones && <span className="text-purple-400">🐲 龙骨</span>}
+                    </div>
+                    <div className="text-xs mt-0.5 flex gap-3">
+                      <span className="text-green-400">⚔ {dmgToThem}/每击</span>
+                      {dmgToUs > 0 ? <span className="text-red-400">💔 {dmgToUs}/每击</span> : <span className="text-blue-400">🛡 无法受伤</span>}
+                      <span className="text-yellow-400">📦 {Math.round((0.15 + index * 0.02) * 100)}% 掉落</span>
+                    </div>
+                  </div>
+                  <div className="flex-shrink-0">
+                    {isActive ? (
+                      <Button size="sm" variant="destructive" onClick={() => startAction.mutate("idle")} data-testid={`button-stop-${enemy.id}`}>逃跑</Button>
+                    ) : (
+                      <Button size="sm" disabled={locked} onClick={() => startAction.mutate(`combat_${index}`)} data-testid={`button-fight-${enemy.id}`}>
+                        {locked ? `${enemy.reqCombatLevel}级` : "战斗"}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Dungeon list */}
+      {activeTab === 'dungeons' && (
+        <div>
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">选择副本</h2>
+          <p className="text-xs text-muted-foreground mb-3">每个副本含 1 个强力 Boss，击杀后有概率掉落专属传奇装备</p>
+          <div className="space-y-3">
+            {DUNGEONS.map((dungeon, index) => {
+              const locked     = combatLevel < dungeon.reqCombatLevel;
+              const isActive   = activeDungIdx === index;
+              const canAfford  = gs.gold >= dungeon.cost.gold
+                && gs.bones >= (dungeon.cost.bones ?? 0)
+                && gs.dragonBones >= (dungeon.cost.dragonBones ?? 0);
+              const busy       = isCombat || isDungeon;
+              const canEnter   = !locked && canAfford && !busy;
+
+              return (
+                <div key={dungeon.id}
+                  className={`p-4 rounded-xl border transition-colors ${
+                    isActive   ? "border-purple-400/60 bg-purple-500/10" :
+                    locked     ? "border-border bg-muted/10 opacity-60" :
+                    !canAfford ? "border-border bg-card opacity-75" :
+                                 "border-border bg-card hover:border-purple-400/40"
+                  }`}
+                  data-testid={`dungeon-card-${dungeon.id}`}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="text-3xl mt-0.5">{dungeon.emoji}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap mb-1">
+                        <span className="font-bold text-base">{dungeon.name}</span>
+                        {locked && (
+                          <span className="flex items-center gap-1 text-xs text-muted-foreground border border-border px-1.5 py-0.5 rounded">
+                            <Lock className="w-3 h-3" /> 战斗 {dungeon.reqCombatLevel} 解锁
+                          </span>
+                        )}
+                        {isActive && (
+                          <span className="text-xs text-purple-300 border border-purple-400/40 bg-purple-500/15 px-1.5 py-0.5 rounded font-medium">
+                            挑战中
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground mb-2 leading-relaxed">{dungeon.theme}</p>
+
+                      {/* Boss info */}
+                      <div className="flex items-center gap-3 text-xs mb-2 flex-wrap">
+                        <span className="font-medium text-purple-200">{dungeon.boss.emoji} {dungeon.boss.name}</span>
+                        <span className="text-muted-foreground">生命 {formatNumber(dungeon.boss.maxHp)}</span>
+                        <span className="text-red-400">攻击 {dungeon.boss.attack}</span>
+                        <span className="text-blue-400">防御 {dungeon.boss.defence}</span>
+                        <span className="text-yellow-400">💰 {formatNumber(dungeon.boss.xp * 2)} 金币奖励</span>
+                        <span className="text-green-300">⚔ {dungeon.boss.xp} 经验</span>
+                      </div>
+
+                      {/* Drop preview */}
+                      <div className="flex items-center gap-2 mb-2 flex-wrap">
+                        <span className="text-[11px] text-muted-foreground">专属传奇：</span>
+                        {dungeon.uniqueDropIds.map(uid => (
+                          <span key={uid} className="text-[11px] px-1.5 py-0.5 rounded border border-orange-400/40 text-orange-300 bg-orange-400/8 font-medium">
+                            ✦ 传奇物品
+                          </span>
+                        ))}
+                        <span className="text-[11px] text-purple-300">{Math.round(dungeon.dropChance * 100)}% 掉率</span>
+                      </div>
+
+                      {/* Entry cost */}
+                      <div className="flex items-center gap-3 text-xs flex-wrap">
+                        <span className="text-muted-foreground">入场消耗：</span>
+                        <span className={gs.gold < dungeon.cost.gold ? "text-red-400" : "text-yellow-400"}>
+                          💰 {formatNumber(dungeon.cost.gold)} 金币
+                        </span>
+                        {dungeon.cost.bones && (
+                          <span className={gs.bones < dungeon.cost.bones ? "text-red-400" : "text-foreground"}>
+                            🦴 {dungeon.cost.bones} 骨头
+                          </span>
+                        )}
+                        {dungeon.cost.dragonBones && (
+                          <span className={gs.dragonBones < dungeon.cost.dragonBones ? "text-red-400" : "text-purple-300"}>
+                            🐲 {dungeon.cost.dragonBones} 龙骨
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex-shrink-0">
+                      {isActive ? (
+                        <Button size="sm" variant="outline" onClick={() => startAction.mutate("idle")} data-testid={`button-escape-${dungeon.id}`}>
+                          撤退
+                        </Button>
+                      ) : (
+                        <Button
+                          size="sm"
+                          disabled={locked || !canEnter || enterDungeon.isPending}
+                          variant={canEnter ? "default" : "outline"}
+                          onClick={() => handleEnterDungeon(index)}
+                          data-testid={`button-enter-dungeon-${dungeon.id}`}
+                          className={canEnter ? "bg-purple-600 hover:bg-purple-700 text-white" : ""}
+                        >
+                          {locked ? `${dungeon.reqCombatLevel}级` : !canAfford ? "资源不足" : busy ? "战斗中" : "进入"}
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Drops summary */}
       <div className="bg-card border border-border rounded-xl p-4">

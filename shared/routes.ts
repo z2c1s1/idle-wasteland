@@ -46,6 +46,15 @@ export const api = {
       input: z.object({ instanceId: z.string(), gemKey: z.string() }),
       responses: { 200: z.custom<typeof gameStates.$inferSelect>() },
     },
+    enterDungeon: {
+      method: 'POST' as const,
+      path: '/api/game/enter-dungeon' as const,
+      input: z.object({ dungeonIndex: z.number().int().min(0) }),
+      responses: {
+        200: z.custom<typeof gameStates.$inferSelect>(),
+        400: z.object({ message: z.string() }),
+      },
+    },
   },
 };
 

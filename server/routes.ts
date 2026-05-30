@@ -72,5 +72,16 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     }
   });
 
+  app.post(api.game.enterDungeon.path, async (req, res) => {
+    try {
+      const input = api.game.enterDungeon.input.parse(req.body);
+      const state = await storage.enterDungeon(input.dungeonIndex);
+      res.json(state);
+    } catch (err) {
+      if (err instanceof Error) return res.status(400).json({ message: err.message });
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   return httpServer;
 }
