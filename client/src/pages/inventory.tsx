@@ -326,7 +326,14 @@ export default function Inventory() {
   const destroyLoot    = useDestroyLoot();
   const setLootFilter  = useSetLootFilter();
   const { toast }      = useToast();
-  const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
+  const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>(() => {
+    try {
+      const stored = localStorage.getItem("idlerpg_inventory_collapsed");
+      return stored ? JSON.parse(stored) : {};
+    } catch {
+      return {};
+    }
+  });
 
   if (!state) return null;
   const gs = state as GameState;
@@ -588,7 +595,11 @@ export default function Inventory() {
               <div key={section.label} className="bg-card border border-border rounded-xl p-4">
                 <button
                   className="w-full flex items-center justify-between group mb-0"
-                  onClick={() => setCollapsedSections(prev => ({ ...prev, [section.label]: !prev[section.label] }))}
+                  onClick={() => setCollapsedSections(prev => {
+                    const next = { ...prev, [section.label]: !prev[section.label] };
+                    try { localStorage.setItem("idlerpg_inventory_collapsed", JSON.stringify(next)); } catch {}
+                    return next;
+                  })}
                   data-testid={`toggle-section-${section.prefix}`}
                 >
                   <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider group-hover:text-foreground transition-colors">
