@@ -133,10 +133,20 @@ async function handleProductionRecipe(
 }
 
 // ─── Storage interface ─────────────────────────────────────────────────────────
+// Rarity ordering for loot filter comparisons
+const RARITY_ORDER: Record<string, number> = {
+  common: 0, uncommon: 1, rare: 2, epic: 3, legendary: 4,
+};
+// Gold returned when an item is auto-disenchanted by loot filter
+const DISENCHANT_GOLD: Record<string, number> = {
+  common: 5, uncommon: 15, rare: 40, epic: 100, legendary: 0,
+};
+
 export interface IStorage {
   getGameState(): Promise<GameState>;
   updateAction(action: string): Promise<GameState>;
   enterDungeon(dungeonIndex: number): Promise<GameState>;
+  setLootFilter(rarity: string): Promise<GameState>;
   equipItem(instanceId?: string, itemId?: string): Promise<GameState>;
   unequipItem(slot: string): Promise<GameState>;
   destroyLoot(instanceId: string): Promise<GameState>;
@@ -272,7 +282,15 @@ export class DatabaseStorage implements IStorage {
           dragonBonesGained += enemy.drops.dragonBones ?? 0;
           attackXpGained    += enemy.xp;
           hitpointsXpGained += Math.floor(enemy.xp / 3);
-          if (Math.random() < dropChance) newDrops.push(generateDroppedItem(enemyIndex, magicFind));
+          if (Math.random() < dropChance) {
+            const drop = generateDroppedItem(enemyIndex, magicFind);
+            const filterThreshold = RARITY_ORDER[state.lootFilter ?? 'common'] ?? 0;
+            if ((RARITY_ORDER[drop.rarity] ?? 0) >= filterThreshold) {
+              newDrops.push(drop);
+            } else {
+              goldGained += DISENCHANT_GOLD[drop.rarity] ?? 5;
+            }
+          }
           // Gem drop on kill
           if (Math.random() < gemPool.chance) {
             const gk = gemPool.pool[Math.floor(Math.random() * gemPool.pool.length)];
@@ -408,7 +426,14 @@ export class DatabaseStorage implements IStorage {
           attackXpGained    += boss.xp;
           hitpointsXpGained += Math.floor(boss.xp / 3);
           const drop = generateDungeonDrop(dungeonIndex);
-          if (drop) newDrops.push(drop);
+          if (drop) {
+            const filterThreshold = RARITY_ORDER[state.lootFilter ?? 'common'] ?? 0;
+            if ((RARITY_ORDER[drop.rarity] ?? 0) >= filterThreshold) {
+              newDrops.push(drop);
+            } else {
+              goldGained += DISENCHANT_GOLD[drop.rarity] ?? 5;
+            }
+          }
           if (vampiricHp > 0) playerHp = Math.min(playerMaxHp, playerHp + vampiricHp);
           bossKilled = true;
           break;
@@ -516,6 +541,14 @@ export class DatabaseStorage implements IStorage {
     const [updated] = await db.update(gameStates)
       .set({ activeAction: action, actionUpdatedAt: new Date() })
       .where(eq(gameStates.id, currentState.id)).returning();
+    return updated;
+  }
+
+  async setLootFilter(rarity: string): Promise<GameState> {
+    const state = await this.getGameState();
+    const [updated] = await db.update(gameStates)
+      .set({ lootFilter: rarity })
+      .where(eq(gameStates.id, state.id)).returning();
     return updated;
   }
 

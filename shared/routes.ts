@@ -55,6 +55,12 @@ export const api = {
         400: z.object({ message: z.string() }),
       },
     },
+    setLootFilter: {
+      method: 'POST' as const,
+      path: '/api/game/loot-filter' as const,
+      input: z.object({ rarity: z.enum(['common', 'uncommon', 'rare', 'epic', 'legendary']) }),
+      responses: { 200: z.custom<typeof gameStates.$inferSelect>() },
+    },
   },
 };
 

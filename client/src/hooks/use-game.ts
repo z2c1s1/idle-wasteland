@@ -111,3 +111,18 @@ export function useEnterDungeon() {
     onSuccess: (state) => queryClient.setQueryData(QUERY_KEY, state),
   });
 }
+
+export function useSetLootFilter() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (rarity: string) => {
+      const res = await fetch(api.game.setLootFilter.path, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rarity }), credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to update loot filter");
+      return api.game.setLootFilter.responses[200].parse(await res.json());
+    },
+    onSuccess: (state) => queryClient.setQueryData(QUERY_KEY, state),
+  });
+}

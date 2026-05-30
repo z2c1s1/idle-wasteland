@@ -37,6 +37,8 @@ export const gameStates = pgTable("game_states", {
   lootBag: text("loot_bag").notNull().default("[]"),
   // gems: {gemKey: qty} gem inventory
   gems: text("gems").notNull().default("{}"),
+  // lootFilter: minimum rarity to keep (items below are auto-disenchanted for gold)
+  lootFilter: text("loot_filter").notNull().default("common"),
 
   wood_0: integer("wood_0").notNull().default(0),
   wood_1: integer("wood_1").notNull().default(0),

@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { useGameState, useEquipItem, useUnequipItem, useDestroyLoot } from "@/hooks/use-game";
+import { useGameState, useEquipItem, useUnequipItem, useDestroyLoot, useSetLootFilter } from "@/hooks/use-game";
 import {
   ALL_CRAFTABLE_ITEMS, ALL_SLOTS, SLOT_LABEL, SLOT_EMOJI,
   RARITY_COLOR, RARITY_BORDER, RARITY_BG, RARITY_LABEL,
   AFFIX_LABEL, AFFIX_COLOR, GEM_EMOJI, SKILL_EMOJI, SKILL_COLOR,
   ITEM_SETS, UNIQUE_ITEMS, getEquipmentBonuses,
   getGemName, getGemBgClass,
-  type GameItem, type EquipmentSlot, type GemType,
+  type GameItem, type EquipmentSlot, type GemType, type Rarity,
 } from "@shared/game-data";
 import {
   parseCraftItems, parseEquipment, parseLootBag, formatNumber, getEquipmentStats,
@@ -303,12 +303,29 @@ const RESOURCE_SECTIONS = [
   { label: "制作", prefix: "item", emoji: "🧵", names: ["布料","皮革","珠宝料","甲料","兵器料","神器料","遗物料","杰作料","天界料","神圣料"] },
 ];
 
+const FILTER_RARITIES: Rarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
+const FILTER_LABELS: Record<Rarity, string> = {
+  common:    '保留全部',
+  uncommon:  '魔法+',
+  rare:      '稀有+',
+  epic:      '神圣+',
+  legendary: '仅独特',
+};
+const DISENCHANT_GOLD_PREVIEW: Record<Rarity, string> = {
+  common:    '—',
+  uncommon:  '普通 →5金',
+  rare:      '普通 →5金 · 魔法 →15金',
+  epic:      '普通/魔法/稀有各→5/15/40金',
+  legendary: '普通→5 · 魔法→15 · 稀有→40 · 神圣→100金',
+};
+
 export default function Inventory() {
   const { data: state } = useGameState();
-  const equipItem    = useEquipItem();
-  const unequipItem  = useUnequipItem();
-  const destroyLoot  = useDestroyLoot();
-  const { toast }    = useToast();
+  const equipItem      = useEquipItem();
+  const unequipItem    = useUnequipItem();
+  const destroyLoot    = useDestroyLoot();
+  const setLootFilter  = useSetLootFilter();
+  const { toast }      = useToast();
 
   if (!state) return null;
   const gs = state as GameState;
@@ -347,6 +364,14 @@ export default function Inventory() {
     return order[a.rarity] - order[b.rarity];
   });
 
+  const currentFilter = (gs.lootFilter ?? 'common') as Rarity;
+
+  function handleSetFilter(rarity: Rarity) {
+    setLootFilter.mutate(rarity, {
+      onError: () => toast({ title: "筛选器设置失败", variant: "destructive" }),
+    });
+  }
+
   return (
     <div className="p-4 max-w-6xl mx-auto space-y-6">
       <div>
@@ -357,6 +382,40 @@ export default function Inventory() {
           战利品袋中有 {lootBag.length} 件物品
           {equipStats.hpBonus > 0 && ` · +${equipStats.hpBonus} 生命`}
         </p>
+      </div>
+
+      {/* Loot Filter Panel */}
+      <div className="bg-card border border-border rounded-xl p-4 space-y-3" data-testid="loot-filter-panel">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">⚗ 战利品筛选器</span>
+          <span className="text-xs text-muted-foreground">— 低于阈值的物品自动分解为金币</span>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {FILTER_RARITIES.map((rarity) => {
+            const isActive = currentFilter === rarity;
+            const colorCls = RARITY_COLOR[rarity];
+            return (
+              <button
+                key={rarity}
+                data-testid={`filter-btn-${rarity}`}
+                onClick={() => handleSetFilter(rarity)}
+                className={[
+                  "px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all",
+                  isActive
+                    ? `border-current ${colorCls} bg-muted/40 ring-1 ring-current`
+                    : `border-border text-muted-foreground hover:border-muted-foreground`,
+                ].join(" ")}
+              >
+                {FILTER_LABELS[rarity]}
+              </button>
+            );
+          })}
+        </div>
+        {currentFilter !== 'common' && (
+          <p className="text-xs text-amber-400/80">
+            🔥 自动分解：{DISENCHANT_GOLD_PREVIEW[currentFilter]}
+          </p>
+        )}
       </div>
 
 

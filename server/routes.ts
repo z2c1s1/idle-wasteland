@@ -83,5 +83,17 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     }
   });
 
+  app.post(api.game.setLootFilter.path, async (req, res) => {
+    try {
+      const input = api.game.setLootFilter.input.parse(req.body);
+      const state = await storage.setLootFilter(input.rarity);
+      res.json(state);
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
+      if (err instanceof Error) return res.status(400).json({ message: err.message });
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   return httpServer;
 }
