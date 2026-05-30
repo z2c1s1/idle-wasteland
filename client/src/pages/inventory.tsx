@@ -83,7 +83,7 @@ function ItemCard({ item, onEquip, onDestroy, onUnequip, isEquipped }: {
     <div className={`rounded-lg border p-3 flex flex-col gap-2 transition-all ${borderClass} ${bgClass}`}
       data-testid={`item-card-${item.instanceId}`}>
       <div className="flex items-start gap-2">
-        <span className="text-2xl leading-none mt-0.5">{item.emoji}</span>
+        <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center text-base leading-none">{item.emoji}</span>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className={`text-sm leading-tight ${nameClass}`}>
@@ -549,7 +549,7 @@ export default function Inventory() {
               return (
                 <div key={itemId} className="flex items-center gap-2 p-2 rounded-lg border border-green-500/30 bg-green-500/5"
                   data-testid={`smithed-item-${itemId}`}>
-                  <span className="text-xl">{def.emoji}</span>
+                  <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center text-base leading-none">{def.emoji}</span>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium text-green-400 truncate">{def.name}</p>
                     <p className="text-[10px] text-muted-foreground">x{qty} · 物品等级 {def.ilvl}</p>
@@ -587,11 +587,12 @@ export default function Inventory() {
                 <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
                   {section.emoji} {section.label}
                 </h3>
-                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1">
                   {items.map(item => (
-                    <div key={item.key} className="bg-muted/20 rounded-lg p-2 text-center" data-testid={`resource-${item.key}`}>
-                      <p className="text-xs text-muted-foreground truncate">{item.name}</p>
-                      <p className="text-sm font-bold mt-0.5">{formatNumber(item.qty)}</p>
+                    <div key={item.key} className="flex items-center gap-1.5 bg-muted/20 rounded-md px-2 py-1.5" data-testid={`resource-${item.key}`}>
+                      <span className="w-4 h-4 flex-shrink-0 flex items-center justify-center text-sm leading-none">{section.emoji}</span>
+                      <span className="text-xs text-muted-foreground truncate flex-1">{item.name}</span>
+                      <span className="text-xs font-bold text-foreground flex-shrink-0">{formatNumber(item.qty)}</span>
                     </div>
                   ))}
                 </div>
