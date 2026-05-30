@@ -326,6 +326,7 @@ export default function Inventory() {
   const destroyLoot    = useDestroyLoot();
   const setLootFilter  = useSetLootFilter();
   const { toast }      = useToast();
+  const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
 
   if (!state) return null;
   const gs = state as GameState;
@@ -582,20 +583,34 @@ export default function Inventory() {
               key: `${section.prefix}_${i}`,
             })).filter(it => it.qty > 0);
             if (!items.length) return null;
+            const isCollapsed = !!collapsedSections[section.label];
             return (
               <div key={section.label} className="bg-card border border-border rounded-xl p-4">
-                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                  {section.emoji} {section.label}
-                </h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1">
-                  {items.map(item => (
-                    <div key={item.key} className="flex items-center gap-1.5 bg-muted/20 rounded-md px-2 py-1.5" data-testid={`resource-${item.key}`}>
-                      <span className="w-4 h-4 flex-shrink-0 flex items-center justify-center text-sm leading-none">{section.emoji}</span>
-                      <span className="text-xs text-muted-foreground truncate flex-1">{item.name}</span>
-                      <span className="text-xs font-bold text-foreground flex-shrink-0">{formatNumber(item.qty)}</span>
-                    </div>
-                  ))}
-                </div>
+                <button
+                  className="w-full flex items-center justify-between group mb-0"
+                  onClick={() => setCollapsedSections(prev => ({ ...prev, [section.label]: !prev[section.label] }))}
+                  data-testid={`toggle-section-${section.prefix}`}
+                >
+                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider group-hover:text-foreground transition-colors">
+                    {section.emoji} {section.label}
+                    <span className="ml-2 font-normal normal-case text-muted-foreground/60">{items.length} 种</span>
+                  </h3>
+                  {isCollapsed
+                    ? <ChevronDown className="w-3.5 h-3.5 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
+                    : <ChevronUp className="w-3.5 h-3.5 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
+                  }
+                </button>
+                {!isCollapsed && (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1 mt-3">
+                    {items.map(item => (
+                      <div key={item.key} className="flex items-center gap-1.5 bg-muted/20 rounded-md px-2 py-1.5" data-testid={`resource-${item.key}`}>
+                        <span className="w-4 h-4 flex-shrink-0 flex items-center justify-center text-sm leading-none">{section.emoji}</span>
+                        <span className="text-xs text-muted-foreground truncate flex-1">{item.name}</span>
+                        <span className="text-xs font-bold text-foreground flex-shrink-0">{formatNumber(item.qty)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             );
           })}
