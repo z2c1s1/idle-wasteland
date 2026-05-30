@@ -93,3 +93,6 @@ Combat state: `playerHp` (-1 = full), `enemyHp` (-1 = new enemy)
 Loot: `gold`, `bones`, `dragonBones`  
 JSON: `equipment` (slot→itemId map), `craftItems` (itemId→qty map)  
 Resources: `wood_0..9`, `ore_0..9`, `bar_0..9`, `fish_0..9`, `hide_0..9`, `item_0..9`
+
+## User preferences
+- 所有对话使用中文回复
