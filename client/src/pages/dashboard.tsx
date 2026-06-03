@@ -4,11 +4,14 @@ import { calculateLevel, levelProgress, formatNumber, getCombatLevel } from "@/l
 import {
   Axe, Pickaxe, Flame, Waves, PawPrint, Hammer,
   StopCircle, Skull, Shield, HandMetal, Crosshair, Wand,
-  Footprints, Zap,
+  Footprints, Zap, Download, Upload,
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { WORLD_TIER_LABEL } from "@shared/game-data";
 import type { GameState } from "@shared/schema";
+import { useQueryClient } from "@tanstack/react-query";
+import { api } from "@shared/routes";
+import { useToast } from "@/hooks/use-toast";
 
 const GATHERING_SKILLS = [
   { title: "伐木", xpKey: "woodcuttingXp" as const, icon: Axe,      color: "text-green-400",  bg: "bg-green-900/30",  href: "/woodcutting" },
@@ -65,7 +68,42 @@ function SkillRow({ title, xp, icon: Icon, color, href, isActive, onClick }: {
 export default function Dashboard() {
   const { data: state } = useGameState();
   const { mutate: startAction, isPending } = useStartAction();
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
   const [, setLocation] = useLocation();
+
+  const handleExport = () => {
+    const a = document.createElement("a");
+    a.href = "/api/game/export";
+    a.download = "wasteland-save.json";
+    a.click();
+    toast({ title: "存档导出中…" });
+  };
+
+  const handleImport = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".json";
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        const res = await fetch("/api/game/import", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        if (!res.ok) throw new Error((await res.json()).message);
+        queryClient.invalidateQueries({ queryKey: [api.game.getState.path] });
+        toast({ title: "存档导入成功！刷新页面生效" });
+      } catch (e: any) {
+        toast({ title: "导入失败", description: e.message, variant: "destructive" });
+      }
+    };
+    input.click();
+  };
 
   if (!state) return null;
   const gs = state as GameState;
@@ -203,6 +241,18 @@ export default function Dashboard() {
             </tr>
           </tbody>
         </table>
+      </div>
+
+      {/* Save / Load */}
+      <div className="flex gap-3 justify-center">
+        <button onClick={handleExport}
+          className="flex items-center gap-2 px-4 py-2 text-xs rounded border border-border hover:bg-muted/20 transition-colors">
+          <Download className="w-3.5 h-3.5" /> 导出存档
+        </button>
+        <button onClick={handleImport}
+          className="flex items-center gap-2 px-4 py-2 text-xs rounded border border-border hover:bg-muted/20 transition-colors">
+          <Upload className="w-3.5 h-3.5" /> 导入存档
+        </button>
       </div>
     </div>
   );

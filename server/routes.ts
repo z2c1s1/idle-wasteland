@@ -114,5 +114,25 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     catch (err: any) { res.status(400).json({ message: err.message }); }
   });
 
+  // Export save
+  app.get("/api/game/export", async (_req, res) => {
+    try {
+      const state = await storage.getGameState();
+      res.setHeader("Content-Type", "application/json");
+      res.setHeader("Content-Disposition", "attachment; filename=wasteland-save.json");
+      res.json(state);
+    } catch (err: any) { res.status(500).json({ message: err.message }); }
+  });
+
+  // Import save
+  app.post("/api/game/import", async (req, res) => {
+    try {
+      const imported = req.body;
+      if (!imported || typeof imported !== "object") throw new Error("无效的存档数据");
+      const state = await storage.importSave(imported);
+      res.json(state);
+    } catch (err: any) { res.status(400).json({ message: err.message }); }
+  });
+
   return httpServer;
 }

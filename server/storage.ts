@@ -276,6 +276,11 @@ export class DatabaseStorage implements IStorage {
     return worldMod.demolishOutpost(state, zoneIndex);
   }
 
+  async importSave(data: any): Promise<GameState> {
+    const state = await this.getGameState();
+    return skillMod.importSave(state, data);
+  }
+
   // ── Slayer ────────────────────────────────────────────────────────────────
 
   async getSlayerTask(): Promise<GameState> {

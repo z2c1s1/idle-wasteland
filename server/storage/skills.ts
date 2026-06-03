@@ -139,3 +139,24 @@ export function getActiveBuffs(state: any): { hpMul: number; atkMul: number; def
   }
   return { hpMul: Math.min(hpMul, 2), atkMul: Math.min(atkMul, 2), defMul: Math.min(defMul, 2), xpMul: Math.min(xpMul, 2), speedMul: Math.min(speedMul, 1.5), dropMul: Math.min(dropMul, 1.5), critMul: Math.min(critMul, 1.5), leechMul: Math.min(leechMul, 1.3) };
 }
+
+// ─── Save import/export ──────────────────────────────────────────────────────
+
+export async function importSave(state: GameState, data: any): Promise<GameState> {
+  // Only allow known fields, prevent injection
+  const allowed = new Set(Object.keys(gameStates));
+  const clean: Record<string, any> = {};
+  for (const key of Object.keys(data)) {
+    if (allowed.has(key) && key !== "id") {
+      clean[key] = data[key];
+    }
+  }
+  // Reset active action so tick doesn't apply stale time
+  clean.activeAction = "idle";
+  clean.actionUpdatedAt = new Date();
+
+  const [updated] = await db.update(gameStates)
+    .set(clean as any)
+    .where(eq(gameStates.id, state.id)).returning();
+  return updated;
+}
