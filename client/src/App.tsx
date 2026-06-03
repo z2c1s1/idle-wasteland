@@ -13,13 +13,23 @@ import Mining from "@/pages/mining";
 import Smelting from "@/pages/smelting";
 import Fishing from "@/pages/fishing";
 import Hunting from "@/pages/hunting";
-import Crafting from "@/pages/crafting";
 import Combat from "@/pages/combat";
 import Inventory from "@/pages/inventory";
 import Smithing from "@/pages/smithing-craft";
 import Leatherworking from "@/pages/leatherworking";
 import Jewelcrafting from "@/pages/jewelcrafting";
 import Gems from "@/pages/gems";
+import Thieving from "@/pages/thieving";
+import Tools from "@/pages/tools";
+import Talents from "@/pages/talents";
+import EquipmentSynth from "@/pages/equipment-synth";
+import Homestead from "@/pages/homestead";
+import Cooking from "@/pages/cooking";
+import Alchemy from "@/pages/alchemy";
+import Agility from "@/pages/agility";
+import Prayer from "@/pages/prayer";
+import Town from "@/pages/town";
+import Exploration from "@/pages/exploration";
 
 function Router() {
   return (
@@ -30,13 +40,23 @@ function Router() {
       <Route path="/smelting" component={Smelting} />
       <Route path="/fishing" component={Fishing} />
       <Route path="/hunting" component={Hunting} />
-      <Route path="/crafting" component={Crafting} />
       <Route path="/combat" component={Combat} />
       <Route path="/inventory" component={Inventory} />
       <Route path="/smithing" component={Smithing} />
       <Route path="/leatherworking" component={Leatherworking} />
       <Route path="/jewelcrafting" component={Jewelcrafting} />
       <Route path="/gems" component={Gems} />
+      <Route path="/thieving" component={Thieving} />
+      <Route path="/tools" component={Tools} />
+      <Route path="/talents" component={Talents} />
+      <Route path="/equipment-synth" component={EquipmentSynth} />
+      <Route path="/homestead" component={Homestead} />
+      <Route path="/cooking" component={Cooking} />
+      <Route path="/alchemy" component={Alchemy} />
+      <Route path="/agility" component={Agility} />
+      <Route path="/prayer" component={Prayer} />
+      <Route path="/town" component={Town} />
+      <Route path="/exploration" component={Exploration} />
       <Route component={NotFound} />
     </Switch>
   );

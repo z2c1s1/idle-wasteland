@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@shared/routes";
+import { postGame } from "@/lib/api";
+import type { GameState } from "@shared/schema";
 
 const QUERY_KEY = [api.game.getState.path];
 
@@ -10,7 +12,12 @@ async function fetchGameState() {
 }
 
 export function useGameState() {
-  return useQuery({ queryKey: QUERY_KEY, queryFn: fetchGameState, refetchInterval: 1000 });
+  return useQuery({
+    queryKey: QUERY_KEY,
+    queryFn: fetchGameState,
+    refetchInterval: 2500,
+    refetchIntervalInBackground: true,
+  });
 }
 
 export function useStartAction() {
@@ -112,17 +119,76 @@ export function useEnterDungeon() {
   });
 }
 
-export function useSetLootFilter() {
+export function useStartTower() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (rarity: string) => {
-      const res = await fetch(api.game.setLootFilter.path, {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rarity }), credentials: "include",
-      });
-      if (!res.ok) throw new Error("Failed to update loot filter");
-      return api.game.setLootFilter.responses[200].parse(await res.json());
-    },
+    mutationFn: () => postGame(api.game.startTower.path),
     onSuccess: (state) => queryClient.setQueryData(QUERY_KEY, state),
   });
 }
+
+export function useStartTrial() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => postGame(api.game.startTrial.path),
+    onSuccess: (state) => queryClient.setQueryData(QUERY_KEY, state),
+  });
+}
+
+export function useChooseBuff() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (buffId: string) => postGame(api.game.chooseBuff.path, { buffId }),
+    onSuccess: (state) => queryClient.setQueryData(QUERY_KEY, state),
+  });
+}
+
+export function useSetLootFilter() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (rarity: string) => postGame(api.game.setLootFilter.path, { rarity }),
+    onSuccess: (state) => queryClient.setQueryData(QUERY_KEY, state),
+  });
+}
+
+function useGameMutation<TInput = void>(fn: (input: TInput) => Promise<GameState>) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: fn,
+    onSuccess: (state) => queryClient.setQueryData(QUERY_KEY, state),
+  });
+}
+
+export const useCookFood = () =>
+  useGameMutation((recipeId: string) => postGame(api.game.cook.path, { recipeId }));
+
+export const useBrewPotion = () =>
+  useGameMutation((recipeId: string) => postGame(api.game.brew.path, { recipeId }));
+
+export const useGamble = () =>
+  useGameMutation((input: { tierIdx: number; slot?: string }) =>
+    postGame(api.game.gamble.path, input));
+
+export const useSynthEquip = () =>
+  useGameMutation((instanceIds: string[]) =>
+    postGame(api.game.synthEquip.path, { instanceIds }));
+
+export const useSynthGem = () =>
+  useGameMutation((items: { type: string; quality: string }[]) =>
+    postGame(api.game.synthGem.path, { items }));
+
+export const useUnlockTalent = () =>
+  useGameMutation((input: { style: "melee" | "ranged" | "magic"; nodeId: string }) =>
+    postGame(api.game.unlockTalent.path, input));
+
+export const useResetTalents = () =>
+  useGameMutation<void>(() => postGame(api.game.resetTalents.path));
+
+export const useExpandLootBag = () =>
+  useGameMutation<void>(() => postGame(api.game.expandLoot.path));
+
+export const useEquipSkill = () =>
+  useGameMutation((skillId: string) => postGame(api.game.equipSkill.path, { skillId }));
+
+export const useEnhanceItem = () =>
+  useGameMutation((instanceId: string) => postGame(api.game.enhance.path, { instanceId }));

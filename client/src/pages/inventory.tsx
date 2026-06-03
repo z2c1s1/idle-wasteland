@@ -1,275 +1,33 @@
-import { useState } from "react";
-import { useGameState, useEquipItem, useUnequipItem, useDestroyLoot, useSetLootFilter } from "@/hooks/use-game";
+import React, { useState, useRef } from "react";
+import { useGameState, useEquipItem, useUnequipItem, useDestroyLoot, useSetLootFilter, useExpandLootBag, useEnhanceItem } from "@/hooks/use-game";
+import { ItemCard } from "@/components/inventory/item-card";
 import {
   ALL_CRAFTABLE_ITEMS, ALL_SLOTS, SLOT_LABEL, SLOT_EMOJI,
   RARITY_COLOR, RARITY_BORDER, RARITY_BG, RARITY_LABEL,
-  AFFIX_LABEL, AFFIX_COLOR, GEM_EMOJI, SKILL_EMOJI, SKILL_COLOR,
-  ITEM_SETS, UNIQUE_ITEMS, getEquipmentBonuses,
-  getGemName, getGemBgClass,
+  AFFIX_LABEL, SKILL_EMOJI, SKILL_COLOR,
+  ITEM_SETS, getEquipmentBonuses,
   type GameItem, type EquipmentSlot, type GemType, type Rarity,
 } from "@shared/game-data";
 import {
-  parseCraftItems, parseEquipment, parseLootBag, formatNumber, getEquipmentStats,
+  parseCraftItems, parseEquipment, parseLootBag, formatNumber, getEquipmentStats, getPlayerAttack, getPlayerDefence, getPlayerMaxHp,
 } from "@/lib/game-utils";
 import type { GameState } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Package, Shield, Sword, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-// ─── Shared affix row with optional blue/gold tint ───────────────────────────
-function AffixRow({ affix, tint }: { affix: { type: string; value: number }; tint?: 'blue' | 'gold' }) {
-  const baseColor = AFFIX_COLOR[affix.type as keyof typeof AFFIX_COLOR] ?? 'text-foreground';
-  const labelColor = tint === 'blue' ? 'text-blue-300' : tint === 'gold' ? 'text-yellow-300' : baseColor;
-  const label = AFFIX_LABEL[affix.type as keyof typeof AFFIX_LABEL] ?? affix.type;
-  const hints: Record<string, string> = {
-    strength:       `+${affix.value} 攻击力`,
-    armour:         `+${affix.value} 防御`,
-    dexterity:      `+${(affix.value * 0.5).toFixed(1)}% 暴击率`,
-    vitality:       `+${affix.value * 5} 最大生命`,
-    intelligence:   `所有技能伤害 +${Math.floor(affix.value * 0.5)}%`,
-    damage_percent: `所有伤害 +${affix.value}%`,
-    life_on_hit:    `每次命中恢复 ${affix.value} 生命`,
-    overpower:      `${affix.value}% 概率触发强击（额外造成最大 HP 1% 伤害）`,
-    lucky_hit:      `${affix.value}% 概率幸运命中（触发时恢复生命）`,
-    life_regen:     `每回合恢复 ${affix.value} 生命`,
-    resist_all:     `所有伤害减免 ${affix.value} 点`,
-    life_leech:     `造成伤害的 ${affix.value}% 恢复生命`,
-    crit_damage:    `暴击伤害 +${affix.value}%`,
-    attack_speed:   `攻击间隔缩短 ${affix.value}%`,
-    thorns:         `被击时对攻击者反弹 ${affix.value} 伤害`,
-    skill_rank:     `所有技能等级 +${affix.value}（提升 ${affix.value * 5}% 战斗效能）`,
-  };
-  const hint = hints[affix.type];
-  return (
-    <div className={`text-xs flex items-center gap-1.5 ${labelColor}`}>
-      <span className="font-semibold">+{affix.value} {label}</span>
-      {hint && <span className="text-muted-foreground text-[10px]">({hint})</span>}
-    </div>
-  );
-}
-
-// ─── Item tooltip card ────────────────────────────────────────────────────────
-function ItemCard({ item, onEquip, onDestroy, onUnequip, isEquipped }: {
-  item: GameItem;
-  onEquip?: () => void;
-  onDestroy?: () => void;
-  onUnequip?: () => void;
-  isEquipped?: boolean;
-}) {
-  const [expanded, setExpanded] = useState(false);
-
-  const isUnique = item.source === 'unique';
-  const isSet    = !!item.setId;
-  const setDef   = isSet ? ITEM_SETS.find(s => s.id === item.setId) : undefined;
-  const uniqueDef= isUnique ? UNIQUE_ITEMS.find(u => u.id === item.uniqueId) : undefined;
-
-  const borderClass = isSet
-    ? 'border-teal-400/70 shadow-teal-400/15 shadow-sm'
-    : isUnique
-    ? 'border-amber-400/70 shadow-amber-400/20 shadow-md'
-    : RARITY_BORDER[item.rarity];
-  const bgClass = isSet
-    ? 'bg-teal-500/8'
-    : isUnique
-    ? 'bg-amber-500/10'
-    : RARITY_BG[item.rarity];
-  const nameClass = isSet
-    ? 'text-teal-300 font-bold'
-    : isUnique
-    ? 'text-amber-300 font-bold'
-    : `font-semibold ${RARITY_COLOR[item.rarity]}`;
-
-  return (
-    <div className={`rounded-lg border p-3 flex flex-col gap-2 transition-all ${borderClass} ${bgClass}`}
-      data-testid={`item-card-${item.instanceId}`}>
-      <div className="flex items-start gap-2">
-        <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center text-base leading-none">{item.emoji}</span>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span className={`text-sm leading-tight ${nameClass}`}>
-              {item.name}
-            </span>
-            {isSet && setDef && (
-              <span className="text-[10px] px-1 py-0.5 rounded font-semibold uppercase border border-teal-400/50 text-teal-300 bg-teal-400/10">
-                套装
-              </span>
-            )}
-            {!isSet && isUnique && (
-              <span className="text-[10px] px-1 py-0.5 rounded font-semibold uppercase border border-amber-400/50 text-amber-300 bg-amber-400/10">
-                传说独特
-              </span>
-            )}
-            {!isSet && !isUnique && (
-              <span className={`text-[10px] px-1 py-0.5 rounded font-semibold uppercase border ${RARITY_BORDER[item.rarity]} ${RARITY_COLOR[item.rarity]}`}>
-                {RARITY_LABEL[item.rarity]}
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-2 mt-0.5">
-            <span className="text-xs text-muted-foreground">{SLOT_LABEL[item.slot]}</span>
-            {item.baseType && <><span className="text-xs text-muted-foreground">·</span><span className="text-xs text-muted-foreground/60">{item.baseType}</span></>}
-            <span className="text-xs text-muted-foreground">·</span>
-            <span className="text-xs text-yellow-500 font-medium">物品等级 {item.ilvl}</span>
-          </div>
-          {/* Weapon damage range */}
-          {(item.maxDamage ?? 0) > 0 && (
-            <div className="text-xs text-orange-200 mt-0.5">⚔ 武器伤害：{item.minDamage}–{item.maxDamage}</div>
-          )}
-          {/* Flavor text for uniques */}
-          {(uniqueDef?.flavorText || item.flavorText) && (
-            <div className="text-[10px] text-amber-200/60 italic mt-0.5 leading-tight">
-              "{uniqueDef?.flavorText ?? item.flavorText}"
-            </div>
-          )}
-        </div>
-        <button className="text-muted-foreground hover:text-foreground p-0.5 transition-colors flex-shrink-0"
-          onClick={() => setExpanded(e => !e)}>
-          {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-        </button>
-      </div>
-
-      {/* Set name badge */}
-      {setDef && (
-        <div className="text-[10px] text-teal-300 font-semibold tracking-wide">
-          ◆ {setDef.name} — {setDef.pieces.length}件套
-        </div>
-      )}
-
-      {/* Quick stat summary */}
-      <div className="flex flex-wrap gap-x-3 gap-y-0.5">
-        {item.attackBonus    > 0 && <span className="text-xs text-red-300">⚔ +{item.attackBonus} 攻击</span>}
-        {item.defenceBonus   > 0 && <span className="text-xs text-blue-300">🛡 +{item.defenceBonus} 防御</span>}
-        {item.hpBonus        > 0 && <span className="text-xs text-green-300">❤ +{item.hpBonus} 生命</span>}
-        {item.critRating     > 0 && <span className="text-xs text-yellow-300">✦ +{item.critRating.toFixed(1)}% 暴击</span>}
-        {(item.enhancedDamage ?? 0) > 0 && <span className="text-xs text-orange-300">🔥 +{item.enhancedDamage}% 伤害</span>}
-        {(item.lifeOnKill ?? 0)     > 0 && <span className="text-xs text-pink-300">💗 +{item.lifeOnKill} 命中回血</span>}
-        {(item.crushingBlow ?? 0)   > 0 && <span className="text-xs text-red-500">💥 {item.crushingBlow}% 强击</span>}
-        {(item.magicFind ?? 0)      > 0 && <span className="text-xs text-purple-300">🍀 {item.magicFind}% 幸运命中</span>}
-        {(item.lifeRegen ?? 0)      > 0 && <span className="text-xs text-emerald-300">🌿 +{item.lifeRegen} 生命回复/回合</span>}
-        {(item.resistAll ?? 0)      > 0 && <span className="text-xs text-cyan-300">🔵 -{item.resistAll} 受伤</span>}
-        {(item.lifeLeech ?? 0)      > 0 && <span className="text-xs text-rose-300">🩸 {item.lifeLeech}% 吸血</span>}
-        {(item.deadlyStrike ?? 0)   > 0 && <span className="text-xs text-amber-300">⚡ {item.deadlyStrike}% 暴击伤害</span>}
-        {(item.attackSpeed ?? 0)    > 0 && <span className="text-xs text-sky-300">⚡ +{item.attackSpeed}% 攻速</span>}
-        {(item.reflectDamage ?? 0)  > 0 && <span className="text-xs text-lime-300">🌵 {item.reflectDamage} 反伤</span>}
-      </div>
-
-      {/* Gem sockets row */}
-      {(item.maxSockets ?? 0) > 0 && (
-        <div className="flex gap-1.5 items-center">
-          {Array.from({ length: item.maxSockets }).map((_, i) => {
-            const gk = item.socketedGems?.[i];
-            if (gk) {
-              const type = gk.split('_')[0] as GemType;
-              return (
-                <span key={i} className={`w-5 h-5 rounded-full border flex items-center justify-center text-[11px] ${getGemBgClass(gk)}`}
-                  title={getGemName(gk)}>{GEM_EMOJI[type]}</span>
-              );
-            }
-            return <span key={i} className="w-5 h-5 rounded-full border border-dashed border-muted-foreground/30 flex items-center justify-center text-[9px] text-muted-foreground/40">○</span>;
-          })}
-          <span className="text-[10px] text-muted-foreground">{(item.socketedGems?.length ?? 0)}/{item.maxSockets} 宝石孔</span>
-        </div>
-      )}
-
-      {/* Skills row */}
-      {(item.skills?.length ?? 0) > 0 && (
-        <div className="flex flex-wrap gap-1">
-          {item.skills.map((skill, i) => (
-            <span key={i} className={`text-[10px] px-1.5 py-0.5 rounded bg-muted/30 border border-border/50 font-medium ${SKILL_COLOR[skill.type]}`}
-              title={skill.description}>
-              {SKILL_EMOJI[skill.type]} {skill.name}
-            </span>
-          ))}
-        </div>
-      )}
-
-      {/* Expanded affix detail — prefix/suffix split (Diablo-style) */}
-      {expanded && (
-        <div className="border-t border-border/50 pt-2 space-y-1.5">
-          {/* Implicit affix (from item base) */}
-          {(() => {
-            const prefixTypes = new Set(item.prefixes?.map(a => a.type) ?? []);
-            const suffixTypes = new Set(item.suffixes?.map(a => a.type) ?? []);
-            const implicits = item.affixes.filter(a => !prefixTypes.has(a.type) && !suffixTypes.has(a.type));
-            return implicits.length > 0 && (
-              <div className="space-y-0.5">
-                <div className="text-[9px] text-muted-foreground/50 uppercase tracking-widest font-semibold">固有属性</div>
-                {implicits.map((affix, i) => <AffixRow key={i} affix={affix} />)}
-              </div>
-            );
-          })()}
-
-          {/* Prefixes (offensive, blue) */}
-          {(item.prefixes?.length ?? 0) > 0 && (
-            <div className="space-y-0.5">
-              <div className="text-[9px] text-blue-400/70 uppercase tracking-widest font-semibold">前缀</div>
-              {item.prefixes!.map((affix, i) => <AffixRow key={i} affix={affix} tint="blue" />)}
-            </div>
-          )}
-
-          {/* Suffixes (defensive/utility, gold) */}
-          {(item.suffixes?.length ?? 0) > 0 && (
-            <div className="space-y-0.5">
-              <div className="text-[9px] text-yellow-400/70 uppercase tracking-widest font-semibold">后缀</div>
-              {item.suffixes!.map((affix, i) => <AffixRow key={i} affix={affix} tint="gold" />)}
-            </div>
-          )}
-
-          {/* Fallback for smithed/unique items with no prefix/suffix split */}
-          {((item.prefixes?.length ?? 0) === 0 && (item.suffixes?.length ?? 0) === 0) && item.affixes.map((affix, i) => (
-            <AffixRow key={i} affix={affix} />
-          ))}
-
-          {(item.skills?.length ?? 0) > 0 && (
-            <div className="mt-1 space-y-0.5 border-t border-border/30 pt-1">
-              {item.skills.map((skill, i) => (
-                <p key={i} className={`text-[10px] ${SKILL_COLOR[skill.type]}`}>
-                  {SKILL_EMOJI[skill.type]} <span className="font-semibold">{skill.name}：</span>{skill.description}
-                </p>
-              ))}
-            </div>
-          )}
-          {item.source === 'smithed' && (
-            <p className="text-[10px] text-muted-foreground mt-1">制作 · 精良品质</p>
-          )}
-        </div>
-      )}
-
-      {/* Actions */}
-      <div className="flex gap-2 mt-1">
-        {isEquipped && onUnequip && (
-          <Button size="sm" variant="outline" onClick={onUnequip} className="h-7 text-xs px-2" data-testid={`button-unequip-${item.slot}`}>
-            卸下
-          </Button>
-        )}
-        {!isEquipped && onEquip && (
-          <Button size="sm" onClick={onEquip} className="h-7 text-xs px-2 flex-1" data-testid={`button-equip-${item.instanceId}`}>
-            装备
-          </Button>
-        )}
-        {!isEquipped && onDestroy && (
-          <Button size="sm" variant="ghost" onClick={onDestroy}
-            className="h-7 text-xs px-2 text-red-400 hover:text-red-300 hover:bg-red-950/30"
-            data-testid={`button-destroy-${item.instanceId}`}>
-            <Trash2 className="w-3 h-3" />
-          </Button>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ─── Equipment slot ───────────────────────────────────────────────────────────
+// ─── Equipment slot with hover tooltip ────────────────────────────────────────
 function EquipSlot({ slot, item, onUnequip }: {
   slot: EquipmentSlot;
   item: GameItem | null;
   onUnequip: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
+  const slotRef = useRef<HTMLDivElement>(null);
 
   return (
     <div className="relative" onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
-      <div className={`flex items-center gap-2 p-2 rounded-lg border transition-colors cursor-pointer ${
+      <div ref={slotRef} className={`flex items-center gap-2 p-2 rounded-lg border transition-colors cursor-pointer ${
         item ? `${RARITY_BORDER[item.rarity]} ${RARITY_BG[item.rarity]}` : "border-border bg-muted/10"
       }`}
         onClick={item ? onUnequip : undefined}
@@ -286,10 +44,41 @@ function EquipSlot({ slot, item, onUnequip }: {
             <p className="text-xs text-muted-foreground/50 mt-0.5">空</p>
           )}
         </div>
-        {item && hovered && (
-          <span className="text-[10px] text-red-400 flex-shrink-0">卸下</span>
-        )}
       </div>
+      {/* Hover tooltip */}
+      {hovered && item && (
+        <div className="fixed z-[99999] w-64 bg-card border border-border rounded-xl p-3 shadow-2xl space-y-1.5"
+          style={{
+            left: slotRef.current ? Math.min(slotRef.current.getBoundingClientRect().right + 8, window.innerWidth - 270) : 0,
+            top: slotRef.current ? slotRef.current.getBoundingClientRect().top : 0,
+          }}>
+          <div className="flex items-center gap-2">
+            <span className="text-lg">{item.emoji}</span>
+            <div>
+              <p className={`text-sm font-bold ${RARITY_COLOR[item.rarity]}`}>{item.name}</p>
+              <p className="text-[10px] text-muted-foreground">{SLOT_LABEL[item.slot]} · 物品等级 {item.ilvl}</p>
+            </div>
+          </div>
+          {(item.maxDamage ?? 0) > 0 && <p className="text-xs text-orange-200">⚔ 武器伤害：{item.minDamage}–{item.maxDamage}</p>}
+          <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs">
+            {item.attackBonus    > 0 && <span className="text-red-300">⚔ +{item.attackBonus} 攻击</span>}
+            {item.defenceBonus   > 0 && <span className="text-blue-300">🛡 +{item.defenceBonus} 防御</span>}
+            {item.hpBonus        > 0 && <span className="text-green-300">❤ +{item.hpBonus} 生命</span>}
+            {item.critRating     > 0 && <span className="text-yellow-300">✦ +{item.critRating.toFixed(1)}% 暴击</span>}
+            {(item.enhancedDamage ?? 0) > 0 && <span className="text-orange-300">🔥 +{item.enhancedDamage}% 伤害</span>}
+            {(item.lifeLeech ?? 0)      > 0 && <span className="text-rose-300">🩸 {item.lifeLeech}% 吸血</span>}
+            {(item.attackSpeed ?? 0)    > 0 && <span className="text-sky-300">⚡ +{item.attackSpeed}% 攻速</span>}
+          </div>
+          {(item.skills?.length ?? 0) > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {item.skills.map((s, i) => (
+                <span key={i} className="text-[10px] px-1 py-0.5 rounded bg-muted/30 border border-border/50">{SKILL_EMOJI[s.type]} {s.name}</span>
+              ))}
+            </div>
+          )}
+          <button onClick={onUnequip} className="text-xs text-red-400 hover:text-red-300 mt-1">点击卸下</button>
+        </div>
+      )}
     </div>
   );
 }
@@ -300,16 +89,16 @@ const RESOURCE_SECTIONS = [
   { label: "冶炼", prefix: "bar",  emoji: "🔩", names: ["青铜锭","铁锭","钢锭","银锭","金锭","秘银锭","精金锭","符文锭","龙锭","永恒锭"] },
   { label: "钓鱼", prefix: "fish", emoji: "🐟", names: ["虾","沙丁鱼","鲱鱼","鳟鱼","三文鱼","金枪鱼","龙虾","旗鱼","鲨鱼","鲸鱼"] },
   { label: "狩猎", prefix: "hide", emoji: "🪶", names: ["兔皮","鸟羽","狐皮","狼皮","熊皮","野猪皮","鹿皮","虎皮","龙皮","凤凰羽"] },
-  { label: "制作", prefix: "item", emoji: "🧵", names: ["布料","皮革","珠宝料","甲料","兵器料","神器料","遗物料","杰作料","天界料","神圣料"] },
 ];
 
-const FILTER_RARITIES: Rarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
+const FILTER_RARITIES: Rarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
 const FILTER_LABELS: Record<Rarity, string> = {
   common:    '保留全部',
   uncommon:  '魔法+',
   rare:      '稀有+',
   epic:      '神圣+',
-  legendary: '仅独特',
+  legendary: '传说+',
+  mythic:    '仅神话',
 };
 const DISENCHANT_GOLD_PREVIEW: Record<Rarity, string> = {
   common:    '—',
@@ -317,6 +106,7 @@ const DISENCHANT_GOLD_PREVIEW: Record<Rarity, string> = {
   rare:      '普通 →5金 · 魔法 →15金',
   epic:      '普通/魔法/稀有各→5/15/40金',
   legendary: '普通→5 · 魔法→15 · 稀有→40 · 神圣→100金',
+  mythic:    '不可分解',
 };
 
 export default function Inventory() {
@@ -325,6 +115,8 @@ export default function Inventory() {
   const unequipItem    = useUnequipItem();
   const destroyLoot    = useDestroyLoot();
   const setLootFilter  = useSetLootFilter();
+  const expandLootBag  = useExpandLootBag();
+  const enhanceItem    = useEnhanceItem();
   const { toast }      = useToast();
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>(() => {
     try {
@@ -368,7 +160,7 @@ export default function Inventory() {
   }
 
   const lootByRarity = [...lootBag].sort((a, b) => {
-    const order = { legendary: 0, epic: 1, rare: 2, uncommon: 3, common: 4 };
+    const order = { mythic: 0, legendary: 1, epic: 2, rare: 3, uncommon: 4, common: 5 };
     return order[a.rarity] - order[b.rarity];
   });
 
@@ -378,6 +170,23 @@ export default function Inventory() {
     setLootFilter.mutate(rarity, {
       onError: () => toast({ title: "筛选器设置失败", variant: "destructive" }),
     });
+  }
+
+  const [sellMode, setSellMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  function toggleSelect(id: string) {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
+  function handleSellSelected() {
+    if (selectedIds.size === 0) { setSellMode(false); return; }
+    selectedIds.forEach(id => destroyLoot.mutate(id));
+    setSelectedIds(new Set());
+    setSellMode(false);
+    toast({ title: `出售 ${selectedIds.size} 件装备` });
   }
 
   return (
@@ -390,6 +199,61 @@ export default function Inventory() {
           战利品袋中有 {lootBag.length} 件物品
           {equipStats.hpBonus > 0 && ` · +${equipStats.hpBonus} 生命`}
         </p>
+      </div>
+
+      {/* Total stats (base + equipment) — grouped by category */}
+      <div className="bg-card border border-border rounded-xl p-3 space-y-3">
+        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">总属性</h2>
+
+        {/* 基础战斗 */}
+        <div>
+          <h3 className="text-[10px] text-muted-foreground/60 mb-1">基础战斗</h3>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
+            <span className="text-red-300">⚔ {getPlayerAttack(gs)} 攻击</span>
+            <span className="text-blue-300">🛡 {getPlayerDefence(gs)} 防御</span>
+            <span className="text-green-300">❤ {getPlayerMaxHp(gs)} 生命</span>
+          </div>
+        </div>
+
+        {/* 暴击 */}
+        <div>
+          <h3 className="text-[10px] text-muted-foreground/60 mb-1">暴击</h3>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
+            <span className="text-yellow-300">✦ {(equipStats.critRating ?? 0).toFixed(1)}% 暴击率</span>
+            <span className="text-purple-300">💀 +{equipStats.deadlyStrike ?? 0}% 暴击伤害</span>
+          </div>
+        </div>
+
+        {/* 伤害增幅 */}
+        <div>
+          <h3 className="text-[10px] text-muted-foreground/60 mb-1">伤害增幅</h3>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
+            <span className="text-orange-300">🔥 +{equipStats.enhancedDamage ?? 0}% 增强伤害</span>
+            <span className="text-sky-300">⚡ +{equipStats.attackSpeed ?? 0}% 攻击速度</span>
+            <span className="text-amber-300">💥 +{equipStats.crushingBlow ?? 0}% 碾压打击</span>
+          </div>
+        </div>
+
+        {/* 生存与回复 */}
+        <div>
+          <h3 className="text-[10px] text-muted-foreground/60 mb-1">生存与回复</h3>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
+            <span className="text-emerald-300">🌿 +{equipStats.lifeRegen ?? 0} 生命回复</span>
+            <span className="text-pink-300">💗 +{equipStats.lifeOnKill ?? 0} 击杀回血</span>
+            <span className="text-rose-300">🩸 {equipStats.lifeLeech ?? 0}% 生命偷取</span>
+            <span className="text-cyan-300">🔵 -{equipStats.resistAll ?? 0} 伤害减免</span>
+          </div>
+        </div>
+
+        {/* 特殊 */}
+        <div>
+          <h3 className="text-[10px] text-muted-foreground/60 mb-1">特殊属性</h3>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
+            <span className="text-lime-300">🍀 +{equipStats.magicFind ?? 0}% 寻宝</span>
+            <span className="text-teal-300">💰 +{equipStats.goldBonus ?? 0}% 金币加成</span>
+            <span className="text-indigo-300">🔄 +{equipStats.reflectDamage ?? 0} 伤害反射</span>
+          </div>
+        </div>
       </div>
 
       {/* Loot Filter Panel */}
@@ -499,9 +363,35 @@ export default function Inventory() {
             <div className="flex items-center gap-2">
               <Sword className="w-4 h-4 text-yellow-400" />
               <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                战利品袋 <span className="text-xs normal-case">({lootBag.length}/50)</span>
+                战利品袋 <span className="text-xs normal-case">({lootBag.length}/{gs.lootBagSize ?? 50})</span>
               </h2>
+              {(gs.lootBagSize ?? 50) < 100 && (
+                <button onClick={async () => {
+                  try {
+                    const cost = Math.floor(Math.pow((gs.lootBagSize ?? 50) - 49, 2) * 100);
+                    if (!confirm(`扩容1格消耗${cost}金币？`)) return;
+                    await expandLootBag.mutateAsync();
+                    toast({ title: "扩容成功" });
+                  } catch (e: unknown) {
+                    toast({
+                      title: "扩容失败",
+                      description: e instanceof Error ? e.message : "未知错误",
+                      variant: "destructive",
+                    });
+                  }
+                }} className="h-6 text-[10px] px-2 rounded border border-border hover:bg-muted/20 text-muted-foreground">
+                  +扩容
+                </button>
+              )}
             </div>
+            <button
+              onClick={() => sellMode ? handleSellSelected() : setSellMode(true)}
+              className={`h-7 text-xs px-3 rounded font-semibold transition-colors ${
+                sellMode ? 'bg-red-600 hover:bg-red-500 text-white' : 'bg-muted/30 hover:bg-muted/50 text-muted-foreground'
+              }`}
+            >
+              {sellMode ? `出售 (${selectedIds.size})` : '出售'}
+            </button>
           </div>
 
           {lootBag.length === 0 ? (
@@ -510,40 +400,41 @@ export default function Inventory() {
               <p className="text-xs mt-1">击败敌人以获取战利品！</p>
             </div>
           ) : (
-            <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1">
-              {lootByRarity.map(item => (
-                <ItemCard
-                  key={item.instanceId}
-                  item={item}
-                  onEquip={() => handleEquipDropped(item.instanceId)}
-                  onDestroy={() => handleDestroy(item.instanceId)}
-                />
-              ))}
+            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-1.5 max-h-[400px] overflow-y-auto pr-1">
+              {lootByRarity.map(item => {
+                const equipSame = (equipment[item.slot] as GameItem | undefined) ?? null;
+                const isSelected = selectedIds.has(item.instanceId);
+                return (
+                <div key={item.instanceId} className="relative">
+                  <ItemCard
+                    item={item}
+                    compact
+                    onEquip={() => handleEquipDropped(item.instanceId)}
+                    onDestroy={() => handleDestroy(item.instanceId)}
+                    onEnhance={() => enhanceItem.mutate(item.instanceId, {
+                      onError: (err) => toast({ title: "强化失败", description: err.message, variant: "destructive" }),
+                    })}
+                    equippedSame={equipSame}
+                  />
+                  {sellMode && (
+                    <div
+                      className={`absolute top-1 left-1 w-5 h-5 rounded border-2 flex items-center justify-center cursor-pointer text-xs font-bold transition-colors ${
+                        isSelected ? 'bg-red-500 border-red-500 text-white' : 'border-border bg-muted/30 text-transparent hover:border-red-400'
+                      }`}
+                      onClick={() => toggleSelect(item.instanceId)}
+                    >
+                      {isSelected ? '✓' : ''}
+                    </div>
+                  )}
+                </div>
+                );
+              })}
             </div>
           )}
         </div>
       </div>
 
-      {/* Currently equipped items (as cards) */}
-      {Object.values(equipment).some(Boolean) && (
-        <div className="bg-card border border-border rounded-xl p-4 space-y-3">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">已装备物品</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {ALL_SLOTS.map(slot => {
-              const item = (equipment[slot] as GameItem | undefined) ?? null;
-              if (!item) return null;
-              return (
-                <ItemCard
-                  key={slot}
-                  item={item}
-                  isEquipped
-                  onUnequip={() => handleUnequip(slot)}
-                />
-              );
-            })}
-          </div>
-        </div>
-      )}
+
 
       {/* Smithed items */}
       {Object.keys(craftItems).length > 0 && (
@@ -612,12 +503,12 @@ export default function Inventory() {
                   }
                 </button>
                 {!isCollapsed && (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1 mt-3">
+                  <div className="flex flex-wrap gap-1 mt-3">
                     {items.map(item => (
-                      <div key={item.key} className="flex items-center gap-1.5 bg-muted/20 rounded-md px-2 py-1.5" data-testid={`resource-${item.key}`}>
-                        <span className="w-4 h-4 flex-shrink-0 flex items-center justify-center text-sm leading-none">{section.emoji}</span>
-                        <span className="text-xs text-muted-foreground truncate flex-1">{item.name}</span>
-                        <span className="text-xs font-bold text-foreground flex-shrink-0">{formatNumber(item.qty)}</span>
+                      <div key={item.key} className="flex flex-col items-center justify-center bg-muted/20 rounded-md w-14 h-14 p-0.5" data-testid={`resource-${item.key}`}>
+                        <span className="text-base leading-none">{section.emoji}</span>
+                        <span className="text-[10px] font-bold text-foreground leading-tight">{formatNumber(item.qty)}</span>
+                        <span className="text-[9px] text-muted-foreground text-center leading-none">{item.name}</span>
                       </div>
                     ))}
                   </div>
@@ -639,22 +530,22 @@ export default function Inventory() {
             <h2 className="text-sm font-semibold text-red-400 uppercase tracking-wider">战斗类</h2>
           </div>
           <div className="bg-card border border-border rounded-xl p-4">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="bg-muted/20 rounded-lg p-3 text-center" data-testid="resource-gold">
-                <p className="text-lg mb-0.5">💰</p>
-                <p className="text-xs text-muted-foreground">金币</p>
-                <p className="text-sm font-bold text-yellow-400 mt-0.5">{formatNumber(gs.gold)}</p>
+            <div className="flex flex-wrap gap-1">
+              <div className="flex flex-col items-center justify-center bg-muted/20 rounded-md w-14 h-14 p-0.5" data-testid="resource-gold">
+                <span className="text-base leading-none">💰</span>
+                <span className="text-[10px] font-bold text-yellow-400 leading-tight">{formatNumber(gs.gold)}</span>
+                <span className="text-[9px] text-muted-foreground text-center leading-none">金币</span>
               </div>
-              <div className="bg-muted/20 rounded-lg p-3 text-center" data-testid="resource-bones">
-                <p className="text-lg mb-0.5">🦴</p>
-                <p className="text-xs text-muted-foreground">骨头</p>
-                <p className="text-sm font-bold mt-0.5">{formatNumber(gs.bones)}</p>
+              <div className="flex flex-col items-center justify-center bg-muted/20 rounded-md w-14 h-14 p-0.5" data-testid="resource-bones">
+                <span className="text-base leading-none">🦴</span>
+                <span className="text-[10px] font-bold text-foreground leading-tight">{formatNumber(gs.bones)}</span>
+                <span className="text-[9px] text-muted-foreground text-center leading-none">骨头</span>
               </div>
               {gs.dragonBones > 0 && (
-                <div className="bg-muted/20 rounded-lg p-3 text-center" data-testid="resource-dragon-bones">
-                  <p className="text-lg mb-0.5">🐲</p>
-                  <p className="text-xs text-muted-foreground">龙骨</p>
-                  <p className="text-sm font-bold text-purple-400 mt-0.5">{formatNumber(gs.dragonBones)}</p>
+                <div className="flex flex-col items-center justify-center bg-muted/20 rounded-md w-14 h-14 p-0.5" data-testid="resource-dragon-bones">
+                  <span className="text-base leading-none">🐲</span>
+                  <span className="text-[10px] font-bold text-purple-400 leading-tight">{formatNumber(gs.dragonBones)}</span>
+                  <span className="text-[9px] text-muted-foreground text-center leading-none">龙骨</span>
                 </div>
               )}
             </div>

@@ -1,55 +1,71 @@
-import { getEquipmentBonuses, type EquipmentState, type GameItem } from "@shared/game-data";
+import { getEquipmentBonuses } from "@shared/game-data";
 import type { GameState } from "@shared/schema";
+import {
+  MAX_LEVEL,
+  calculateLevel,
+  xpForLevel,
+  levelProgress,
+  getPlayerMaxHp,
+  getPlayerAttack,
+  getPlayerDefence,
+  getCombatLevel,
+  getAgilityBonuses,
+  getTemperatureMultiplier,
+} from "@shared/game-math";
+import {
+  parseEquipment,
+  parseCraftItems,
+  parseLootBag,
+  parseGems,
+  parseDungeonStats,
+  type DungeonStat,
+  type DungeonStats,
+} from "@shared/game-state-parse";
+import { getResourceCount } from "@shared/resources";
 
-export const calculateLevel = (xp: number): number => Math.floor(Math.sqrt(Math.max(0, xp))) + 1;
-export const xpForLevel = (level: number): number => Math.pow(level - 1, 2);
-export const levelProgress = (xp: number): number => {
-  const lv = calculateLevel(xp);
-  const cur = xpForLevel(lv);
-  const nxt = xpForLevel(lv + 1);
-  const range = nxt - cur;
-  return range === 0 ? 100 : Math.min(100, Math.max(0, ((xp - cur) / range) * 100));
+export {
+  MAX_LEVEL,
+  calculateLevel,
+  xpForLevel,
+  levelProgress,
+  getPlayerMaxHp,
+  getPlayerAttack,
+  getPlayerDefence,
+  getCombatLevel,
+  getAgilityBonuses,
+  getTemperatureMultiplier,
+  parseEquipment,
+  parseCraftItems,
+  parseLootBag,
+  parseGems,
+  parseDungeonStats,
+  type DungeonStat,
+  type DungeonStats,
+  getResourceCount,
 };
+
 export const formatNumber = (n: number): string =>
-  new Intl.NumberFormat('en-US').format(Math.floor(n));
+  new Intl.NumberFormat("en-US").format(Math.floor(n));
 
-export function parseEquipment(raw: string): EquipmentState {
-  try { return JSON.parse(raw) as EquipmentState; } catch { return {}; }
-}
-export function parseCraftItems(raw: string): Record<string, number> {
-  try { return JSON.parse(raw) as Record<string, number>; } catch { return {}; }
-}
-export function parseLootBag(raw: string): GameItem[] {
-  try { return JSON.parse(raw) as GameItem[]; } catch { return []; }
-}
-export function parseGems(raw: string): Record<string, number> {
-  try { return JSON.parse(raw) as Record<string, number>; } catch { return {}; }
-}
-
-export function getPlayerMaxHp(state: GameState): number {
-  const equipment = parseEquipment(state.equipment);
-  const { hpBonus } = getEquipmentBonuses(equipment);
-  return 10 + (calculateLevel(state.hitpointsXp) - 1) * 5 + hpBonus;
-}
-
-export function getPlayerAttack(state: GameState): number {
-  const equipment = parseEquipment(state.equipment);
-  const { attackBonus, critRating } = getEquipmentBonuses(equipment);
-  const base = Math.max(1, Math.floor(calculateLevel(state.attackXp) * 1.2) + attackBonus);
-  return Math.floor(base * (1 + (critRating / 100) * 0.5));
-}
-
-export function getPlayerDefence(state: GameState): number {
-  const equipment = parseEquipment(state.equipment);
-  const { defenceBonus } = getEquipmentBonuses(equipment);
-  return Math.floor(calculateLevel(state.defenceXp) * 0.8) + defenceBonus;
-}
-
-export function getCombatLevel(state: GameState): number {
-  return Math.floor((calculateLevel(state.attackXp) + calculateLevel(state.defenceXp) + calculateLevel(state.hitpointsXp)) / 3);
+export function getTotalTalentPoints(state: GameState): number {
+  // 每个技能达到 9/18/27/... 级时各获得 1 天赋点
+  const skills = [
+    state.attackXp,
+    state.defenceXp,
+    state.hitpointsXp,
+    state.rangedXp ?? 0,
+    state.magicXp ?? 0,
+    state.woodcuttingXp,
+    state.miningXp,
+    state.smeltingXp,
+    state.fishingXp,
+    state.huntingXp,
+    state.thievingXp,
+    state.agilityXp ?? 0,
+  ];
+  return skills.reduce((sum, xp) => sum + Math.floor(calculateLevel(xp) / 9), 0);
 }
 
 export function getEquipmentStats(state: GameState) {
-  const equipment = parseEquipment(state.equipment);
-  return getEquipmentBonuses(equipment);
+  return getEquipmentBonuses(parseEquipment(state.equipment));
 }

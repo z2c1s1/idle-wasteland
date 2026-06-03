@@ -1,0 +1,432 @@
+$ findstr /N "enemyHp = totalMaxHp" "server\storage.ts"
+[exit 0]
+14:export const SKILLS_DATA: Record<string, { name: string; time: number; xp: number; prefix: string }[]> = {
+15:  woodcutting: Array.from({ length: 10 }, (_, i) => ({
+19:  mining: Array.from({ length: 10 }, (_, i) => ({
+23:  smelting: Array.from({ length: 10 }, (_, i) => ({
+27:  fishing: Array.from({ length: 10 }, (_, i) => ({
+31:  hunting: Array.from({ length: 10 }, (_, i) => ({
+35:  crafting: Array.from({ length: 10 }, (_, i) => ({
+61:  const equipment = parseEquipment(state.equipment);
+62:  const { hpBonus } = getEquipmentBonuses(equipment);
+67:  const equipment = parseEquipment(state.equipment);
+68:  const { attackBonus, critRating } = getEquipmentBonuses(equipment);
+69:  const baseAtk = Math.max(1, Math.floor(calcLevel(state.attackXp) * 1.2) + attackBonus);
+70:  const critMult = 1 + (critRating / 100) * 0.5;
+75:  const equipment = parseEquipment(state.equipment);
+76:  const { defenceBonus } = getEquipmentBonuses(equipment);
+86:  const expected = completions * chance;
+87:  const total = Math.floor(expected) + (Math.random() < (expected % 1) ? 1 : 0);
+88:  const gems: Record<string, number> = {};
+89:  for (let i = 0; i < total; i++) {
+90:    const key = pool[Math.floor(Math.random() * pool.length)];
+91:    gems[key] = (gems[key] ?? 0) + 1;
+97:  const out = { ...a };
+98:  for (const [k, v] of Object.entries(b)) out[k] = (out[k] ?? 0) + v;
+110:  const recipe = recipes[recipeIndex];
+113:  const elapsedSeconds = (now.getTime() - new Date(state.actionUpdatedAt).getTime()) / 1000;
+114:  const ticks = Math.floor(elapsedSeconds / recipe.time);
+115:  if (ticks <= 0) return null;
+117:  const craftItems = parseCraftItems(state.craftItems);
+118:  const tempRes: Record<string, number> = {};
+119:  for (const inp of recipe.inputs) tempRes[inp.resource] = ((state as Record<string, unknown>)[inp.resource] as number) ?? 0;
+121:  let actualTicks = 0;
+122:  for (let i = 0; i < ticks; i++) {
+123:    if (!recipe.inputs.every(inp => (tempRes[inp.resource] ?? 0) >= inp.qty)) break;
+124:    for (const inp of recipe.inputs) tempRes[inp.resource] -= inp.qty;
+125:    craftItems[recipe.output] = (craftItems[recipe.output] ?? 0) + 1;
+129:  const updates: Partial<GameState> = {
+134:  for (const inp of recipe.inputs) (updates as Record<string, unknown>)[inp.resource] = tempRes[inp.resource];
+135:  const depleted = recipe.inputs.some(inp => (tempRes[inp.resource] ?? 0) < inp.qty);
+136:  if (actualTicks === 0 || actualTicks < ticks || depleted) updates.activeAction = "idle";
+143:const RARITY_ORDER: Record<string, number> = {
+147:const DISENCHANT_GOLD: Record<string, number> = {
+163:type CombatStyle = 'melee' | 'ranged' | 'magic';
+168:  const equipment = parseEquipment(state.equipment);
+169:  const allSkills = Object.values(equipment).flatMap((item: any) => item?.skills ?? []);
+170:  const getSkillChance = (type: string) => allSkills.filter((s: any) => s.type === type).reduce((max: number, s: any) => Math.max(max, s.chance ?? s.value ?? 0), 0);
+171:  const getSkillMag = (type: string) => allSkills.filter((s: any) => s.type === type).reduce((sum: number, s: any) => sum + (s.magnitude ?? s.value ?? 0), 0);
+172:  const getSkillVal = (type: string) => allSkills.filter((s: any) => s.type === type).reduce((sum: number, s: any) => sum + (s.magnitude ?? s.value ?? 0), 0);
+174:  const { attackBonus: eqAttackBonus, enhancedDamage, lifeOnKill, crushingBlow, magicFind, lifeRegen, lifeLeech, deadlyStrike, attackSpeed, reflectDamage, resistAll } = getEquipmentBonuses(equipment);
+175:  const spellbladePct = getSkillVal('spellblade');
+176:  const poisonDmg = getSkillVal('poison');
+177:  const thornsDmg = getSkillVal('thorns');
+178:  const berserkPct = getSkillVal('berserk');
+179:  const doubleStrikePct = getSkillVal('doublestrike');
+180:  const dodgePct = getSkillVal('dodge');
+182:  const BASE_COMBAT_SPEED = 3;
+183:  const effectiveCombatSpeed = Math.max(1.5, BASE_COMBAT_SPEED * (1 - attackSpeed / 200));
+184:  const ticks = Math.floor(elapsedSeconds / effectiveCombatSpeed);
+185:  if (ticks <= 0) return state;
+187:  const enemyStyle: CombatStyle = enemy.combatStyle ?? 'melee';
+188:  let triangleMult = 1;
+189:  if (COMBAT_TRIANGLE[style].strong === enemyStyle) triangleMult = 1 + TRIANGLE_DAMAGE_BONUS;
+190:  else if (COMBAT_TRIANGLE[style].weak === enemyStyle) triangleMult = 1 - TRIANGLE_DAMAGE_PENALTY;
+192:  const playerMaxHp = getPlayerMaxHp(state);
+193:  let playerHp = state.playerHp < 0 ? playerMaxHp : state.playerHp;
+194:  let enemyHp = state.enemyHp < 0 ? enemy.maxHp : state.enemyHp;
+196:  const weaponItem = equipment.weapon ?? null;
+197:  const hasWeaponRange = weaponItem && (weaponItem.maxDamage ?? 0) > 0;
+198:  const levelBaseDmg = Math.max(1, Math.floor(calcLevel(style === 'ranged' ? state.rangedXp : state.magicXp) * 1.2) + eqAttackBonus);
+200:  let goldGained = 0, attackXpGained = 0, defenceXpGained = 0, hitpointsXpGained = 0;
+201:  let playerDied = false;
+202:  const newDrops: GameItem[] = [];
+203:  let gemsGained: Record<string, number> = {};
+205:  for (let i = 0; i < ticks; i++) {
+206:    if (lifeRegen > 0) playerHp = Math.min(playerMaxHp, playerHp + lifeRegen);
+208:    const weaponRoll = hasWeaponRange && weaponItem ? (weaponItem.minDamage ?? 0) + Math.floor(Math.random() * ((weaponItem.maxDamage ?? 0) - (weaponItem.minDamage ?? 0) + 1)) : levelBaseDmg;
+209:    const perHitBase = Math.max(1, weaponRoll + eqAttackBonus);
+210:    let effAtk = Math.max(1, perHitBase - enemy.defence);
+211:    if (spellbladePct > 0) effAtk = Math.floor(effAtk * (1 + spellbladePct / 100));
+212:    if (enhancedDamage > 0) effAtk = Math.floor(effAtk * (1 + enhancedDamage / 100));
+213:    if (berserkPct > 0 && playerHp < playerMaxHp * 0.3) effAtk = Math.floor(effAtk * (1 + berserkPct / 100));
+215:    const deadlyStrikeHit = deadlyStrike > 0 && Math.random() * 100 < deadlyStrike;
+216:    const strikes = (doubleStrikePct > 0 && Math.random() * 100 < doubleStrikePct) ? 2 : 1;
+217:    let totalDmgToEnemy = Math.floor((effAtk * strikes * (deadlyStrikeHit ? 2 : 1) + poisonDmg) * triangleMult);
+218:    if (crushingBlow > 0 && Math.random() * 100 < crushingBlow) totalDmgToEnemy += Math.max(1, Math.floor(playerMaxHp * 0.01));
+220:    enemyHp -= totalDmgToEnemy;
+221:    attackXpGained += 4 * strikes;
+222:    if (lifeLeech > 0) playerHp = Math.min(playerMaxHp, playerHp + Math.floor(totalDmgToEnemy * lifeLeech / 100));
+223:    if (lifeOnKill > 0) playerHp = Math.min(playerMaxHp, playerHp + lifeOnKill);
+225:    if (enemyHp <= 0) {
+226:      goldGained += enemy.drops.gold[0] + Math.floor(Math.random() * (enemy.drops.gold[1] - enemy.drops.gold[0] + 1));
+227:      attackXpGained += enemy.xp;
+228:      hitpointsXpGained += Math.floor(enemy.xp / 3);
+231:        const drop = generateDroppedItem(enemyIndex, 0);
+232:        if (drop) { const filterThreshold = RARITY_ORDER[state.lootFilter ?? 'common'] ?? 0; if ((RARITY_ORDER[drop.rarity] ?? 0) >= filterThreshold) newDrops.push(drop); else goldGained += DISENCHANT_GOLD[drop.rarity] ?? 5; }
+234:      enemyHp = enemy.maxHp;
+238:    const rawDmg = Math.max(0, enemy.attack - (style === 'melee' ? getPlayerDefence(state) : Math.floor(calcLevel(state.defenceXp) * 0.5)));
+239:    const dmgToPlayer = Math.max(0, rawDmg - resistAll);
+240:    const dodged = dodgePct > 0 && Math.random() * 100 < dodgePct;
+242:      playerHp -= dmgToPlayer;
+243:      defenceXpGained += 2;
+244:      hitpointsXpGained += 1;
+245:      if (thornsDmg > 0) enemyHp -= thornsDmg;
+246:      if (reflectDamage > 0) enemyHp -= reflectDamage;
+248:    if (playerHp <= 0) { playerDied = true; playerHp = Math.floor(playerMaxHp * 0.5); break; }
+251:  const usedTime = playerDied ? elapsedSeconds : ticks * effectiveCombatSpeed;
+252:  const existingLoot = parseLootBag(state.lootBag);
+253:  const combinedLoot = [...existingLoot, ...newDrops].slice(-50);
+254:  const existingGems = parseGems(state.gems);
+255:  const mergedGems = mergeGems(existingGems, gemsGained);
+257:  const updates: Partial<GameState> = {
+258:    playerHp, enemyHp,
+260:    [style === 'ranged' ? 'rangedXp' : 'magicXp']: (state[style === 'ranged' ? 'rangedXp' : 'magicXp'] ?? 0) + attackXpGained,
+261:    attackXp: style === 'melee' ? state.attackXp + attackXpGained : state.attackXp,
+270:  const [updated] = await db.update(gameStates).set(updates).where(eq(gameStates.id, state.id)).returning();
+276:    let [state] = await db.select().from(gameStates).limit(1);
+278:      const [newState] = await db.insert(gameStates).values({}).returning();
+279:      state = newState;
+282:    const action = state.activeAction;
+283:    if (action === "idle") return state;
+285:    const now = new Date();
+286:    const elapsedSeconds = (now.getTime() - new Date(state.actionUpdatedAt).getTime()) / 1000 * (state.speedMult ?? 1);
+287:    if (elapsedSeconds <= 0) return state;
+291:      const parts = action.split("_");
+292:      const enemyIndex = parseInt(parts[1]);
+293:      const enemyQty = parseInt(parts[2] ?? '1') || 1;
+294:      const enemy = ENEMIES[enemyIndex];
+298:      const equipment = parseEquipment(state.equipment);
+299:      const allSkills: ItemSkill[] = Object.values(equipment).flatMap(item => item?.skills ?? []);
+300:      const getSkillVal = (type: ItemSkill['type']) =>
+301:        allSkills.filter(s => s.type === type).reduce((sum, s) => sum + ((s as any).magnitude ?? (s as any).value ?? 0), 0);
+302:      const getSkillChance = (type: ItemSkill['type']) =>
+303:        allSkills.filter(s => s.type === type).reduce((max, s) => Math.max(max, (s as any).chance ?? (s as any).value ?? 0), 0);
+304:      const getSkillMag = (type: ItemSkill['type']) =>
+305:        allSkills.filter(s => s.type === type).reduce((sum, s) => sum + ((s as any).magnitude ?? (s as any).value ?? 0), 0);
+313:      } = getEquipmentBonuses(equipment);
+315:      const spellbladePct   = Math.min(60, getSkillVal('spellblade'));
+316:      const poisonDmg       = getSkillVal('poison');
+317:      const thornsDmg       = getSkillVal('thorns');
+318:      const effectiveResist = Math.min(50, resistAll);
+319:      const lifeStealPct    = Math.min(50, getSkillVal('lifesteal'));
+320:      const vampiricHp      = getSkillVal('vampiric');
+321:      const berserkPct      = Math.min(80, getSkillVal('berserk'));
+322:      const doubleStrikePct = Math.min(50, getSkillVal('doublestrike'));
+323:      const dodgePct        = Math.min(50, getSkillVal('dodge'));
+324:      const executePct      = Math.min(40, getSkillChance('execute'));
+325:      const frostNovaPct    = Math.min(40, getSkillChance('frost_nova'));
+326:      const bloodSacPct     = Math.min(30, getSkillVal('blood_sacrifice'));
+327:      const avalanchePct    = getSkillChance('avalanche');
+328:      const divineShieldPct = Math.min(50, getSkillChance('divine_shield'));
+329:      const meteorPct       = getSkillVal('meteor');
+333:      const BASE_COMBAT_SPEED = 3;
+334:      const effectiveCombatSpeed = Math.max(1.5, BASE_COMBAT_SPEED * (1 - attackSpeed / 200));
+335:      const ticks = Math.floor(elapsedSeconds / effectiveCombatSpeed);
+336:      if (ticks <= 0) return state;
+338:      const playerMaxHp = getPlayerMaxHp(state);
+339:      let playerHp = state.playerHp < 0 ? playerMaxHp : state.playerHp;
+340:      // Each monster fights simultaneously: HP pool = unit_hp × qty, damage = unit_atk × qty
+341:      const totalMaxHp = enemy.maxHp * enemyQty;
+342:      let enemyHp  = state.enemyHp  < 0 ? totalMaxHp  : state.enemyHp;
+343:      const isAoE = (state as any).equippedSkill && COMBAT_SKILLS.find((s: any) => s.id === (state as any).equippedSkill)?.type === 'aoe';
+345:      const playerAtk = getPlayerAttack(state);
+346:      const playerDef = getPlayerDefence(state);
+349:      const weaponItem = equipment.weapon ?? null;
+350:      const hasWeaponRange = weaponItem && (weaponItem.maxDamage ?? 0) > 0;
+352:      const levelBaseDmg = Math.max(1, playerAtk - eqAttackBonus);
+355:      const playerStyle: CombatStyle = (equipment.weapon as any)?.combatStyle ?? 'melee';
+356:      const enemyStyle: CombatStyle = (enemy as any).combatStyle ?? 'melee';
+357:      let triangleMult = 1;
+358:      if (COMBAT_TRIANGLE[playerStyle].strong === enemyStyle) triangleMult = 1 + TRIANGLE_DAMAGE_BONUS;
+359:      else if (COMBAT_TRIANGLE[playerStyle].weak === enemyStyle) triangleMult = 1 - TRIANGLE_DAMAGE_PENALTY;
+361:      let goldGained = 0, bonesGained = 0, dragonBonesGained = 0;
+362:      let attackXpGained = 0, defenceXpGained = 0, hitpointsXpGained = 0;
+363:      let playerDied = false;
+364:      const newDrops: GameItem[] = [];
+365:      let gemsGained: Record<string, number> = {};
+366:      const dropChance = getDropChance(enemyIndex);
+367:      const gemPool = COMBAT_GEM_POOLS[Math.min(enemyIndex, COMBAT_GEM_POOLS.length - 1)];
+369:      for (let i = 0; i < ticks; i++) {
+371:        if (lifeRegen > 0) playerHp = Math.min(playerMaxHp, playerHp + lifeRegen);
+374:        const weaponRoll = hasWeaponRange && weaponItem
+377:        // Total base = rolled weapon damage + affix attack bonus
+378:        const perHitBase = Math.max(1, weaponRoll + eqAttackBonus);
+381:        let effAtk = Math.max(1, perHitBase - enemy.defence);
+382:        if (spellbladePct > 0)  effAtk = Math.floor(effAtk * (1 + spellbladePct / 100));
+383:        if (enhancedDamage > 0) effAtk = Math.floor(effAtk * (1 + enhancedDamage / 100));
+384:        if (berserkPct > 0 && playerHp < playerMaxHp * 0.3) effAtk = Math.floor(effAtk * (1 + berserkPct / 100));
+388:        const deadlyStrikeHit = deadlyStrike > 0 && Math.random() * 100 < deadlyStrike;
+389:        const strikes = (doubleStrikePct > 0 && Math.random() * 100 < doubleStrikePct) ? 2 : 1;
+390:        let totalDmgToEnemy = effAtk * strikes * (deadlyStrikeHit ? 2 : 1) + poisonDmg;
+391:        if (isAoE) totalDmgToEnemy = Math.floor(totalDmgToEnemy * Math.min(enemyQty, 5));
+395:          totalDmgToEnemy += Math.max(1, Math.floor(playerMaxHp * 0.01));
+398:        enemyHp -= totalDmgToEnemy;
+399:        attackXpGained += 4 * strikes;
+403:        if (executePct > 0 && enemyHp < enemy.maxHp * 0.2 && Math.random() * 100 < executePct) {
+404:          totalDmgToEnemy = enemyHp;
+407:          const sacDmg = Math.floor(playerHp * bloodSacPct / 100);
+408:          totalDmgToEnemy += sacDmg;
+409:          playerHp -= sacDmg;
+412:          totalDmgToEnemy += Math.floor(totalDmgToEnemy * getSkillMag('avalanche') / 100);
+415:          totalDmgToEnemy += Math.floor(perHitBase * getSkillMag('meteor') / 100);
+418:        const cleaveChance = getSkillChance('cleave');
+420:          totalDmgToEnemy += Math.floor(totalDmgToEnemy * getSkillMag('cleave') / 100);
+423:        const frenzyChance = getSkillChance('frenzy');
+425:          totalDmgToEnemy += Math.floor(perHitBase * getSkillMag('frenzy') / 100);
+428:        const arcaneChance = getSkillChance('arcane_barrage');
+430:          const extraHits = getSkillMag('arcane_barrage');
+431:          totalDmgToEnemy += effAtk * extraHits;
+432:          attackXpGained += 4 * extraHits;
+436:          playerHp = Math.min(playerMaxHp, playerHp + Math.floor(totalDmgToEnemy * lifeLeech / 100));
+440:        if (lifeOnKill > 0) playerHp = Math.min(playerMaxHp, playerHp + lifeOnKill);
+444:          playerHp = Math.min(playerMaxHp, playerHp + Math.max(1, Math.floor(playerMaxHp * 0.02)));
+449:          playerHp = Math.min(playerMaxHp, playerHp + Math.floor(totalDmgToEnemy * lifeStealPct / 100));
+452:        if (enemyHp <= 0) {
+453:            const killReward = enemy.drops.gold[0] + Math.floor(Math.random() * (enemy.drops.gold[1] - enemy.drops.gold[0] + 1));
+454:          goldGained += killReward * enemyQty;
+455:          bonesGained       += (enemy.drops.bones ?? 0) * enemyQty;
+456:          dragonBonesGained += (enemy.drops.dragonBones ?? 0) * enemyQty;
+457:          attackXpGained    += enemy.xp * enemyQty;
+458:          hitpointsXpGained += Math.floor(enemy.xp / 3) * enemyQty;
+460:            const drop = generateDroppedItem(enemyIndex, magicFind);
+461:            const filterThreshold = RARITY_ORDER[state.lootFilter ?? 'common'] ?? 0;
+462:            if ((RARITY_ORDER[drop.rarity] ?? 0) >= filterThreshold) {
+465:              goldGained += DISENCHANT_GOLD[drop.rarity] ?? 5;
+470:            const gk = gemPool.pool[Math.floor(Math.random() * gemPool.pool.length)];
+471:            gemsGained[gk] = (gemsGained[gk] ?? 0) + 1;
+474:          if (vampiricHp > 0) playerHp = Math.min(playerMaxHp, playerHp + vampiricHp);
+475:          enemyHp = totalMaxHp;
+479:        const rawDmg = Math.max(0, enemy.attack * enemyQty - playerDef);
+480:        let dmgToPlayer = Math.max(0, rawDmg - effectiveResist);
+482:        if (frostNovaPct > 0 && Math.random() * 100 < frostNovaPct) dmgToPlayer = 0;
+483:        const dodged = dodgePct > 0 && Math.random() * 100 < dodgePct;
+485:        if (divineShieldPct > 0 && !dodged && dmgToPlayer > 0 && Math.random() * 100 < divineShieldPct) dmgToPlayer = 0;
+487:        const ironMaidenChance = getSkillChance('iron_maiden');
+489:          enemyHp -= Math.floor(dmgToPlayer * getSkillMag('iron_maiden') / 100);
+492:        const mortalChance = getSkillChance('mortal_strike');
+494:          const debuffPct = getSkillMag('mortal_strike');
+495:          totalDmgToEnemy += Math.floor(perHitBase * debuffPct / 100);
+498:        const lastStandChance = getSkillChance('last_stand');
+499:        const lastStandThreshold = getSkillMag('last_stand');
+501:          dmgToPlayer = Math.floor(dmgToPlayer * (1 - getSkillMag('last_stand') / 100));
+504:          playerHp -= dmgToPlayer;
+505:          defenceXpGained   += 2;
+506:          hitpointsXpGained += 1;
+508:          if (thornsDmg > 0) enemyHp -= thornsDmg;
+510:          if (reflectDamage > 0) enemyHp -= reflectDamage;
+513:        if (playerHp <= 0) {
+514:          playerDied = true;
+515:          playerHp = Math.floor(playerMaxHp * 0.5);
+520:      const usedTime = playerDied ? elapsedSeconds : ticks * effectiveCombatSpeed;
+521:      const existingLoot = parseLootBag(state.lootBag);
+522:      const combinedLoot = [...existingLoot, ...newDrops].slice(-50);
+523:      const existingGems = parseGems(state.gems);
+525:      const updates: Partial<GameState> = {
+526:        playerHp, enemyHp,
+530:        [playerStyle === 'ranged' ? 'rangedXp' as 'rangedXp' : playerStyle === 'magic' ? 'magicXp' as 'magicXp' : 'attackXp' as 'attackXp']: (state[playerStyle === 'ranged' ? 'rangedXp' as 'rangedXp' : playerStyle === 'magic' ? 'magicXp' as 'magicXp' : 'attackXp' as 'attackXp'] ?? 0) + attackXpGained,
+539:      const [updated] = await db.update(gameStates).set(updates).where(eq(gameStates.id, state.id)).returning();
+545:      const parts = action.split("_");
+546:      const dungeonIndex = parseInt(parts[1]);
+547:      const waveIndex = parseInt(parts[2] ?? "0");
+548:      const dungeon = DUNGEONS[dungeonIndex];
+551:      const equipment = parseEquipment(state.equipment);
+552:      const allSkills: ItemSkill[] = Object.values(equipment).flatMap(item => item?.skills ?? []);
+553:      const getSkillVal = (type: ItemSkill['type']) =>
+554:        allSkills.filter(s => s.type === type).reduce((sum, s) => sum + ((s as any).magnitude ?? (s as any).value ?? 0), 0);
+560:      } = getEquipmentBonuses(equipment);
+562:      const spellbladePct   = getSkillVal('spellblade');
+563:      const poisonDmg       = getSkillVal('poison');
+564:      const thornsDmg       = getSkillVal('thorns');
+565:      const lifeStealPct    = getSkillVal('lifesteal');
+566:      const vampiricHp      = getSkillVal('vampiric');
+567:      const berserkPct      = getSkillVal('berserk');
+568:      const doubleStrikePct = getSkillVal('doublestrike');
+569:      const dodgePct        = getSkillVal('dodge');
+570:      const playerStyle: CombatStyle = (equipment.weapon as any)?.combatStyle ?? 'melee';
+572:      const BASE_COMBAT_SPEED = 3;
+573:      const effectiveCombatSpeed = Math.max(1.5, BASE_COMBAT_SPEED * (1 - attackSpeed / 200));
+574:      const ticks = Math.floor(elapsedSeconds / effectiveCombatSpeed);
+575:      if (ticks <= 0) return state;
+578:      const bossSkills = (dungeon.boss.skills ?? []) as Array<{ type: string; name: string; cooldownSec: number; value: number; duration: number }>;
+579:      const bossSkillCooldowns: number[] = bossSkills.map(() => 0);
+580:      let bossActiveEffects: Array<{ skill: typeof bossSkills[0]; remainingTicks: number }> = [];
+582:      const isBoss = waveIndex >= 10;
+583:      const waveDef = !isBoss ? dungeon.waves[waveIndex] : null;
+584:      const boss = dungeon.boss;
+585:      const enemyMaxHp = isBoss ? boss.maxHp : Math.floor(boss.maxHp * (waveDef?.hpMul ?? 0.5));
+586:      const enemyAtk  = isBoss ? boss.attack : Math.floor(boss.attack * (waveDef?.atkMul ?? 0.6));
+587:      const enemyDef  = isBoss ? boss.defence : Math.floor(boss.defence * 0.6);
+588:      const enemyXp   = isBoss ? boss.xp : Math.floor(boss.xp * 0.08);
+589:      const enemyName = isBoss ? boss.name : (waveDef?.name ?? '怪物');
+590:      const enemyEmoji= isBoss ? boss.emoji : (waveDef?.emoji ?? '👾');
+592:      const playerMaxHp = getPlayerMaxHp(state);
+593:      let playerHp = state.playerHp < 0 ? playerMaxHp : state.playerHp;
+594:      let enemyHp  = state.enemyHp  < 0 ? enemyMaxHp : state.enemyHp;
+595:      const weaponItem = equipment.weapon ?? null;
+596:      const hasWeaponRange = weaponItem && (weaponItem.maxDamage ?? 0) > 0;
+597:      const levelBaseDmg = Math.max(1, getPlayerAttack(state) - eqAttackBonus);
+599:      let goldGained = 0, attackXpGained = 0, defenceXpGained = 0, hitpointsXpGained = 0;
+600:      let playerDied = false;
+601:      let bossKilled = false;
+602:      const newDrops: GameItem[] = [];
+603:      let bossShieldActive = false;
+605:      for (let i = 0; i < ticks; i++) {
+606:        if (lifeRegen > 0) playerHp = Math.min(playerMaxHp, playerHp + lifeRegen);
+608:        const weaponRoll = hasWeaponRange && weaponItem
+611:        const perHitBase = Math.max(1, weaponRoll + eqAttackBonus);
+613:        let effAtk = Math.max(1, perHitBase - enemyDef);
+614:        if (spellbladePct  > 0) effAtk = Math.floor(effAtk * (1 + spellbladePct / 100));
+615:        if (enhancedDamage > 0) effAtk = Math.floor(effAtk * (1 + enhancedDamage / 100));
+616:        if (berserkPct > 0 && playerHp < playerMaxHp * 0.3) effAtk = Math.floor(effAtk * (1 + berserkPct / 100));
+618:        const deadlyStrikeHit = deadlyStrike > 0 && Math.random() * 100 < deadlyStrike;
+619:        const strikes = (doubleStrikePct > 0 && Math.random() * 100 < doubleStrikePct) ? 2 : 1;
+620:        let totalDmgToEnemy = effAtk * strikes * (deadlyStrikeHit ? 2 : 1) + poisonDmg;
+621:        if (bossShieldActive) totalDmgToEnemy = Math.floor(totalDmgToEnemy * 0.5);
+624:          totalDmgToEnemy += Math.max(1, Math.floor(playerMaxHp * 0.01));
+627:        enemyHp -= totalDmgToEnemy;
+628:        attackXpGained += 4 * strikes;
+630:        if (lifeLeech > 0)    playerHp = Math.min(playerMaxHp, playerHp + Math.floor(totalDmgToEnemy * lifeLeech / 100));
+631:        if (lifeOnKill > 0)   playerHp = Math.min(playerMaxHp, playerHp + lifeOnKill);
+633:          playerHp = Math.min(playerMaxHp, playerHp + Math.max(1, Math.floor(playerMaxHp * 0.02)));
+634:        if (lifeStealPct > 0) playerHp = Math.min(playerMaxHp, playerHp + Math.floor(totalDmgToEnemy * lifeStealPct / 100));
+636:        if (enemyHp <= 0) {
+637:          goldGained        += enemyXp * (isBoss ? 2 : 1);
+638:          attackXpGained    += enemyXp;
+639:          hitpointsXpGained += Math.floor(enemyXp / 3);
+642:            const drop = generateDungeonDrop(dungeonIndex);
+644:              const filterThreshold = RARITY_ORDER[state.lootFilter ?? 'common'] ?? 0;
+645:              if ((RARITY_ORDER[drop.rarity] ?? 0) >= filterThreshold) {
+648:                goldGained += DISENCHANT_GOLD[drop.rarity] ?? 5;
+652:          if (vampiricHp > 0) playerHp = Math.min(playerMaxHp, playerHp + vampiricHp);
+653:          bossKilled = isBoss;
+658:        let bossEnhancedAtk = boss.attack;
+659:        bossShieldActive = false;
+662:        bossActiveEffects = bossActiveEffects.filter(e => {
+663:          if (e.skill.type === 'enrage') bossEnhancedAtk = Math.floor(bossEnhancedAtk * (1 + e.skill.value / 100));
+664:          if (e.skill.type === 'shield') bossShieldActive = true;
+669:        for (let si = 0; si < bossSkills.length; si++) {
+670:          bossSkillCooldowns[si] -= effectiveCombatSpeed;
+671:          if (bossSkillCooldowns[si] <= 0) {
+672:            const skill = bossSkills[si];
+673:            bossSkillCooldowns[si] = skill.cooldownSec;
+674:            if (skill.type === 'shield') {
+676:            } else if (skill.type === 'heal') {
+677:              enemyHp = Math.min(dungeon.boss.maxHp, enemyHp + skill.value);
+678:            } else if (skill.type === 'aoe') {
+679:              const aoeDmg = skill.value;
+680:              if (aoeDmg > 0) playerHp -= aoeDmg;
+681:              hitpointsXpGained += 1;
+682:            } else if (skill.type === 'enrage') {
+690:        const effectiveEnemyAtk = isBoss ? bossEnhancedAtk : enemyAtk;
+691:        const rawDmg = Math.max(0, effectiveEnemyAtk - getPlayerDefence(state));
+692:        const dmgToPlayer = Math.max(0, rawDmg - resistAll);
+693:        const dodged = dodgePct > 0 && Math.random() * 100 < dodgePct;
+695:          playerHp -= dmgToPlayer;
+696:          defenceXpGained   += 2;
+697:          hitpointsXpGained += 1;
+698:          if (thornsDmg > 0)    enemyHp -= thornsDmg;
+699:          if (reflectDamage > 0) enemyHp -= reflectDamage;
+702:        if (playerHp <= 0) {
+703:          playerDied = true;
+704:          playerHp = Math.floor(playerMaxHp * 0.5);
+709:      const usedTime = (playerDied || bossKilled) ? elapsedSeconds : ticks * effectiveCombatSpeed;
+710:      const existingLoot = parseLootBag(state.lootBag);
+711:      const combinedLoot = [...existingLoot, ...newDrops].slice(-50);
+712:      const nextAction = bossKilled ? "idle" : `dungeon_${dungeonIndex}_${waveIndex + 1}`;
+715:      let dungeonStatsObj = parseDungeonStats(state.dungeonStats);
+717:        const dungeonId = DUNGEONS[dungeonIndex].id;
+718:        const current = dungeonStatsObj[dungeonId] ?? { clears: 0, fastestSec: null };
+719:        current.clears = (current.clears ?? 0) + 1;
+720:        if (current.fastestSec === null || usedTime < current.fastestSec) {
+721:          current.fastestSec = usedTime;
+723:        dungeonStatsObj[dungeonId] = current;
+726:      const updates: Partial<GameState> = {
+728:        enemyHp: (playerDied || bossKilled) ? -1 : enemyHp,
+731:        [playerStyle === 'ranged' ? 'rangedXp' as 'rangedXp' : playerStyle === 'magic' ? 'magicXp' as 'magicXp' : 'attackXp' as 'attackXp']: (state[playerStyle === 'ranged' ? 'rangedXp' as 'rangedXp' : playerStyle === 'magic' ? 'magicXp' as 'magicXp' : 'attackXp' as 'attackXp'] ?? 0) + attackXpGained,
+740:      const [updated] = await db.update(gameStates).set(updates).where(eq(gameStates.id, state.id)).returning();
+747:      const parts = action.split("_");
+748:      const trialIndex = parseInt(parts[1]);
+749:      const phase = parseInt(parts[2] ?? "0");
+750:      if (phase >= 7) { const [u] = await db.update(gameStates).set({ activeAction: "idle" } as any).where(eq(gameStates.id, state.id)).returning(); return u; }
+752:      const equipment = parseEquipment(state.equipment);
+753:      const { attackBonus, enhancedDamage, lifeRegen, resistAll, lifeLeech, deadlyStrike } = getEquipmentBonuses(equipment);
+754:      const playerStyle: CombatStyle = (equipment.weapon as any)?.combatStyle ?? 'melee';
+755:      const buffs: string[] = JSON.parse(state.trialBuffs ?? '[]');
+756:      const curses: string[] = JSON.parse(state.trialCurses ?? '[]');
+759:      let atkMul = 1, hpMul = 1, defMul = 1, regenAdd = 0, dmgTakenMul = 1;
+760:      buffs.forEach(id => { const b = TRIAL_BUFFS.find(x => x.id === id); if (b) { atkMul += (b.attackMul - 1); hpMul += (b.hpMul - 1); defMul += (b.defMul - 1); regenAdd += b.regenBonus; } });
+761:      curses.forEach(id => { const c = TRIAL_CURSES.find(x => x.id === id); if (c) { hpMul += (c.hpMul - 1); dmgTakenMul += (c.dmgTakenMul - 1); } });
+763:      const effSpeed = Math.max(1.5, 3);
+764:      const ticks = Math.floor(elapsedSeconds / effSpeed);
+765:      if (ticks <= 0) return state;
+767:      const bossRef = DUNGEONS[phase % DUNGEONS.length]?.boss;
+768:      const scale = 1 + phase * 0.25;
+769:      const bossHp = Math.floor((bossRef?.maxHp ?? 500) * scale * 0.6);
+770:      const bossAtk = Math.floor((bossRef?.attack ?? 15) * scale * 0.5);
+771:      const bossDef = Math.floor((bossRef?.defence ?? 5) * scale * 0.4);
+772:      const bossXp = Math.floor((bossRef?.xp ?? 200) * scale * 0.3);
+773:      const bossName = bossRef?.name ?? `Boss ${phase + 1}`;
+775:      const playerMaxHp = Math.max(10, Math.floor(getPlayerMaxHp(state) * hpMul));
+776:      let playerHp = state.playerHp < 0 ? playerMaxHp : state.playerHp;
+777:      let enemyHp = state.enemyHp < 0 ? bossHp : state.enemyHp;
+778:      const effRegen = lifeRegen + regenAdd - (curses.some(id => id === 'c_decay') ? 5 * curses.filter(id => id === 'c_decay').length : 0);
+779:      let goldGained = 0, atkXp = 0, defXp = 0, hpXp = 0, died = false, killed = false;
+780:      const drops: GameItem[] = [];
+782:      for (let i = 0; i < ticks; i++) {
+783:        if (effRegen > 0) playerHp = Math.min(playerMaxHp, playerHp + effRegen);
+784:        const baseAtk = Math.floor(getPlayerAttack(state) * atkMul);
+785:        const defPenalty = Math.floor(bossDef * defMul);
+786:        let dmg = Math.max(1, baseAtk + (attackBonus ?? 0) - defPenalty);
+787:        if (enhancedDamage) dmg = Math.floor(dmg * (1 + enhancedDamage / 100));
+788:        if (deadlyStrike && Math.random() * 100 < deadlyStrike) dmg *= 2;
+789:        if (curses.some(id => id === 'c_fog') && Math.random() < 0.1) dmg = 0;
+790:        enemyHp -= dmg; atkXp += 4;
+791:        if (lifeLeech) playerHp = Math.min(playerMaxHp, playerHp + Math.floor(dmg * lifeLeech / 100));
+792:        if (enemyHp <= 0) {
+793:          goldGained += Math.floor(bossXp * (curses.some(id => id === 'c_poor') ? 0.5 : 1));
+794:          atkXp += bossXp; hpXp += Math.floor(bossXp / 3);
+795:          killed = true;
+796:          if (phase === 6) { const setDef = ITEM_SETS[Math.floor(Math.random() * ITEM_SETS.length)]; const pid = setDef.pieces[Math.floor(Math.random() * setDef.pieces.length)]; const def = UNIQUE_ITEMS.find(u => u.id === pid); if (def) drops.push(buildUniqueGameItem(def)); if (Math.random() < 0.15) { const slot = ALL_SLOTS[Math.floor(Math.random() * ALL_SLOTS.length)]; const base = SLOT_BASES[slot]?.[0]; if (base) drops.push({ instanceId:'mythic_'+Date.now(), name:'神话 '+base.name, slot, emoji:base.emoji, rarity:'mythic',ilvl:75,affixes:[],prefixes:[],suffixes:[],minDamage:base.minDamage,maxDamage:base.maxDamage,attackBonus:35,defenceBonus:0,hpBonus:0,critRating:0,enhancedDamage:0,lifeOnKill:0,crushingBlow:0,magicFind:0,lifeRegen:0,goldBonus:0,resistAll:0,lifeLeech:0,deadlyStrike:0,attackSpeed:0,reflectDamage:0,source:'dropped',baseType:base.id,maxSockets:4,socketedGems:[],skills:[] } as GameItem); } }
+799:        const rDmg = Math.max(0, Math.floor(bossAtk * dmgTakenMul) - getPlayerDefence(state) - (resistAll ?? 0));
+800:        if (rDmg > 0) { playerHp -= rDmg; defXp += 2; hpXp += 1; }
+801:        if (playerHp <= 0) { died = true; break; }
+804:      const usedTime = (died || killed) ? elapsedSeconds : ticks * effSpeed;
+805:      const combined = [...parseLootBag(state.lootBag), ...drops].slice(-50);
+806:      const updates: any = {
+807:        playerHp: died ? 0 : playerHp, enemyHp: (died || killed) ? -1 : enemyHp,
+809:        [playerStyle === 'ranged' ? 'rangedXp' : playerStyle === 'magic' ? 'magicXp' : 'attackXp']: (state[playerStyle === 'ranged' ? 'rangedXp' : playerStyle === 'magic' ? 'magicXp' : 'attackXp'] ?? 0) + atkXp,
+812:        activeAction: died ? 'idle' : (killed && phase >= 6) ? 'idle' : state.activeAction,
+815:      if (died) { updates.trialBuffs = '[]'; upd
+
+[… truncated 28861 chars …]

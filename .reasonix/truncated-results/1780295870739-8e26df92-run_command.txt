@@ -1,0 +1,335 @@
+$ findstr /N "weapon: \[" "shared\game-data.ts"
+[exit 0]
+40:  weapon:  '武器',
+52:  weapon:  '⚔️',
+63:export const ALL_SLOTS: EquipmentSlot[] = ['weapon','offhand','helmet','chest','legs','gloves','boots','neck','ring'];
+152:export const GEM_TYPES: GemType[]    = ['ruby','sapphire','emerald','topaz','diamond'];
+153:export const GEM_QUALITIES: GemQuality[] = ['chipped','flawed','normal','flawless','perfect'];
+156:  const [type, quality] = gemKey.split('_') as [GemType, GemQuality];
+157:  return `${GEM_QUALITY_LABEL[quality] ?? ''}${GEM_TYPE_LABEL[type] ?? gemKey}`;
+160:  const [type, quality] = gemKey.split('_') as [GemType, GemQuality];
+161:  const mult = ({ chipped:1, flawed:2, normal:4, flawless:7, perfect:12 })[quality] ?? 1;
+172:  const type = gemKey.split('_')[0] as GemType;
+175:    diamond:'bg-cyan-500/20 border-cyan-500/50' })[type] ?? 'bg-muted/20 border-border';
+179:export const MINING_GEM_POOLS: { chance: number; pool: string[] }[] = [
+180:  { chance: 0.04, pool: ['ruby_chipped','sapphire_chipped','emerald_chipped','topaz_chipped'] },
+181:  { chance: 0.04, pool: ['ruby_chipped','sapphire_chipped','emerald_chipped','topaz_chipped'] },
+182:  { chance: 0.05, pool: ['ruby_chipped','sapphire_chipped','emerald_chipped','topaz_chipped','ruby_flawed','sapphire_flawed'] },
+183:  { chance: 0.05, pool: ['ruby_flawed','sapphire_flawed','emerald_flawed','topaz_flawed'] },
+184:  { chance: 0.06, pool: ['ruby_flawed','sapphire_flawed','emerald_flawed','topaz_flawed','ruby_normal'] },
+185:  { chance: 0.06, pool: ['ruby_normal','sapphire_normal','emerald_normal','topaz_normal'] },
+186:  { chance: 0.07, pool: ['ruby_normal','sapphire_normal','emerald_normal','topaz_normal','ruby_flawless','diamond_normal'] },
+187:  { chance: 0.07, pool: ['ruby_flawless','sapphire_flawless','emerald_flawless','topaz_flawless'] },
+188:  { chance: 0.08, pool: ['ruby_flawless','sapphire_flawless','emerald_flawless','topaz_flawless','diamond_flawless'] },
+189:  { chance: 0.09, pool: ['ruby_perfect','sapphire_perfect','emerald_perfect','topaz_perfect','diamond_perfect'] },
+191:export const COMBAT_GEM_POOLS: { chance: number; pool: string[] }[] = [
+192:  { chance: 0.03, pool: ['ruby_chipped','sapphire_chipped','emerald_chipped','topaz_chipped'] },
+193:  { chance: 0.04, pool: ['ruby_chipped','sapphire_chipped','emerald_chipped','topaz_chipped','ruby_flawed'] },
+194:  { chance: 0.05, pool: ['ruby_flawed','sapphire_flawed','emerald_flawed','topaz_flawed'] },
+195:  { chance: 0.06, pool: ['ruby_flawed','sapphire_flawed','emerald_flawed','topaz_flawed','ruby_normal'] },
+196:  { chance: 0.08, pool: ['ruby_normal','sapphire_normal','emerald_normal','topaz_normal'] },
+197:  { chance: 0.09, pool: ['ruby_normal','sapphire_normal','emerald_normal','topaz_normal','ruby_flawless'] },
+198:  { chance: 0.11, pool: ['ruby_flawless','sapphire_flawless','emerald_flawless','topaz_flawless','diamond_normal'] },
+199:  { chance: 0.13, pool: ['ruby_flawless','sapphire_flawless','emerald_flawless','topaz_flawless','diamond_flawless','ruby_perfect'] },
+224:const SKILL_POOL: { type: SkillType; name: string; minVal: number; maxVal: number; desc: (v: number) => string }[] = [
+243:function rollSkills(rarity: Rarity): ItemSkill[] {
+244:  const count = RARITY_SKILL_COUNT[rarity];
+245:  if (count === 0) return [];
+246:  const pool = [...SKILL_POOL];
+247:  const result: ItemSkill[] = [];
+252:    const s = avail[Math.floor(Math.random() * avail.length)];
+261:  const max = RARITY_MAX_SOCKETS[rarity];
+276:  minDamage: number;    // weapon: base min damage; armor: 0
+277:  maxDamage: number;    // weapon: base max damage; armor: 0
+278:  baseDefence: number;  // armor base defence value; weapon: 0
+282:export const SLOT_BASES: Record<EquipmentSlot, ItemBase[]> = {
+283:  weapon: [
+292:  offhand: [
+298:  helmet: [
+304:  chest: [
+310:  legs: [
+316:  gloves: [
+321:  boots: [
+327:  neck: [
+333:  ring: [
+350:  affixes: ItemAffix[];
+351:  skills?: { type: SkillType; name: string; value: number; description: string }[];
+354:export const UNIQUE_ITEMS: UniqueItemDef[] = [
+358:    affixes:[{type:'strength',value:8},{type:'dexterity',value:6},{type:'damage_percent',value:15}],
+359:    skills:[{type:'poison',name:'寒毒',value:4,description:'每次攻击追加 4 点冰毒伤害'}],
+364:    affixes:[{type:'lucky_hit',value:25},{type:'intelligence',value:30},{type:'dexterity',value:4}],
+369:    affixes:[{type:'vitality',value:12},{type:'armour',value:15},{type:'life_regen',value:5},{type:'resist_all',value:8}],
+370:    skills:[{type:'thorns',name:'骸骨',value:10,description:'被击中时反弹 10 点伤害'}],
+375:    affixes:[{type:'dexterity',value:10},{type:'lucky_hit',value:20},{type:'intelligence',value:15}],
+376:    skills:[{type:'dodge',name:'幻影',value:18,description:'18% 概率闪避所有伤害'}],
+381:    affixes:[{type:'strength',value:14},{type:'damage_percent',value:20},{type:'crit_damage',value:12},{type:'overpower',value:8}],
+382:    skills:[{type:'berserk',name:'暴怒',value:35,description:'HP < 30% 时攻击力提升 35%'}],
+387:    affixes:[{type:'vitality',value:18},{type:'life_leech',value:8},{type:'crit_damage',value:15},{type:'damage_percent',value:15}],
+388:    skills:[{type:'poison',name:'安达里尔毒液',value:8,description:'每次攻击追加 8 点毒素伤害'}],
+393:    affixes:[{type:'armour',value:30},{type:'resist_all',value:12},{type:'thorns',value:15},{type:'vitality',value:10}],
+398:    affixes:[{type:'dexterity',value:16},{type:'crit_damage',value:20},{type:'life_leech',value:10},{type:'attack_speed',value:15}],
+399:    skills:[{type:'doublestrike',name:'影分身',value:25,description:'25% 概率每回合攻击两次'}],
+404:    affixes:[{type:'strength',value:22},{type:'overpower',value:20},{type:'damage_percent',value:25}],
+405:    skills:[{type:'berserk',name:'巨怒',value:30,description:'HP < 30% 时攻击力提升 30%'}],
+410:    affixes:[{type:'dexterity',value:14},{type:'attack_speed',value:20},{type:'life_on_hit',value:12}],
+411:    skills:[{type:'vampiric',name:'猎杀',value:15,description:'击杀时恢复 15 点生命'}],
+416:    affixes:[{type:'life_leech',value:12},{type:'life_on_hit',value:15},{type:'dexterity',value:8}],
+417:    skills:[{type:'lifesteal',name:'吸血鬼',value:10,description:'击中时吸取 10% 伤害恢复生命'}],
+422:    affixes:[{type:'vitality',value:24},{type:'armour',value:35},{type:'resist_all',value:15},{type:'life_regen',value:8}],
+427:    affixes:[{type:'lucky_hit',value:40},{type:'intelligence',value:35},{type:'vitality',value:15},{type:'life_on_hit',value:20}],
+432:    affixes:[{type:'armour',value:55},{type:'vitality',value:30},{type:'resist_all',value:20},{type:'thorns',value:20}],
+433:    skills:[{type:'thorns',name:'龙鳞',value:20,description:'被击中时反弹 20 点伤害'}],
+438:    affixes:[{type:'armour',value:42},{type:'vitality',value:22},{type:'resist_all',value:15},{type:'life_regen',value:10}],
+443:    affixes:[{type:'strength',value:20},{type:'crit_damage',value:25},{type:'life_leech',value:15},{type:'attack_speed',value:20}],
+444:    skills:[{type:'doublestrike',name:'黑暗双击',value:30,description:'30% 概率每回合攻击两次'}],
+449:    affixes:[{type:'damage_percent',value:35},{type:'strength',value:24},{type:'crit_damage',value:18},{type:'life_leech',value:10}],
+450:    skills:[{type:'spellblade',name:'炎语',value:25,description:'攻击力额外提升 25%'}],
+455:    affixes:[{type:'armour',value:70},{type:'vitality',value:35},{type:'thorns',value:25},{type:'resist_all',value:25},{type:'life_regen',value:15}],
+456:    skills:[{type:'thorns',name:'地狱之焰',value:30,description:'被击中时反弹 30 点伤害'}],
+461:    affixes:[{type:'vitality',value:28},{type:'life_leech',value:18},{type:'lucky_hit',value:30},{type:'life_on_hit',value:25}],
+462:    skills:[{type:'vampiric',name:'火龙嗜血',value:20,description:'击杀时恢复 20 点生命'}],
+467:    affixes:[{type:'attack_speed',value:30},{type:'dexterity',value:20},{type:'crit_damage',value:20},{type:'lucky_hit',value:25}],
+468:    skills:[{type:'doublestrike',name:'时之双击',value:35,description:'35% 概率每回合攻击两次'}],
+473:    affixes:[{type:'strength',value:35},{type:'damage_percent',value:50},{type:'crit_damage',value:25},{type:'overpower',value:20},{type:'life_leech',value:15}],
+474:    skills:[{type:'spellblade',name:'永恒剑意',value:30,description:'攻击力额外提升 30%'}],
+479:    affixes:[{type:'armour',value:80},{type:'vitality',value:40},{type:'resist_all',value:30},{type:'thorns',value:30},{type:'life_regen',value:20}],
+486:    affixes:[{type:'armour',value:18},{type:'vitality',value:10},{type:'life_regen',value:4},{type:'resist_all',value:6}],
+491:    affixes:[{type:'strength',value:10},{type:'damage_percent',value:12}],
+492:    skills:[{type:'poison',name:'腐化毒液',value:6,description:'每次攻击追加 6 点腐化伤害'}],
+498:    affixes:[{type:'armour',value:22},{type:'dexterity',value:14},{type:'life_leech',value:6}],
+499:    skills:[{type:'dodge',name:'幻影步',value:22,description:'22% 概率闪避所有伤害'}],
+504:    affixes:[{type:'lucky_hit',value:30},{type:'dexterity',value:12},{type:'attack_speed',value:12}],
+510:    affixes:[{type:'vitality',value:20},{type:'damage_percent',value:22},{type:'crit_damage',value:18}],
+511:    skills:[{type:'poison',name:'裂焰灼烧',value:10,description:'每次攻击追加 10 点灼烧伤害'}],
+516:    affixes:[{type:'dexterity',value:18},{type:'attack_speed',value:18},{type:'intelligence',value:20}],
+517:    skills:[{type:'spellblade',name:'裂焰剑气',value:18,description:'攻击力额外提升 18%'}],
+523:    affixes:[{type:'strength',value:28},{type:'damage_percent',value:35},{type:'crit_damage',value:22},{type:'overpower',value:18}],
+524:    skills:[{type:'doublestrike',name:'虚空双裂',value:30,description:'30% 概率每回合攻击两次'}],
+529:    affixes:[{type:'armour',value:55},{type:'vitality',value:30},{type:'resist_all',value:18},{type:'life_regen',value:12}],
+535:    affixes:[{type:'armour',value:65},{type:'resist_all',value:22},{type:'thorns',value:25}],
+536:    skills:[{type:'vampiric',name:'骨血汲取',value:20,description:'击杀时恢复 20 点生命'}],
+541:    affixes:[{type:'vitality',value:40},{type:'armour',value:50},{type:'life_leech',value:14},{type:'crit_damage',value:20}],
+547:    affixes:[{type:'strength',value:45},{type:'damage_percent',value:55},{type:'crit_damage',value:30},{type:'overpower',value:25},{type:'attack_speed',value:20}],
+548:    skills:[{type:'spellblade',name:'混沌剑意',value:35,description:'攻击力额外提升 35%'},{type:'doublestrike',name:'混沌双裂',value:30,description:'30% 概率每回合攻击两次'}],
+553:    affixes:[{type:'armour',value:90},{type:'vitality',value:55},{type:'resist_all',value:35},{type:'life_regen',value:25},{type:'life_leech',value:18}],
+561:  pieces: string[]; // uniqueId values
+562:  bonuses: Array<{ count: number; description: string; affixes: ItemAffix[] }>;
+565:export const ITEM_SETS: ItemSetDef[] = [
+569:    pieces: ['skeletal_crown', 'giant_chest', 'dragonblood_legs'],
+570:    bonuses: [
+574:        affixes: [{type:'armour',value:20},{type:'strength',value:10}],
+579:        affixes: [{type:'vitality',value:16},{type:'damage_percent',value:20},{type:'life_regen',value:10}],
+586:    pieces: ['flame_tongue_sword', 'tyrant_shield', 'berserker_gloves', 'hellhound_boots'],
+587:    bonuses: [
+591:        affixes: [{type:'damage_percent',value:20}],
+596:        affixes: [{type:'overpower',value:15},{type:'crit_damage',value:15}],
+601:        affixes: [{type:'lucky_hit',value:40},{type:'attack_speed',value:20}],
+608:    pieces: ['andariel_visage', 'hellfire_plate', 'dragon_eye_necklace', 'time_keeper_ring'],
+609:    bonuses: [
+613:        affixes: [{type:'lucky_hit',value:30},{type:'intelligence',value:25}],
+618:        affixes: [{type:'life_leech',value:15},{type:'life_on_hit',value:20}],
+623:        affixes: [{type:'life_regen',value:20},{type:'attack_speed',value:25}],
+632:  for (const piece of set.pieces) UNIQUE_SET_MAP[piece] = set.id;
+643:  affixes: ItemAffix[];   // = [...prefixes, ...suffixes, implicit?]
+644:  prefixes: ItemAffix[];  // offensive affixes
+645:  suffixes: ItemAffix[];  // defensive/utility affixes
+673:  socketedGems: string[];
+674:  skills: ItemSkill[];
+709:    setCount[item.setId] = (setCount[item.setId] ?? 0) + 1;
+711:  for (const [setId, count] of Object.entries(setCount)) {
+789:  const def = EQUIPMENT_ITEMS[itemId];
+791:  const affix: ItemAffix[] = [];
+800:    prefixes: [], suffixes: affix, minDamage: 0, maxDamage: 0,
+807:    maxSockets: rollSockets('uncommon'), socketedGems: [], skills: [],
+883:  inputs: { resource: string; qty: number }[];
+889:export const LEATHERWORKING_RECIPES: CraftingRecipe[] = [
+891:  { id: 'lw_leather_cap',     output: 'leather_cap',     inputs: [{ resource: 'hide_0', qty: 2 }], reqLevel: 1,  xp: 20,  time: 6  },
+892:  { id: 'lw_leather_vest',    output: 'leather_vest',    inputs: [{ resource: 'hide_0', qty: 4 }], reqLevel: 1,  xp: 40,  time: 12 },
+893:  { id: 'lw_leather_pants',   output: 'leather_pants',   inputs: [{ resource: 'hide_0', qty: 3 }], reqLevel: 1,  xp: 30,  time: 9  },
+894:  { id: 'lw_leather_gloves',  output: 'leather_gloves',  inputs: [{ resource: 'hide_0', qty: 2 }], reqLevel: 1,  xp: 20,  time: 6  },
+895:  { id: 'lw_leather_boots',   output: 'leather_boots',   inputs: [{ resource: 'hide_0', qty: 2 }], reqLevel: 1,  xp: 20,  time: 6  },
+897:  { id: 'lw_studded_cap',     output: 'studded_cap',     inputs: [{ resource: 'hide_2', qty: 2 }], reqLevel: 15, xp: 55,  time: 8  },
+898:  { id: 'lw_studded_vest',    output: 'studded_vest',    inputs: [{ resource: 'hide_2', qty: 4 }], reqLevel: 15, xp: 110, time: 15 },
+899:  { id: 'lw_studded_pants',   output: 'studded_pants',   inputs: [{ resource: 'hide_2', qty: 3 }], reqLevel: 15, xp: 82,  time: 12 },
+900:  { id: 'lw_studded_gloves',  output: 'studded_gloves',  inputs: [{ resource: 'hide_2', qty: 2 }], reqLevel: 15, xp: 55,  time: 8  },
+902:  { id: 'lw_wolf_cap',        output: 'wolf_cap',        inputs: [{ resource: 'hide_3', qty: 2 }], reqLevel: 25, xp: 85,  time: 8  },
+903:  { id: 'lw_wolf_vest',       output: 'wolf_vest',       inputs: [{ resource: 'hide_3', qty: 4 }], reqLevel: 25, xp: 170, time: 15 },
+904:  { id: 'lw_wolf_pants',      output: 'wolf_pants',      inputs: [{ resource: 'hide_3', qty: 3 }], reqLevel: 25, xp: 128, time: 12 },
+905:  { id: 'lw_wolf_gloves',     output: 'wolf_gloves',     inputs: [{ resource: 'hide_3', qty: 2 }], reqLevel: 25, xp: 85,  time: 8  },
+907:  { id: 'lw_bear_vest',       output: 'bear_vest',       inputs: [{ resource: 'hide_4', qty: 5 }], reqLevel: 35, xp: 230, time: 18 },
+908:  { id: 'lw_bear_pants',      output: 'bear_pants',      inputs: [{ resource: 'hide_4', qty: 4 }], reqLevel: 35, xp: 185, time: 15 },
+910:  { id: 'lw_dragonhide_vest', output: 'dragonhide_vest', inputs: [{ resource: 'hide_8', qty: 4 }], reqLevel: 60, xp: 480, time: 22 },
+911:  { id: 'lw_dragonhide_boots',output: 'dragonhide_boots',inputs: [{ resource: 'hide_8', qty: 3 }], reqLevel: 60, xp: 360, time: 18 },
+913:  { id: 'lw_phoenix_vest',    output: 'phoenix_vest',    inputs: [{ resource: 'hide_9', qty: 4 }], reqLevel: 70, xp: 650, time: 25 },
+917:export const JEWELCRAFTING_RECIPES: CraftingRecipe[] = [
+919:  { id: 'jc_copper_ring',    output: 'copper_ring',    inputs: [{ resource: 'item_0', qty: 3 }], reqLevel: 1,  xp: 25,  time: 8  },
+920:  { id: 'jc_leather_amulet', output: 'leather_amulet', inputs: [{ resource: 'item_0', qty: 4 }], reqLevel: 1,  xp: 30,  time: 10 },
+922:  { id: 'jc_tin_band',       output: 'tin_band',       inputs: [{ resource: 'item_1', qty: 3 }], reqLevel: 10, xp: 45,  time: 8  },
+923:  { id: 'jc_cord_pendant',   output: 'cord_pendant',   inputs: [{ resource: 'item_1', qty: 4 }], reqLevel: 10, xp: 55,  time: 10 },
+925:  { id: 'jc_bronze_signet',  output: 'bronze_signet',  inputs: [{ resource: 'item_2', qty: 3 }], reqLevel: 20, xp: 70,  time: 9  },
+926:  { id: 'jc_iron_chain',     output: 'iron_chain',     inputs: [{ resource: 'item_2', qty: 4 }], reqLevel: 20, xp: 85,  time: 12 },
+928:  { id: 'jc_silver_ring',    output: 'silver_ring',    inputs: [{ resource: 'item_3', qty: 3 }], reqLevel: 28, xp: 100, time: 10 },
+929:  { id: 'jc_silver_chain',   output: 'silver_chain',   inputs: [{ resource: 'item_3', qty: 4 }], reqLevel: 28, xp: 120, time: 12 },
+931:  { id: 'jc_gold_ring',      output: 'gold_ring',      inputs: [{ resource: 'item_4', qty: 3 }], reqLevel: 38, xp: 140, time: 10 },
+932:  { id: 'jc_gold_locket',    output: 'gold_locket',    inputs: [{ resource: 'item_4', qty: 4 }], reqLevel: 38, xp: 165, time: 12 },
+934:  { id: 'jc_mithril_signet', output: 'mithril_signet', inputs: [{ resource: 'item_5', qty: 3 }], reqLevel: 48, xp: 200, time: 12 },
+935:  { id: 'jc_runed_pendant',  output: 'runed_pendant',  inputs: [{ resource: 'item_5', qty: 4 }], reqLevel: 48, xp: 240, time: 14 },
+937:  { id: 'jc_arcane_band',    output: 'arcane_band',    inputs: [{ resource: 'item_6', qty: 3 }], reqLevel: 55, xp: 270, time: 12 },
+938:  { id: 'jc_arcane_locket',  output: 'arcane_locket',  inputs: [{ resource: 'item_6', qty: 4 }], reqLevel: 55, xp: 320, time: 15 },
+940:  { id: 'jc_dragon_ring',    output: 'dragon_ring',    inputs: [{ resource: 'item_8', qty: 2 }], reqLevel: 65, xp: 400, time: 14 },
+941:  { id: 'jc_dragon_pendant', output: 'dragon_pendant', inputs: [{ resource: 'item_8', qty: 3 }], reqLevel: 65, xp: 480, time: 16 },
+943:  { id: 'jc_eternal_ring',   output: 'eternal_ring',   inputs: [{ resource: 'item_9', qty: 2 }], reqLevel: 72, xp: 600, time: 16 },
+944:  { id: 'jc_eternal_pendant',output: 'eternal_pendant', inputs: [{ resource: 'item_9', qty: 3 }], reqLevel: 72, xp: 720, time: 20 },
+948:const RARITY_PREFIXES: Record<Rarity, string[]> = {
+949:  common:    ['破旧', '磨损', '粗制', '老旧', '残破'],
+950:  uncommon:  ['坚固', '精良', '光泽', '强化', '锋利'],
+951:  rare:      ['精工', '附魔', '精炼', '卓越', '淬火'],
+952:  epic:      ['远古', '奥术', '神话', '符文', '圣洁'],
+953:  legendary: ['传说', '永恒', '神赋', '炼狱', '不朽'],
+956:const SLOT_BASE_NAMES: Record<EquipmentSlot, string[]> = {
+957:  weapon:  ['剑', '刃', '斧', '锤', '战锤', '巨剑', '枪', '戟', '战刃'],
+958:  offhand: ['盾', '圆盾', '法典', '法球', '匕首', '标盾', '神盾', '护壁'],
+959:  helmet:  ['头盔', '王冠', '兜帽', '面罩', '颅盖', '护面', '头冠', '面甲'],
+960:  chest:   ['胸甲', '法袍', '上衣', '锁子甲', '胸铠', '链甲', '战衣'],
+961:  legs:    ['腿甲', '马裤', '护腿', '胫甲', '腿铠', '战裤'],
+962:  gloves:  ['护手', '手套', '握把', '缠带', '护腕', '拳套'],
+963:  boots:   ['靴子', '铁靴', '足甲', '重踏', '护靴', '软鞋'],
+964:  neck:    ['项链', '护身符', '吊坠', '颈环', '链条', '颈圈', '锁扣'],
+965:  ring:    ['戒指', '指环', '印戒', '环圈', '圆环', '封印', '线圈'],
+969:const SLOT_PREFIX_POOL: Record<EquipmentSlot, AffixType[]> = {
+970:  weapon:  ['strength', 'strength', 'damage_percent', 'damage_percent', 'crit_damage', 'attack_speed', 'life_leech', 'dexterity'],
+971:  offhand: ['strength', 'dexterity', 'damage_percent', 'crit_damage', 'attack_speed'],
+972:  helmet:  ['strength', 'dexterity', 'vitality', 'damage_percent', 'crit_damage'],
+973:  chest:   ['strength', 'dexterity', 'vitality', 'damage_percent'],
+974:  legs:    ['strength', 'dexterity', 'vitality'],
+975:  gloves:  ['strength', 'strength', 'damage_percent', 'crit_damage', 'attack_speed', 'life_leech', 'overpower'],
+976:  boots:   ['dexterity', 'dexterity', 'attack_speed', 'crit_damage', 'damage_percent'],
+977:  neck:    ['damage_percent', 'life_leech', 'crit_damage', 'attack_speed', 'dexterity', 'strength'],
+978:  ring:    ['damage_percent', 'life_leech', 'crit_damage', 'attack_speed', 'dexterity', 'strength'],
+982:const SLOT_SUFFIX_POOL: Record<EquipmentSlot, AffixType[]> = {
+983:  weapon:  ['life_on_hit', 'overpower', 'vitality'],
+984:  offhand: ['armour', 'armour', 'vitality', 'resist_all', 'resist_all', 'life_regen', 'thorns'],
+985:  helmet:  ['armour', 'vitality', 'vitality', 'lucky_hit', 'life_regen', 'resist_all', 'life_on_hit'],
+986:  chest:   ['armour', 'armour', 'vitality', 'resist_all', 'life_regen', 'thorns'],
+987:  legs:    ['armour', 'armour', 'vitality', 'resist_all', 'life_regen', 'thorns'],
+988:  gloves:  ['armour', 'life_on_hit', 'thorns', 'vitality'],
+989:  boots:   ['armour', 'vitality', 'intelligence', 'lucky_hit', 'resist_all', 'life_on_hit'],
+990:  neck:    ['lucky_hit', 'life_on_hit', 'intelligence', 'life_regen', 'vitality', 'resist_all'],
+991:  ring:    ['lucky_hit', 'life_on_hit', 'intelligence', 'life_regen', 'vitality', 'resist_all'],
+995:const SLOT_AFFIX_POOL: Record<EquipmentSlot, AffixType[]> = Object.fromEntries(
+996:  (Object.keys(SLOT_PREFIX_POOL) as EquipmentSlot[]).map(slot => [
+998:    [...SLOT_PREFIX_POOL[slot], ...SLOT_SUFFIX_POOL[slot]],
+1000:) as Record<EquipmentSlot, AffixType[]>;
+1028:function rand<T>(arr: T[]): T { return arr[Math.floor(Math.random() * arr.length)]; }
+1031:function computeItemStats(affixes: ItemAffix[]) {
+1053:const ENEMY_ILVL_BANDS: [number, number][] = [
+1054:  [1,  8],  // 0: chicken
+1055:  [5,  15], // 1: cow
+1056:  [10, 22], // 2: goblin
+1057:  [18, 32], // 3: skeleton
+1058:  [28, 45], // 4: troll
+1059:  [38, 55], // 5: giant
+1060:  [48, 65], // 6: dragon
+1061:  [58, 75], // 7: fire_dragon
+1079:  const setId = UNIQUE_SET_MAP[def.id];
+1081:  const eligibleForUnique = SLOT_BASES[def.slot].filter(b => b.reqIlvl <= def.ilvl);
+1083:    ? eligibleForUnique[eligibleForUnique.length - 1]
+1084:    : SLOT_BASES[def.slot][0];
+1089:    affixes, prefixes: [], suffixes: affixes,
+1094:    maxSockets: 2, socketedGems: [],
+1095:    skills: (def.skills ?? []).map(s => ({ ...s })),
+1100:  const band = ENEMY_ILVL_BANDS[Math.min(enemyIndex, ENEMY_ILVL_BANDS.length - 1)];
+1101:  const ilvl = band[0] + randInt(0, band[1] - band[0]);
+1113:  const weights = [
+1121:  const pool: Rarity[] = [];
+1122:  (['common', 'uncommon', 'rare', 'epic'] as Rarity[]).forEach((r, i) => {
+1123:    for (let w = 0; w < weights[i]; w++) pool.push(r);
+1130:  const eligibleBases = SLOT_BASES[slot].filter(b => b.reqIlvl <= ilvl);
+1131:  const base = eligibleBases.length ? eligibleBases[eligibleBases.length - 1] : SLOT_BASES[slot][0];
+1135:  const mult = RARITY_MULTIPLIER[rarity];
+1137:  const ALL_TYPES: AffixType[] = [
+1144:  function pickAffixes(pool: AffixType[], count: number, used: Set<AffixType>): ItemAffix[] {
+1145:    const result: ItemAffix[] = [];
+1152:      const value = Math.max(1, Math.round(ilvl * mult * AFFIX_SCALING[type]));
+1162:  const prefixes = pickAffixes(SLOT_PREFIX_POOL[slot], numPrefix, usedTypes);
+1163:  const suffixes = pickAffixes(SLOT_SUFFIX_POOL[slot], numSuffix, usedTypes);
+1164:  const implicit = base.implicit ? [base.implicit] : [];
+1165:  const affixes  = [...implicit, ...prefixes, ...suffixes];
+1169:  // ── Name generation: "[prefix] [base] [suffix]" Diablo-style ─────────────────
+1170:  const namePrefix = rarity !== 'common' ? rand(RARITY_PREFIXES[rarity]) + ' ' : '';
+1173:    ? ' · ' + rand(SLOT_BASE_NAMES[slot]) : '';
+1183:    maxSockets: rollSockets(rarity), socketedGems: [], skills: rollSkills(rarity),
+1200:  drops: { gold: [number, number]; bones?: number; dragonBones?: number };
+1204:export const ENEMIES: Enemy[] = [
+1205:  { id: 'chicken',    name: '小鸡',   emoji: '🐔', maxHp: 15,   attack: 1,  defence: 0,  xp: 8,    drops: { gold: [1, 2] },               reqCombatLevel: 1  },
+1206:  { id: 'cow',        name: '奶牛',   emoji: '🐄', maxHp: 35,   attack: 4,  defence: 0,  xp: 20,   drops: { gold: [2, 5],  bones: 1 },    reqCombatLevel: 5  },
+1207:  { id: 'goblin',     name: '哥布林', emoji: '👺', maxHp: 70,   attack: 8,  defence: 2,  xp: 45,   drops: { gold: [4, 10], bones: 1 },    reqCombatLevel: 10 },
+1208:  { id: 'skeleton',   name: '骷髅',   emoji: '💀', maxHp: 140,  attack: 15, defence: 5,  xp: 100,  drops: { gold: [8, 18], bones: 2 },    reqCombatLevel: 20 },
+1209:  { id: 'troll',      name: '食人魔', emoji: '👹', maxHp: 280,  attack: 26, defence: 10, xp: 200,  drops: { gold: [18, 40], bones: 3 },   reqCombatLevel: 35 },
+1210:  { id: 'giant',      name: '巨人',   emoji: '🦣', maxHp: 500,  attack: 42, defence: 18, xp: 380,  drops: { gold: [35, 75] },             reqCombatLevel: 50 },
+1211:  { id: 'dragon',     name: '绿龙',   emoji: '🐲', maxHp: 850,  attack: 65, defence: 30, xp: 720,  drops: { gold: [70, 140], dragonBones: 1 }, reqCombatLevel: 65 },
+1212:  { id: 'fire_dragon',name: '火龙',   emoji: '🔥', maxHp: 1400, attack: 95, defence: 50, xp: 1400, drops: { gold: [140, 280], dragonBones: 2 }, reqCombatLevel: 80 },
+1248:  skills?: BossSkill[];
+1259:  uniqueDropIds: string[];
+1263:export const DUNGEONS: Dungeon[] = [
+1271:    boss: { name: '矿坑蠕变怪', emoji: '🦠', maxHp: 500, attack: 14, defence: 4, xp: 200, skills: [{ type: 'shield', name: '腐化甲壳', cooldownSec: 12, value: 50, duration: 1 }] },
+1272:    uniqueDropIds: ['d_rotten_core', 'd_corrosion_pick'],
+1282:    boss: { name: '幽魂领主', emoji: '👻', maxHp: 1100, attack: 26, defence: 9, xp: 450, skills: [{ type: 'aoe', name: '幽魂嚎叫', cooldownSec: 15, value: 20, duration: 0 }] },
+1283:    uniqueDropIds: ['d_specter_cloak', 'd_shadow_sigil'],
+1293:    boss: { name: '炎核祭司', emoji: '🧙', maxHp: 2400, attack: 44, defence: 17, xp: 900, skills: [{ type: 'heal', name: '烈焰洗礼', cooldownSec: 18, value: 300, duration: 0 }, { type: 'enrage', name: '火焰狂怒', cooldownSec: 24, value: 30, duration: 2 }] },
+1294:    uniqueDropIds: ['d_flame_crown', 'd_ember_ring'],
+1304:    boss: { name: '虚空铁卫', emoji: '🤖', maxHp: 4500, attack: 68, defence: 28, xp: 1800, skills: [{ type: 'shield', name: '虚空屏障', cooldownSec: 15, value: 50, duration: 1 }, { type: 'aoe', name: '虚空裂隙', cooldownSec: 20, value: 35, duration: 0 }] },
+1305:    uniqueDropIds: ['d_void_blade', 'd_nullity_plate'],
+1315:    boss: { name: '古龙亡灵', emoji: '💀', maxHp: 8000, attack: 100, defence: 44, xp: 3500, skills: [{ type: 'aoe', name: '龙息烈焰', cooldownSec: 15, value: 45, duration: 0 }, { type: 'heal', name: '龙骨再生', cooldownSec: 22, value: 600, duration: 0 }, { type: 'enrage', name: '龙怒', cooldownSec: 30, value: 40, duration: 2 }] },
+1316:    uniqueDropIds: ['d_bone_dragon_shield', 'd_dracolich_mantle'],
+1326:    boss: { name: '混沌熔魂', emoji: '😈', maxHp: 16000, attack: 160, defence: 70, xp: 8000, skills: [{ type: 'shield', name: '混沌壁垒', cooldownSec: 18, value: 60, duration: 1 }, { type: 'aoe', name: '混沌风暴', cooldownSec: 15, value: 55, duration: 0 }, { type: 'enrage', name: '混沌狂怒', cooldownSec: 30, value: 50, duration: 3 }] },
+1327:    uniqueDropIds: ['d_chaos_edge', 'd_primal_forge_armor'],
+1335:  for (const uid of DUNGEONS[i].uniqueDropIds) DUNGEON_UNIQUE_MAP[uid] = i;
+1339:  const dungeon = DUNGEONS[dungeonIndex];
+1342:  const id = dungeon.uniqueDropIds[Math.floor(Math.random() * dungeon.uniqueDropIds.length)];
+1352:  inputs: { resource: string; qty: number }[];
+1358:export const SMITHING_RECIPES: SmithingRecipe[] = [
+1360:  { id: 'r_bronze_sword',      output: 'bronze_sword',      inputs: [{ resource: 'bar_0', qty: 2 }], reqLevel: 5,  xp: 25,  time: 8  },
+1361:  { id: 'r_bronze_shield',     output: 'bronze_shield',     inputs: [{ resource: 'bar_0', qty: 3 }], reqLevel: 5,  xp: 35,  time: 10 },
+1362:  { id: 'r_bronze_helmet',     output: 'bronze_helmet',     inputs: [{ resource: 'bar_0', qty: 2 }], reqLevel: 5,  xp: 25,  time: 8  },
+1363:  { id: 'r_bronze_body',       output: 'bronze_body',       inputs: [{ resource: 'bar_0', qty: 5 }], reqLevel: 10, xp: 60,  time: 15 },
+1364:  { id: 'r_bronze_legs',       output: 'bronze_legs',       inputs: [{ resource: 'bar_0', qty: 4 }], reqLevel: 10, xp: 48,  time: 12 },
+1365:  { id: 'r_bronze_gauntlets',  output: 'bronze_gauntlets',  inputs: [{ resource: 'bar_0', qty: 2 }], reqLevel: 5,  xp: 22,  time: 7  },
+1366:  { id: 'r_bronze_boots',      output: 'bronze_boots',      inputs: [{ resource: 'bar_0', qty: 2 }], reqLevel: 5,  xp: 22,  time: 7  },
+1368:  { id: 'r_iron_sword',        output: 'iron_sword',        inputs: [{ resource: 'bar_1', qty: 2 }], reqLevel: 20, xp: 50,  time: 8  },
+1369:  { id: 'r_iron_shield',       output: 'iron_shield',       inputs: [{ resource: 'bar_1', qty: 3 }], reqLevel: 20, xp: 70,  time: 10 },
+1370:  { id: 'r_iron_helmet',       output: 'iron_helmet',       inputs: [{ resource: 'bar_1', qty: 2 }], reqLevel: 20, xp: 50,  time: 8  },
+1371:  { id: 'r_iron_body',         output: 'iron_body',         inputs: [{ resource: 'bar_1', qty: 5 }], reqLevel: 25, xp: 120, time: 15 },
+1372:  { id: 'r_iron_legs',         output: 'iron_legs',         inputs: [{ resource: 'bar_1', qty: 4 }], reqLevel: 25, xp: 96,  time: 12 },
+1373:  { id: 'r_iron_gauntlets',    output: 'iron_gauntlets',    inputs: [{ resource: 'bar_1', qty: 2 }], reqLevel: 20, xp: 45,  time: 7  },
+1374:  { id: 'r_iron_boots',        output: 'iron_boots',        inputs: [{ resource: 'bar_1', qty: 2 }], reqLevel: 20, xp: 45,  time: 7  },
+1376:  { id: 'r_steel_sword',       output: 'steel_sword',       inputs: [{ resource: 'bar_2', qty: 2 }], reqLevel: 30, xp: 75,  time: 8  },
+1377:  { id: 'r_steel_shield',      output: 'steel_shield',      inputs: [{ resource: 'bar_2', qty: 3 }], reqLevel: 30, xp: 105, time: 10 },
+1378:  { id: 'r_steel_helmet',      output: 'steel_helmet',      inputs: [{ resource: 'bar_2', qty: 2 }], reqLevel: 30, xp: 75,  time: 8  },
+1379:  { id: 'r_steel_body',        output: 'steel_body',        inputs: [{ resource: 'bar_2', qty: 5 }], reqLevel: 35, xp: 180, time: 15 },
+1380:  { id: 'r_steel_legs',        output: 'steel_legs',        inputs: [{ resource: 'bar_2', qty: 4 }], reqLevel: 35, xp: 144, time: 12 },
+1381:  { id: 'r_steel_gauntlets',   output: 'steel_gauntlets',   inputs: [{ resource: 'bar_2', qty: 2 }], reqLevel: 30, xp: 70,  time: 7  },
+1382:  { id: 'r_steel_boots',       output: 'steel_boots',       inputs: [{ resource: 'bar_2', qty: 2 }], reqLevel: 30, xp: 70,  time: 7  },
+1384:  { id: 'r_mithril_sword',     output: 'mithril_sword',     inputs: [{ resource: 'bar_4', qty: 2 }], reqLevel: 50, xp: 120, time: 10 },
+1385:  { id: 'r_mithril_shield',    output: 'mithril_shield',    inputs: [{ resource: 'bar_4', qty: 3 }], reqLevel: 50, xp: 160, time: 12 },
+1387:  { id: 'r_adamant_sword',     output: 'adamant_sword',     inputs: [{ resource: 'bar_5', qty: 2 }], reqLevel: 60, xp: 160, time: 10 },
+1389:  { id: 'r_rune_sword',        output: 'rune_sword',        inputs: [{ resource: 'bar_6', qty: 2 }], reqLevel: 70, xp: 220, time: 10 },
+1394:  const def = ALL_CRAFTABLE_ITEMS[itemId];
+1396:  const affix: ItemAffix[] = [];
+1405:    rarity, ilvl: def.ilvl, affixes: affix, prefixes: [], suffixes: affix,
+1413:    maxSockets: rollSockets(rarity), socketedGems: [], skills: [],
+1422:  commonDrops: { name: string; emoji: string; qty: number; chance: number }[];
+1427:export const THIEVING_NPCS: ThievingNPC[] = [
+1428:  { id:'drunkard',name:'醉汉',emoji:'🍺',level:1,perception:50,maxHit:3,interval:4,xp:8,gpMin:1,gpMax:3,commonDrops:[{name:'面包屑',emoji:'🍞',qty:1,chance:0.3}] },
+1429:  { id:'beggar',name:'乞丐',emoji:'🧙',level:5,perception:80,maxHit:5,interval:4,xp:12,gpMin:2,gpMax:5,commonDrops:[{name:'破布',emoji:'🧶',qty:1,chance:0.25}] },
+1430:  { id:'peddler',name:'小贩',emoji:'🧑',level:10,perception:120,maxHit:8,interval:4,xp:18,gpMin:3,gpMax:8,commonDrops:[{name:'布料',emoji:'🧵',qty:1,chance:0.2}] },
+1431:  { id:'pickpocket',name:'扒手',emoji:'🕵️',level:15,perception:160,maxHit:12,interval:3,xp:25,gpMin:5,gpMax:12,commonDrops:[{name:'小刀',emoji:'🔪',qty:1,chance:0.15}] },
+1432:  { id:'gambler',name:'赌徒',emoji:'🎲',level:20,perception:210,maxHit:16,interval:3,xp:35,gpMin:8,gpMax:18,commonDrops:[{name:'骰子',emoji:'🎲',qty:1,chance:0.12}] },
+1433:  { id:'scribe',name:'抄写员',emoji:'✍️',level:25,perception:260,maxHit:22,interval:3,xp:48,gpMin:12,gpMax:25,commonDrops:[{name:'卷轴',emoji:'📜',qty:1,chance:0.1}] },
+1434:  { id:'apothecary',name:'药师',emoji:'🧪',level:30,perception:310,maxHit:28,interval:3,xp:60,gpMin:15,gpMax:30,commonDrops:[{name:'药草',emoji:'🌿',qty:1,chance:0.15}] },
+1435:  { id:'squire',name:'骑士侍从',emoji:'🛡️',level:35,perception:370,maxHit:35,interval:3,xp:78,gpMin:20,gpMax:40,commonDrops:[{name:'铁锭',emoji:'🔩',qty:1,chance:0.1}] },
+1436:  { id:'spice_merchant',name:'香料商人',emoji:'🌶️',level:40,perception:430,maxHit:42,interval:3,xp:95,gpMin:25,gpMax:50,commonDrops:[{name:'香料',emoji:'🌿',qty:1,chance:0.12}] },
+1437:  { id:'jeweler',name:'宝石匠',emoji:'💎',level:45,perception:500,maxHit:50,interval:3,xp:115,gpMin:30,gpMax:60,commonDrops:[{name:'碎裂宝石',emoji:'💠',qty:1,chance:0.08}] },
+1438:  { id:'noble_lady',name:'贵族夫人',emoji:'👸',level:50,perception:570,maxHit:58,interval:3,xp:140,gpMin:35,gpMax:70,commonDrops:[{name:'丝绸',emoji:'🧣',qty:1,chance:0.1},{name:'珠
+
+[… truncated 3451 chars …]

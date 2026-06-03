@@ -2,18 +2,14 @@ import { useGameState } from "@/hooks/use-game";
 import { SkillPage } from "@/components/skill-page";
 import { Axe } from "lucide-react";
 
-const RESOURCES = [
-  { name: "Oak Logs", emoji: "🪵", time: 5, xp: 10, reqLevel: 1, resourceKey: "wood_0", actionKey: "woodcutting_0" },
-  { name: "Willow Logs", emoji: "🌿", time: 10, xp: 25, reqLevel: 6, resourceKey: "wood_1", actionKey: "woodcutting_1" },
-  { name: "Teak Logs", emoji: "🌳", time: 15, xp: 40, reqLevel: 11, resourceKey: "wood_2", actionKey: "woodcutting_2" },
-  { name: "Maple Logs", emoji: "🍁", time: 20, xp: 55, reqLevel: 16, resourceKey: "wood_3", actionKey: "woodcutting_3" },
-  { name: "Mahogany Logs", emoji: "🌲", time: 25, xp: 70, reqLevel: 21, resourceKey: "wood_4", actionKey: "woodcutting_4" },
-  { name: "Yew Logs", emoji: "🎋", time: 30, xp: 85, reqLevel: 26, resourceKey: "wood_5", actionKey: "woodcutting_5" },
-  { name: "Magic Logs", emoji: "✨", time: 35, xp: 100, reqLevel: 31, resourceKey: "wood_6", actionKey: "woodcutting_6" },
-  { name: "Elder Logs", emoji: "🌟", time: 40, xp: 115, reqLevel: 36, resourceKey: "wood_7", actionKey: "woodcutting_7" },
-  { name: "Redwood Logs", emoji: "🎑", time: 45, xp: 130, reqLevel: 41, resourceKey: "wood_8", actionKey: "woodcutting_8" },
-  { name: "Spirit Logs", emoji: "💫", time: 50, xp: 145, reqLevel: 46, resourceKey: "wood_9", actionKey: "woodcutting_9" },
-];
+const WOODS = ["橡木","柳木","柚木","枫木","桃花心木","紫杉木","魔法木","古树木","红杉木","灵木","白蜡木","桦木","雪松木","榆木","铁木","血木","影木","月木","风暴木","霜木","余烬木","雷霆木","龙木","巨魔木","巨人木","暗木","水晶木","露木","荆棘木","骨木","墓木","虚空木","恶魔木","天使木","泰坦木","长老木","符文木","咒木","星木","深渊木","以太木","天界木","炼狱木","龙息木","凤凰木","狮鹫木","蛇妖木","海德拉木","巨兽木","巨像木","原始木","永恒木","不朽木","神木","世界树","梦木","夜木","暮木","晨木","黄昏木","日木","月影木","星尘木","星云木","星河木","宇宙木","星光木","以太之木","秘银木","精金木","山铜木","命运木","末日木","混沌木","秩序木","创世木","灭世木","起源木","天启木","超越木","全知木","无限木","至高木","终极木","完美木","无瑕木","全能木","永恒之木","不朽之木","无尽木","神谕木","圣光木","天罚木","终末木","涅槃木","万古长青木","创世神木"];
+const LV = [1,4,7,10,15,25,40,60,80,99];
+const T = [3,4,5,6,8,10,12,14,16,18];
+const X = [10,16,24,34,48,64,84,110,140,180];
+const RESOURCES = LV.map((lv, i) => ({
+  name: WOODS[i], emoji: "🪵", time: T[i], xp: X[i], reqLevel: lv,
+  resourceKey: `wood_${i}`, actionKey: `woodcutting_${i}`,
+}));
 
 export default function Woodcutting() {
   const { data: state } = useGameState();

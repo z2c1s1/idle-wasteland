@@ -22,7 +22,7 @@ export async function setupVite(server: Server, app: Express) {
       ...viteLogger,
       error: (msg, options) => {
         viteLogger.error(msg, options);
-        process.exit(1);
+        // Do NOT exit — just log. Transient compile errors shouldn't crash the server.
       },
     },
     server: serverOptions,
@@ -42,7 +42,6 @@ export async function setupVite(server: Server, app: Express) {
         "index.html",
       );
 
-      // always reload the index.html file from disk incase it changes
       let template = await fs.promises.readFile(clientTemplate, "utf-8");
       template = template.replace(
         `src="/src/main.tsx"`,
@@ -52,7 +51,9 @@ export async function setupVite(server: Server, app: Express) {
       res.status(200).set({ "Content-Type": "text/html" }).end(page);
     } catch (e) {
       vite.ssrFixStacktrace(e as Error);
-      next(e);
+      // Return 500 instead of crashing the server
+      console.error("Vite transform error:", (e as Error).message);
+      res.status(500).end("Build error — please refresh");
     }
   });
 }

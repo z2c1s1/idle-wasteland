@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useGameState, useSocketGem } from "@/hooks/use-game";
+import { useGameState, useSocketGem, useSynthGem } from "@/hooks/use-game";
 import {
   GEM_EMOJI, GEM_TYPE_LABEL, GEM_QUALITY_LABEL, GEM_TYPE_COLOR, GEM_QUALITY_COLOR,
   GEM_TYPES, GEM_QUALITIES, getGemName, getGemBonus, getGemBgClass,
@@ -163,6 +163,7 @@ function ItemRow({
 export default function GemsPage() {
   const { data: state }  = useGameState();
   const socketGem        = useSocketGem();
+  const synthGem         = useSynthGem();
   const { toast }        = useToast();
 
   if (!state) return null;
@@ -319,6 +320,44 @@ export default function GemsPage() {
         <div className="bg-card border border-border rounded-xl p-6 text-center text-muted-foreground">
           <p className="text-sm">暂无可镶嵌物品。</p>
           <p className="text-xs mt-1">击败敌人或制作/掉落精良+物品可获得宝石孔。</p>
+        </div>
+      )}
+
+      {/* Gem Synthesis */}
+      {totalGems >= 3 && (
+        <div className="bg-card border border-amber-500/30 rounded-xl p-4">
+          <h2 className="text-sm font-semibold text-amber-400 uppercase mb-2">宝石合成</h2>
+          <p className="text-xs text-muted-foreground mb-2">5粒同品质→1粒高一级(100%) · 3粒25% · 4粒50% · 消耗金币</p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1">
+            {GEM_TYPES.map(type => 
+              GEM_QUALITIES.filter(q => (gems[`${type}_${q}`] ?? 0) >= 5).map(q => {
+                const key = `${type}_${q}`;
+                const qty = gems[key] ?? 0;
+                return (
+                  <button key={key} className="text-xs p-2 rounded border border-border hover:border-amber-400 bg-muted/20"
+                    onClick={async () => {
+                      if (!confirm(`合成5粒${GEM_QUALITY_LABEL[q]}${GEM_TYPE_LABEL[type]}？`)) return;
+                      try {
+                        const items = Array(5).fill({ type, quality: q });
+                        await synthGem.mutateAsync(items);
+                        toast({ title: "合成成功" });
+                      } catch (e: unknown) {
+                        toast({
+                          title: "合成失败",
+                          description: e instanceof Error ? e.message : "未知错误",
+                          variant: "destructive",
+                        });
+                      }
+                    }}>
+                    <span className="text-lg">{GEM_EMOJI[type]}</span>
+                    <p className="text-[10px]">{GEM_TYPE_LABEL[type]}</p>
+                    <p className={`text-[9px] ${GEM_QUALITY_COLOR[q]}`}>{GEM_QUALITY_LABEL[q]}</p>
+                    <p className="text-[10px] font-bold">×{qty}</p>
+                  </button>
+                );
+              })
+            )}
+          </div>
         </div>
       )}
     </div>

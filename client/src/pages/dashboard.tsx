@@ -3,9 +3,11 @@ import { useStartAction } from "@/hooks/use-game";
 import { calculateLevel, levelProgress, formatNumber, getCombatLevel } from "@/lib/game-utils";
 import {
   Axe, Pickaxe, Flame, Waves, PawPrint, Hammer,
-  StopCircle, Skull, Shield,
+  StopCircle, Skull, Shield, HandMetal, Crosshair, Wand,
+  Footprints, Zap,
 } from "lucide-react";
 import { useLocation } from "wouter";
+import { WORLD_TIER_LABEL } from "@shared/game-data";
 import type { GameState } from "@shared/schema";
 
 const GATHERING_SKILLS = [
@@ -14,13 +16,16 @@ const GATHERING_SKILLS = [
   { title: "冶炼", xpKey: "smeltingXp"    as const, icon: Flame,    color: "text-orange-400", bg: "bg-orange-900/30", href: "/smelting"    },
   { title: "钓鱼", xpKey: "fishingXp"     as const, icon: Waves,    color: "text-blue-400",   bg: "bg-blue-900/30",   href: "/fishing"     },
   { title: "狩猎", xpKey: "huntingXp"     as const, icon: PawPrint, color: "text-red-400",    bg: "bg-red-900/30",    href: "/hunting"     },
-  { title: "制作", xpKey: "craftingXp"    as const, icon: Hammer,   color: "text-purple-400", bg: "bg-purple-900/30", href: "/crafting"    },
+  { title: "搜刮", xpKey: "thievingXp"    as const, icon: HandMetal,color: "text-purple-400", bg: "bg-purple-900/30", href: "/thieving"    },
+  { title: "敏捷", xpKey: "agilityXp"     as const, icon: Footprints,color:"text-cyan-400",  bg: "bg-cyan-900/30",   href: "/agility"     },
 ];
 
 const COMBAT_SKILLS = [
   { title: "攻击", xpKey: "attackXp"     as const, color: "text-red-400"    },
   { title: "防御", xpKey: "defenceXp"    as const, color: "text-blue-400"   },
   { title: "生命", xpKey: "hitpointsXp"  as const, color: "text-green-400"  },
+  { title: "远程", xpKey: "rangedXp"     as const, color: "text-green-400"  },
+  { title: "魔法", xpKey: "magicXp"      as const, color: "text-purple-400" },
 ];
 
 function SkillRow({ title, xp, icon: Icon, color, href, isActive, onClick }: {
@@ -72,8 +77,22 @@ export default function Dashboard() {
   return (
     <div className="p-4 max-w-4xl mx-auto space-y-5">
       <div className="pb-4 border-b border-border">
-        <h1 className="font-display text-xl font-bold text-foreground mb-0.5">总览</h1>
-        <p className="text-xs text-muted-foreground">查看你的技能进度</p>
+        <h1 className="font-display text-xl font-bold text-foreground mb-0.5">辐射废土总览</h1>
+        <p className="text-xs text-muted-foreground">在废土中生存下去</p>
+      </div>
+
+      {/* World Tier banner */}
+      <div onClick={() => setLocation("/exploration")}
+        className="bg-card border border-amber-500/30 rounded-xl px-4 py-3 cursor-pointer hover:border-amber-400/50 transition-colors">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Zap className="w-4 h-4 text-amber-400" />
+            <span className="text-sm font-semibold text-amber-300">
+              {WORLD_TIER_LABEL[(gs.worldTier as 1|2|3|4|undefined) ?? 1]}
+            </span>
+          </div>
+          <span className="text-xs text-muted-foreground">切换层级 →</span>
+        </div>
       </div>
 
       {isActive && (

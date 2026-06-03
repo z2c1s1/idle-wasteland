@@ -1,0 +1,26 @@
+Task #9: 背包子类型图标缩小为 1:1
+
+Shrink inventory emoji icons to uniform 1:1 square size for a more compact layout.
+
+Changes in client/src/pages/inventory.tsx:
+1. ItemCard component (loot bag items): changed emoji span from `text-2xl leading-none mt-0.5`
+   to `w-5 h-5 flex-shrink-0 flex items-center justify-center text-base leading-none`
+   — forces a 20×20px square container, vertically centered.
+
+2. craftItems section (smithed/crafted items): changed emoji span from `text-xl`
+   to `w-5 h-5 flex-shrink-0 flex items-center justify-center text-base leading-none`
+   — same treatment as loot bag icons.
+
+3. Resource section items (gathering resources): converted from centered card layout
+   (`grid p-2 text-center`) to compact horizontal row layout with:
+   - Small 16×16px section emoji (w-4 h-4) as a 1:1 icon on the left
+   - Truncated item name (flex-1)
+   - Bold qty on the right
+   Grid adjusted from `grid-cols-2/4/6` to `grid-cols-2/3/5` to fit the new row layout.
+
+Out of scope (unchanged per spec):
+- Sidebar navigation icons
+- Equipment slot icons in the "已装备" panel
+- Gem page icons
+
+TypeScript check: clean.

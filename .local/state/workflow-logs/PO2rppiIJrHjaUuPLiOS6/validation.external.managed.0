@@ -1,0 +1,39 @@
+VERDICT: APPROVED_WITH_COMMENTS
+
+The dungeon feature is functionally implemented end-to-end (data definitions, server action, combat loop integration, API contract, and combat-page UI), and it meets the core gameplay objective: selectable dungeons, entry cost, boss-only combat flow, and dungeon-exclusive legendary drops.
+
+Critical findings:
+- Core flow works: `DUNGEONS` + dungeon unique items were added, `enterDungeon` endpoint/hook is wired, `activeAction` supports `dungeon_<index>`, and `getGameState()` now processes dungeon combat ticks with boss kill/death returning player to `idle`.
+- Exclusive legendary drops are correctly isolated from normal drops via `minEnemyIndex: 99` and dropped through `generateDungeonDrop()` only.
+- UI includes a dedicated dungeon tab with lock state, costs, req combat level, and active dungeon boss panel.
+
+Non-blocking gaps worth fixing:
+1) Task-spec mismatch: schema was not extended with `dungeonId` (task explicitly called for it). Current implementation infers dungeon from `activeAction`, which works, but misses the requested explicit state field.
+2) Server-side state guard: `enterDungeon()` does not reject entry while already in another active action. UI prevents this, but API-level guard is advisable for consistency VERDICT: APPROVED_WITH_COMMENTS
+and to avoid accidental double-charging/race behavior.
+3) Drop preview UX: dungeon cards show generic “✦ 传奇物品” badges, not actual unique item names, so “专属掉落预览”
+ is only partially informative.
+
+Security: none observed (no serious authz/injection/secret handling regressions in this diff).
+
+NexThe dungeon feature is functionally implemented end-to-end (data definitions, server action, combat loop integration, API contract, and combat-page UI), and it meets the core gameplay objective: selectable dungeons, entry cost, boss-only combat flow, and dungeon-exclusive legendary drops.
+t actions:
+1) Add optional `dungeonId` to schema/state updates (set on enter, clear on e
+xit/death/retreat) to align with the requested design.
+Critical findings:
+2) Enforce server-side busy-state validation in `enterDungeon()` (e.g., re- Core flow works: `DUNGEONS` + dungeon unique items were added, `enterDungeon` endpoint/hook is wired, `activeAction` supports `dungeon_<index>`, and `getGameState()` now processes dungeon combat ticks with boss kill/death returning player to `idle`.
+quire `activeAction === "idle"` or explicit transition policy).
+- Exclusive legendary drops are correctly isolated from normal drops via `minEnemyIndex: 99` and dropped through `generateDungeonDrop()` only.
+3) Improve dungeon drop preview by resolving and displaying unique item names (and optionall- UI includes a dedicated dungeon tab with lock state, costs, req combat level, and active dungeon boss panel.
+y icons) instead of generic labels.
+Non-blocking gaps worth fixing:
+1) Task-spec mismatch: schema was not extended with `dungeonId` (task explicitly called for it). Current implementation infers dungeon from `activeAction`, which works, but misses the requested explicit state field.
+2) Server-side state guard: `enterDungeon()` does not reject entry while already in another active action. UI prevents this, but API-level guard is advisable for consistency and to avoid accidental double-charging/race behavior.
+3) Drop preview UX: dungeon cards show generic “✦ 传奇物品” badges, not actual unique item names, so “专属掉落预览” is only partially informative.
+
+Security: none observed (no serious authz/injection/secret handling regressions in this diff).
+
+Next actions:
+1) Add optional `dungeonId` to schema/state updates (set on enter, clear on exit/death/retreat) to align with the requested design.
+2) Enforce server-side busy-state validation in `enterDungeon()` (e.g., require `activeAction === "idle"` or explicit transition policy).
+3) Improve dungeon drop preview by resolving and displaying unique item names (and optionally icons) instead of generic labels.

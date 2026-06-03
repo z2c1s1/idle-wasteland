@@ -2,97 +2,116 @@ import type { Express } from "express";
 import type { Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
-import { z } from "zod";
+import { registerGamePost, registerGamePostVoid } from "./lib/route-handler";
 
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
-  app.get(api.game.getState.path, async (_req, res) => {
+  const g = api.game;
+
+  app.get(g.getState.path, async (_req, res) => {
     try {
-      const state = await storage.getGameState();
-      res.json(state);
+      res.json(await storage.getGameState());
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Internal server error" });
     }
   });
 
-  app.post(api.game.startAction.path, async (req, res) => {
-    try {
-      const input = api.game.startAction.input.parse(req.body);
-      const state = await storage.updateAction(input.action);
-      res.json(state);
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        return res.status(400).json({ message: err.errors[0].message });
-      }
-      res.status(500).json({ message: "Internal server error" });
-    }
-  });
+  registerGamePost(app, g.startAction.path, g.startAction.input, (input) =>
+    storage.updateAction(input.action),
+  );
+  registerGamePost(app, g.equip.path, g.equip.input, (input) =>
+    storage.equipItem(input.instanceId, input.itemId),
+  );
+  registerGamePost(app, g.unequip.path, g.unequip.input, (input) =>
+    storage.unequipItem(input.slot),
+  );
+  registerGamePost(app, g.destroyLoot.path, g.destroyLoot.input, (input) =>
+    storage.destroyLoot(input.instanceId),
+  );
+  registerGamePost(app, g.socketGem.path, g.socketGem.input, (input) =>
+    storage.socketGem(input.instanceId, input.gemKey),
+  );
+  registerGamePost(app, g.enterDungeon.path, g.enterDungeon.input, (input) =>
+    storage.enterDungeon(input.dungeonIndex),
+  );
+  registerGamePost(app, g.setLootFilter.path, g.setLootFilter.input, (input) =>
+    storage.setLootFilter(input.rarity),
+  );
+  registerGamePost(app, g.equipTool.path, g.equipTool.input, (input) =>
+    storage.equipTool(input.toolId),
+  );
+  registerGamePost(app, g.addSocket.path, g.addSocket.input, (input) =>
+    storage.addSocket(input.instanceId),
+  );
+  registerGamePost(app, g.cook.path, g.cook.input, (input) => storage.cookFood(input.recipeId));
+  registerGamePost(app, g.brew.path, g.brew.input, (input) => storage.brewPotion(input.recipeId));
+  registerGamePost(app, g.equipSkill.path, g.equipSkill.input, (input) =>
+    storage.equipSkill(input.skillId),
+  );
+  registerGamePost(app, g.claimPet.path, g.claimPet.input, (input) =>
+    storage.claimPet(input.achievementId),
+  );
+  registerGamePost(app, g.buildHomestead.path, g.buildHomestead.input, (input) =>
+    storage.buildHomestead(input.buildingId),
+  );
+  registerGamePostVoid(app, g.expandLoot.path, () => storage.expandLootBag());
+  registerGamePost(app, g.gamble.path, g.gamble.input, (input) =>
+    storage.gambleItem(input.tierIdx, input.slot),
+  );
+  registerGamePost(app, g.synthEquip.path, g.synthEquip.input, (input) =>
+    storage.synthEquip(input.instanceIds),
+  );
+  registerGamePost(app, g.synthGem.path, g.synthGem.input, (input) =>
+    storage.synthGem(input.items),
+  );
+  registerGamePostVoid(app, g.startTrial.path, () => storage.startTrial());
+  registerGamePost(app, g.chooseBuff.path, g.chooseBuff.input, (input) =>
+    storage.chooseTrialBuff(input.buffId),
+  );
+  registerGamePostVoid(app, g.startTower.path, () => storage.startTower());
+  registerGamePostVoid(app, g.resetTalents.path, () => storage.resetTalents());
+  registerGamePost(app, g.unlockTalent.path, g.unlockTalent.input, (input) =>
+    storage.unlockTalent(input.style, input.nodeId),
+  );
+  registerGamePost(app, g.addFuel.path, g.addFuel.input, (input) =>
+    storage.addFuel(input.woodTier),
+  );
+  registerGamePost(app, g.activatePrayer.path, g.activatePrayer.input, (input) =>
+    storage.activatePrayer(input.prayerId),
+  );
+  registerGamePostVoid(app, g.deactivatePrayer.path, () => storage.deactivatePrayer());
+  registerGamePostVoid(app, g.getSlayerTask.path, () => storage.getSlayerTask());
+  registerGamePostVoid(app, g.completeSlayerTask.path, () => storage.completeSlayerTask());
+  registerGamePost(app, g.farmPlant.path, g.farmPlant.input, (input) =>
+    storage.farmPlant(input.slot, input.seed),
+  );
+  registerGamePost(app, g.farmHarvest.path, g.farmHarvest.input, (input) =>
+    storage.farmHarvest(input.slot),
+  );
+  registerGamePost(app, g.npcAction.path, g.npcAction.input, (input) =>
+    storage.npcAction(input.npcId, input.actionIndex),
+  );
+  registerGamePostVoid(app, g.dismissNpc.path, () => storage.dismissNpc());
 
-  app.post(api.game.equip.path, async (req, res) => {
-    try {
-      const input = api.game.equip.input.parse(req.body);
-      const state = await storage.equipItem(input.instanceId, input.itemId);
-      res.json(state);
-    } catch (err) {
-      if (err instanceof Error) return res.status(400).json({ message: err.message });
-      res.status(500).json({ message: "Internal server error" });
-    }
-  });
+  registerGamePost(app, g.setWorldTier.path, g.setWorldTier.input, (input) =>
+    storage.setWorldTier(input.tier),
+  );
+  registerGamePost(app, g.enhance.path, g.enhance.input, (input) =>
+    storage.enhanceItem(input.instanceId),
+  );
 
-  app.post(api.game.unequip.path, async (req, res) => {
-    try {
-      const input = api.game.unequip.input.parse(req.body);
-      const state = await storage.unequipItem(input.slot);
-      res.json(state);
-    } catch (err) {
-      if (err instanceof Error) return res.status(400).json({ message: err.message });
-      res.status(500).json({ message: "Internal server error" });
-    }
+  // Outpost routes
+  app.post("/api/game/establish-outpost", async (req, res) => {
+    try { res.json(await storage.establishOutpost(req.body.zoneIndex)); }
+    catch (err: any) { res.status(400).json({ message: err.message }); }
   });
-
-  app.post(api.game.destroyLoot.path, async (req, res) => {
-    try {
-      const input = api.game.destroyLoot.input.parse(req.body);
-      const state = await storage.destroyLoot(input.instanceId);
-      res.json(state);
-    } catch (err) {
-      if (err instanceof Error) return res.status(400).json({ message: err.message });
-      res.status(500).json({ message: "Internal server error" });
-    }
+  app.post("/api/game/demolish-outpost", async (req, res) => {
+    try { res.json(await storage.demolishOutpost(req.body.zoneIndex)); }
+    catch (err: any) { res.status(400).json({ message: err.message }); }
   });
-
-  app.post(api.game.socketGem.path, async (req, res) => {
-    try {
-      const input = api.game.socketGem.input.parse(req.body);
-      const state = await storage.socketGem(input.instanceId, input.gemKey);
-      res.json(state);
-    } catch (err) {
-      if (err instanceof Error) return res.status(400).json({ message: err.message });
-      res.status(500).json({ message: "Internal server error" });
-    }
-  });
-
-  app.post(api.game.enterDungeon.path, async (req, res) => {
-    try {
-      const input = api.game.enterDungeon.input.parse(req.body);
-      const state = await storage.enterDungeon(input.dungeonIndex);
-      res.json(state);
-    } catch (err) {
-      if (err instanceof Error) return res.status(400).json({ message: err.message });
-      res.status(500).json({ message: "Internal server error" });
-    }
-  });
-
-  app.post(api.game.setLootFilter.path, async (req, res) => {
-    try {
-      const input = api.game.setLootFilter.input.parse(req.body);
-      const state = await storage.setLootFilter(input.rarity);
-      res.json(state);
-    } catch (err) {
-      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
-      if (err instanceof Error) return res.status(400).json({ message: err.message });
-      res.status(500).json({ message: "Internal server error" });
-    }
+  app.post("/api/game/collect-outposts", async (_req, res) => {
+    try { res.json(await storage.collectOutposts()); }
+    catch (err: any) { res.status(400).json({ message: err.message }); }
   });
 
   return httpServer;

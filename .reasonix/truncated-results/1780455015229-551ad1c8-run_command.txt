@@ -1,0 +1,374 @@
+$ findstr /N "Gem drop on kill" "server\storage.ts"
+[exit 0]
+4:  ENEMIES, DUNGEONS, generateDungeonDrop, SMITHING_RECIPES, LEATHERWORKING_RECIPES, JEWELCRAFTING_RECIPES,
+5:  getEquipmentBonuses, generateDroppedItem, getDropChance, craftedToGameItem,
+6:  MINING_GEM_POOLS, COMBAT_GEM_POOLS, getGemBonus,
+7:  type GameItem, type EquipmentSlot, type ItemSkill,
+10:import { THIEVING_NPCS, calcStealth, calcThievingSuccessRate, calcThievingDoubleRate, COMBAT_TRIANGLE, TRIANGLE_DAMAGE_BONUS, TRIANGLE_DAMAGE_PENALTY, getCombatStyle, getToolBonus, ALL_TOOLS, TOOL_RECIPES, TALENT_TREES, ALL_SLOTS, SLOT_BASES, ITEM_SETS, UNIQUE_ITEMS, buildUniqueGameItem, GAMBLE_TIERS, HOMESTEAD_BUILDINGS, WOODCUTTING_BERRY_DROPS, HUNTING_HERB_DROPS, ACHIEVEMENTS, PETS, COOKING_RECIPES, POTION_RECIPES, COMBAT_SKILLS, PRAYERS, getPrayerLevel, TOWN_NPCS, type AffixType, type Rarity } from "@shared/game-data";
+13:import { parseEquipment, parseCraftItems, parseLootBag, parseGems, parseDungeonStats } from "@shared/game-state-parse";
+15:import { SKILLS_DATA, RARITY_ORDER, DISENCHANT_GOLD } from "./storage/constants";
+16:import { handleProductionRecipe, rollGemDropsFromPool, mergeGems } from "./storage/helpers";
+18:import { tickActiveAction } from "./storage/tick-action";
+20:export { SKILLS_DATA } from "./storage/constants";
+23:const calcLevel = calculateLevel;
+27:  updateAction(action: string): Promise<GameState>;
+28:  enterDungeon(dungeonIndex: number): Promise<GameState>;
+33:  socketGem(instanceId: string, gemKey: string): Promise<GameState>;
+41:      const [newState] = await db.insert(gameStates).values({}).returning();
+46:    const now = new Date();
+47:    const tempPatch = this.applyTemperatureDecay(state, now);
+49:      const [updated] = await db.update(gameStates).set(tempPatch as any)
+55:    const npcPatch = this.trySpawnNpc(state);
+57:      const [npcUpdated] = await db.update(gameStates).set(npcPatch as any)
+63:    const prayerElapsed = (now.getTime() - new Date(state.prayerStartedAt ?? now).getTime()) / 1000;
+64:    const prayerPatch = this.applyPrayerTick(state, prayerElapsed);
+66:      const [pUpdated] = await db.update(gameStates).set({ ...prayerPatch, prayerStartedAt: state.activePrayer ? now : null } as any)
+71:    const action = state.activeAction;
+72:    if (action === "idle") return state;
+74:    const elapsedSeconds = (now.getTime() - new Date(state.actionUpdatedAt).getTime()) / 1000 * (state.speedMult ?? 1);
+75:    if (elapsedSeconds <= 0) return state;
+77:    return tickActiveAction(state, now, elapsedSeconds);
+80:  async updateAction(action: string): Promise<GameState> {
+81:    const currentState = await this.getGameState();
+84:    const checkRes = (key: string, qty: number) => getResourceCount(currentState, key) >= qty;
+85:    if (action.startsWith("smith_")) {
+86:      const r = SMITHING_RECIPES[parseInt(action.split("_")[1])];
+89:    if (action.startsWith("leather_")) {
+90:      const r = LEATHERWORKING_RECIPES[parseInt(action.split("_")[1])];
+93:    if (action.startsWith("jewel_")) {
+94:      const r = JEWELCRAFTING_RECIPES[parseInt(action.split("_")[1])];
+97:    if (action.startsWith("tool_")) {
+98:      const r = TOOL_RECIPES[parseInt(action.split("_")[1])];
+101:    if (action.startsWith("smelting_")) {
+102:      const idx = action.split("_")[1];
+106:    const [updated] = await db.update(gameStates)
+107:      .set({ activeAction: action, actionUpdatedAt: new Date() })
+113:    const state = await this.getGameState();
+114:    const [updated] = await db.update(gameStates)
+121:    const state = await this.getGameState();
+122:    const [updated] = await db.update(gameStates)
+123:      .set({ activeAction: 'tower', actionUpdatedAt: new Date(), enemyHp: -1 })
+129:    const state = await this.getGameState();
+131:    const [updated] = await db.update(gameStates)
+132:      .set({ activeAction: 'trial_0_0', actionUpdatedAt: new Date(), enemyHp: -1, trialKey: state.trialKey - 1, trialBuffs: '[]', trialCurses: '[]' } as any)
+138:    const state = await this.getGameState();
+139:    const buffs: string[] = JSON.parse(state.trialBuffs ?? '[]');
+140:    const curses: string[] = JSON.parse(state.trialCurses ?? '[]');
+142:    const curse = TRIAL_CURSES[Math.floor(Math.random() * TRIAL_CURSES.length)];
+145:    const parts = state.activeAction.split('_');
+146:    const phase = parseInt(parts[2] ?? '0');
+147:    const nextAction = `trial_${parts[1]}_${phase + 1}`;
+148:    const [updated] = await db.update(gameStates)
+149:      .set({ trialBuffs: JSON.stringify(buffs), trialCurses: JSON.stringify(curses), activeAction: nextAction, actionUpdatedAt: new Date(), enemyHp: -1 } as any)
+155:    const state = await this.getGameState();
+156:    const loot = parseLootBag(state.lootBag);
+157:    const items = loot.filter(i => instanceIds.includes(i.instanceId));
+158:    const count = items.length;
+160:    const chance = count === 3 ? 0.25 : count === 4 ? 0.5 : 1;
+161:    const costMul = count === 3 ? 1 : count === 4 ? 2 : 5;
+162:    const avgIlvl = Math.max(1, Math.floor(items.reduce((s,i) => s + i.ilvl, 0) / count) - 5);
+163:    const rarityCost: Record<string,number> = { normal:10, fine:50, rare:200, epic:800, legendary:3000, mythic:10000 };
+164:    const maxR = items.reduce((r,i) => (rarityCost[i.rarity]||0) > (rarityCost[r]||0) ? i.rarity : r, 'normal');
+165:    const baseCost = Math.floor(avgIlvl * (rarityCost[maxR]||50) * costMul);
+166:    const synthLevel = calcLevel(state.synthesisXp ?? 0);
+167:    const discount = 1 - (synthLevel / 100);
+168:    const finalCost = Math.max(1, Math.floor(baseCost * discount));
+171:    const remaining = loot.filter(i => !instanceIds.includes(i.instanceId));
+172:    const success = Math.random() < chance;
+173:    const xpGain = count * 5;
+175:      const [u] = await db.update(gameStates).set({ lootBag: JSON.stringify(remaining), gold: state.gold - finalCost, synthesisXp: (state.synthesisXp ?? 0) + xpGain } as any).where(eq(gameStates.id, state.id)).returning();
+179:    const rOrder = ['normal','fine','rare','epic','legendary','mythic'];
+180:    const maxRI = Math.max(...items.map(i => rOrder.indexOf(i.rarity)));
+181:    const newRarity = rOrder[Math.min(maxRI + 1, rOrder.length - 1)] as Rarity;
+182:    const sameSlot = items.every(i => i.slot === items[0].slot);
+183:    const slot = sameSlot ? items[0].slot : ALL_SLOTS[Math.floor(Math.random() * ALL_SLOTS.length)];
+185:    const newItem = generateDroppedItem(Math.max(0, Math.min(7, Math.floor(avgIlvl/10))), 0);
+191:    const [u] = await db.update(gameStates).set({ lootBag: JSON.stringify([...remaining, newItem]), gold: state.gold - finalCost, synthesisXp: (state.synthesisXp ?? 0) + xpGain } as any).where(eq(gameStates.id, state.id)).returning();
+196:    const state = await this.getGameState();
+197:    const tier = GAMBLE_TIERS[tierIdx];
+199:    const combatLevel = getCombatLevel(state);
+200:    const cost = tier.costPerLevel * Math.max(1, combatLevel);
+203:    const ilvl = Math.max(1, combatLevel + Math.floor((Math.random() - 0.5) * 2 * tier.ilvlSpread));
+204:    const slotKey = (slot ?? ALL_SLOTS[Math.floor(Math.random() * ALL_SLOTS.length)]) as EquipmentSlot;
+205:    const totalWeight = tier.rarities.reduce((s,r) => s + r.weight, 0);
+207:    let rarity: Rarity = 'common';
+208:    for (const r of tier.rarities) { roll -= r.weight; if (roll <= 0) { rarity = r.rarity; break; } }
+209:    const isUnique = Math.random() < tier.uniqueChance;
+213:      const eligible = UNIQUE_ITEMS.filter(u => u.slot === slotKey && u.ilvl <= ilvl + 10);
+214:      const def = eligible.length > 0 ? eligible[Math.floor(Math.random() * eligible.length)] : null;
+225:    const loot = parseLootBag(state.lootBag);
+226:    const [u] = await db.update(gameStates).set({ lootBag: JSON.stringify([...loot, item]), gold: state.gold - cost } as any).where(eq(gameStates.id, state.id)).returning();
+231:    const state = await this.getGameState();
+232:    const loot = parseLootBag(state.lootBag);
+233:    const item = loot.find(i => i.instanceId === instanceId);
+235:    const maxSockets = item.rarity === 'mythic' ? 5 : item.rarity === 'legendary' ? 4 : item.rarity === 'epic' ? 3 : item.rarity === 'rare' ? 2 : 1;
+237:    const rarityCost: Record<string,number> = { common:1, uncommon:3, rare:8, epic:25, legendary:100, mythic:2000 };
+238:    const cost = Math.floor(Math.pow(item.ilvl, 2) * (rarityCost[item.rarity] ?? 5));
+241:    const idx = loot.findIndex(i => i.instanceId === instanceId);
+243:    const [u] = await db.update(gameStates).set({ lootBag: JSON.stringify(loot), gold: state.gold - cost } as any).where(eq(gameStates.id, state.id)).returning();
+248:    const ach: Record<string, number> = JSON.parse(state.achievements ?? '{}');
+249:    const key = `${type}_${target}`;
+254:  getActiveBuffs(state: any): { hpMul: number; atkMul: number; defMul: number; xpMul: number; speedMul: number; dropMul: number; critMul: number; leechMul: number } {
+255:    const buffs: any[] = JSON.parse(state.activeBuffs ?? '[]');
+256:    const now = Date.now();
+257:    const active = buffs.filter((b: any) => b.expiresAt > now);
+258:    let hpMul = 1, atkMul = 1, defMul = 1, xpMul = 1, speedMul = 1, dropMul = 1, critMul = 1, leechMul = 1;
+259:    for (const b of active) {
+265:      if (b.effect === 'drop') dropMul += b.value;
+269:    return { hpMul: Math.min(hpMul, 2), atkMul: Math.min(atkMul, 2), defMul: Math.min(defMul, 2), xpMul: Math.min(xpMul, 2), speedMul: Math.min(speedMul, 1.5), dropMul: Math.min(dropMul, 1.5), critMul: Math.min(critMul, 1.5), leechMul: Math.min(leechMul, 1.3) };
+273:    const state = await this.getGameState();
+274:    const recipe = COOKING_RECIPES.find(r => r.id === recipeId);
+276:    for (const inp of recipe.inputs) {
+277:      const have = inp.resource.includes('berry') ? JSON.parse(state.berries ?? '{}')[inp.resource] ?? 0 :
+282:    const berries = JSON.parse(state.berries ?? '{}');
+283:    const herbs = JSON.parse(state.herbs ?? '{}');
+284:    const hideUpdates: any = {};
+285:    for (const inp of recipe.inputs) {
+290:    const foods = JSON.parse(state.foods ?? '{}');
+293:    const buffMap: Record<string, { effect: string; value: number }> = {
+296:      honey_roast: { effect:'def', value:0.2 }, elf_bread: { effect:'speed', value:0.15 },
+298:      hunter_pie: { effect:'speed', value:0.15 }, dragon_feast: { effect:'all', value:0.1 },
+300:    const buff = buffMap[recipeId];
+302:      const activeBuffs: any[] = JSON.parse(state.activeBuffs ?? '[]');
+303:      activeBuffs.push({ id: recipeId, effect: buff.effect, value: buff.value, expiresAt: Date.now() + recipe.durationMin * 60000 });
+306:    const [u] = await db.update(gameStates).set({ foods: JSON.stringify(foods), berries: JSON.stringify(berries), herbs: JSON.stringify(herbs), ...hideUpdates } as any).where(eq(gameStates.id, state.id)).returning();
+310:  async brewPotion(recipeId: string): Promise<GameState> {
+311:    const state = await this.getGameState();
+312:    const recipe = POTION_RECIPES.find(r => r.id === recipeId);
+314:    const herbs = JSON.parse(state.herbs ?? '{}');
+315:    for (const inp of recipe.inputs) {
+318:    for (const inp of recipe.inputs) herbs[inp.resource] -= inp.qty;
+319:    const potions = JSON.parse(state.potions ?? '{}');
+320:    potions[recipeId] = (potions[recipeId] ?? 0) + 1;
+321:    // Add buff from potion
+322:    const buffMap: Record<string, { effect: string; value: number }> = {
+323:      health_potion: { effect:'heal', value:0.5 }, greater_health: { effect:'heal', value:1 },
+324:      strength_potion: { effect:'atk', value:0.25 }, iron_potion: { effect:'def', value:0.25 },
+325:      speed_potion: { effect:'speed', value:0.2 }, luck_potion: { effect:'drop', value:0.15 },
+326:      crit_potion: { effect:'crit', value:0.15 }, leech_potion: { effect:'leech', value:0.1 },
+328:    const buff = buffMap[recipeId];
+330:      const activeBuffs: any[] = JSON.parse(state.activeBuffs ?? '[]');
+333:        const maxHp = getPlayerMaxHp(state);
+334:        const newHp = Math.min(maxHp, (state.playerHp < 0 ? maxHp : state.playerHp) + Math.floor(maxHp * buff.value));
+337:        activeBuffs.push({ id: recipeId, effect: buff.effect, value: buff.value, expiresAt: Date.now() + recipe.durationMin * 60000 });
+341:    const [u] = await db.update(gameStates).set({ potions: JSON.stringify(potions), herbs: JSON.stringify(herbs) } as any).where(eq(gameStates.id, state.id)).returning();
+346:    const state = await this.getGameState();
+347:    const ach = ACHIEVEMENTS.find(a => a.id === achievementId);
+349:    const progress: Record<string, number> = JSON.parse(state.achievements ?? '{}');
+350:    const key = `${ach.type}_${ach.target}`;
+352:    const pets = JSON.parse(state.pets ?? '[]');
+355:    const [u] = await db.update(gameStates).set({ pets: JSON.stringify(pets), achievements: JSON.stringify({ ...progress, [key]: -ach.count }) } as any).where(eq(gameStates.id, state.id)).returning();
+359:  getSkillDamageMultiplier(state: any, skill: any): number {
+360:    const levelKey = skill.style === 'melee' ? 'attackXp' : skill.style === 'ranged' ? 'rangedXp' : 'magicXp';
+361:    const level = calcLevel(state[levelKey] ?? 0);
+362:    return skill.dmgMul * (1 + level / 100);
+365:  async equipSkill(skillId: string): Promise<GameState> {
+366:    const state = await this.getGameState();
+367:    const [u] = await db.update(gameStates).set({ equippedSkill: skillId } as any).where(eq(gameStates.id, state.id)).returning();
+372:    const state = await this.getGameState();
+373:    const bld = HOMESTEAD_BUILDINGS.find(b => b.id === buildingId);
+375:    const homestead: Record<string, number> = JSON.parse(state.homestead ?? '{}');
+377:    const costWood = bld.costWood; const costStone = bld.costStone; const costGold = bld.costGold;
+379:    if ((state.stone ?? 0) < costStone) throw new Error("鐭虫枡涓嶈冻");
+382:    const woodLeft = getResourceCount(state, "wood_0") - costWood;
+383:    const resourcePatch = buildResourceUpdates(state, { wood_0: woodLeft });
+384:    const [u] = await db.update(gameStates).set({
+387:      stone: (state.stone ?? 0) - costStone,
+396:    const state = await this.getGameState();
+397:    const homestead: Record<string, number> = JSON.parse(state.homestead ?? '{}');
+398:    const furnaceLevel = homestead['furnace'] ?? 0;
+401:    const woodKey = `wood_${woodTier}`;
+402:    const woodCount = getResourceCount(state, woodKey);
+406:    const tempGain = (woodTier + 1) * 5;
+407:    const burnSec = (woodTier + 1) * 60;
+408:    const newTemp = Math.min(100, (state.temperature ?? 0) + tempGain);
+409:    const fuelEndsAt = new Date(Date.now() + burnSec * 1000);
+411:    const resourcePatch = buildResourceUpdates(state, { [woodKey]: woodCount - 1 });
+412:    const [u] = await db.update(gameStates).set({
+422:    const homestead: Record<string, number> = JSON.parse(state.homestead ?? '{}');
+423:    const furnaceLevel = homestead['furnace'] ?? 0;
+426:    const temp = state.temperature ?? 0;
+430:    const decayInterval = 30 / (1 + furnaceLevel * 0.15);
+431:    const fuelEndsAt = state.fuelEndsAt ? new Date(state.fuelEndsAt) : null;
+432:    const elapsed = (now.getTime() - (fuelEndsAt?.getTime() ?? now.getTime())) / 1000;
+435:    const decayRate = fuelEndsAt && now > fuelEndsAt ? 2 : 1;
+436:    const decayAmount = Math.floor(Math.max(0, -elapsed) / decayInterval) * decayRate * -1;
+438:    const newTemp = Math.max(0, temp - decayRate);
+446:    const state = await this.getGameState();
+447:    const prayer = PRAYERS.find(p => p.id === prayerId);
+451:    const [u] = await db.update(gameStates).set({
+460:    const state = await this.getGameState();
+461:    const [u] = await db.update(gameStates).set({
+471:    const USE_DRAGON_BONES = (state as any).useDragonBones ?? false;
+472:    const boneCost = Math.ceil(elapsedSec); // 1 骨头/秒
+473:    const boneKey = USE_DRAGON_BONES ? 'dragonBones' : 'bones';
+474:    const boneCount = boneKey === 'dragonBones' ? (state.dragonBones ?? 0) : (state.bones ?? 0);
+475:    if (boneCount < boneCost) {
+479:    const xpGain = Math.floor(elapsedSec * (USE_DRAGON_BONES ? 2 : 1));
+481:      [boneKey]: boneCount - boneCost,
+489:    const prayer = PRAYERS.find(p => p.id === state.activePrayer);
+491:    const lv = getPrayerLevel(state.prayerXp ?? 0);
+497:    const state = await this.getGameState();
+499:    const combatLevel = getCombatLevel(state);
+500:    const eligible = ENEMIES.filter((_, i) => {
+501:      const enemyLevel = i + 1;
+505:    const target = eligible[Math.floor(Math.random() * eligible.length)];
+506:    const enemyIndex = ENEMIES.indexOf(target);
+507:    const qty = 3 + Math.floor(Math.random() * 5);
+508:    const task = { enemyIndex, enemyName: target.name, qty, killed: 0, reward: qty * target.xp * 5 };
+509:    const [u] = await db.update(gameStates).set({
+516:    const state = await this.getGameState();
+518:    const task = JSON.parse(state.slayerTask);
+519:    if (task.killed < task.qty) throw new Error(`还需击杀 ${task.qty - task.killed} 个目标`);
+520:    const streak = (state.slayerStreak ?? 0) + 1;
+521:    const bonusGold = task.reward + streak * 50;
+522:    const [u] = await db.update(gameStates).set({
+525:      gold: state.gold + bonusGold,
+526:      bones: state.bones + task.qty * 2,
+533:    const state = await this.getGameState();
+534:    const homestead: Record<string, number> = JSON.parse(state.homestead ?? '{}');
+535:    const farmLevel = homestead['farm'] ?? 0;
+538:    const farms: Record<string, any> = JSON.parse((state as any).farms ?? '{}');
+540:    const berryCount = JSON.parse(state.berries ?? '{}')[seed] ?? 0;
+542:    const berries = JSON.parse(state.berries ?? '{}');
+545:    const [u] = await db.update(gameStates).set({
+553:    const state = await this.getGameState();
+554:    const farms: Record<string, any> = JSON.parse((state as any).farms ?? '{}');
+555:    const plot = farms[String(slot)];
+557:    const elapsed = (Date.now() - plot.plantedAt) / 1000;
+559:    const berries = JSON.parse(state.berries ?? '{}');
+562:    const [u] = await db.update(gameStates).set({
+571:    const homestead: Record<string, number> = JSON.parse(state.homestead ?? '{}');
+580:    const npc = TOWN_NPCS[Math.floor(Math.random() * TOWN_NPCS.length)];
+584:  async npcAction(npcId: string, actionIndex: number): Promise<GameState> {
+585:    const state = await this.getGameState();
+587:    const npc = TOWN_NPCS.find(n => n.id === npcId);
+589:    const action = npc.actions[actionIndex];
+590:    if (!action) throw new Error("无效操作");
+593:    const rewards: Partial<GameState> = { npcEncounter: null } as any;
+596:        if (actionIndex === 0) { // buy gear
+599:          const drop = generateDroppedItem(Math.floor(Math.random() * 5), 0);
+600:          drop.rarity = 'rare';
+601:          const loot = parseLootBag(state.lootBag);
+602:          loot.push(drop);
+605:          const loot = parseLootBag(state.lootBag);
+606:          const junk = loot.filter(i => i.rarity === 'common' || i.rarity === 'uncommon');
+612:        if (actionIndex === 0) { // upgrade weapon
+615:          const eq = parseEquipment(state.equipment);
+616:          if (eq.weapon) { eq.weapon = { ...eq.weapon, ilvl: (eq.weapon.ilvl ?? 1) + 1 }; rewards.equipment = JSON.stringify(eq); }
+620:        if (actionIndex === 0) { // gift
+622:          rewards.bones = state.bones + 10;
+629:        if (actionIndex === 0) { // reset talents
+637:        const tierIdx = actionIndex === 0 ? 0 : actionIndex === 1 ? 2 : 4;
+638:        const tier = GAMBLE_TIERS[tierIdx];
+640:        const combatLevel = getCombatLevel(state);
+641:        const cost = tier.costPerLevel * Math.max(1, combatLevel);
+643:        const ilvl = Math.max(1, combatLevel + Math.floor((Math.random() - 0.5) * 2 * tier.ilvlSpread));
+644:        const slotKey = ALL_SLOTS[Math.floor(Math.random() * ALL_SLOTS.length)];
+645:        const totalWeight = tier.rarities.reduce((s: number, r: any) => s + r.weight, 0);
+647:        let rarity: Rarity = 'common';
+648:        for (const r of tier.rarities) { roll -= r.weight; if (roll <= 0) { rarity = r.rarity; break; } }
+649:        const item = generateDroppedItem(Math.max(0, Math.min(7, Math.floor(ilvl/10))), 0);
+654:        const loot = parseLootBag(state.lootBag);
+663:    const [u] = await db.update(gameStates).set(rewards as any)
+669:    const state = await this.getGameState();
+670:    const [u] = await db.update(gameStates).set({ npcEncounter: null } as any)
+676:    const state = await this.getGameState();
+677:    const current = state.lootBagSize ?? 50;
+679:    const slot = current - 49;
+680:    const cost = Math.floor(Math.pow(slot, 2) * 100);
+682:    const [u] = await db.update(gameStates).set({ lootBagSize: current + 1, gold: state.gold - cost } as any).where(eq(gameStates.id, state.id)).returning();
+686:  async synthGem(items: {type:string;quality:string}[]): Promise<GameState> {
+687:    const state = await this.getGameState();
+688:    const gems = JSON.parse(state.gems??'{}');
+689:    const count = items.length;
+691:    const costMul = count===3?1:count===4?2:5;
+692:    const goldCost = (50+count*30)*costMul;
+694:    const chance = count===3?0.25:count===4?0.5:1;
+695:    for(const g of items){const k=g.type+'_'+g.quality;if(!gems[k])throw new Error("宝石不足");gems[k]--}
+697:      const [u]=await db.update(gameStates).set({gems:JSON.stringify(gems),gold:state.gold-goldCost}as any).where(eq(gameStates.id,state.id)).returning();
+700:    const qo=['chipped','flawed','normal','flawless','perfect'];
+701:    const mi=Math.max(...items.map(g=>qo.indexOf(g.quality)));
+702:    const nq=qo[Math.min(mi+1,qo.length-1)];
+703:    const nk=items[0].type+'_'+nq;
+705:    const [u]=await db.update(gameStates).set({gems:JSON.stringify(gems),gold:state.gold-goldCost}as any).where(eq(gameStates.id,state.id)).returning();
+710:    const state = await this.getGameState();
+711:    const talents: Record<string, string[]> = { melee: [], ranged: [], magic: [] };
+712:    const [updated] = await db.update(gameStates)
+719:    const state = await this.getGameState();
+720:    const talents: Record<string, string[]> = JSON.parse(state.talents ?? '{}');
+723:    const centerMap: Record<string, { cid: string; xp: number }> = {
+728:    const cm = centerMap[style];
+733:    const node = (TALENT_TREES as any)[style]?.find((n: any) => n.id === nodeId);
+737:      const levelMap: Record<string, number> = { melee: calcLevel(state.attackXp), ranged: calcLevel(state.rangedXp ?? 0), magic: calcLevel(state.magicXp ?? 0) };
+739:      // Auto-add to DB when unlocked via level (one-time)
+746:    const skills = [state.attackXp, state.defenceXp, state.hitpointsXp, state.rangedXp??0, state.magicXp??0, state.woodcuttingXp, state.miningXp, state.smeltingXp, state.fishingXp, state.huntingXp, state.thievingXp, state.agilityXp??0];
+747:    const points = skills.reduce((s, xp) => s + Math.floor(calcLevel(xp as number) / 9), 0);
+748:    const allNodesForSpent = [...TALENT_TREES.melee, ...TALENT_TREES.ranged, ...TALENT_TREES.magic];
+749:    const freeIds = new Set(allNodesForSpent.filter((n: any) => n.cost === 0).map((n: any) => n.id));
+750:    const spent = Object.values(talents).reduce((s: number, arr: string[]) => s + arr.filter(id => !freeIds.has(id)).length, 0);
+753:    const [updated] = await db.update(gameStates)
+760:    const state = await this.getGameState();
+761:    const [updated] = await db.update(gameStates)
+768:    const state = await this.getGameState();
+769:    const tool = ALL_TOOLS.find(t => t.id === toolId);
+771:    const [updated] = await db.update(gameStates)
+777:  async enterDungeon(dungeonIndex: number): Promise<GameState> {
+778:    const state = await this.getGameState();
+779:    const dungeon = DUNGEONS[dungeonIndex];
+780:    if (!dungeon) throw new Error("副本不存在");
+782:    const combatLevel = getCombatLevel(state);
+783:    if (combatLevel < dungeon.reqCombatLevel) {
+784:      throw new Error(`需要战斗等级 ${dungeon.reqCombatLevel}（当前 ${combatLevel}）`);
+786:    if (state.gold < dungeon.cost.gold) {
+787:      throw new Error(`金币不足（需要 ${dungeon.cost.gold}，当前 ${state.gold}）`);
+789:    if (dungeon.cost.bones && state.bones < dungeon.cost.bones) {
+790:      throw new Error(`骨头不足（需要 ${dungeon.cost.bones}，当前 ${state.bones}）`);
+792:    if (dungeon.cost.dragonBones && state.dragonBones < dungeon.cost.dragonBones) {
+793:      throw new Error(`龙骨不足（需要 ${dungeon.cost.dragonBones}，当前 ${state.dragonBones}）`);
+796:    const [updated] = await db.update(gameStates)
+798:        activeAction: `dungeon_${dungeonIndex}_0`,
+799:        actionUpdatedAt: new Date(),
+801:        gold:        state.gold        - dungeon.cost.gold,
+802:        bones:       state.bones       - (dungeon.cost.bones ?? 0),
+803:        dragonBones: state.dragonBones - (dungeon.cost.dragonBones ?? 0),
+810:    const state = await this.getGameState();
+811:    const equipment = parseEquipment(state.equipment);
+812:    const craftItems = parseCraftItems(state.craftItems);
+813:    const lootBag = parseLootBag(state.lootBag);
+818:      const idx = lootBag.findIndex(i => i.instanceId === instanceId);
+832:    const prev = equipment[newItem.slot as EquipmentSlot] ?? null;
+843:    const [updated] = await db.update(gameStates).set({
+852:    const state = await this.getGameState();
+853:    const equipment = parseEquipment(state.equipment);
+854:    const item = equipment[slot as EquipmentSlot] ?? null;
+857:    const craftItems = parseCraftItems(state.craftItems);
+858:    const lootBag = parseLootBag(state.lootBag);
+867:    const [updated] = await db.update(gameStates).set({
+876:    const state = await this.getGameState();
+877:    const lootBag = parseLootBag(state.lootBag);
+878:    const item = lootBag.find(i => i.instanceId === instanceId);
+879:    const goldRefund = item ? (DISENCHANT_GOLD[item.rarity] ?? 5) : 0;
+880:    const filtered = lootBag.filter(i => i.instanceId !== instanceId);
+881:    const [updated] = await db.update(gameStates)
+887:  async socketGem(instanceId: string, gemKey: string): Promise<GameState> {
+888:    const state = await this.getGameState();
+889:    const gems = parseGems(state.gems);
+890:    if ((gems[gemKey] ?? 0) < 1) throw new Error("You don't have that gem");
+892:    const lootBag  = parseLootBag(state.lootBag);
+893:    const equipment = parseEquipment(state.equipment);
+898:    const lootIdx = lootBag.findIndex(i => i.instanceId === instanceId);
+901:      for (const slot of Object.keys(equipment) as EquipmentSlot[]) {
+907:    const sockets = item.socketedGems ?? [];
+908:    const maxSockets = item.maxSockets ?? 0;
+911:    // Apply gem bonus to item stats
+912:    const bonus = getGemBonus(gemKey);
+913:    const updatedItem: GameItem = {
+915:      socketedGems: [...sockets, gemKey],
+916:      attackBonus:  item.attackBonus  + bonus.attackBonus,
+917:      defenceBonus: item.defenceBonus + bonus.defenceBonus,
+918:      hpBonus:      item.hpBonus      + bonus.hpBonus,
+919:      critRating:   item.critRating   + bonus.critRating,
+929:      for (const slot of Object.keys(equipment) as EquipmentSlot[]) {
+934:    const [updated] = await db.update(gameStates).set({
+943:export const storage = new DatabaseStorage();

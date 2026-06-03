@@ -21,6 +21,10 @@ export const gameStates = pgTable("game_states", {
   smithingXp: integer("smithing_xp").notNull().default(0),
   leatherworkingXp: integer("leatherworking_xp").notNull().default(0),
   jewelcraftingXp: integer("jewelcrafting_xp").notNull().default(0),
+  thievingXp: integer("thieving_xp").notNull().default(0),
+  agilityXp: integer("agility_xp").notNull().default(0),
+  rangedXp: integer("ranged_xp").notNull().default(0),
+  magicXp: integer("magic_xp").notNull().default(0),
 
   playerHp: integer("player_hp").notNull().default(-1),
   enemyHp: integer("enemy_hp").notNull().default(-1),
@@ -39,6 +43,46 @@ export const gameStates = pgTable("game_states", {
   gems: text("gems").notNull().default("{}"),
   // lootFilter: minimum rarity to keep (items below are auto-disenchanted for gold)
   lootFilter: text("loot_filter").notNull().default("common"),
+  // dungeonStats: { [dungeonId]: { clears, fastestSec } }
+  dungeonStats: text("dungeon_stats").notNull().default("{}"),
+  // equipped tool: { id, name, emoji, skill, timeMult }
+  tool: text("tool").notNull().default("{}"),
+  // talents: { melee: [nodeId,...], ranged: [...], magic: [...] }
+  talents: text("talents").notNull().default("{}"),
+  speedMult: integer("speed_mult").notNull().default(1),
+  towerFloor: integer("tower_floor").notNull().default(0),
+  towerKey: integer("tower_key").notNull().default(0),
+  trialKey: integer("trial_key").notNull().default(0),
+  trialBuffs: text("trial_buffs").notNull().default("[]"),
+  trialCurses: text("trial_curses").notNull().default("[]"),
+  synthesisXp: integer("synthesis_xp").notNull().default(0),
+  worldTier: integer("world_tier").notNull().default(1),
+  tierBossKilled: text("tier_boss_killed").notNull().default('[]'),
+  lootBagSize: integer("loot_bag_size").notNull().default(50),
+  homestead: text("homestead").notNull().default("{}"),
+  temperature: integer("temperature").notNull().default(0),
+  fuelEndsAt: timestamp("fuel_ends_at"),
+  stone: integer("stone").notNull().default(0),
+  achievements: text("achievements").notNull().default("{}"),
+  pets: text("pets").notNull().default("[]"),
+  foods: text("foods").notNull().default("{}"),
+  potions: text("potions").notNull().default("{}"),
+  herbs: text("herbs").notNull().default("{}"),
+  berries: text("berries").notNull().default("{}"),
+  farms: text("farms").notNull().default("{}"),
+  companions: text("companions").notNull().default("[]"),
+  outposts: text("outposts").notNull().default("[]"),
+  npcEncounter: text("npc_encounter"),
+  mastery: text("mastery").notNull().default("{}"),
+  explorationXp: integer("exploration_xp").notNull().default(0),
+  activeBuffs: text("active_buffs").notNull().default("[]"),
+  equippedSkill: text("equipped_skill").notNull().default(""),
+  activePrayer: text("active_prayer").notNull().default(""),
+  prayerXp: integer("prayer_xp").notNull().default(0),
+  prayerStartedAt: timestamp("prayer_started_at"),
+  slayerTask: text("slayer_task"),
+  slayerStreak: integer("slayer_streak").notNull().default(0),
+  enemyQty: integer("enemy_qty").notNull().default(1),
 
   wood_0: integer("wood_0").notNull().default(0),
   wood_1: integer("wood_1").notNull().default(0),
@@ -105,8 +149,12 @@ export const gameStates = pgTable("game_states", {
   item_7: integer("item_7").notNull().default(0),
   item_8: integer("item_8").notNull().default(0),
   item_9: integer("item_9").notNull().default(0),
+  resourceStore: text("resource_store").notNull().default("{}"),
 });
 
 export const insertGameStateSchema = createInsertSchema(gameStates).omit({ id: true });
 export type GameState = typeof gameStates.$inferSelect;
 export type InsertGameState = z.infer<typeof insertGameStateSchema>;
+
+/** Extended state with runtime-access fields beyond Drizzle schema */
+export type GameStateExt = GameState & Record<string, unknown>;

@@ -20,15 +20,17 @@ export function Header() {
           "空闲 — 无任务运行"
         )}
       </span>
-      {isActive && (
-        <button
-          onClick={() => startAction("idle")}
-          disabled={isPending}
-          className="ml-auto px-2.5 py-0.5 text-xs font-semibold bg-red-600 hover:bg-red-500 text-white rounded transition-colors disabled:opacity-50"
-        >
-          停止
-        </button>
-      )}
+      <div className="ml-auto flex items-center gap-2">
+        {isActive && (
+          <button
+            onClick={() => startAction("idle")}
+            disabled={isPending}
+            className="px-2.5 py-0.5 text-xs font-semibold bg-red-600 hover:bg-red-500 text-white rounded transition-colors disabled:opacity-50"
+          >
+            停止
+          </button>
+        )}
+      </div>
     </header>
   );
 }
