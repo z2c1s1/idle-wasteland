@@ -1,9 +1,13 @@
 import express, { type Request, Response, NextFunction } from "express";
+import session from "express-session";
+import createMemoryStore from "memorystore";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 import os from "os";
 import { client } from "./db";
+
+const MemoryStore = createMemoryStore(session);
 
 const app = express();
 const httpServer = createServer(app);
@@ -11,6 +15,8 @@ const httpServer = createServer(app);
 declare module "http" {
   interface IncomingMessage {
     rawBody: unknown;
+    sessionID: string;
+    session: import("express-session").Session & Record<string, any>;
   }
 }
 
@@ -23,6 +29,19 @@ app.use(
 );
 
 app.use(express.urlencoded({ extended: false }));
+
+// Session middleware — each browser gets a unique session for independent saves
+app.use(session({
+  store: new MemoryStore({ checkPeriod: 86400000 }), // prune expired every 24h
+  secret: process.env.SESSION_SECRET || "wasteland-idle-secret-change-me",
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    secure: false, // set true if behind HTTPS proxy
+    httpOnly: true,
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+  },
+}));
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -171,6 +190,7 @@ async function initDatabase() {
     `ALTER TABLE game_states ADD COLUMN extracted_powers TEXT NOT NULL DEFAULT '[]'`,
     `ALTER TABLE game_states ADD COLUMN active_powers TEXT NOT NULL DEFAULT '["","",""]'`,
     `ALTER TABLE game_states ADD COLUMN blood_shards INTEGER NOT NULL DEFAULT 0`,
+    `ALTER TABLE game_states ADD COLUMN session_id TEXT`,
   ];
   for (const sql of migrations) {
     try { await client.exec(sql); } catch { /* 列已存在则跳过 */ }

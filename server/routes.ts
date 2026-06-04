@@ -1,146 +1,134 @@
-import type { Express } from "express";
+import type { Express, Request } from "express";
 import type { Server } from "http";
-import { storage } from "./storage";
+import { DatabaseStorage, storageFor } from "./storage";
 import { api } from "@shared/routes";
 import { registerGamePost, registerGamePostVoid } from "./lib/route-handler";
+
+function getStorage(req: Request): DatabaseStorage {
+  const sessionId = req.sessionID || "default";
+  return storageFor(sessionId);
+}
 
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
   const g = api.game;
 
-  app.get(g.getState.path, async (_req, res) => {
+  app.get(g.getState.path, async (req, res) => {
     try {
-      res.json(await storage.getGameState());
+      res.json(await getStorage(req).getGameState());
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Internal server error" });
     }
   });
 
-  registerGamePost(app, g.startAction.path, g.startAction.input, (input) =>
-    storage.updateAction(input.action),
-  );
-  registerGamePost(app, g.equip.path, g.equip.input, (input) =>
-    storage.equipItem(input.instanceId, input.itemId),
-  );
-  registerGamePost(app, g.unequip.path, g.unequip.input, (input) =>
-    storage.unequipItem(input.slot),
-  );
-  registerGamePost(app, g.destroyLoot.path, g.destroyLoot.input, (input) =>
-    storage.destroyLoot(input.instanceId),
-  );
-  registerGamePost(app, g.socketGem.path, g.socketGem.input, (input) =>
-    storage.socketGem(input.instanceId, input.gemKey),
-  );
-  registerGamePost(app, g.enterDungeon.path, g.enterDungeon.input, (input) =>
-    storage.enterDungeon(input.dungeonIndex),
-  );
-  registerGamePost(app, g.setLootFilter.path, g.setLootFilter.input, (input) =>
-    storage.setLootFilter(input.rarity),
-  );
-  registerGamePost(app, g.equipTool.path, g.equipTool.input, (input) =>
-    storage.equipTool(input.toolId),
-  );
-  registerGamePost(app, g.addSocket.path, g.addSocket.input, (input) =>
-    storage.addSocket(input.instanceId),
-  );
-  registerGamePost(app, g.cook.path, g.cook.input, (input) => storage.cookFood(input.recipeId));
-  registerGamePost(app, g.brew.path, g.brew.input, (input) => storage.brewPotion(input.recipeId));
-  registerGamePost(app, g.equipSkill.path, g.equipSkill.input, (input) =>
-    storage.equipSkill(input.skillId),
-  );
-  registerGamePost(app, g.claimPet.path, g.claimPet.input, (input) =>
-    storage.claimPet(input.achievementId),
-  );
-  registerGamePost(app, g.buildHomestead.path, g.buildHomestead.input, (input) =>
-    storage.buildHomestead(input.buildingId),
-  );
-  registerGamePostVoid(app, g.expandLoot.path, () => storage.expandLootBag());
-  registerGamePost(app, g.gamble.path, g.gamble.input, (input) =>
-    storage.gambleItem(input.tierIdx, input.slot),
-  );
-  registerGamePost(app, g.synthEquip.path, g.synthEquip.input, (input) =>
-    storage.synthEquip(input.instanceIds),
-  );
-  registerGamePost(app, g.synthGem.path, g.synthGem.input, (input) =>
-    storage.synthGem(input.items),
-  );
-  registerGamePostVoid(app, g.startTrial.path, () => storage.startTrial());
-  registerGamePost(app, g.chooseBuff.path, g.chooseBuff.input, (input) =>
-    storage.chooseTrialBuff(input.buffId),
-  );
-  registerGamePostVoid(app, g.startTower.path, () => storage.startTower());
-  registerGamePostVoid(app, g.resetTalents.path, () => storage.resetTalents());
-  registerGamePost(app, g.unlockTalent.path, g.unlockTalent.input, (input) =>
-    storage.unlockTalent(input.style, input.nodeId),
-  );
-  registerGamePost(app, g.addFuel.path, g.addFuel.input, (input) =>
-    storage.addFuel(input.woodTier),
-  );
-  registerGamePost(app, g.activatePrayer.path, g.activatePrayer.input, (input) =>
-    storage.activatePrayer(input.prayerId),
-  );
-  registerGamePostVoid(app, g.deactivatePrayer.path, () => storage.deactivatePrayer());
-  registerGamePostVoid(app, g.getSlayerTask.path, () => storage.getSlayerTask());
-  registerGamePostVoid(app, g.completeSlayerTask.path, () => storage.completeSlayerTask());
-  registerGamePost(app, g.farmPlant.path, g.farmPlant.input, (input) =>
-    storage.farmPlant(input.slot, input.seed),
-  );
-  registerGamePost(app, g.farmHarvest.path, g.farmHarvest.input, (input) =>
-    storage.farmHarvest(input.slot),
-  );
-  registerGamePost(app, g.npcAction.path, g.npcAction.input, (input) =>
-    storage.npcAction(input.npcId, input.actionIndex),
-  );
-  registerGamePostVoid(app, g.dismissNpc.path, () => storage.dismissNpc());
+  // Helper: wraps route registration to use per-session storage
+  function registerAuthedPost<T>(path: string, input: { parse: (body: any) => T }, fn: (storage: DatabaseStorage, input: T) => Promise<any>) {
+    app.post(path, async (req, res) => {
+      try {
+        const parsed = input.parse(req.body) as T;
+        res.json(await fn(getStorage(req), parsed));
+      } catch (err: any) {
+        res.status(400).json({ message: err.message });
+      }
+    });
+  }
 
-  registerGamePost(app, g.setWorldTier.path, g.setWorldTier.input, (input) =>
-    storage.setWorldTier(input.tier),
-  );
-  registerGamePost(app, g.gambleSlot.path, g.gambleSlot.input, (input) =>
-    storage.gambleSlot(input.slot, input.cost),
-  );
-  registerGamePost(app, g.extractPower.path, g.extractPower.input, (input) =>
-    storage.extractPower(input.instanceId),
-  );
-  registerGamePost(app, g.equipPower.path, g.equipPower.input, (input) =>
-    storage.equipPower(input.slot, input.powerId),
-  );
+  registerAuthedPost(g.startAction.path, g.startAction.input, (s, i) => s.updateAction(i.action));
+  registerAuthedPost(g.equip.path, g.equip.input, (s, i) => s.equipItem(i.instanceId, i.itemId));
+  registerAuthedPost(g.unequip.path, g.unequip.input, (s, i) => s.unequipItem(i.slot));
+  registerAuthedPost(g.destroyLoot.path, g.destroyLoot.input, (s, i) => s.destroyLoot(i.instanceId));
+  registerAuthedPost(g.socketGem.path, g.socketGem.input, (s, i) => s.socketGem(i.instanceId, i.gemKey));
+  registerAuthedPost(g.enterDungeon.path, g.enterDungeon.input, (s, i) => s.enterDungeon(i.dungeonIndex));
+  registerAuthedPost(g.setLootFilter.path, g.setLootFilter.input, (s, i) => s.setLootFilter(i.rarity));
+  registerAuthedPost(g.equipTool.path, g.equipTool.input, (s, i) => s.equipTool(i.toolId));
+  registerAuthedPost(g.addSocket.path, g.addSocket.input, (s, i) => s.addSocket(i.instanceId));
+  registerAuthedPost(g.cook.path, g.cook.input, (s, i) => s.cookFood(i.recipeId));
+  registerAuthedPost(g.brew.path, g.brew.input, (s, i) => s.brewPotion(i.recipeId));
+  registerAuthedPost(g.equipSkill.path, g.equipSkill.input, (s, i) => s.equipSkill(i.skillId));
+  registerAuthedPost(g.claimPet.path, g.claimPet.input, (s, i) => s.claimPet(i.achievementId));
+  registerAuthedPost(g.buildHomestead.path, g.buildHomestead.input, (s, i) => s.buildHomestead(i.buildingId));
+  registerAuthedPost(g.gamble.path, g.gamble.input, (s, i) => s.gambleItem(i.tierIdx, i.slot));
+  registerAuthedPost(g.synthEquip.path, g.synthEquip.input, (s, i) => s.synthEquip(i.instanceIds));
+  registerAuthedPost(g.synthGem.path, g.synthGem.input, (s, i) => s.synthGem(i.items));
+  registerAuthedPost(g.chooseBuff.path, g.chooseBuff.input, (s, i) => s.chooseTrialBuff(i.buffId));
+  registerAuthedPost(g.unlockTalent.path, g.unlockTalent.input, (s, i) => s.unlockTalent(i.style, i.nodeId));
+  registerAuthedPost(g.addFuel.path, g.addFuel.input, (s, i) => s.addFuel(i.woodTier));
+  registerAuthedPost(g.activatePrayer.path, g.activatePrayer.input, (s, i) => s.activatePrayer(i.prayerId));
+  registerAuthedPost(g.farmPlant.path, g.farmPlant.input, (s, i) => s.farmPlant(i.slot, i.seed));
+  registerAuthedPost(g.farmHarvest.path, g.farmHarvest.input, (s, i) => s.farmHarvest(i.slot));
+  registerAuthedPost(g.npcAction.path, g.npcAction.input, (s, i) => s.npcAction(i.npcId, i.actionIndex));
+  registerAuthedPost(g.setWorldTier.path, g.setWorldTier.input, (s, i) => s.setWorldTier(i.tier));
+  registerAuthedPost(g.gambleSlot.path, g.gambleSlot.input, (s, i) => s.gambleSlot(i.slot, i.cost));
+  registerAuthedPost(g.extractPower.path, g.extractPower.input, (s, i) => s.extractPower(i.instanceId));
+  registerAuthedPost(g.equipPower.path, g.equipPower.input, (s, i) => s.equipPower(i.slot, i.powerId));
+  registerAuthedPost(g.enhance.path, g.enhance.input, (s, i) => s.enhanceItem(i.instanceId));
+
+  // Void returns
+  app.post(g.expandLoot.path, async (req, res) => {
+    try { res.json(await getStorage(req).expandLootBag()); }
+    catch (e: any) { res.status(400).json({ message: e.message }); }
+  });
+  app.post(g.startTrial.path, async (req, res) => {
+    try { res.json(await getStorage(req).startTrial()); }
+    catch (e: any) { res.status(400).json({ message: e.message }); }
+  });
+  app.post(g.startTower.path, async (req, res) => {
+    try { res.json(await getStorage(req).startTower()); }
+    catch (e: any) { res.status(400).json({ message: e.message }); }
+  });
+  app.post(g.resetTalents.path, async (req, res) => {
+    try { res.json(await getStorage(req).resetTalents()); }
+    catch (e: any) { res.status(400).json({ message: e.message }); }
+  });
+  app.post(g.deactivatePrayer.path, async (req, res) => {
+    try { res.json(await getStorage(req).deactivatePrayer()); }
+    catch (e: any) { res.status(400).json({ message: e.message }); }
+  });
+  app.post(g.getSlayerTask.path, async (req, res) => {
+    try { res.json(await getStorage(req).getSlayerTask()); }
+    catch (e: any) { res.status(400).json({ message: e.message }); }
+  });
+  app.post(g.completeSlayerTask.path, async (req, res) => {
+    try { res.json(await getStorage(req).completeSlayerTask()); }
+    catch (e: any) { res.status(400).json({ message: e.message }); }
+  });
+  app.post(g.dismissNpc.path, async (req, res) => {
+    try { res.json(await getStorage(req).dismissNpc()); }
+    catch (e: any) { res.status(400).json({ message: e.message }); }
+  });
+
   // Corrupt returns {gameState, result}
   app.post("/api/game/corrupt", async (req, res) => {
-    try { res.json(await storage.corruptItem(req.body.instanceId)); }
+    try { res.json(await getStorage(req).corruptItem(req.body.instanceId)); }
     catch (err: any) { res.status(400).json({ message: err.message }); }
   });
-  registerGamePost(app, g.enhance.path, g.enhance.input, (input) =>
-    storage.enhanceItem(input.instanceId),
-  );
 
   // Outpost routes
   app.post("/api/game/establish-outpost", async (req, res) => {
-    try { res.json(await storage.establishOutpost(req.body.zoneIndex)); }
+    try { res.json(await getStorage(req).establishOutpost(req.body.zoneIndex)); }
     catch (err: any) { res.status(400).json({ message: err.message }); }
   });
   app.post("/api/game/demolish-outpost", async (req, res) => {
-    try { res.json(await storage.demolishOutpost(req.body.zoneIndex)); }
+    try { res.json(await getStorage(req).demolishOutpost(req.body.zoneIndex)); }
     catch (err: any) { res.status(400).json({ message: err.message }); }
   });
-  app.post("/api/game/collect-outposts", async (_req, res) => {
-    try { res.json(await storage.collectOutposts()); }
+  app.post("/api/game/collect-outposts", async (req, res) => {
+    try { res.json(await getStorage(req).collectOutposts()); }
     catch (err: any) { res.status(400).json({ message: err.message }); }
   });
 
-  // Debug: fast-forward game time
+  // Fast-forward
   app.post("/api/game/fast-forward", async (req, res) => {
     try {
-      const seconds = req.body.seconds || 60;
-      const state = await storage.fastForward(seconds);
+      const state = await getStorage(req).fastForward(req.body.seconds || 60);
       res.json(state);
     } catch (err: any) { res.status(500).json({ message: err.message }); }
   });
 
   // Export save
-  app.get("/api/game/export", async (_req, res) => {
+  app.get("/api/game/export", async (req, res) => {
     try {
-      const state = await storage.getGameState();
+      const state = await getStorage(req).getGameState();
       res.setHeader("Content-Type", "application/json");
       res.setHeader("Content-Disposition", "attachment; filename=wasteland-save.json");
       res.json(state);
@@ -152,7 +140,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     try {
       const imported = req.body;
       if (!imported || typeof imported !== "object") throw new Error("无效的存档数据");
-      const state = await storage.importSave(imported);
+      const state = await getStorage(req).importSave(imported);
       res.json(state);
     } catch (err: any) { res.status(400).json({ message: err.message }); }
   });

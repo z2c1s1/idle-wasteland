@@ -30,16 +30,27 @@ export interface IStorage {
   socketGem(instanceId: string, gemKey: string): Promise<GameState>;
 }
 
-// ─── DatabaseStorage (thin shell) ────────────────────────────────────────────
+// ─── DatabaseStorage ────────────────────────────────────────────────────────
 
 export class DatabaseStorage implements IStorage {
+  private sessionId: string;
+
+  constructor(sessionId: string) {
+    this.sessionId = sessionId;
+  }
+
   // ── Core ──────────────────────────────────────────────────────────────────
 
   async getGameState(): Promise<GameState> {
-    let [state] = await db.select().from(gameStates).limit(1);
+    const [state] = await db.select().from(gameStates)
+      .where(eq(gameStates.sessionId, this.sessionId))
+      .limit(1);
+
     if (!state) {
-      const [newState] = await db.insert(gameStates).values({}).returning();
-      state = newState;
+      const [newState] = await db.insert(gameStates).values({
+        sessionId: this.sessionId,
+      } as any).returning();
+      return newState;
     }
 
     const now = new Date();
@@ -52,7 +63,8 @@ export class DatabaseStorage implements IStorage {
       if (Object.keys(tempPatch).length > 0) {
         const [updated] = await db.update(gameStates).set(tempPatch as any)
           .where(eq(gameStates.id, state.id)).returning();
-        state = updated;
+        state.id = updated.id;
+        Object.assign(state, updated);
       }
 
       // NPC spawn
@@ -60,7 +72,7 @@ export class DatabaseStorage implements IStorage {
       if (npcPatch) {
         const [npcUpdated] = await db.update(gameStates).set(npcPatch as any)
           .where(eq(gameStates.id, state.id)).returning();
-        state = npcUpdated;
+        Object.assign(state, npcUpdated);
       }
 
       // Prayer tick
@@ -69,7 +81,7 @@ export class DatabaseStorage implements IStorage {
       if (prayerPatch) {
         const [pUpdated] = await db.update(gameStates).set({ ...prayerPatch, prayerStartedAt: state.activePrayer ? now : null } as any)
           .where(eq(gameStates.id, state.id)).returning();
-        state = pUpdated;
+        Object.assign(state, pUpdated);
       }
 
       await client.exec("COMMIT");
@@ -355,4 +367,7 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-export const storage = new DatabaseStorage();
+/** Create a storage instance scoped to a session */
+export function storageFor(sessionId: string): DatabaseStorage {
+  return new DatabaseStorage(sessionId);
+}

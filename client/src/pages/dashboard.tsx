@@ -42,25 +42,25 @@ function SkillRow({ title, xp, icon: Icon, color, href, isActive, onClick }: {
       className={`border-t border-border cursor-pointer transition-colors ${isActive ? "active-row" : "skill-row-hover"}`}
       data-testid={`skill-row-${title.toLowerCase()}`}
     >
-      <td className="px-4 py-3">
-        <div className="flex items-center gap-2.5">
+      <td className="px-3 md:px-4 py-2 md:py-3">
+        <div className="flex items-center gap-2 md:gap-2.5">
           <Icon className={`w-4 h-4 ${color}`} />
-          <span className={`font-medium ${isActive ? "text-primary" : "text-foreground"}`}>{title}</span>
+          <span className={`font-medium text-sm md:text-base ${isActive ? "text-primary" : "text-foreground"}`}>{title}</span>
           {isActive && (
-            <span className="text-[10px] px-1.5 py-0.5 bg-primary/20 text-primary rounded font-semibold uppercase">进行中</span>
+            <span className="text-[10px] px-1.5 py-0.5 bg-primary/20 text-primary rounded font-semibold uppercase whitespace-nowrap">进行中</span>
           )}
         </div>
       </td>
-      <td className="px-4 py-3 text-center">
+      <td className="px-3 md:px-4 py-2 md:py-3 text-center">
         <span className="font-display font-bold text-base">{level}</span>
       </td>
-      <td className="px-4 py-3">
+      <td className="px-3 md:px-4 py-2 md:py-3">
         <div className="h-2.5 bg-[hsl(220_13%_8%)] rounded overflow-hidden border border-border">
           <div className="h-full xp-bar-fill rounded" style={{ width: `${progress}%` }} />
         </div>
         <div className="text-[10px] text-muted-foreground mt-0.5">{progress.toFixed(1)}%</div>
       </td>
-      <td className="px-4 py-3 text-right tabular-nums text-muted-foreground text-xs">{formatNumber(xp)}</td>
+      <td className="px-3 md:px-4 py-2 md:py-3 text-right tabular-nums text-muted-foreground text-xs">{formatNumber(xp)}</td>
     </tr>
   );
 }
@@ -150,7 +150,7 @@ export default function Dashboard() {
       )}
 
       {/* Summary cards */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3">
         <div className="bg-card border border-border rounded-lg px-3 py-2 text-center">
           <Skull className="w-4 h-4 text-red-400 mx-auto mb-1" />
           <p className="text-xs text-muted-foreground">战斗等级</p>
@@ -169,14 +169,14 @@ export default function Dashboard() {
       </div>
 
       {/* Gathering skills */}
-      <div className="rounded border border-border overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="rounded border border-border overflow-x-auto">
+        <table className="w-full text-sm min-w-[380px]">
           <thead>
             <tr className="bg-[hsl(220_13%_8%)] text-muted-foreground text-xs">
-              <th className="text-left px-4 py-2 font-semibold">采集技能</th>
-              <th className="text-center px-4 py-2 font-semibold">等级</th>
-              <th className="text-left px-4 py-2 font-semibold w-48">进度</th>
-              <th className="text-right px-4 py-2 font-semibold">总经验</th>
+              <th className="text-left px-3 md:px-4 py-2 font-semibold">采集技能</th>
+              <th className="text-center px-3 md:px-4 py-2 font-semibold">等级</th>
+              <th className="text-left px-3 md:px-4 py-2 font-semibold w-32 md:w-48">进度</th>
+              <th className="text-right px-3 md:px-4 py-2 font-semibold">总经验</th>
             </tr>
           </thead>
           <tbody>
@@ -197,14 +197,14 @@ export default function Dashboard() {
       </div>
 
       {/* Combat skills */}
-      <div className="rounded border border-border overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="rounded border border-border overflow-x-auto">
+        <table className="w-full text-sm min-w-[380px]">
           <thead>
             <tr className="bg-[hsl(220_13%_8%)] text-muted-foreground text-xs">
-              <th className="text-left px-4 py-2 font-semibold">战斗技能</th>
-              <th className="text-center px-4 py-2 font-semibold">等级</th>
-              <th className="text-left px-4 py-2 font-semibold w-48">进度</th>
-              <th className="text-right px-4 py-2 font-semibold">总经验</th>
+              <th className="text-left px-3 md:px-4 py-2 font-semibold">战斗技能</th>
+              <th className="text-center px-3 md:px-4 py-2 font-semibold">等级</th>
+              <th className="text-left px-3 md:px-4 py-2 font-semibold w-32 md:w-48">进度</th>
+              <th className="text-right px-3 md:px-4 py-2 font-semibold">总经验</th>
             </tr>
           </thead>
           <tbody>
@@ -222,10 +222,10 @@ export default function Dashboard() {
             ))}
             <tr className="border-t border-border cursor-pointer skill-row-hover transition-colors"
               onClick={() => setLocation("/smithing")} data-testid="skill-row-smithing">
-              <td className="px-4 py-3">
-                <div className="flex items-center gap-2.5">
+              <td className="px-3 md:px-4 py-2 md:py-3">
+                <div className="flex items-center gap-2 md:gap-2.5">
                   <Shield className="w-4 h-4 text-slate-400" />
-                  <span className="font-medium">锻造</span>
+                  <span className="font-medium text-sm md:text-base">锻造</span>
                 </div>
               </td>
               <td className="px-4 py-3 text-center">

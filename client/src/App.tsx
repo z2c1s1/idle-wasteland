@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useGameState } from "./hooks/use-game";
 import { AppSidebar } from "./components/layout/app-sidebar";
 import { Header } from "./components/layout/header";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import Woodcutting from "@/pages/woodcutting";
@@ -84,15 +85,15 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <GameWrapper>
-          <div className="flex h-screen w-full bg-background text-foreground overflow-hidden">
+          <SidebarProvider>
             <AppSidebar />
-            <div className="flex flex-col flex-1 overflow-hidden min-w-0">
+            <SidebarInset>
               <Header />
-              <main className="flex-1 overflow-y-auto">
+              <main className="flex-1 overflow-y-auto p-2 md:p-4">
                 <Router />
               </main>
-            </div>
-          </div>
+            </SidebarInset>
+          </SidebarProvider>
         </GameWrapper>
         <Toaster />
       </TooltipProvider>

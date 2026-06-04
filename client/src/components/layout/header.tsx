@@ -1,4 +1,5 @@
 import { useGameState, useStartAction } from "@/hooks/use-game";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export function Header() {
   const { data: state } = useGameState();
@@ -10,6 +11,7 @@ export function Header() {
 
   return (
     <header className="h-10 border-b border-border bg-[hsl(220_13%_8%)] flex items-center px-3 gap-3 flex-shrink-0">
+      <SidebarTrigger className="md:hidden -ml-1" />
       <span className="text-xs text-muted-foreground">
         {isActive ? (
           <span className="flex items-center gap-1.5">
