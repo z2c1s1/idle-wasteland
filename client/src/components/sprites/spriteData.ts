@@ -27,7 +27,8 @@ export const ENEMY_ARCHETYPE_MAP: Record<string, EnemyArchetype> = {
   warlord: 'boss', behemoth: 'boss', ancient_horror: 'boss', overlord: 'boss',
 };
 
-export const ARCHETYPE_COLORS: Record<EnemyArchetype, { primary: string; secondary: string; eye: string }> = {
+export interface ArchetypeColors { primary: string; secondary: string; eye: string; }
+export const ARCHETYPE_COLORS: Record<EnemyArchetype, ArchetypeColors> = {
   insect:   { primary: '#4a7c3f', secondary: '#2d4f25', eye: '#ff4444' },
   rodent:   { primary: '#8b7355', secondary: '#5c4a35', eye: '#ffcc00' },
   humanoid: { primary: '#6b5b4f', secondary: '#4a3f35', eye: '#cc3333' },

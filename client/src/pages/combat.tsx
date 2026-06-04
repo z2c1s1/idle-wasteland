@@ -4,7 +4,7 @@ import { ENEMIES, DUNGEONS, COMBAT_SKILLS, COMBAT_TRIANGLE, getCombatStyle, type
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Skull, Sword, Shield, Heart, Zap, Star, ChevronRight, Lock, Swords, Crosshair, Wand, Target } from "lucide-react";
+import { Skull, Sword, Shield, Heart, Zap, Star, ChevronRight, Lock, Swords, Crosshair, Wand, Target, Radiation } from "lucide-react";
 import { EnemySprite } from "@/components/sprites";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";

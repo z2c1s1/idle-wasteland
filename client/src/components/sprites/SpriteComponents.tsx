@@ -4,7 +4,7 @@
 
 import React from "react";
 import {
-  ENEMY_ARCHETYPE_MAP, ARCHETYPE_COLORS, type EnemyArchetype,
+  ENEMY_ARCHETYPE_MAP, ARCHETYPE_COLORS, type EnemyArchetype, type ArchetypeColors,
   SLOT_SHAPE, EQUIPMENT_SPRITES, RARITY_GLOW,
   SKILL_SPRITES, type SkillIconName,
   GEM_COLORS, RESOURCE_SPRITES, type ResourceType,
@@ -59,7 +59,7 @@ export function EnemySprite({ enemyId, size = 48, className = "" }: EnemySpriteP
   );
 }
 
-function EnemyBody({ arch, color }: { arch: EnemyArchetype; color: { primary: string; secondary: string } }) {
+function EnemyBody({ arch, color }: { arch: EnemyArchetype; color: ArchetypeColors }) {
   switch (arch) {
     case 'insect':
       return <>
