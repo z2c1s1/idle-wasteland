@@ -4,15 +4,15 @@ import { parseEquipment } from "@shared/game-state-parse";
 
 export const MAX_LEVEL = 99;
 
-// Melvor-style exponential curve: XP doubles ~every 7 levels, 92=halfway to 99
+// Melvor-inspired curve: Lv30 ≈ 15min, Lv99 ≈ 200k XP
 export function calculateLevel(xp: number): number {
   if (xp <= 0) return 1;
-  return Math.min(MAX_LEVEL, Math.floor(Math.pow(xp, 0.36)) + 1);
+  return Math.min(MAX_LEVEL, Math.floor(Math.pow(xp, 0.375)) + 1);
 }
 
 export function xpForLevel(level: number): number {
   if (level <= 1) return 0;
-  return Math.ceil(Math.pow(level - 1, 1 / 0.36)); // ≈ (L-1)^2.78
+  return Math.ceil(Math.pow(level - 1, 1 / 0.375)); // ≈ (L-1)^2.67
 }
 
 export function levelProgress(xp: number): number {

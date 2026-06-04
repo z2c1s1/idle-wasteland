@@ -178,6 +178,26 @@ export class DatabaseStorage implements IStorage {
     return eqMod.enhanceItem(state, instanceId);
   }
 
+  async gambleSlot(slot: string, cost: number): Promise<GameState> {
+    const state = await this.getGameState();
+    return eqMod.gambleSlot(state, slot, cost);
+  }
+
+  async extractPower(instanceId: string): Promise<GameState> {
+    const state = await this.getGameState();
+    return eqMod.extractPower(state, instanceId);
+  }
+
+  async equipPower(slot: number, powerId: string): Promise<GameState> {
+    const state = await this.getGameState();
+    return eqMod.equipPower(state, slot, powerId);
+  }
+
+  async corruptItem(instanceId: string) {
+    const state = await this.getGameState();
+    return eqMod.corruptItem(state, instanceId);
+  }
+
   async setWorldTier(tier: number): Promise<GameState> {
     const state = await this.getGameState();
     return skillMod.setWorldTier(state, tier);
@@ -279,6 +299,11 @@ export class DatabaseStorage implements IStorage {
   async importSave(data: any): Promise<GameState> {
     const state = await this.getGameState();
     return skillMod.importSave(state, data);
+  }
+
+  async fastForward(seconds: number): Promise<GameState> {
+    const state = await this.getGameState();
+    return skillMod.fastForward(state, seconds);
   }
 
   // ── Slayer ────────────────────────────────────────────────────────────────

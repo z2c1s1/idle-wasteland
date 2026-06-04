@@ -1,6 +1,8 @@
 import {
   db, gameStates, type GameState, eq,
-  getEquipmentBonuses, COMBAT_GEM_POOLS, type CombatStyle,
+  DUNGEONS, getEquipmentBonuses, COMBAT_GEM_POOLS, type CombatStyle,
+  ALL_SLOTS, SLOT_BASES, ITEM_SETS, UNIQUE_ITEMS, buildUniqueGameItem,
+  type GameItem, type AffixType, type Rarity,
   TRIAL_BUFFS, TRIAL_CURSES,
   calculateLevel, getPlayerMaxHp, getPlayerAttack, getPlayerDefence,
   parseEquipment, parseLootBag, parseGems,

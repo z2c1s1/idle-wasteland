@@ -229,6 +229,30 @@ export const api = {
       input: z.object({ tier: z.number().int().min(1).max(4) }),
       responses: postErr,
     },
+    extractPower: {
+      method: "POST" as const,
+      path: "/api/game/extract-power" as const,
+      input: z.object({ instanceId: z.string().min(1) }),
+      responses: postErr,
+    },
+    equipPower: {
+      method: "POST" as const,
+      path: "/api/game/equip-power" as const,
+      input: z.object({ slot: z.number().int().min(0).max(2), powerId: z.string() }),
+      responses: postErr,
+    },
+    gambleSlot: {
+      method: "POST" as const,
+      path: "/api/game/gamble-slot" as const,
+      input: z.object({ slot: z.string().min(1), cost: z.number().int().min(1) }),
+      responses: postErr,
+    },
+    corrupt: {
+      method: "POST" as const,
+      path: "/api/game/corrupt" as const,
+      input: z.object({ instanceId: z.string().min(1) }),
+      responses: postErr,
+    },
     enhance: {
       method: "POST" as const,
       path: "/api/game/enhance" as const,

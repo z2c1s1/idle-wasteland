@@ -5,3 +5,5 @@ server/public
 vite.config.ts.*
 *.tar.gz
 .data/
+tmp.json
+.reasonix/truncated-results/

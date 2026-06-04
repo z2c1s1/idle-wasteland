@@ -6,7 +6,7 @@ import {
   calculateLevel, getPlayerMaxHp,
   parseEquipment, getResourceCount, buildResourceUpdates,
   getAgilityBonuses, getTemperatureMultiplier,
-  SKILLS_DATA, RARITY_ORDER, DISENCHANT_GOLD, mergeGems,
+  SKILLS_DATA, RARITY_ORDER, DISENCHANT_GOLD, mergeGems, rollGemDropsFromPool, parseGems,
 } from "./_shared";
 
 const calcLevel = calculateLevel;

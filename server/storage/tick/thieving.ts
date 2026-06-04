@@ -1,7 +1,8 @@
 import {
   db, gameStates, type GameState, eq,
   THIEVING_NPCS, calcStealth, calcThievingSuccessRate, calcThievingDoubleRate,
-  COMBAT_GEM_POOLS,
+  COMBAT_GEM_POOLS, getEquipmentBonuses, generateDroppedItem,
+  type GameItem,
   calculateLevel, getPlayerMaxHp, getPlayerAttack, getPlayerDefence,
   parseEquipment, parseLootBag, parseGems,
   getResourceCount, buildResourceUpdates,

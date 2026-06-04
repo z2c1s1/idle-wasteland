@@ -81,13 +81,13 @@ export function ItemCard({ item, onEquip, onDestroy, onUnequip, onEnhance, isEqu
             </div>
             <p className="text-orange-200">⚔ {item.minDamage ?? 0}-{item.maxDamage ?? 0} 武器伤害</p>
             <div className="flex flex-wrap gap-x-2 gap-y-0.5">
-              <span className="text-red-300">⚔ +{item.attackBonus ?? 0} 攻击</span>
-              <span className="text-blue-300">🛡 +{item.defenceBonus ?? 0} 防御</span>
-              <span className="text-green-300">❤ +{item.hpBonus ?? 0} 生命</span>
-              <span className="text-yellow-300">✦ +{(item.critRating ?? 0).toFixed(1)}% 暴击</span>
-              <span className="text-orange-300">🔥 +{item.enhancedDamage ?? 0}% 伤害</span>
-              <span className="text-rose-300">🩸 {item.lifeLeech ?? 0}% 吸血</span>
-              <span className="text-sky-300">⚡ +{item.attackSpeed ?? 0}% 攻速</span>
+              {(item.attackBonus ?? 0) !== 0 && <span className="text-red-300">⚔ +{item.attackBonus} 攻击</span>}
+              {(item.defenceBonus ?? 0) !== 0 && <span className="text-blue-300">🛡 +{item.defenceBonus} 防御</span>}
+              {(item.hpBonus ?? 0) !== 0 && <span className="text-green-300">❤ +{item.hpBonus} 生命</span>}
+              {(item.critRating ?? 0) !== 0 && <span className="text-yellow-300">✦ +{(item.critRating ?? 0).toFixed(1)}% 暴击</span>}
+              {(item.enhancedDamage ?? 0) !== 0 && <span className="text-orange-300">🔥 +{item.enhancedDamage}% 最终伤害</span>}
+              {(item.lifeLeech ?? 0) !== 0 && <span className="text-rose-300">🩸 {item.lifeLeech}% 吸血</span>}
+              {(item.attackSpeed ?? 0) !== 0 && <span className="text-sky-300">⚡ -{item.attackSpeed}% 间隔</span>}
             </div>
             {/* Sub-stats */}
             {(item.subStats?.length ?? 0) > 0 && (
@@ -194,22 +194,22 @@ export function ItemCard({ item, onEquip, onDestroy, onUnequip, onEnhance, isEqu
         </div>
       )}
 
-      {/* Quick stat summary */}
+      {/* Quick stat summary — hide zeros */}
       <div className="flex flex-wrap gap-x-3 gap-y-0.5">
-        <span className="text-xs text-red-300">⚔ +{item.attackBonus ?? 0} 攻击</span>
-        <span className="text-xs text-blue-300">🛡 +{item.defenceBonus ?? 0} 防御</span>
-        <span className="text-xs text-green-300">❤ +{item.hpBonus ?? 0} 生命</span>
-        <span className="text-xs text-yellow-300">✦ +{(item.critRating ?? 0).toFixed(1)}% 暴击</span>
-        <span className="text-xs text-orange-300">🔥 +{item.enhancedDamage ?? 0}% 伤害</span>
-        <span className="text-xs text-pink-300">💗 +{item.lifeOnKill ?? 0} 命中回血</span>
-        <span className="text-xs text-red-500">💥 {item.crushingBlow ?? 0}% 强击</span>
-        <span className="text-xs text-purple-300">🍀 {item.magicFind ?? 0}% 幸运命中</span>
-        <span className="text-xs text-emerald-300">🌿 +{item.lifeRegen ?? 0} 生命回复/回合</span>
-        <span className="text-xs text-cyan-300">🔵 -{item.resistAll ?? 0} 受伤</span>
-        <span className="text-xs text-rose-300">🩸 {item.lifeLeech ?? 0}% 吸血</span>
-        <span className="text-xs text-amber-300">⚡ {item.deadlyStrike ?? 0}% 暴击伤害</span>
-        <span className="text-xs text-sky-300">⚡ +{item.attackSpeed ?? 0}% 攻速</span>
-        <span className="text-xs text-lime-300">🌵 {item.reflectDamage ?? 0} 反伤</span>
+        {(item.attackBonus ?? 0) !== 0 && <span className="text-xs text-red-300">⚔ +{item.attackBonus} 攻击</span>}
+        {(item.defenceBonus ?? 0) !== 0 && <span className="text-xs text-blue-300">🛡 +{item.defenceBonus} 防御</span>}
+        {(item.hpBonus ?? 0) !== 0 && <span className="text-xs text-green-300">❤ +{item.hpBonus} 生命</span>}
+        {(item.critRating ?? 0) !== 0 && <span className="text-xs text-yellow-300">✦ +{(item.critRating ?? 0).toFixed(1)}% 暴击</span>}
+        {(item.enhancedDamage ?? 0) !== 0 && <span className="text-xs text-orange-300">🔥 +{item.enhancedDamage}% 最终伤害</span>}
+        {(item.lifeOnKill ?? 0) !== 0 && <span className="text-xs text-pink-300">💗 +{item.lifeOnKill} 命中回血</span>}
+        {(item.crushingBlow ?? 0) !== 0 && <span className="text-xs text-red-500">💥 {item.crushingBlow}% 强击</span>}
+        {(item.magicFind ?? 0) !== 0 && <span className="text-xs text-purple-300">🍀 {item.magicFind}% 掉落概率</span>}
+        {(item.lifeRegen ?? 0) !== 0 && <span className="text-xs text-emerald-300">🌿 +{item.lifeRegen} 生命回复/回合</span>}
+        {(item.resistAll ?? 0) !== 0 && <span className="text-xs text-cyan-300">🔵 -{item.resistAll} 受伤</span>}
+        {(item.lifeLeech ?? 0) !== 0 && <span className="text-xs text-rose-300">🩸 {item.lifeLeech}% 吸血</span>}
+        {(item.deadlyStrike ?? 0) !== 0 && <span className="text-xs text-amber-300">⚡ {item.deadlyStrike}% 暴击伤害</span>}
+        {(item.attackSpeed ?? 0) !== 0 && <span className="text-xs text-sky-300">⚡ -{item.attackSpeed}% 攻击间隔</span>}
+        {(item.reflectDamage ?? 0) !== 0 && <span className="text-xs text-lime-300">🌵 {item.reflectDamage}% 反弹</span>}
       </div>
 
       {/* Gem sockets row */}

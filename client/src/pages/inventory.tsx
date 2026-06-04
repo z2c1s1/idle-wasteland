@@ -1,5 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useGameState, useEquipItem, useUnequipItem, useDestroyLoot, useSetLootFilter, useExpandLootBag, useEnhanceItem } from "@/hooks/use-game";
+import { useQueryClient } from "@tanstack/react-query";
+import { api } from "@shared/routes";
 import { ItemCard } from "@/components/inventory/item-card";
 import {
   ALL_CRAFTABLE_ITEMS, ALL_SLOTS, SLOT_LABEL, SLOT_EMOJI,
@@ -9,11 +11,11 @@ import {
   type GameItem, type EquipmentSlot, type GemType, type Rarity,
 } from "@shared/game-data";
 import {
-  parseCraftItems, parseEquipment, parseLootBag, formatNumber, getEquipmentStats, getPlayerAttack, getPlayerDefence, getPlayerMaxHp,
+  parseCraftItems, parseEquipment, parseLootBag, formatNumber, getEquipmentStats, getPlayerAttack, getPlayerDefence, getPlayerMaxHp, getResourceCount,
 } from "@/lib/game-utils";
 import type { GameState } from "@shared/schema";
 import { Button } from "@/components/ui/button";
-import { Package, Shield, Sword, Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import { Package, Shield, Sword, Trash2, ChevronDown, ChevronUp, Download, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 // ─── Equipment slot with hover tooltip ────────────────────────────────────────
@@ -117,7 +119,31 @@ export default function Inventory() {
   const setLootFilter  = useSetLootFilter();
   const expandLootBag  = useExpandLootBag();
   const enhanceItem    = useEnhanceItem();
+  const queryClient    = useQueryClient();
   const { toast }      = useToast();
+
+  const handleExport = () => {
+    const a = document.createElement("a");
+    a.href = "/api/game/export";
+    a.download = "wasteland-save.json";
+    a.click();
+  };
+  const handleImport = () => {
+    const input = document.createElement("input");
+    input.type = "file"; input.accept = ".json";
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      try {
+        const data = JSON.parse(await file.text());
+        const res = await fetch("/api/game/import", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(data) });
+        if (!res.ok) throw new Error((await res.json()).message);
+        queryClient.invalidateQueries({ queryKey: [api.game.getState.path] });
+        toast({ title: "存档导入成功！请刷新页面" });
+      } catch (e: any) { toast({ title:"导入失败", description:e.message, variant:"destructive" }); }
+    };
+    input.click();
+  };
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>(() => {
     try {
       const stored = localStorage.getItem("idlerpg_inventory_collapsed");
@@ -191,14 +217,24 @@ export default function Inventory() {
 
   return (
     <div className="p-4 max-w-6xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-xl font-bold flex items-center gap-2">
-          <Package className="w-5 h-5 text-yellow-400" /> 背包
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          战利品袋中有 {lootBag.length} 件物品
-          {equipStats.hpBonus > 0 && ` · +${equipStats.hpBonus} 生命`}
-        </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-xl font-bold flex items-center gap-2">
+            <Package className="w-5 h-5 text-yellow-400" /> 背包
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            战利品袋中有 {lootBag.length} 件物品
+            {equipStats.hpBonus > 0 && ` · +${equipStats.hpBonus} 生命`}
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <button onClick={handleExport} className="flex items-center gap-1 px-2.5 py-1.5 text-xs rounded border border-border hover:bg-muted/20">
+            <Download className="w-3 h-3" /> 导出
+          </button>
+          <button onClick={handleImport} className="flex items-center gap-1 px-2.5 py-1.5 text-xs rounded border border-border hover:bg-muted/20">
+            <Upload className="w-3 h-3" /> 导入
+          </button>
+        </div>
       </div>
 
       {/* Total stats (base + equipment) — grouped by category */}
@@ -228,8 +264,8 @@ export default function Inventory() {
         <div>
           <h3 className="text-[10px] text-muted-foreground/60 mb-1">伤害增幅</h3>
           <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
-            <span className="text-orange-300">🔥 +{equipStats.enhancedDamage ?? 0}% 增强伤害</span>
-            <span className="text-sky-300">⚡ +{equipStats.attackSpeed ?? 0}% 攻击速度</span>
+            <span className="text-orange-300">🔥 +{equipStats.enhancedDamage ?? 0}% 最终伤害</span>
+            <span className="text-sky-300">⚡ -{equipStats.attackSpeed ?? 0}% 攻击间隔</span>
             <span className="text-amber-300">💥 +{equipStats.crushingBlow ?? 0}% 碾压打击</span>
           </div>
         </div>
@@ -249,9 +285,9 @@ export default function Inventory() {
         <div>
           <h3 className="text-[10px] text-muted-foreground/60 mb-1">特殊属性</h3>
           <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
-            <span className="text-lime-300">🍀 +{equipStats.magicFind ?? 0}% 寻宝</span>
+            <span className="text-lime-300">🍀 +{equipStats.magicFind ?? 0}% 掉落概率</span>
             <span className="text-teal-300">💰 +{equipStats.goldBonus ?? 0}% 金币加成</span>
-            <span className="text-indigo-300">🔄 +{equipStats.reflectDamage ?? 0} 伤害反射</span>
+            <span className="text-indigo-300">🔄 +{equipStats.reflectDamage ?? 0}% 反弹伤害</span>
           </div>
         </div>
       </div>
@@ -477,7 +513,7 @@ export default function Inventory() {
           {RESOURCE_SECTIONS.map(section => {
             const items = Array.from({ length: 10 }, (_, i) => ({
               name: section.names[i],
-              qty: ((gs as Record<string, unknown>)[`${section.prefix}_${i}`] as number) ?? 0,
+              qty: getResourceCount(gs, `${section.prefix}_${i}`),
               key: `${section.prefix}_${i}`,
             })).filter(it => it.qty > 0);
             if (!items.length) return null;

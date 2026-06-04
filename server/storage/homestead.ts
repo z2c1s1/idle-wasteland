@@ -5,6 +5,26 @@ import { eq } from "drizzle-orm";
 import { getResourceCount, buildResourceUpdates } from "@shared/resources";
 import { msg } from "@shared/messages";
 
+// ─── Wood helpers (sums all tiers) ────────────────────────────────────────────
+
+function totalWood(state: GameState): number {
+  let sum = 0;
+  for (let i = 0; i <= 9; i++) sum += getResourceCount(state, `wood_${i}`);
+  return sum;
+}
+
+function consumeAnyWood(state: GameState, amount: number): Record<string, number> {
+  const result: Record<string, number> = {};
+  let remaining = amount;
+  for (let i = 0; i <= 9 && remaining > 0; i++) {
+    const have = getResourceCount(state, `wood_${i}`);
+    const take = Math.min(have, remaining);
+    result[`wood_${i}`] = have - take;
+    remaining -= take;
+  }
+  return result;
+}
+
 // ─── Homestead building ───────────────────────────────────────────────────────
 
 export async function buildHomestead(state: GameState, buildingId: string): Promise<GameState> {
@@ -13,12 +33,12 @@ export async function buildHomestead(state: GameState, buildingId: string): Prom
   const homestead: Record<string, number> = JSON.parse(state.homestead ?? '{}');
   if ((homestead[buildingId] ?? 0) >= bld.maxLevel) throw new Error(msg("buildingMaxLevel"));
   const costWood = bld.costWood; const costStone = bld.costStone; const costGold = bld.costGold;
-  if (getResourceCount(state, "wood_0") < costWood) throw new Error(msg("notEnoughWood"));
+  if (totalWood(state) < costWood) throw new Error(msg("notEnoughWood"));
   if ((state.stone ?? 0) < costStone) throw new Error(msg("notEnoughStone"));
   if (state.gold < costGold) throw new Error(msg("notEnoughGold"));
   homestead[buildingId] = (homestead[buildingId] ?? 0) + 1;
-  const woodLeft = getResourceCount(state, "wood_0") - costWood;
-  const resourcePatch = buildResourceUpdates(state, { wood_0: woodLeft });
+  const woodPatch = consumeAnyWood(state, costWood);
+  const resourcePatch = buildResourceUpdates(state, woodPatch);
   const [u] = await db.update(gameStates).set({
     homestead: JSON.stringify(homestead),
     ...resourcePatch,

@@ -50,8 +50,8 @@ describe("calculateLevel", () => {
   it("level 2 at 4 xp (new curve)", () => {
     assert.equal(calculateLevel(4), 2);
   });
-  it("level 5 at 81 xp (new curve)", () => {
-    assert.equal(calculateLevel(81), 5);
+  it("level 6 at 81 xp (Melvor curve)", () => {
+    assert.equal(calculateLevel(81), 6);
   });
   it("caps at MAX_LEVEL (99)", () => {
     assert.equal(calculateLevel(1_000_000), MAX_LEVEL);
@@ -62,8 +62,8 @@ describe("xpForLevel", () => {
   it("level 2 requires 1 xp threshold", () => {
     assert.equal(xpForLevel(2), 1);
   });
-  it("level 99 requires ~340k xp (new curve)", () => {
-    assert.ok(xpForLevel(99) > 300000 && xpForLevel(99) < 400000);
+  it("level 99 requires ~204k xp (Melvor curve)", () => {
+    assert.ok(xpForLevel(99) > 200000 && xpForLevel(99) < 210000);
   });
 });
 
@@ -125,7 +125,7 @@ describe("getCombatLevel", () => {
   });
   it("averages attack/defence/hitpoints levels (new curve)", () => {
     const state = makeState({ attackXp: 81, defenceXp: 81, hitpointsXp: 81 }); // all level 5
-    assert.equal(getCombatLevel(state), 5);
+    assert.equal(getCombatLevel(state), 6);
   });
 });
 

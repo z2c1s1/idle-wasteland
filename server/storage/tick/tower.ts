@@ -1,10 +1,11 @@
 import {
   db, gameStates, type GameState, eq,
-  getEquipmentBonuses, COMBAT_GEM_POOLS, type CombatStyle,
+  DUNGEONS, getEquipmentBonuses, COMBAT_GEM_POOLS, type CombatStyle,
   calculateLevel, getPlayerMaxHp, getPlayerAttack, getPlayerDefence,
   parseEquipment, parseLootBag, parseGems,
   getResourceCount, buildResourceUpdates,
   SKILLS_DATA, RARITY_ORDER, DISENCHANT_GOLD, mergeGems,
+  type GameItem, ALL_SLOTS, SLOT_BASES, type AffixType, type Rarity,
 } from "./_shared";
 
 const calcLevel = calculateLevel;

@@ -79,10 +79,10 @@ export const AFFIX_LABEL: Record<AffixType, string> = {
   vitality:      '体质',
   intelligence:  '科技',
   armour:        '护甲',
-  damage_percent:'伤害加成',
+  damage_percent:'最终伤害',
   life_on_hit:   '命中回血',
   overpower:     '重击',
-  lucky_hit:     '幸运命中',
+  lucky_hit:     '掉落概率',
   life_regen:    '生命回复',
   resist_all:    '辐射抗性',
   life_leech:    '生命汲取',
@@ -115,10 +115,10 @@ export const AFFIX_EFFECT: Record<AffixType, string> = {
   vitality:      '+5 生命/点',
   intelligence:  '+0.5% 技能伤害/点',
   armour:        '+1 防御/点',
-  damage_percent:'+1% 所有伤害/点',
+  damage_percent:'+1% 最终伤害/点',
   life_on_hit:   '+1 生命/命中',
   overpower:     '+1% 强击概率 — 额外伤害等于最大生命 1%',
-  lucky_hit:     '+1% 幸运命中 — 触发时恢复少量生命',
+  lucky_hit:     '+1% 掉落概率 — 提升装备稀有度',
   life_regen:    '+1 生命回复/战斗回合',
   resist_all:    '+1 伤害减免/点',
   life_leech:    '+1% 吸血率/点',
@@ -783,11 +783,11 @@ export const SUB_STAT_LABEL: Record<SubStatType, string> = {
   defenceBonus:   '防御力',
   hpBonus:        '生命值',
   critRating:     '暴击率',
-  enhancedDamage: '暴击伤害',
+  enhancedDamage: '最终伤害',
   lifeLeech:      '生命偷取',
   // attackSpeed removed — not meaningful in single-player idle combat
   resistAll:      '伤害减免',
-  deadlyStrike:   '致命打击',
+  deadlyStrike:   '暴击伤害',
   crushingBlow:   '碾压打击',
 };
 
@@ -873,7 +873,7 @@ export function rollSubStatValue(type: SubStatType, ilvl: number): { value: numb
 }
 
 export const MAX_ENHANCE_LEVEL = 12;
-export const ENHANCE_COST_PER_LEVEL = 150; // base gold per level × ilvl
+export const ENHANCE_COST_PER_LEVEL = 30; // base gold per level × ilvl
 
 // ─── Game item interface ────────────────────────────────────────────────────────
 export interface GameItem {

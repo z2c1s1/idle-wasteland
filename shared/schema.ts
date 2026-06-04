@@ -30,6 +30,7 @@ export const gameStates = pgTable("game_states", {
   enemyHp: integer("enemy_hp").notNull().default(-1),
 
   gold: integer("gold").notNull().default(0),
+  bloodShards: integer("blood_shards").notNull().default(0),
   bones: integer("bones").notNull().default(0),
   dragonBones: integer("dragon_bones").notNull().default(0),
 
@@ -58,6 +59,8 @@ export const gameStates = pgTable("game_states", {
   synthesisXp: integer("synthesis_xp").notNull().default(0),
   worldTier: integer("world_tier").notNull().default(1),
   tierBossKilled: text("tier_boss_killed").notNull().default('[]'),
+  extractedPowers: text("extracted_powers").notNull().default('[]'),
+  activePowers: text("active_powers").notNull().default('["","",""]'),
   lootBagSize: integer("loot_bag_size").notNull().default(50),
   homestead: text("homestead").notNull().default("{}"),
   temperature: integer("temperature").notNull().default(0),

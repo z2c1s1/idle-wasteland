@@ -168,6 +168,9 @@ async function initDatabase() {
     `ALTER TABLE game_states ADD COLUMN outposts TEXT NOT NULL DEFAULT '[]'`,
     `ALTER TABLE game_states ADD COLUMN world_tier INTEGER NOT NULL DEFAULT 1`,
     `ALTER TABLE game_states ADD COLUMN tier_boss_killed TEXT NOT NULL DEFAULT '[]'`,
+    `ALTER TABLE game_states ADD COLUMN extracted_powers TEXT NOT NULL DEFAULT '[]'`,
+    `ALTER TABLE game_states ADD COLUMN active_powers TEXT NOT NULL DEFAULT '["","",""]'`,
+    `ALTER TABLE game_states ADD COLUMN blood_shards INTEGER NOT NULL DEFAULT 0`,
   ];
   for (const sql of migrations) {
     try { await client.exec(sql); } catch { /* 列已存在则跳过 */ }

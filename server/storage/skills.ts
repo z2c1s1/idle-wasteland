@@ -9,6 +9,7 @@ import { eq } from "drizzle-orm";
 import { calculateLevel } from "@shared/game-math";
 import { msg } from "@shared/messages";
 import { getResourceCount } from "@shared/resources";
+import { SKILLS_DATA } from "./constants";
 
 const calcLevel = calculateLevel;
 
@@ -35,6 +36,23 @@ export async function updateAction(state: GameState, action: string): Promise<Ga
   if (action.startsWith("smelting_")) {
     const idx = action.split("_")[1];
     if (!checkRes(`ore_${idx}`, 1)) throw new Error(msg("notEnoughOre"));
+  }
+
+  // Level gate — check reqLevel for gathering skills
+  const gatherSkills = ['woodcutting','mining','smelting','fishing','hunting','crafting','agility','exploration'];
+  for (const skill of gatherSkills) {
+    if (action.startsWith(skill + '_')) {
+      const idx = parseInt(action.split('_')[1]);
+      const data = SKILLS_DATA[skill]?.[idx];
+      if (data?.reqLevel) {
+        const xpKey = (skill + 'Xp') as keyof GameState;
+        const playerLevel = calcLevel(state[xpKey] as number ?? 0);
+        if (playerLevel < data.reqLevel) {
+          throw new Error(`需要${skill}等级 ${data.reqLevel}（当前 ${playerLevel}）`);
+        }
+      }
+      break;
+    }
   }
 
   const [updated] = await db.update(gameStates)
@@ -159,4 +177,15 @@ export async function importSave(state: GameState, data: any): Promise<GameState
     .set(clean as any)
     .where(eq(gameStates.id, state.id)).returning();
   return updated;
+}
+
+// ─── Debug: Fast-forward ─────────────────────────────────────────────────────
+
+export async function fastForward(state: GameState, seconds: number): Promise<GameState> {
+  const past = new Date(new Date(state.actionUpdatedAt).getTime() - seconds * 1000);
+  const [updated] = await db.update(gameStates)
+    .set({ actionUpdatedAt: past } as any)
+    .where(eq(gameStates.id, state.id)).returning();
+  const { tickActiveAction } = await import("./tick-action");
+  return tickActiveAction(updated, new Date(), seconds);
 }

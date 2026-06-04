@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import {
   Axe, Pickaxe, LayoutDashboard, Swords, Flame, Waves, PawPrint, Soup,
   Hammer, Shield, Package, Skull, Gem, HandMetal, Home, Scissors,
-  Footprints, CandlestickChart, Building2, Map, Radiation,
+  Footprints, CandlestickChart, Building2, Map, Radiation, Zap,
 } from "lucide-react";
 import { useGameState } from "@/hooks/use-game";
 import { calculateLevel, getCombatLevel, formatNumber } from "@/lib/game-utils";
@@ -155,6 +155,10 @@ export function AppSidebar() {
         <NavItem title="祷言" url="/prayer" icon={CandlestickChart}
           level={null}
           isActive={location === "/prayer"} color="text-amber-400" />
+
+        <SectionLabel label="科技" />
+        <NavItem title="废土科技" url="/wasteland-tech" icon={Zap} level={null}
+          isActive={location === "/wasteland-tech"} color="text-amber-400" />
 
       </nav>
 

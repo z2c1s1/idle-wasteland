@@ -17,6 +17,7 @@ export function rollGemDropsFromPool(
   chance: number,
   pool: string[],
 ): Record<string, number> {
+  if (pool.length === 0) return {};
   const expected = completions * chance;
   const total = Math.floor(expected) + (Math.random() < expected % 1 ? 1 : 0);
   const gems: Record<string, number> = {};

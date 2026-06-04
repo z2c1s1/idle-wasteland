@@ -96,6 +96,20 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   registerGamePost(app, g.setWorldTier.path, g.setWorldTier.input, (input) =>
     storage.setWorldTier(input.tier),
   );
+  registerGamePost(app, g.gambleSlot.path, g.gambleSlot.input, (input) =>
+    storage.gambleSlot(input.slot, input.cost),
+  );
+  registerGamePost(app, g.extractPower.path, g.extractPower.input, (input) =>
+    storage.extractPower(input.instanceId),
+  );
+  registerGamePost(app, g.equipPower.path, g.equipPower.input, (input) =>
+    storage.equipPower(input.slot, input.powerId),
+  );
+  // Corrupt returns {gameState, result}
+  app.post("/api/game/corrupt", async (req, res) => {
+    try { res.json(await storage.corruptItem(req.body.instanceId)); }
+    catch (err: any) { res.status(400).json({ message: err.message }); }
+  });
   registerGamePost(app, g.enhance.path, g.enhance.input, (input) =>
     storage.enhanceItem(input.instanceId),
   );
@@ -112,6 +126,15 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.post("/api/game/collect-outposts", async (_req, res) => {
     try { res.json(await storage.collectOutposts()); }
     catch (err: any) { res.status(400).json({ message: err.message }); }
+  });
+
+  // Debug: fast-forward game time
+  app.post("/api/game/fast-forward", async (req, res) => {
+    try {
+      const seconds = req.body.seconds || 60;
+      const state = await storage.fastForward(seconds);
+      res.json(state);
+    } catch (err: any) { res.status(500).json({ message: err.message }); }
   });
 
   // Export save

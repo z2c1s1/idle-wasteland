@@ -28,7 +28,7 @@ export async function tickDungeon(state: GameState, elapsedSeconds: number): Pro
   const {
     attackBonus: eqAttackBonus,
     enhancedDamage, lifeOnKill, crushingBlow, magicFind,
-    lifeRegen, resistAll, lifeLeech, deadlyStrike, attackSpeed, reflectDamage,
+    lifeRegen, resistAll, critRating, lifeLeech, deadlyStrike, attackSpeed, reflectDamage,
   } = getEquipmentBonuses(equipment);
 
   const spellbladePct   = getSkillVal('spellblade');
@@ -87,9 +87,10 @@ export async function tickDungeon(state: GameState, elapsedSeconds: number): Pro
     if (enhancedDamage > 0) effAtk = Math.floor(effAtk * (1 + enhancedDamage / 100));
     if (berserkPct > 0 && playerHp < playerMaxHp * 0.3) effAtk = Math.floor(effAtk * (1 + berserkPct / 100));
 
-    const deadlyStrikeHit = deadlyStrike > 0 && Math.random() * 100 < deadlyStrike;
+    const critHit = critRating > 0 && Math.random() * 100 < critRating;
+    const critDmg = (deadlyStrike ?? 200) / 100;
     const strikes = (doubleStrikePct > 0 && Math.random() * 100 < doubleStrikePct) ? 2 : 1;
-    let totalDmgToEnemy = effAtk * strikes * (deadlyStrikeHit ? 2 : 1) + poisonDmg;
+    let totalDmgToEnemy = effAtk * strikes * (critHit ? critDmg : 1) + poisonDmg;
     if (bossShieldActive) totalDmgToEnemy = Math.floor(totalDmgToEnemy * 0.5);
 
     if (crushingBlow > 0 && Math.random() * 100 < crushingBlow) {
@@ -101,8 +102,6 @@ export async function tickDungeon(state: GameState, elapsedSeconds: number): Pro
 
     if (lifeLeech > 0)    playerHp = Math.min(playerMaxHp, playerHp + Math.floor(totalDmgToEnemy * lifeLeech / 100));
     if (lifeOnKill > 0)   playerHp = Math.min(playerMaxHp, playerHp + lifeOnKill);
-    if (magicFind > 0 && Math.random() * 100 < magicFind)
-      playerHp = Math.min(playerMaxHp, playerHp + Math.max(1, Math.floor(playerMaxHp * 0.02)));
     if (lifeStealPct > 0) playerHp = Math.min(playerMaxHp, playerHp + Math.floor(totalDmgToEnemy * lifeStealPct / 100));
 
     if (enemyHp <= 0) {

@@ -19,7 +19,7 @@ export default function Homestead() {
   const gs = state as GameState;
   const homestead: Record<string, number> = JSON.parse(gs.homestead ?? '{}');
   const furnaceLevel = homestead['furnace'] ?? 0;
-  const wood = getResourceCount(gs, "wood_0");
+  const wood = Array.from({length:10}, (_,i)=>getResourceCount(gs,`wood_${i}`)).reduce((a,b)=>a+b,0);
   const stone = gs.stone ?? 0;
   const temp = gs.temperature ?? 0;
   const tempLabel = temp >= 50 ? '温暖' : temp >= 30 ? '微凉' : temp >= 10 ? '寒冷' : temp > 0 ? '严寒' : '冰冻';
@@ -120,44 +120,58 @@ export default function Homestead() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-        {HOMESTEAD_BUILDINGS.map(b => {
-          const level = homestead[b.id] ?? 0;
-          const maxed = level >= b.maxLevel;
-          const currentTier = (gs as any).worldTier ?? 1;
-          const tierLocked = (b.reqTier ?? 1) > currentTier;
-          const canAfford = wood >= b.costWood && stone >= b.costStone && gs.gold >= b.costGold;
-          const locked = tierLocked && level === 0;
-          return (
-            <div key={b.id} className={`p-3 rounded-xl border text-center transition-colors ${
-              locked ? 'border-border/30 opacity-40' :
-              level>0 ? 'border-green-400 bg-green-500/10' : 'border-border'
-            }`}>
-              <span className="text-2xl">{b.emoji}</span>
-              <p className="text-xs font-bold mt-1">{b.name}</p>
-              <p className="text-[10px] text-muted-foreground">{b.effect}: {b.effectPerLevel}</p>
-              {locked ? (
-                <p className="text-[9px] text-amber-400 mt-1">需世界层级 {b.reqTier}</p>
-              ) : (
-                <>
-                  <p className="text-[10px] font-bold mt-1">{level}/{b.maxLevel} 级</p>
-                  {!maxed && (
-                    <div className="text-[9px] text-muted-foreground mt-1">
-                      {b.costWood>0 && <span>🪵{b.costWood} </span>}
-                      {b.costStone>0 && <span>🪨{b.costStone} </span>}
-                      {b.costGold>0 && <span>💰{b.costGold}</span>}
-                    </div>
-                  )}
-                </>
-              )}
-              <Button size="sm" disabled={maxed || !canAfford || locked} onClick={() => build(b.id)}
-                className="mt-2 h-6 text-[10px] w-full bg-green-600 hover:bg-green-500">
-                {locked ? '🔒 锁定' : maxed ? '满级' : level === 0 ? '建造' : '升级'}
-              </Button>
+      {[
+        { label: '🏠 常规建筑', filter: (b: any) => !b.id.startsWith('wonder_') && (b.reqTier ?? 1) <= 1 },
+        { label: '⚙️ 废土科技', filter: (b: any) => !b.id.startsWith('wonder_') && (b.reqTier ?? 1) >= 2 },
+        { label: '🏛️ 奇观', filter: (b: any) => b.id.startsWith('wonder_') },
+      ].map(group => {
+        const items = HOMESTEAD_BUILDINGS.filter(group.filter)
+          .sort((a, b) => (a.reqTier ?? 0) - (b.reqTier ?? 0));
+        if (items.length === 0) return null;
+        return (
+          <div key={group.label} className="space-y-2">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{group.label}</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+              {items.map(b => {
+                const level = homestead[b.id] ?? 0;
+                const maxed = level >= b.maxLevel;
+                const currentTier = (gs as any).worldTier ?? 1;
+                const tierLocked = (b.reqTier ?? 1) > currentTier;
+                const canAfford = wood >= b.costWood && stone >= b.costStone && gs.gold >= b.costGold;
+                const locked = tierLocked && level === 0;
+                return (
+                  <div key={b.id} className={`p-3 rounded-xl border text-center transition-colors ${
+                    locked ? 'border-border/30 opacity-40' :
+                    level>0 ? 'border-green-400 bg-green-500/10' : 'border-border'
+                  }`}>
+                    <span className="text-2xl">{b.emoji}</span>
+                    <p className="text-xs font-bold mt-1">{b.name}</p>
+                    <p className="text-[10px] text-muted-foreground">{b.effect}: {b.effectPerLevel}</p>
+                    {locked ? (
+                      <p className="text-[9px] text-amber-400 mt-1">需世界层级 {b.reqTier}</p>
+                    ) : (
+                      <>
+                        <p className="text-[10px] font-bold mt-1">{level}/{b.maxLevel} 级</p>
+                        {!maxed && (
+                          <div className="text-[9px] text-muted-foreground mt-1">
+                            {b.costWood>0 && <span>🪵{b.costWood} </span>}
+                            {b.costStone>0 && <span>🪨{b.costStone} </span>}
+                            {b.costGold>0 && <span>💰{b.costGold}</span>}
+                          </div>
+                        )}
+                      </>
+                    )}
+                    <Button size="sm" disabled={maxed || !canAfford || locked} onClick={() => build(b.id)}
+                      className="mt-2 h-6 text-[10px] w-full bg-green-600 hover:bg-green-500">
+                      {locked ? '🔒 锁定' : maxed ? '满级' : level === 0 ? '建造' : '升级'}
+                    </Button>
+                  </div>
+                );
+              })}
             </div>
-          );
-        })}
-      </div>
+          </div>
+        );
+      })}
 
       {/* ─── 农田 ────────────────────────────────────────────────────────── */}
       {(() => {

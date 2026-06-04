@@ -382,3 +382,168 @@ export function applySubStatsToItem(item: GameItem): GameItem {
     attackSpeed: aspd, resistAll: res, deadlyStrike: ds, crushingBlow: cb,
   };
 }
+
+// ─── Legendary Power Extraction ──────────────────────────────────────────────
+
+export async function extractPower(state: GameState, instanceId: string): Promise<GameState> {
+  const lootBag = parseLootBag(state.lootBag);
+  const equipment = parseEquipment(state.equipment);
+
+  let item: GameItem | null = null;
+  let inLoot = false;
+  const idx = lootBag.findIndex(i => i.instanceId === instanceId);
+  if (idx >= 0) { item = lootBag[idx]; inLoot = true; }
+  else {
+    for (const slot of Object.keys(equipment) as EquipmentSlot[]) {
+      if (equipment[slot]?.instanceId === instanceId) { item = equipment[slot]!; break; }
+    }
+  }
+  if (!item) throw new Error("物品不存在");
+  if (!item.legendaryPower && !item.skills?.length) throw new Error("该装备没有可萃取的传奇特效");
+
+  const powerId = item.legendaryPower || `skill_${item.skills?.[0]?.type || 'unknown'}`;
+  const powerName = item.legendaryPower || item.skills?.[0]?.name || '未知威能';
+  const powers: string[] = JSON.parse((state as any).extractedPowers ?? '[]');
+  if (powers.includes(powerId)) throw new Error("该威能已学会");
+
+  powers.push(powerId);
+  (item as any)._powerName = powerName;
+
+  // Remove item
+  if (inLoot) lootBag.splice(idx, 1);
+  else {
+    for (const slot of Object.keys(equipment) as EquipmentSlot[]) {
+      if (equipment[slot]?.instanceId === instanceId) { delete equipment[slot]; break; }
+    }
+  }
+
+  const [updated] = await db.update(gameStates).set({
+    extractedPowers: JSON.stringify(powers),
+    lootBag: JSON.stringify(lootBag),
+    equipment: JSON.stringify(equipment),
+  } as any).where(eq(gameStates.id, state.id)).returning();
+  return updated;
+}
+
+export async function equipPower(state: GameState, slotS: number, powerId: string): Promise<GameState> {
+  const powers: string[] = JSON.parse((state as any).extractedPowers ?? '[]');
+  if (powerId !== "" && !powers.includes(powerId)) throw new Error("尚未学会该威能");
+  const active: string[] = JSON.parse((state as any).activePowers ?? '["","",""]');
+  if (powerId !== "" && active.includes(powerId)) throw new Error("该威能已在其他槽位激活");
+  active[slotS] = powerId;
+  const [updated] = await db.update(gameStates).set({
+    activePowers: JSON.stringify(active),
+  } as any).where(eq(gameStates.id, state.id)).returning();
+  return updated;
+}
+
+// ─── Equipment Corruption ────────────────────────────────────────────────────
+
+const CORRUPT_EFFECTS = [
+  { weight: 30, type: 'buff', desc: '全体属性 +15%', apply: (item: GameItem) => {
+    item.attackBonus = Math.floor((item.attackBonus||0) * 1.15);
+    item.defenceBonus = Math.floor((item.defenceBonus||0) * 1.15);
+    item.hpBonus = Math.floor((item.hpBonus||0) * 1.15);
+    item.critRating = Math.floor((item.critRating||0) * 1.15);
+  }},
+  { weight: 20, type: 'big_buff', desc: '随机一条副属性翻倍', apply: (item: GameItem) => {
+    if ((item.subStats?.length ?? 0) > 0) {
+      const idx = Math.floor(Math.random() * item.subStats!.length);
+      item.subStats![idx].value *= 2;
+    }
+  }},
+  { weight: 20, type: 'nerf', desc: '全体属性 -10%', apply: (item: GameItem) => {
+    item.attackBonus = Math.floor((item.attackBonus||0) * 0.9);
+    item.defenceBonus = Math.floor((item.defenceBonus||0) * 0.9);
+    item.hpBonus = Math.floor((item.hpBonus||0) * 0.9);
+  }},
+  { weight: 15, type: 'big_nerf', desc: '随机一条副属性清零', apply: (item: GameItem) => {
+    if ((item.subStats?.length ?? 0) > 0) {
+      const idx = Math.floor(Math.random() * item.subStats!.length);
+      item.subStats![idx].value = 0;
+    }
+  }},
+  { weight: 15, type: 'nothing', desc: '无变化' },
+];
+
+export async function corruptItem(state: GameState, instanceId: string): Promise<{ gameState: GameState; result: string }> {
+  const lootBag = parseLootBag(state.lootBag);
+  const equipment = parseEquipment(state.equipment);
+
+  let item: GameItem | null = null;
+  let inLoot = false;
+  const idx = lootBag.findIndex(i => i.instanceId === instanceId);
+  if (idx >= 0) { item = lootBag[idx]; inLoot = true; }
+  else {
+    for (const slot of Object.keys(equipment) as EquipmentSlot[]) {
+      if (equipment[slot]?.instanceId === instanceId) { item = equipment[slot]!; break; }
+    }
+  }
+  if (!item) throw new Error("物品不存在");
+  if ((item as any).corrupted) throw new Error("该装备已被辐射污染");
+
+  // Roll effect
+  const totalWeight = CORRUPT_EFFECTS.reduce((s, e) => s + e.weight, 0);
+  let roll = Math.random() * totalWeight;
+  let chosen = CORRUPT_EFFECTS[0];
+  for (const e of CORRUPT_EFFECTS) { roll -= e.weight; if (roll <= 0) { chosen = e; break; } }
+
+  if (chosen.type === 'destroy') {
+    if (inLoot) lootBag.splice(idx, 1);
+    else {
+      for (const slot of Object.keys(equipment) as EquipmentSlot[]) {
+        if (equipment[slot]?.instanceId === instanceId) { delete equipment[slot]; break; }
+      }
+    }
+    const [updated] = await db.update(gameStates).set({
+      lootBag: JSON.stringify(lootBag), equipment: JSON.stringify(equipment),
+    }).where(eq(gameStates.id, state.id)).returning();
+    return { gameState: updated, result: '💀 装备被辐射摧毁！' };
+  }
+
+  if (chosen.apply) chosen.apply(item);
+  (item as any).corrupted = true;
+
+  if (inLoot) lootBag[idx] = item;
+  else {
+    for (const slot of Object.keys(equipment) as EquipmentSlot[]) {
+      if (equipment[slot]?.instanceId === instanceId) { equipment[slot] = item; break; }
+    }
+  }
+
+  const [updated] = await db.update(gameStates).set({
+    lootBag: JSON.stringify(lootBag), equipment: JSON.stringify(equipment),
+  }).where(eq(gameStates.id, state.id)).returning();
+  return { gameState: updated, result: chosen.desc };
+}
+
+// ─── Blood Shards Slot Gambling ──────────────────────────────────────────────
+
+export async function gambleSlot(state: GameState, slotS: string, cost: number): Promise<GameState> {
+  const bloodShards = (state as any).bloodShards ?? 0;
+  if (bloodShards < cost) throw new Error(`血岩碎片不足（需要${cost}，当前${bloodShards}）`);
+
+  const rarityRoll = Math.random();
+  let rarity: Rarity;
+  if (rarityRoll < 0.10)      rarity = 'mythic';
+  else if (rarityRoll < 0.30) rarity = 'legendary';
+  else if (rarityRoll < 0.60) rarity = 'epic';
+  else                         rarity = 'rare';
+
+  const combatLevel = getCombatLevel(state);
+  const ilvl = Math.max(1, combatLevel + Math.floor((Math.random() - 0.5) * 10));
+  const slotKey = (slotS || ALL_SLOTS[Math.floor(Math.random() * ALL_SLOTS.length)]) as EquipmentSlot;
+
+  const item = generateDroppedItem(Math.max(0, Math.min(7, Math.floor(ilvl / 10))), 0);
+  item.rarity = rarity;
+  item.ilvl = ilvl;
+  item.slot = slotKey;
+  item.instanceId = 'shard_' + Date.now();
+
+  const loot = parseLootBag(state.lootBag);
+  const [updated] = await db.update(gameStates).set({
+    lootBag: JSON.stringify([...loot, item]),
+    bloodShards: bloodShards - cost,
+  } as any).where(eq(gameStates.id, state.id)).returning();
+  return updated;
+}

@@ -1443,7 +1443,7 @@ export function rollSubStatValue(type: SubStatType, ilvl: number): { value: numb
 }
 
 export const MAX_ENHANCE_LEVEL = 12;
-export const ENHANCE_COST_PER_LEVEL = 150;
+export const ENHANCE_COST_PER_LEVEL = 30;
 
 // ─── World Tier ────────────────────────────────────────────────────────────────
 
@@ -1850,31 +1850,41 @@ export interface ThievingNPC {
 }
 
 export const THIEVING_NPCS: ThievingNPC[] = [
-  { id:'drunkard',name:'醉汉',emoji:'🍺',level:1,perception:50,maxHit:3,interval:4,xp:8,gpMin:1,gpMax:3,commonDrops:[{name:'面包屑',emoji:'🍞',qty:1,chance:0.3}] },
-  { id:'beggar',name:'乞丐',emoji:'🧙',level:5,perception:80,maxHit:5,interval:4,xp:12,gpMin:2,gpMax:5,commonDrops:[{name:'破布',emoji:'🧶',qty:1,chance:0.25}] },
-  { id:'peddler',name:'小贩',emoji:'🧑',level:10,perception:120,maxHit:8,interval:4,xp:18,gpMin:3,gpMax:8,commonDrops:[{name:'布料',emoji:'🧵',qty:1,chance:0.2}] },
-  { id:'pickpocket',name:'扒手',emoji:'🕵️',level:15,perception:160,maxHit:12,interval:3,xp:25,gpMin:5,gpMax:12,commonDrops:[{name:'小刀',emoji:'🔪',qty:1,chance:0.15}] },
-  { id:'gambler',name:'赌徒',emoji:'🎲',level:20,perception:210,maxHit:16,interval:3,xp:35,gpMin:8,gpMax:18,commonDrops:[{name:'骰子',emoji:'🎲',qty:1,chance:0.12}] },
-  { id:'scribe',name:'抄写员',emoji:'✍️',level:25,perception:260,maxHit:22,interval:3,xp:48,gpMin:12,gpMax:25,commonDrops:[{name:'卷轴',emoji:'📜',qty:1,chance:0.1}] },
-  { id:'apothecary',name:'药师',emoji:'🧪',level:30,perception:310,maxHit:28,interval:3,xp:60,gpMin:15,gpMax:30,commonDrops:[{name:'药草',emoji:'🌿',qty:1,chance:0.15}] },
-  { id:'squire',name:'骑士侍从',emoji:'🛡️',level:35,perception:370,maxHit:35,interval:3,xp:78,gpMin:20,gpMax:40,commonDrops:[{name:'铁锭',emoji:'🔩',qty:1,chance:0.1}] },
-  { id:'spice_merchant',name:'香料商人',emoji:'🌶️',level:40,perception:430,maxHit:42,interval:3,xp:95,gpMin:25,gpMax:50,commonDrops:[{name:'香料',emoji:'🌿',qty:1,chance:0.12}] },
-  { id:'jeweler',name:'宝石匠',emoji:'💎',level:45,perception:500,maxHit:50,interval:3,xp:115,gpMin:30,gpMax:60,commonDrops:[{name:'碎裂宝石',emoji:'💠',qty:1,chance:0.08}] },
-  { id:'noble_lady',name:'贵族夫人',emoji:'👸',level:50,perception:570,maxHit:58,interval:3,xp:140,gpMin:35,gpMax:70,commonDrops:[{name:'丝绸',emoji:'🧣',qty:1,chance:0.1},{name:'珠宝',emoji:'💍',qty:1,chance:0.05}] },
-  { id:'court_clerk',name:'宫廷书记',emoji:'📋',level:55,perception:640,maxHit:66,interval:3,xp:170,gpMin:40,gpMax:80,commonDrops:[{name:'金粉',emoji:'✨',qty:1,chance:0.08}] },
-  { id:'shadow_assassin',name:'暗影刺客',emoji:'🗡️',level:60,perception:720,maxHit:80,interval:3,xp:220,gpMin:50,gpMax:100,commonDrops:[{name:'毒药瓶',emoji:'🧪',qty:1,chance:0.15}],uniqueDrop:{id:'shadow_blade',name:'暗杀之刃',emoji:'🗡️',chance:300},hidden:true,unlockCondition:'thieving_60',unlockHint:'盗窃等级达到 60' },
-  { id:'duke',name:'公爵',emoji:'🤴',level:65,perception:800,maxHit:90,interval:3,xp:260,gpMin:60,gpMax:120,commonDrops:[{name:'地契',emoji:'📄',qty:1,chance:0.06}] },
-  { id:'royal_guard',name:'皇家侍卫',emoji:'⚔️',level:70,perception:890,maxHit:105,interval:3,xp:310,gpMin:75,gpMax:150,commonDrops:[{name:'精炼矿石',emoji:'💎',qty:1,chance:0.05}] },
-  { id:'archbishop',name:'大主教',emoji:'⛪',level:75,perception:980,maxHit:120,interval:3,xp:370,gpMin:90,gpMax:180,commonDrops:[{name:'圣水',emoji:'💧',qty:1,chance:0.08},{name:'祝福卷轴',emoji:'📜',qty:1,chance:0.04}] },
-  { id:'thief_master',name:'盗贼大师',emoji:'🎭',level:78,perception:1060,maxHit:140,interval:2,xp:450,gpMin:120,gpMax:240,commonDrops:[{name:'万能钥匙',emoji:'🔑',qty:1,chance:0.12}],uniqueDrop:{id:'stealth_cloak',name:'潜行斗篷',emoji:'🧥',chance:250},hidden:true,unlockCondition:'shadow_maze',unlockHint:'通关幽影迷宫副本' },
-  { id:'sun_priest',name:'太阳祭司',emoji:'☀️',level:82,perception:1150,maxHit:160,interval:2,xp:530,gpMin:140,gpMax:280,commonDrops:[{name:'太阳石',emoji:'🔶',qty:1,chance:0.06}] },
-  { id:'moon_priestess',name:'月神女祭司',emoji:'🌙',level:88,perception:1280,maxHit:185,interval:2,xp:620,gpMin:170,gpMax:340,commonDrops:[{name:'月光石',emoji:'🔵',qty:1,chance:0.05},{name:'银质圣杯',emoji:'🏆',qty:1,chance:0.03}] },
-  { id:'time_traveler',name:'时空旅者',emoji:'⏳',level:92,perception:1420,maxHit:210,interval:2,xp:720,gpMin:200,gpMax:400,commonDrops:[{name:'次元碎片',emoji:'🌀',qty:1,chance:0.12}],uniqueDrop:{id:'time_hourglass',name:'时间沙漏',emoji:'⏳',chance:220},hidden:true,unlockCondition:'any_amulet',unlockHint:'拥有任意暗金项链' },
-  { id:'dragonblood',name:'龙血后裔',emoji:'🐲',level:95,perception:1560,maxHit:240,interval:2,xp:830,gpMin:230,gpMax:460,commonDrops:[{name:'龙鳞',emoji:'🛡️',qty:1,chance:0.04},{name:'龙血瓶',emoji:'🧪',qty:1,chance:0.03}] },
-  { id:'rune_master',name:'符文大师',emoji:'🔮',level:100,perception:1720,maxHit:280,interval:2,xp:980,gpMin:270,gpMax:540,commonDrops:[{name:'符文石',emoji:'🪨',qty:1,chance:0.05},{name:'魔力水晶',emoji:'💎',qty:1,chance:0.03}] },
-  { id:'ghost_bartender',name:'幽灵酒保',emoji:'👻',level:105,perception:1900,maxHit:320,interval:2,xp:1150,gpMin:320,gpMax:640,commonDrops:[{name:'魂酿',emoji:'🍷',qty:1,chance:0.12}],uniqueDrop:{id:'ghost_ore_ring',name:'鬼矿戒',emoji:'💍',chance:200},hidden:true,unlockCondition:'dragon_tomb',unlockHint:'击败古龙亡灵 Boss' },
-  { id:'void_trader',name:'虚灵商人',emoji:'🌌',level:110,perception:2100,maxHit:370,interval:2,xp:1350,gpMin:380,gpMax:760,commonDrops:[{name:'虚空精华',emoji:'✨',qty:1,chance:0.06},{name:'虚空碎片',emoji:'💠',qty:1,chance:0.04}] },
-  { id:'ancient_king',name:'远古王者之魂',emoji:'👑',level:115,perception:2500,maxHit:450,interval:2,xp:1700,gpMin:500,gpMax:1000,commonDrops:[{name:'不朽碎片',emoji:'🌟',qty:1,chance:0.08}],uniqueDrop:{id:'immortal_badge',name:'不朽徽章',emoji:'🏅',chance:150},hidden:true,unlockCondition:'chaos_forge',unlockHint:'通关混沌熔炉副本' },
+  { id:'drunkard',name:'醉汉',emoji:'🍺',level:1,perception:40,maxHit:2,interval:3,xp:5,gpMin:5,gpMax:15,
+    commonDrops:[{name:'空瓶盖',emoji:'🍾',qty:1,chance:0.3},{name:'发霉面包',emoji:'🍞',qty:1,chance:0.2}],
+    uniqueDrop:{id:'lucky_coin',name:'幸运硬币',emoji:'🪙',chance:250} },
+  { id:'beggar',name:'乞丐',emoji:'🧙',level:8,perception:80,maxHit:3,interval:3,xp:10,gpMin:10,gpMax:30,
+    commonDrops:[{name:'破布',emoji:'🧶',qty:1,chance:0.25},{name:'幸运草',emoji:'🍀',qty:1,chance:0.15}],
+    uniqueDrop:{id:'beggar_pouch',name:'乞丐钱袋',emoji:'💰',chance:300} },
+  { id:'peddler',name:'小贩',emoji:'🧑',level:15,perception:120,maxHit:5,interval:3,xp:18,gpMin:20,gpMax:50,
+    commonDrops:[{name:'旧布料',emoji:'🧵',qty:1,chance:0.2},{name:'植物种子',emoji:'🌱',qty:1,chance:0.15}],
+    uniqueDrop:{id:'discount_coupon',name:'打折券',emoji:'🎫',chance:250} },
+  { id:'scavenger',name:'拾荒者',emoji:'🎒',level:25,perception:180,maxHit:8,interval:3,xp:30,gpMin:35,gpMax:80,
+    commonDrops:[{name:'废金属',emoji:'🔩',qty:1,chance:0.2},{name:'机械零件',emoji:'⚙️',qty:1,chance:0.12}],
+    uniqueDrop:{id:'scrap_backpack',name:'废料背包',emoji:'🎒',chance:220} },
+  { id:'smuggler',name:'走私贩',emoji:'🕵️',level:35,perception:250,maxHit:12,interval:3,xp:50,gpMin:60,gpMax:130,
+    commonDrops:[{name:'走私品',emoji:'📦',qty:1,chance:0.15},{name:'稀有草药',emoji:'🌿',qty:1,chance:0.1}],
+    uniqueDrop:{id:'smuggler_map',name:'走私地图',emoji:'🗺️',chance:200} },
+  { id:'raider',name:'掠夺者',emoji:'🏴',level:45,perception:340,maxHit:16,interval:3,xp:80,gpMin:100,gpMax:200,
+    commonDrops:[{name:'弹药箱',emoji:'🔫',qty:1,chance:0.12},{name:'手雷',emoji:'💣',qty:1,chance:0.06}],
+    uniqueDrop:{id:'raider_gloves',name:'掠夺者手套',emoji:'🧤',chance:180},
+    hidden:true, unlockCondition:'combat_50', unlockHint:'击杀 50 个敌人' },
+  { id:'trader',name:'废土商人',emoji:'🧳',level:55,perception:450,maxHit:22,interval:3,xp:120,gpMin:150,gpMax:300,
+    commonDrops:[{name:'金粉',emoji:'✨',qty:1,chance:0.1},{name:'宝石碎片',emoji:'💠',qty:1,chance:0.08}],
+    uniqueDrop:{id:'trader_license',name:'商人执照',emoji:'📜',chance:160},
+    hidden:true, unlockCondition:'town_15', unlockHint:'城镇等级达到 15' },
+  { id:'warlord',name:'废土军阀',emoji:'👑',level:65,perception:580,maxHit:30,interval:3,xp:180,gpMin:250,gpMax:500,
+    commonDrops:[{name:'军需物资',emoji:'⚙️',qty:1,chance:0.08},{name:'情报文件',emoji:'📜',qty:1,chance:0.05}],
+    uniqueDrop:{id:'warlord_ring',name:'军阀之戒',emoji:'💍',chance:140},
+    hidden:true, unlockCondition:'dungeon_2', unlockHint:'通关第 2 个副本' },
+  { id:'banker',name:'避难所银行家',emoji:'🏦',level:75,perception:750,maxHit:40,interval:3,xp:280,gpMin:400,gpMax:800,
+    commonDrops:[{name:'债券',emoji:'📄',qty:1,chance:0.06},{name:'金币袋',emoji:'💰',qty:1,chance:0.04}],
+    uniqueDrop:{id:'banker_key',name:'银行家钥匙',emoji:'🔑',chance:120},
+    hidden:true, unlockCondition:'tier_2', unlockHint:'世界层级达到 2' },
+  { id:'ancient_king',name:'远古王者之魂',emoji:'👑',level:90,perception:1000,maxHit:60,interval:3,xp:500,gpMin:800,gpMax:1600,
+    commonDrops:[{name:'不朽碎片',emoji:'🌟',qty:1,chance:0.06},{name:'龙鳞',emoji:'🛡️',qty:1,chance:0.03}],
+    uniqueDrop:{id:'immortal_badge',name:'不朽徽章',emoji:'🏅',chance:80},
+    hidden:true, unlockCondition:'thieving_90', unlockHint:'搜刮等级达到 90' },
 ];
 
 export function calcStealth(thievingLevel: number, equipmentBonus: number): number {
@@ -2036,9 +2046,9 @@ export interface HomesteadBuilding {
   reqTier?: number;
 }
 export const HOMESTEAD_BUILDINGS: HomesteadBuilding[] = [
-  { id:'shelter', name:'庇护所', emoji:'🏠', maxLevel:10, costWood:100, costStone:0, costGold:0, effect:'最大HP', effectPerLevel:'+10 HP' },
-  { id:'farm', name:'农田', emoji:'🌾', maxLevel:10, costWood:50, costStone:25, costGold:0, effect:'金币产量', effectPerLevel:'+3金/分钟' },
-  { id:'lumbermill', name:'伐木场', emoji:'🪓', maxLevel:5, costWood:100, costStone:50, costGold:0, effect:'伐木时间', effectPerLevel:'-3%' },
+  { id:'shelter', name:'庇护所', emoji:'🏠', maxLevel:10, costWood:30, costStone:0, costGold:0, effect:'最大HP', effectPerLevel:'+10 HP' },
+  { id:'farm', name:'农田', emoji:'🌾', maxLevel:10, costWood:30, costStone:0, costGold:0, effect:'金币产量', effectPerLevel:'+3金/分钟' },
+  { id:'lumbermill', name:'伐木场', emoji:'🪓', maxLevel:5, costWood:50, costStone:0, costGold:0, effect:'伐木时间', effectPerLevel:'-3%' },
   { id:'mine', name:'矿场', emoji:'⛏️', maxLevel:5, costWood:0, costStone:100, costGold:0, effect:'采矿时间', effectPerLevel:'-3%' },
   { id:'workshop', name:'工坊', emoji:'🔨', maxLevel:5, costWood:200, costStone:100, costGold:0, effect:'制作时间', effectPerLevel:'-3%' },
   { id:'wall', name:'围墙', emoji:'🛡️', maxLevel:10, costWood:150, costStone:50, costGold:0, effect:'防御', effectPerLevel:'+3' },
@@ -2049,6 +2059,11 @@ export const HOMESTEAD_BUILDINGS: HomesteadBuilding[] = [
   { id:'furnace', name:'火炉', emoji:'🔥', maxLevel:5, costWood:200, costStone:100, costGold:0, effect:'温度衰减', effectPerLevel:'-15% 衰减速度' },
   { id:'recycling', name:'废品回收站', emoji:'♻️', maxLevel:3, costWood:0, costStone:200, costGold:2000, effect:'传奇萃取槽', effectPerLevel:'+1 槽位', reqTier:2 },
   { id:'radlab', name:'辐射实验室', emoji:'☢️', maxLevel:3, costWood:0, costStone:400, costGold:5000, effect:'辐射成功率', effectPerLevel:'+5% 正面概率', reqTier:3 },
+  { id:'wonder_corpse', name:'尸山', emoji:'💀', maxLevel:1, costWood:0, costStone:500, costGold:10000, effect:'非Boss敌人HP', effectPerLevel:'-5%', reqTier:2 },
+  { id:'wonder_beacon', name:'辐射灯塔', emoji:'🗼', maxLevel:1, costWood:300, costStone:300, costGold:8000, effect:'副本Boss伤害', effectPerLevel:'-8%', reqTier:2 },
+  { id:'wonder_radio', name:'废土广播塔', emoji:'📡', maxLevel:1, costWood:200, costStone:500, costGold:6000, effect:'NPC来访频率', effectPerLevel:'+30%', reqTier:3 },
+  { id:'wonder_greenhouse', name:'地下温室', emoji:'🌿', maxLevel:1, costWood:500, costStone:200, costGold:5000, effect:'农田产量', effectPerLevel:'+40%', reqTier:1 },
+  { id:'wonder_furnace', name:'废铁熔炉', emoji:'🔥', maxLevel:1, costWood:100, costStone:400, costGold:7000, effect:'分解金币', effectPerLevel:'+25%', reqTier:1 },
 ];
 
 // ─── Cooking & Alchemy ─────────────────────────────────────────────────────────
@@ -2158,29 +2173,31 @@ export function getPrayerLevel(xp: number): number {
 export interface TownNPC {
   id: string; name: string; emoji: string; desc: string;
   actions: { label: string; effect: string }[];
+  reqTownLevel?: number;
+  reqDungeon?: number;
 }
 export const TOWN_NPCS: TownNPC[] = [
-  { id:'merchant', name:'废土商人', emoji:'🧳', desc:'推着破旧的手推车，在废土上兜售捡来的物资',
+  { id:'merchant', name:'废土商人', emoji:'🧳', desc:'推着破旧的手推车，在废土上兜售捡来的物资', reqTownLevel:3,
     actions:[
       { label:'购买装备 (500金)', effect:'随机获得一件稀有装备' },
       { label:'出售杂物', effect:'自动出售背包中普通品质以下物品' },
     ]},
-  { id:'blacksmith', name:'武器匠', emoji:'⚒️', desc:'用废铁和零件打造和修理装备',
+  { id:'blacksmith', name:'武器匠', emoji:'⚒️', desc:'用废铁和零件打造和修理装备', reqTownLevel:5,
     actions:[
       { label:'强化武器 (300金)', effect:'武器ilvl+1' },
       { label:'修复装备', effect:'恢复所有装备耐久' },
     ]},
-  { id:'traveler', name:'流浪幸存者', emoji:'🧭', desc:'从远方带来了救命的物资和消息',
+  { id:'traveler', name:'流浪幸存者', emoji:'🧭', desc:'从远方带来了救命的物资和消息', reqTownLevel:8,
     actions:[
       { label:'接受物资', effect:'获得金币+骨头+随机材料' },
       { label:'交换情报', effect:'获得大量经验' },
     ]},
-  { id:'sage', name:'老幸存者', emoji:'🧙', desc:'在废土上活了大半辈子，懂得许多生存技巧',
+  { id:'sage', name:'老幸存者', emoji:'🧙', desc:'在废土上活了大半辈子，懂得许多生存技巧', reqTownLevel:15,
     actions:[
       { label:'重置天赋 (免费)', effect:'重置所有天赋点' },
       { label:'学习生存技能', effect:'随机获得500技能经验' },
     ]},
-  { id:'gambler', name:'拾荒赌徒', emoji:'🎲', desc:'用捡来的瓶盖和你赌装备',
+  { id:'gambler', name:'拾荒赌徒', emoji:'🎲', desc:'用捡来的瓶盖和你赌装备', reqTownLevel:25, reqDungeon:2,
     actions:[
       { label:'普通拾荒 (50金/级)', effect:'随机普通~稀有装备' },
       { label:'稀有拾荒 (1000金/级)', effect:'随机稀有~传说装备' },

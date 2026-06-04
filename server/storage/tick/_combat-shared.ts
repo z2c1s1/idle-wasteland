@@ -206,16 +206,13 @@ export function computeIncomingDamage(
 
 export function applyLifeRecovery(
   playerHp: number, playerMaxHp: number, totalDmgToEnemy: number,
-  lifeLeech: number, lifeStealPct: number, lifeOnKill: number, magicFind: number,
+  lifeLeech: number, lifeStealPct: number, lifeOnKill: number,
   rng: () => number,
 ): number {
   let hp = playerHp;
   if (lifeLeech > 0) hp = Math.min(playerMaxHp, hp + Math.floor(totalDmgToEnemy * lifeLeech / 100));
   if (lifeStealPct > 0) hp = Math.min(playerMaxHp, hp + Math.floor(totalDmgToEnemy * lifeStealPct / 100));
   if (lifeOnKill > 0) hp = Math.min(playerMaxHp, hp + lifeOnKill);
-  if (magicFind > 0 && rng() * 100 < magicFind) {
-    hp = Math.min(playerMaxHp, hp + Math.max(1, Math.floor(playerMaxHp * 0.02)));
-  }
   return hp;
 }
 
@@ -225,7 +222,7 @@ export function applyThornsReflect(enemyHp: number, dmgToPlayer: number, thornsD
   let hp = enemyHp;
   if (dmgToPlayer > 0) {
     if (thornsDmg > 0) hp -= thornsDmg;
-    if (reflectDamage > 0) hp -= reflectDamage;
+    if (reflectDamage > 0) hp -= Math.floor(dmgToPlayer * reflectDamage / 100);
   }
   return hp;
 }

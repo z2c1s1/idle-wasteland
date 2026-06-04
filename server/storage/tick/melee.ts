@@ -32,7 +32,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
   const {
     attackBonus: eqAttackBonus,
     enhancedDamage, lifeOnKill, crushingBlow, magicFind,
-    lifeRegen, goldBonus, resistAll,
+    lifeRegen, goldBonus, resistAll, critRating,
     lifeLeech, deadlyStrike, attackSpeed, reflectDamage,
   } = getEquipmentBonuses(equipment);
 
@@ -71,7 +71,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
   if (COMBAT_TRIANGLE[playerStyle].strong === enemyStyle) triangleMult = 1 + TRIANGLE_DAMAGE_BONUS;
   else if (COMBAT_TRIANGLE[playerStyle].weak === enemyStyle) triangleMult = 1 - TRIANGLE_DAMAGE_PENALTY;
 
-  let goldGained = 0, bonesGained = 0, dragonBonesGained = 0;
+  let goldGained = 0, bonesGained = 0, dragonBonesGained = 0, bloodShardsGained = 0;
   let attackXpGained = 0, defenceXpGained = 0, hitpointsXpGained = 0;
   let playerDied = false;
   let slayerKills = 0;
@@ -98,9 +98,10 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
     if (enhancedDamage > 0) effAtk = Math.floor(effAtk * (1 + enhancedDamage / 100));
     if (eff.berserkPct > 0 && playerHp < playerMaxHp * 0.3) effAtk = Math.floor(effAtk * (1 + eff.berserkPct / 100));
 
-    const deadlyStrikeHit = deadlyStrike > 0 && Math.random() * 100 < deadlyStrike;
+    const critHit = critRating > 0 && Math.random() * 100 < critRating;
+    const critDmg = (deadlyStrike ?? 200) / 100; // default 200% = 2x
     const strikes = (eff.doubleStrikePct > 0 && Math.random() * 100 < eff.doubleStrikePct) ? 2 : 1;
-    let totalDmgToEnemy = effAtk * strikes * (deadlyStrikeHit ? 2 : 1) + eff.poisonDmg;
+    let totalDmgToEnemy = effAtk * strikes * (critHit ? critDmg : 1) + eff.poisonDmg;
 
     if (crushingBlow > 0 && Math.random() * 100 < crushingBlow) {
       totalDmgToEnemy += Math.max(1, Math.floor(playerMaxHp * 0.01));
@@ -123,13 +124,14 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
 
     // ── Life recovery (shared) ─────────────────────────────────────────────
     playerHp = applyLifeRecovery(playerHp, playerMaxHp, totalDmgToEnemy,
-      lifeLeech, eff.lifeStealPct, lifeOnKill, magicFind, rng);
+      lifeLeech, eff.lifeStealPct, lifeOnKill, rng);
 
     if (enemyHp <= 0) {
       const killReward = enemy.drops.gold[0] + Math.floor(Math.random() * (enemy.drops.gold[1] - enemy.drops.gold[0] + 1));
       goldGained += killReward * enemyQty;
       bonesGained       += (enemy.drops.bones ?? 0) * enemyQty;
       dragonBonesGained += (enemy.drops.dragonBones ?? 0) * enemyQty;
+      bloodShardsGained += Math.floor((enemyIndex + 1) * 2 * enemyQty);
       attackXpGained    += enemy.xp * enemyQty;
       hitpointsXpGained += Math.floor(enemy.xp / 3) * enemyQty;
       slayerKills += enemyQty;
@@ -186,6 +188,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
   Object.assign(updates, {
     playerHp, enemyHp,
     gold:        state.gold        + goldGained,
+    bloodShards: (state as any).bloodShards + bloodShardsGained,
     bones:       state.bones       + bonesGained,
     dragonBones: state.dragonBones + dragonBonesGained,
     [playerStyle === 'ranged' ? 'rangedXp' as 'rangedXp' : playerStyle === 'magic' ? 'magicXp' as 'magicXp' : 'attackXp' as 'attackXp']: (state[playerStyle === 'ranged' ? 'rangedXp' as 'rangedXp' : playerStyle === 'magic' ? 'magicXp' as 'magicXp' : 'attackXp' as 'attackXp'] ?? 0) + attackXpGained,

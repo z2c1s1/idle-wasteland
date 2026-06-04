@@ -36,7 +36,7 @@ export async function handleTriangleCombat(
     attackBonus: eqAttackBonus,
     enhancedDamage,
     lifeOnKill,
-    crushingBlow,
+    crushingBlow, critRating,
     lifeRegen,
     lifeLeech,
     deadlyStrike,
@@ -102,9 +102,10 @@ export async function handleTriangleCombat(
       effAtk = Math.floor(effAtk * (1 + eff.berserkPct / 100));
     }
 
-    const deadlyStrikeHit = deadlyStrike > 0 && Math.random() * 100 < deadlyStrike;
+    const critHit = critRating > 0 && Math.random() * 100 < critRating;
+    const critDmg = (deadlyStrike ?? 200) / 100;
     const strikes = eff.doubleStrikePct > 0 && Math.random() * 100 < eff.doubleStrikePct ? 2 : 1;
-    let totalDmgToEnemy = Math.floor((effAtk * strikes * (deadlyStrikeHit ? 2 : 1) + eff.poisonDmg) * triangleMult);
+    let totalDmgToEnemy = Math.floor((effAtk * strikes * (critHit ? critDmg : 1) + eff.poisonDmg) * triangleMult);
     if (crushingBlow > 0 && Math.random() * 100 < crushingBlow) {
       totalDmgToEnemy += Math.max(1, Math.floor(playerMaxHp * 0.01));
     }
@@ -124,7 +125,7 @@ export async function handleTriangleCombat(
 
     // ── Life recovery (shared) ─────────────────────────────────────────────
     playerHp = applyLifeRecovery(playerHp, playerMaxHp, totalDmgToEnemy,
-      lifeLeech, eff.lifeStealPct, lifeOnKill, magicFind, rng);
+      lifeLeech, eff.lifeStealPct, lifeOnKill, rng);
 
     if (enemyHp <= 0) {
       goldGained +=

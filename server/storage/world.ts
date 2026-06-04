@@ -9,6 +9,7 @@ import { getCombatLevel } from "@shared/game-math";
 import { msg } from "@shared/messages";
 import { parseEquipment, parseLootBag } from "@shared/game-state-parse";
 import { calculateLevel } from "@shared/game-math";
+import { getResourceCount, buildResourceUpdates } from "@shared/resources";
 
 const calcLevel = calculateLevel;
 
@@ -23,9 +24,20 @@ export function getTownLevel(state: GameState): number {
 
 export function trySpawnNpc(state: GameState): Partial<GameState> | null {
   if (state.npcEncounter) return null;
-  if (getTownLevel(state) < 5) return null;
-  if (Math.random() > 0.05) return null;
-  const npc = TOWN_NPCS[Math.floor(Math.random() * TOWN_NPCS.length)];
+  const townLevel = getTownLevel(state);
+  if (townLevel < 3) return null;
+  const dungeonStats = (() => { try { return JSON.parse(state.dungeonStats ?? '{}'); } catch { return {}; } })();
+  const eligible = TOWN_NPCS.filter(n => {
+    if ((n.reqTownLevel ?? 0) > townLevel) return false;
+    if ((n.reqDungeon ?? 0) > 0) {
+      const clears = (dungeonStats[String(n.reqDungeon)] as any)?.clears ?? 0;
+      if (clears <= 0) return false;
+    }
+    return true;
+  });
+  if (eligible.length === 0) return null;
+  if (Math.random() > 0.08) return null;
+  const npc = eligible[Math.floor(Math.random() * eligible.length)];
   return { npcEncounter: JSON.stringify({ id: npc.id, arrivedAt: Date.now() }) } as any;
 }
 
@@ -131,17 +143,20 @@ export async function establishOutpost(state: GameState, zoneIndex: number): Pro
   // Cost: scales with zone index
   const costWood = Math.floor(50 + zoneIndex * 30);
   const costStone = Math.floor(30 + zoneIndex * 20);
-  if ((state as any).wood_0 < costWood) throw new Error(`木材不足（需${costWood}）`);
-  if ((state.stone ?? 0) < costStone) throw new Error(`石料不足（需${costStone}）`);
+  const currentWood = getResourceCount(state, "wood_0");
+  if (currentWood < costWood) throw new Error(`木材不足（需${costWood}）`);
+  const currentStone = state.stone ?? 0;
+  if (currentStone < costStone) throw new Error(`石料不足（需${costStone}）`);
 
   const zoneNames = ["枯树林","废弃加油站","废墟小镇","辐射沼泽","破碎公路","废弃农场","地下掩体","酸雨平原","沙暴废土","雪地废墟","火山灰地带","淹没城区","高架桥废墟","裂谷深渊","变异丛林","巨兽骸骨场","精灵废墟","矮人矿场","吸血鬼巢穴","狼人森林","搁浅货轮","海盗码头","天文台废墟","迷宫地铁","梦境实验室","陨石坑","虚空边界","混沌荒原","避难所遗迹","终末之门"];
   const resourceTypes = ['wood','ore','herb','berry','fish','hide','gold','bone'];
   const resource = resourceTypes[zoneIndex % resourceTypes.length];
   outposts.push({ zoneIndex, zoneName: zoneNames[zoneIndex]??`区域${zoneIndex+1}`, resource, establishedAt: Date.now(), level:1 });
+  const resourcePatch = buildResourceUpdates(state, { wood_0: currentWood - costWood });
   const [u] = await db.update(gameStates).set({
     outposts: JSON.stringify(outposts),
-    wood_0: (state as any).wood_0 - costWood,
-    stone: (state.stone ?? 0) - costStone,
+    ...resourcePatch,
+    stone: currentStone - costStone,
   } as any).where(eq(gameStates.id, state.id)).returning();
   return u;
 }
@@ -169,8 +184,13 @@ export async function collectOutposts(state: GameState): Promise<GameState> {
     o.establishedAt = now;
   }
   const updates: any = { outposts: JSON.stringify(outposts), gold: state.gold + totalGold };
-  if (resourceGains.wood) updates.wood_0 = (state.wood_0??0) + resourceGains.wood;
-  if (resourceGains.ore)  updates.ore_0  = (state.ore_0??0)  + resourceGains.ore;
+  // Use resourceStore abstraction — individual columns are deprecated
+  const resourceCounts: Record<string, number> = {};
+  if (resourceGains.wood) resourceCounts['wood_0'] = getResourceCount(state, 'wood_0') + resourceGains.wood;
+  if (resourceGains.ore)  resourceCounts['ore_0']  = getResourceCount(state, 'ore_0')  + resourceGains.ore;
+  if (Object.keys(resourceCounts).length > 0) {
+    Object.assign(updates, buildResourceUpdates(state, resourceCounts));
+  }
   if (resourceGains.herb) { const h = JSON.parse(state.herbs??'{}'); h['dandelion']=(h['dandelion']??0)+(resourceGains.herb??0); updates.herbs = JSON.stringify(h); }
   if (resourceGains.berry){ const b = JSON.parse(state.berries??'{}'); b['blueberry']=(b['blueberry']??0)+(resourceGains.berry??0); updates.berries = JSON.stringify(b); }
   if (resourceGains.bone) updates.bones = (state.bones??0) + resourceGains.bone;

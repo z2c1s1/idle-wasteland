@@ -30,6 +30,7 @@ import Agility from "@/pages/agility";
 import Prayer from "@/pages/prayer";
 import Town from "@/pages/town";
 import Exploration from "@/pages/exploration";
+import WastelandTech from "@/pages/wasteland-tech";
 
 function Router() {
   return (
@@ -51,6 +52,7 @@ function Router() {
       <Route path="/talents" component={Talents} />
       <Route path="/equipment-synth" component={EquipmentSynth} />
       <Route path="/homestead" component={Homestead} />
+      <Route path="/wasteland-tech" component={WastelandTech} />
       <Route path="/cooking" component={Cooking} />
       <Route path="/alchemy" component={Alchemy} />
       <Route path="/agility" component={Agility} />
