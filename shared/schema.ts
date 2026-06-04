@@ -153,7 +153,7 @@ export const gameStates = pgTable("game_states", {
   item_8: integer("item_8").notNull().default(0),
   item_9: integer("item_9").notNull().default(0),
   resourceStore: text("resource_store").notNull().default("{}"),
-  sessionId: text("session_id"),
+  playerId: text("player_id"),
 });
 
 export const insertGameStateSchema = createInsertSchema(gameStates).omit({ id: true });

@@ -1,13 +1,10 @@
 import express, { type Request, Response, NextFunction } from "express";
-import session from "express-session";
-import createMemoryStore from "memorystore";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 import os from "os";
 import { client } from "./db";
-
-const MemoryStore = createMemoryStore(session);
+import { ensurePlayerColumn } from "./storage";
 
 const app = express();
 const httpServer = createServer(app);
@@ -15,8 +12,6 @@ const httpServer = createServer(app);
 declare module "http" {
   interface IncomingMessage {
     rawBody: unknown;
-    sessionID: string;
-    session: import("express-session").Session & Record<string, any>;
   }
 }
 
@@ -30,44 +25,25 @@ app.use(
 
 app.use(express.urlencoded({ extended: false }));
 
-// Session middleware — each browser gets a unique session for independent saves
-app.use(session({
-  store: new MemoryStore({ checkPeriod: 86400000 }), // prune expired every 24h
-  secret: process.env.SESSION_SECRET || "wasteland-idle-secret-change-me",
-  resave: false,
-  saveUninitialized: true,
-  cookie: {
-    secure: false, // set true if behind HTTPS proxy
-    httpOnly: true,
-    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-  },
-}));
-
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: true,
+    hour: "numeric", minute: "2-digit", second: "2-digit", hour12: true,
   });
-
   console.log(`${formattedTime} [${source}] ${message}`);
 }
 
 app.use((req, res, next) => {
   const start = Date.now();
-  const path = req.path;
   res.on("finish", () => {
     const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      log(`${req.method} ${path} ${res.statusCode} in ${duration}ms`);
+    if (req.path.startsWith("/api")) {
+      log(`${req.method} ${req.path} ${res.statusCode} in ${duration}ms`);
     }
   });
-
   next();
 });
 
-// ─── Create table on startup (pglite persistence) ────────────────────────────
+// ─── Create table on startup ─────────────────────────────────────────────────
 async function initDatabase() {
   await client.exec(`
     CREATE TABLE IF NOT EXISTS game_states (
@@ -169,7 +145,7 @@ async function initDatabase() {
       resource_store TEXT NOT NULL DEFAULT '{}'
     );
   `);
-  // 迁移：为旧数据库添加新列（PGlite 无 IF NOT EXISTS，用 try-catch）
+
   const migrations = [
     `ALTER TABLE game_states ADD COLUMN agility_xp INTEGER NOT NULL DEFAULT 0`,
     `ALTER TABLE game_states ADD COLUMN temperature INTEGER NOT NULL DEFAULT 0`,
@@ -190,16 +166,17 @@ async function initDatabase() {
     `ALTER TABLE game_states ADD COLUMN extracted_powers TEXT NOT NULL DEFAULT '[]'`,
     `ALTER TABLE game_states ADD COLUMN active_powers TEXT NOT NULL DEFAULT '["","",""]'`,
     `ALTER TABLE game_states ADD COLUMN blood_shards INTEGER NOT NULL DEFAULT 0`,
-    `ALTER TABLE game_states ADD COLUMN session_id TEXT`,
   ];
   for (const sql of migrations) {
-    try { await client.exec(sql); } catch { /* 列已存在则跳过 */ }
+    try { await client.exec(sql); } catch { /* already exists */ }
   }
+
+  // Auto-migrate player_id column (safe, preserves old data)
+  await ensurePlayerColumn();
 
   log("Database initialized");
 }
 
-// Prevent crashes from unhandled rejections
 process.on('unhandledRejection', (reason) => {
   console.error('Unhandled Rejection:', reason);
 });
@@ -209,7 +186,6 @@ process.on('uncaughtException', (err: any) => {
     process.exit(1);
   }
   console.error('Uncaught Exception:', err.message);
-  // Don't exit for transient errors
 });
 
 (async () => {
@@ -217,21 +193,10 @@ process.on('uncaughtException', (err: any) => {
   await registerRoutes(httpServer, app);
 
   app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
-    console.error("Internal Server Error:", err);
-
-    if (res.headersSent) {
-      return next(err);
-    }
-
-    return res.status(status).json({ message });
+    if (res.headersSent) return next(err);
+    return res.status(err.status || 500).json({ message: err.message || "Internal Server Error" });
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
   if (process.env.NODE_ENV === "production") {
     serveStatic(app);
   } else {
@@ -239,15 +204,10 @@ process.on('uncaughtException', (err: any) => {
     await setupVite(httpServer, app);
   }
 
-  // ALWAYS serve the app on the port specified in the environment variable PORT.
-  // Other ports are firewalled. Default to 5001 if not specified.
-  // This serves both the API and the client.
   const port = parseInt(process.env.PORT || "5001", 10);
-  const hostEnv = (process.env.HOST || "").trim();
-  const host = hostEnv || "127.0.0.1";
+  const host = (process.env.HOST || "").trim() || "127.0.0.1";
   httpServer.listen({ port, host }, () => {
-    const localUrl = `http://localhost:${port}`;
-    log(`serving on ${localUrl}`);
+    log(`serving on http://localhost:${port}`);
     if (host === "0.0.0.0") {
       for (const lanUrl of getLanUrls(port)) {
         log(`内网访问: ${lanUrl}`, "intranet");
@@ -260,9 +220,7 @@ function getLanUrls(port: number): string[] {
   const urls: string[] = [];
   for (const ifaces of Object.values(os.networkInterfaces())) {
     for (const iface of ifaces ?? []) {
-      const isIpv4 =
-        iface.family === "IPv4" || String(iface.family) === "4";
-      if (isIpv4 && !iface.internal) {
+      if ((iface.family === "IPv4" || String(iface.family) === "4") && !iface.internal) {
         urls.push(`http://${iface.address}:${port}`);
       }
     }
