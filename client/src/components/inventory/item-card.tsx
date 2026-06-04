@@ -10,6 +10,7 @@ import {
   type GameItem, type GemType,
 } from "@shared/game-data";
 import { AffixRow } from "./affix-row";
+import { ItemSprite } from "@/components/sprites";
 
 
 // ─── Item tooltip card ────────────────────────────────────────────────────────
@@ -64,7 +65,7 @@ export function ItemCard({ item, onEquip, onDestroy, onUnequip, onEnhance, isEqu
           }}
           title=""
         >
-          <span className="text-2xl">{item.emoji}</span>
+          <ItemSprite slot={item.slot} baseId={(item as any).baseId ?? (item as any).baseType} rarity={item.rarity} ilvl={item.ilvl} size={32} />
         </div>
         {hover && (
           <div className="fixed z-[99999] w-56 bg-card border border-border rounded-lg p-3 shadow-2xl space-y-1.5 text-xs"
@@ -73,7 +74,7 @@ export function ItemCard({ item, onEquip, onDestroy, onUnequip, onEnhance, isEqu
               top: iconRef.current ? iconRef.current.getBoundingClientRect().top : 0,
             }}>
             <div className="flex items-center gap-2">
-              <span className="text-lg">{item.emoji}</span>
+              <ItemSprite slot={item.slot} baseId={(item as any).baseId ?? (item as any).baseType} rarity={item.rarity} ilvl={item.ilvl} size={24} />
               <div>
                 <p className={`text-sm font-bold ${RARITY_COLOR[item.rarity]}`}>{item.name}</p>
                 <p className="text-[10px] text-muted-foreground">{SLOT_LABEL[item.slot]} · ilvl {item.ilvl}</p>
@@ -119,7 +120,7 @@ export function ItemCard({ item, onEquip, onDestroy, onUnequip, onEnhance, isEqu
             )}
             {equippedSame && (
               <div className="border-t border-border/50 pt-1.5 mt-1">
-                <p className="text-[10px] text-muted-foreground">vs 已装备 {equippedSame.emoji} {equippedSame.name}</p>
+                <p className="text-[10px] text-muted-foreground">vs 已装备 <ItemSprite slot={equippedSame.slot} baseId={(equippedSame as any).baseId ?? (equippedSame as any).baseType} rarity={equippedSame.rarity} ilvl={equippedSame.ilvl} size={14} /> {equippedSame.name}</p>
               </div>
             )}
 
@@ -133,7 +134,7 @@ export function ItemCard({ item, onEquip, onDestroy, onUnequip, onEnhance, isEqu
     <div className={`rounded-lg border p-3 gap-2 flex flex-col transition-all ${borderClass} ${bgClass}`}
       data-testid={`item-card-${item.instanceId}`}>
       <div className={`flex items-start gap-2`}>
-        <span className="w-6 h-6 text-sm flex-shrink-0 flex items-center justify-center leading-none">{item.emoji}</span>
+        <ItemSprite slot={item.slot} baseId={(item as any).baseId ?? (item as any).baseType} rarity={item.rarity} ilvl={item.ilvl} size={28} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className={`text-sm leading-tight ${nameClass}`}>

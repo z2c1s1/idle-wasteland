@@ -4,7 +4,8 @@ import { ENEMIES, DUNGEONS, COMBAT_SKILLS, COMBAT_TRIANGLE, getCombatStyle, type
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Skull, Sword, Shield, Heart, Zap, Star, ChevronRight, Lock, Swords, Crosshair, Wand, Target, Radiation } from "lucide-react";
+import { Skull, Sword, Shield, Heart, Zap, Star, ChevronRight, Lock, Swords, Crosshair, Wand, Target } from "lucide-react";
+import { EnemySprite } from "@/components/sprites";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { calculateLevel, formatNumber, parseEquipment, getPlayerAttack, getPlayerMaxHp, getPlayerDefence } from "@/lib/game-utils";
@@ -88,7 +89,7 @@ export default function Combat() {
         <button onClick={() => startAction.mutate(`combat_${index}_${q}`)}
           className="w-full px-2 pt-2 pb-1 hover:bg-muted/20 transition-colors rounded-t-lg">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-lg">{enemy.emoji}</span>
+            <EnemySprite enemyId={enemy.id} size={36} />
             <span className="text-xs font-bold">{enemy.name} ×{displayQ}</span>
             <span className="text-[9px] text-muted-foreground">LV.{index+1}</span>
             {isStrong && <span className="text-[9px] text-green-400">克制</span>}

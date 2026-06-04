@@ -10,6 +10,7 @@ import { parseLootBag, parseEquipment, parseGems } from "@/lib/game-utils";
 import type { GameState } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Gem, Package, Zap } from "lucide-react";
+import { GemSprite, ItemSprite } from "@/components/sprites";
 import { useToast } from "@/hooks/use-toast";
 
 // ─── Gem stat preview ─────────────────────────────────────────────────────────
@@ -115,7 +116,7 @@ function ItemRow({
     <div className={`rounded-xl border p-3 space-y-2 ${RARITY_BORDER[item.rarity]} ${RARITY_BG[item.rarity]}`}
       data-testid={`gem-item-row-${item.instanceId}`}>
       <div className="flex items-center gap-2">
-        <span className="text-xl">{item.emoji}</span>
+        <ItemSprite slot={item.slot} baseId={(item as any).baseId ?? (item as any).baseType} rarity={item.rarity} ilvl={item.ilvl} size={24} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className={`text-sm font-semibold ${RARITY_COLOR[item.rarity]}`}>{item.name}</span>
@@ -133,7 +134,7 @@ function ItemRow({
             <span className="flex gap-0.5 items-center">
               {Array.from({ length: maxSockets }).map((_, i) => (
                 <span key={i} className="text-sm">
-                  {filledSockets[i] ? GEM_EMOJI[filledSockets[i].split('_')[0] as GemType] : '○'}
+                  {filledSockets[i] ? <GemSprite gemKey={filledSockets[i].split('_')[0]} size={14} /> : <span className="text-base">○</span>}
                 </span>
               ))}
               {maxSockets === 0 && <span className="text-muted-foreground/40 text-[10px]">无宝石孔</span>}
