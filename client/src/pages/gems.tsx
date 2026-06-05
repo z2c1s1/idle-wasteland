@@ -3,7 +3,7 @@ import { useGameState, useSocketGem, useSynthGem } from "@/hooks/use-game";
 import {
   GEM_EMOJI, GEM_TYPE_LABEL, GEM_QUALITY_LABEL, GEM_TYPE_COLOR, GEM_QUALITY_COLOR,
   GEM_TYPES, GEM_QUALITIES, getGemName, getGemBonus, getGemBgClass,
-  RARITY_COLOR, RARITY_BORDER, RARITY_BG, RARITY_LABEL, SLOT_LABEL, SLOT_EMOJI,
+  RARITY_COLOR, RARITY_BORDER, RARITY_BG, RARITY_LABEL, SLOT_LABEL,
   type GameItem, type GemType, type GemQuality,
 } from "@shared/game-data";
 import { parseLootBag, parseEquipment, parseGems } from "@/lib/game-utils";
@@ -41,7 +41,7 @@ function SocketGemPanel({
   return (
     <div className="bg-background border border-border rounded-xl p-4 space-y-3">
       <div className="flex items-center gap-2">
-        <span className="text-lg">{item.emoji}</span>
+        <ItemSprite slot={item.slot} baseId={(item as any).baseId ?? (item as any).baseType} rarity={item.rarity} ilvl={item.ilvl} size={24} />
         <div>
           <p className={`text-sm font-semibold ${RARITY_COLOR[item.rarity]}`}>{item.name}</p>
           <p className="text-xs text-muted-foreground">{SLOT_LABEL[item.slot]} · 物品等级 {item.ilvl}</p>

@@ -8,7 +8,7 @@ const T = [3,4,5,6,8,10,12,14,16,18];
 const X = [12,19,28,40,56,75,98,128,164,210];
 const RESOURCES = LV.map((lv, i) => ({
   name: ORES[i], emoji: "⛏️", time: T[i], xp: X[i], reqLevel: lv,
-  resourceKey: `ore_${i}`, actionKey: `mining_${i}`,
+  resourceKey: `ore_${i}`, actionKey: `mining_${i}`, resourceType: "ore" as const,
 }));
 
 export default function Mining() {

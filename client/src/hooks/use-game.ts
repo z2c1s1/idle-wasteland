@@ -19,6 +19,9 @@ export function useStartAction() {
   return useMutation({
     mutationFn: (action: string) => postGame(api.game.startAction.path, { action }),
     onSuccess: (state) => queryClient.setQueryData(QUERY_KEY, state),
+    onError: (err: any) => {
+      console.error("Start action failed:", err?.message ?? err);
+    },
   });
 }
 
@@ -99,6 +102,9 @@ function useGameMutation<TInput = void>(fn: (input: TInput) => Promise<GameState
   return useMutation({
     mutationFn: fn,
     onSuccess: (state) => queryClient.setQueryData(QUERY_KEY, state),
+    onError: (err: any) => {
+      console.error("Game mutation failed:", err);
+    },
   });
 }
 

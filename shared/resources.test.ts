@@ -193,10 +193,12 @@ describe("buildResourceUpdates (extended)", () => {
     assert.equal(store.wood[0], 20); // overwritten, not added
   });
 
-  it("does not write to individual columns", () => {
+  it("writes to both resourceStore and individual columns", () => {
     const state = makeState();
     const patch = buildResourceUpdates(state, { wood_0: 12 });
-    // Individual columns are no longer written
-    assert.equal((patch as any).wood_0, undefined);
+    // Both resourceStore and legacy column are updated
+    assert.equal((patch as any).wood_0, 12);
+    const store = JSON.parse(patch.resourceStore!);
+    assert.equal(store.wood[0], 12);
   });
 });

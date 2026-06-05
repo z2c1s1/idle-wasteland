@@ -82,3 +82,11 @@ export function getAgilityBonuses(state: GameState): {
     luckMul:     Math.min(1.3, 1 + lv * 0.003), // 每级 +0.3%，上限 1.3x
   };
 }
+
+/** Base attack interval in seconds */
+export const BASE_COMBAT_SPEED = 3;
+
+/** Shared combat speed formula — used by both client and server */
+export function computeEffectiveCombatSpeed(attackSpeed: number, tempMul: number): number {
+  return Math.max(1.5, BASE_COMBAT_SPEED * (1 - attackSpeed / 200)) / Math.max(0.1, tempMul);
+}

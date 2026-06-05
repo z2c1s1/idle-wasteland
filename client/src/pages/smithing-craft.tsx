@@ -3,24 +3,42 @@ import { SMITHING_RECIPES, EQUIPMENT_ITEMS } from "@shared/game-data";
 import { calculateLevel, formatNumber, levelProgress } from "@/lib/game-utils";
 import type { GameState } from "@shared/schema";
 import { Button } from "@/components/ui/button";
+import { ItemSprite } from "@/components/sprites";
 import { Progress } from "@/components/ui/progress";
 import { Shield, CheckCircle2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { getPlayerId } from "@/lib/api";
+import { api } from "@shared/routes";
+import { useQueryClient } from "@tanstack/react-query";
 
 function ActionTimer({ actionUpdatedAt, time }: { actionUpdatedAt: string; time: number }) {
   const [progress, setProgress] = useState(0);
+  const lastSyncRef = useRef(0);
+  const prevStartRef = useRef("");
+  const queryClient = useQueryClient();
   const rafRef = useRef<number>(0);
   const startMs = new Date(actionUpdatedAt).getTime();
+  if (actionUpdatedAt !== prevStartRef.current) {
+    prevStartRef.current = actionUpdatedAt;
+    lastSyncRef.current = 0;
+  }
 
   useEffect(() => {
     const tick = () => {
-      const elapsed = (Date.now() - startMs) % (time * 1000);
-      setProgress((elapsed / (time * 1000)) * 100);
+      const elapsed = (Date.now() - startMs) / 1000;
+      setProgress(((elapsed % time) / time) * 100);
+      const cycles = Math.floor(elapsed / time);
+      if (cycles > lastSyncRef.current) {
+        lastSyncRef.current = cycles;
+        fetch(api.game.getState.path, { headers: { "x-player-id": getPlayerId() } })
+          .then(r => r.ok && r.json().then(d => queryClient.setQueryData([api.game.getState.path], d)))
+          .catch(() => {});
+      }
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [startMs, time]);
+  }, [startMs, time, queryClient]);
 
   return (
     <div className="h-1.5 bg-muted/30 rounded-full overflow-hidden">
@@ -108,7 +126,7 @@ export default function SmithingCraft() {
               }`}
               data-testid={`recipe-${recipe.id}`}>
 
-              <span className="text-2xl">{item.emoji}</span>
+              <ItemSprite slot={item.slot} baseId={item.id} rarity={(item as any).rarity ?? 'common'} ilvl={item.ilvl} size={28} />
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">

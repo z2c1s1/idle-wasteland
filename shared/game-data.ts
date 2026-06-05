@@ -194,14 +194,28 @@ export const MINING_GEM_POOLS: { chance: number; pool: string[] }[] = [
   { chance: 0.09, pool: ['ruby_perfect','sapphire_perfect','emerald_perfect','topaz_perfect','diamond_perfect'] },
 ];
 export const COMBAT_GEM_POOLS: { chance: number; pool: string[] }[] = [
-  { chance: 0.03, pool: ['ruby_chipped','sapphire_chipped','emerald_chipped','topaz_chipped'] },
-  { chance: 0.04, pool: ['ruby_chipped','sapphire_chipped','emerald_chipped','topaz_chipped','ruby_flawed'] },
-  { chance: 0.05, pool: ['ruby_flawed','sapphire_flawed','emerald_flawed','topaz_flawed'] },
-  { chance: 0.06, pool: ['ruby_flawed','sapphire_flawed','emerald_flawed','topaz_flawed','ruby_normal'] },
-  { chance: 0.08, pool: ['ruby_normal','sapphire_normal','emerald_normal','topaz_normal'] },
-  { chance: 0.09, pool: ['ruby_normal','sapphire_normal','emerald_normal','topaz_normal','ruby_flawless'] },
-  { chance: 0.11, pool: ['ruby_flawless','sapphire_flawless','emerald_flawless','topaz_flawless','diamond_normal'] },
-  { chance: 0.13, pool: ['ruby_flawless','sapphire_flawless','emerald_flawless','topaz_flawless','diamond_flawless','ruby_perfect'] },
+  { chance:0.03, pool:['ruby_chipped','sapphire_chipped'] },
+  { chance:0.04, pool:['ruby_chipped','sapphire_chipped','emerald_chipped'] },
+  { chance:0.04, pool:['ruby_chipped','sapphire_chipped','emerald_chipped','topaz_chipped'] },
+  { chance:0.05, pool:['ruby_flawed','sapphire_flawed','emerald_flawed'] },
+  { chance:0.05, pool:['ruby_flawed','sapphire_flawed','emerald_flawed','topaz_flawed'] },
+  { chance:0.06, pool:['ruby_normal','sapphire_normal','emerald_normal'] },
+  { chance:0.06, pool:['ruby_normal','sapphire_normal','emerald_normal','topaz_normal'] },
+  { chance:0.07, pool:['ruby_normal','sapphire_normal','emerald_normal','topaz_normal','ruby_flawless'] },
+  { chance:0.07, pool:['ruby_flawless','sapphire_flawless','emerald_flawless','topaz_flawless'] },
+  { chance:0.08, pool:['ruby_flawless','sapphire_flawless','emerald_flawless','topaz_flawless','diamond_normal'] },
+  { chance:0.08, pool:['ruby_flawless','sapphire_flawless','emerald_flawless','topaz_flawless','diamond_flawless'] },
+  { chance:0.09, pool:['ruby_flawless','sapphire_flawless','emerald_flawless','topaz_flawless','diamond_flawless','ruby_perfect'] },
+  { chance:0.09, pool:['ruby_perfect','sapphire_perfect','emerald_perfect'] },
+  { chance:0.10, pool:['ruby_perfect','sapphire_perfect','emerald_perfect','topaz_perfect'] },
+  { chance:0.10, pool:['ruby_perfect','sapphire_perfect','emerald_perfect','topaz_perfect','diamond_flawless'] },
+  { chance:0.11, pool:['ruby_perfect','sapphire_perfect','emerald_perfect','topaz_perfect','diamond_perfect'] },
+  { chance:0.12, pool:['ruby_perfect','sapphire_perfect','emerald_perfect','topaz_perfect','diamond_perfect','ruby_perfect'] },
+  { chance:0.12, pool:['ruby_perfect','sapphire_perfect','emerald_perfect','topaz_perfect','diamond_perfect'] },
+  { chance:0.14, pool:['ruby_perfect','sapphire_perfect','emerald_perfect','topaz_perfect','diamond_perfect'] },
+  { chance:0.16, pool:['ruby_perfect','sapphire_perfect','emerald_perfect','topaz_perfect','diamond_perfect'] },
+  { chance:0.18, pool:['ruby_perfect','sapphire_perfect','emerald_perfect','topaz_perfect','diamond_perfect'] },
+  { chance:0.20, pool:['ruby_perfect','sapphire_perfect','emerald_perfect','topaz_perfect','diamond_perfect'] },
 ];
 
 // ─── Item skills (Diablo-style procs) ──────────────────────────────────────────
@@ -925,6 +939,33 @@ export const EQUIPMENT_ITEMS: Record<string, SmithedItemDef> = {
   bronze_boots:     { id: 'bronze_boots',     name: '青铜靴',   emoji: '👢', slot: 'boots',   attackBonus: 0,  defenceBonus: 5,  ilvl: 5  },
   iron_boots:       { id: 'iron_boots',       name: '铁靴',     emoji: '👢', slot: 'boots',   attackBonus: 0,  defenceBonus: 10, ilvl: 10 },
   steel_boots:      { id: 'steel_boots',      name: '钢靴',     emoji: '👢', slot: 'boots',   attackBonus: 0,  defenceBonus: 16, ilvl: 15 },
+  // Obsidian (bar_3)
+  obsidian_sword:    { id: 'obsidian_sword',    name: '黑曜石剑', emoji: '⚔️', slot: 'weapon',  attackBonus: 22, defenceBonus: 0,  ilvl: 25 },
+  obsidian_shield:   { id: 'obsidian_shield',   name: '黑曜石盾', emoji: '🛡️', slot: 'offhand', attackBonus: 0,  defenceBonus: 35, ilvl: 25 },
+  obsidian_helmet:   { id: 'obsidian_helmet',   name: '黑曜石头盔',emoji: '⛑️', slot: 'helmet',  attackBonus: 0,  defenceBonus: 25, ilvl: 25 },
+  obsidian_body:     { id: 'obsidian_body',     name: '黑曜石胸甲',emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 55, ilvl: 30 },
+  obsidian_legs:     { id: 'obsidian_legs',     name: '黑曜石腿甲',emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 35, ilvl: 28 },
+  obsidian_gauntlets:{ id: 'obsidian_gauntlets',name: '黑曜石护手',emoji: '🥊', slot: 'gloves',  attackBonus: 12, defenceBonus: 12, ilvl: 25 },
+  obsidian_boots:    { id: 'obsidian_boots',    name: '黑曜石靴', emoji: '👢', slot: 'boots',   attackBonus: 0,  defenceBonus: 22, ilvl: 25 },
+  // Dragon (bar_7)
+  dragon_sword:      { id: 'dragon_sword',      name: '龙鳞剑',   emoji: '⚔️', slot: 'weapon',  attackBonus: 38, defenceBonus: 0,  ilvl: 45 },
+  dragon_shield:     { id: 'dragon_shield',     name: '龙鳞盾',   emoji: '🛡️', slot: 'offhand', attackBonus: 0,  defenceBonus: 65, ilvl: 45 },
+  dragon_helmet:     { id: 'dragon_helmet',     name: '龙鳞头盔', emoji: '⛑️', slot: 'helmet',  attackBonus: 0,  defenceBonus: 45, ilvl: 45 },
+  dragon_body:       { id: 'dragon_body',       name: '龙鳞战甲', emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 95, ilvl: 48 },
+  dragon_legs:       { id: 'dragon_legs',       name: '龙鳞腿甲', emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 60, ilvl: 46 },
+  dragon_gauntlets:  { id: 'dragon_gauntlets',  name: '龙鳞护手', emoji: '🥊', slot: 'gloves',  attackBonus: 18, defenceBonus: 18, ilvl: 45 },
+  dragon_boots:      { id: 'dragon_boots',      name: '龙鳞战靴', emoji: '👢', slot: 'boots',   attackBonus: 0,  defenceBonus: 38, ilvl: 45 },
+  // Eternal (bar_8)
+  eternal_sword:     { id: 'eternal_sword',     name: '永恒之刃', emoji: '⚔️', slot: 'weapon',  attackBonus: 52, defenceBonus: 0,  ilvl: 58 },
+  eternal_shield:    { id: 'eternal_shield',    name: '永恒之盾', emoji: '🛡️', slot: 'offhand', attackBonus: 0,  defenceBonus: 90, ilvl: 58 },
+  eternal_helmet:    { id: 'eternal_helmet',    name: '永恒战盔', emoji: '⛑️', slot: 'helmet',  attackBonus: 0,  defenceBonus: 62, ilvl: 58 },
+  eternal_body:      { id: 'eternal_body',      name: '永恒战甲', emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 130,ilvl: 60 },
+  eternal_legs:      { id: 'eternal_legs',      name: '永恒腿甲', emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 82, ilvl: 58 },
+  // Divine (bar_9)
+  divine_sword:      { id: 'divine_sword',      name: '神造之剑', emoji: '⚔️', slot: 'weapon',  attackBonus: 70, defenceBonus: 0,  ilvl: 80 },
+  divine_shield:     { id: 'divine_shield',     name: '神造之盾', emoji: '🛡️', slot: 'offhand', attackBonus: 0,  defenceBonus: 125,ilvl: 80 },
+  divine_helmet:     { id: 'divine_helmet',     name: '神造战盔', emoji: '⛑️', slot: 'helmet',  attackBonus: 0,  defenceBonus: 85, ilvl: 80 },
+  divine_body:       { id: 'divine_body',       name: '神造战甲', emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 180,ilvl: 85 },
 };
 
 export function smithedToGameItem(itemId: string): GameItem | null {
@@ -1239,14 +1280,28 @@ function computeItemStats(affixes: ItemAffix[]) {
 
 // Enemy-tier ilvl drop bands (explicit, not formulaic)
 const ENEMY_ILVL_BANDS: [number, number][] = [
-  [1,  8],  // 0: chicken
-  [5,  15], // 1: cow
-  [10, 22], // 2: goblin
-  [18, 32], // 3: skeleton
-  [28, 45], // 4: troll
-  [38, 55], // 5: giant
-  [48, 65], // 6: dragon
-  [58, 75], // 7: fire_dragon
+  [1,   5],  // 0: rad_roach
+  [3,   8],  // 1: rad_rat
+  [5,  12],  // 2: stray_dog
+  [8,  18],  // 3: mutant_spider
+  [12, 24],  // 4: zombie_walk
+  [18, 30],  // 5: rad_scorpion
+  [24, 38],  // 6: ghoul_flesh
+  [30, 48],  // 7: mutant_hound
+  [38, 55],  // 8: bandit_scav
+  [48, 62],  // 9: rad_elemental
+  [55, 70],  // 10: mutant_bear
+  [62, 78],  // 11: zombie_brute
+  [70, 86],  // 12: wasteland_raider
+  [78, 94],  // 13: sentry_bot
+  [86, 102], // 14: rad_drake
+  [94, 110], // 15: deathclaw
+  [102,120], // 16: mutant_behemoth
+  [110,130], // 17: ancient_wraith
+  [120,145], // 18: warlord
+  [130,160], // 19: glowing_one (hidden)
+  [145,180], // 20: elder_dragon (hidden)
+  [160,200], // 21: overlord (hidden)
 ];
 
 // Prefix/suffix counts per rarity (Diablo-style rarity template)
@@ -1487,108 +1542,39 @@ export interface Enemy {
   critRating?: number;
   critDamage?: number;
   attackSpeed?: number;
+  hidden?: boolean;
 }
 
+// ═══ Melvor-style: 19 regular + 3 hidden — balanced 1-99 ════════════════════
 export const ENEMIES: Enemy[] = [
-  { id:'rad_roach',   name:'变异蟑螂', emoji:'🪳', maxHp:12,  attack:1,  defence:0, xp:6,  drops:{gold:[1,2]},                    reqCombatLevel:1,  combatStyle:'melee' },
-  { id:'rad_rat',     name:'辐射鼠',   emoji:'🐀', maxHp:18,  attack:2,  defence:0, xp:10, drops:{gold:[1,3]},                    reqCombatLevel:2,  combatStyle:'melee' },
-  { id:'mutant_worm', name:'变异蠕虫', emoji:'🐛', maxHp:25,  attack:3,  defence:0, xp:14, drops:{gold:[2,4]},                    reqCombatLevel:3,  combatStyle:'melee' },
-  { id:'stray_dog',   name:'流浪犬',   emoji:'🐕', maxHp:35,  attack:4,  defence:1, xp:20, drops:{gold:[2,5],bones:1},           reqCombatLevel:4,  combatStyle:'melee' },
-  { id:'rad_mite',    name:'辐射螨虫', emoji:'🕷️', maxHp:45,  attack:5,  defence:1, xp:26, drops:{gold:[3,6]},                   reqCombatLevel:5,  combatStyle:'melee' },
-  { id:'mutant_fly',  name:'变异蝇',   emoji:'🪰', maxHp:55,  attack:6,  defence:2, xp:32, drops:{gold:[3,7]},                   reqCombatLevel:6,  combatStyle:'ranged' },
-  { id:'rad_hare',    name:'辐射野兔', emoji:'🐇', maxHp:65,  attack:7,  defence:2, xp:38, drops:{gold:[4,8],bones:1},           reqCombatLevel:7,  combatStyle:'melee' },
-  { id:'mutant_crab', name:'变异蟹',   emoji:'🦀', maxHp:80,  attack:8,  defence:3, xp:45, drops:{gold:[4,9]},                   reqCombatLevel:8,  combatStyle:'melee' },
-  { id:'rad_bat',     name:'辐射蝙蝠', emoji:'🦇', maxHp:90,  attack:9,  defence:3, xp:52, drops:{gold:[5,10]},                  reqCombatLevel:9,  combatStyle:'ranged' },
-  { id:'mutant_hound',name:'变异猎犬', emoji:'🐺', maxHp:105, attack:10, defence:4, xp:60, drops:{gold:[5,12],bones:1},          reqCombatLevel:10, combatStyle:'melee' },
-  { id:'zombie_walk', name:'蹒跚丧尸', emoji:'🧟', maxHp:120, attack:11, defence:4, xp:68, drops:{gold:[6,14],bones:1},          reqCombatLevel:11, combatStyle:'melee' },
-  { id:'rad_vulture', name:'辐射秃鹫', emoji:'🦅', maxHp:135, attack:12, defence:5, xp:76, drops:{gold:[7,16]},                  reqCombatLevel:12, combatStyle:'ranged' },
-  { id:'mutant_spider',name:'变异蜘蛛',emoji:'🕸️',maxHp:150, attack:13, defence:5, xp:84, drops:{gold:[8,18]},                   reqCombatLevel:13, combatStyle:'melee' },
-  { id:'ghoul_flesh', name:'食尸鬼',   emoji:'👹', maxHp:170, attack:14, defence:6, xp:92, drops:{gold:[9,20],bones:1},          reqCombatLevel:14, combatStyle:'melee' },
-  { id:'rad_scorpion',name:'辐射蝎',  emoji:'🦂', maxHp:190, attack:15, defence:6, xp:100,drops:{gold:[10,22]},                  reqCombatLevel:15, combatStyle:'melee' },
-  { id:'zombie_fast', name:'奔跑丧尸', emoji:'🏃', maxHp:210, attack:16, defence:7, xp:110,drops:{gold:[11,24],bones:1},         reqCombatLevel:16, combatStyle:'melee' },
-  { id:'mutant_snake',name:'变异蛇',   emoji:'🐍', maxHp:230, attack:17, defence:7, xp:120,drops:{gold:[12,26]},                 reqCombatLevel:17, combatStyle:'magic' },
-  { id:'rad_crawler', name:'辐射爬行者',emoji:'🦎',maxHp:250, attack:18, defence:8, xp:130,drops:{gold:[13,28]},                 reqCombatLevel:18, combatStyle:'melee' },
-  { id:'mutant_boar', name:'变异野猪', emoji:'🐗', maxHp:275, attack:19, defence:9, xp:140,drops:{gold:[14,30],bones:2},         reqCombatLevel:19, combatStyle:'melee' },
-  { id:'zombie_brute',name:'壮硕丧尸', emoji:'💪', maxHp:300, attack:20, defence:10,xp:150,drops:{gold:[15,32],bones:2},         reqCombatLevel:20, combatStyle:'melee' },
-  { id:'rad_wolf',    name:'辐射狼',   emoji:'🐺', maxHp:325, attack:22, defence:11,xp:165,drops:{gold:[16,35],bones:2},         reqCombatLevel:21, combatStyle:'melee' },
-  { id:'mutant_hyena',name:'变异鬣狗', emoji:'🦊', maxHp:350, attack:24, defence:12,xp:180,drops:{gold:[18,38],bones:2},         reqCombatLevel:22, combatStyle:'melee' },
-  { id:'rad_wraith',  name:'辐射幽魂', emoji:'👻', maxHp:380, attack:26, defence:6, xp:195,drops:{gold:[20,42]},                 reqCombatLevel:23, combatStyle:'magic' },
-  { id:'mutant_troll',name:'变异巨魔', emoji:'👹', maxHp:410, attack:28, defence:14,xp:210,drops:{gold:[22,46],bones:3},         reqCombatLevel:24, combatStyle:'melee' },
-  { id:'rad_element', name:'辐射元素', emoji:'☢️', maxHp:440, attack:30, defence:8, xp:225,drops:{gold:[24,50]},                 reqCombatLevel:25, combatStyle:'magic' },
-  { id:'mutant_bear', name:'变异熊',   emoji:'🐻', maxHp:475, attack:32, defence:16,xp:240,drops:{gold:[26,54],bones:3},         reqCombatLevel:26, combatStyle:'melee' },
-  { id:'zombie_toxic',name:'毒雾丧尸', emoji:'☣️', maxHp:510, attack:34, defence:10,xp:255,drops:{gold:[28,58],bones:3},         reqCombatLevel:27, combatStyle:'magic' },
-  { id:'rad_scream',  name:'辐射尖啸者',emoji:'📢',maxHp:545, attack:36, defence:11,xp:270,drops:{gold:[30,62]},                 reqCombatLevel:28, combatStyle:'ranged' },
-  { id:'mutant_ape',  name:'变异猿',   emoji:'🦍', maxHp:580, attack:38, defence:18,xp:290,drops:{gold:[32,66],bones:4},         reqCombatLevel:29, combatStyle:'melee' },
-  { id:'ghoul_rav',   name:'狂暴食尸鬼',emoji:'😡',maxHp:620, attack:40, defence:20,xp:310,drops:{gold:[35,70],bones:4},         reqCombatLevel:30, combatStyle:'melee' },
-  { id:'rad_stalker', name:'辐射潜行者',emoji:'🦎',maxHp:660, attack:42, defence:22,xp:330,drops:{gold:[38,75],bones:4},         reqCombatLevel:31, combatStyle:'melee' },
-  { id:'mutant_croc', name:'变异鳄',   emoji:'🐊', maxHp:700, attack:44, defence:24,xp:350,drops:{gold:[40,80],bones:5},         reqCombatLevel:32, combatStyle:'melee' },
-  { id:'rad_horror',  name:'辐射恐魔', emoji:'👾', maxHp:745, attack:46, defence:12,xp:370,drops:{gold:[43,85]},                 reqCombatLevel:33, combatStyle:'magic' },
-  { id:'mutant_wyrm', name:'变异巨蟒', emoji:'🐍', maxHp:790, attack:48, defence:14,xp:390,drops:{gold:[46,90]},                 reqCombatLevel:34, combatStyle:'magic' },
-  { id:'zombie_armor',name:'装甲丧尸', emoji:'🛡️', maxHp:840, attack:50, defence:28,xp:415,drops:{gold:[50,95],bones:5},         reqCombatLevel:35, combatStyle:'melee' },
-  { id:'rad_golem',   name:'辐射魔像', emoji:'🗿', maxHp:890, attack:52, defence:30,xp:440,drops:{gold:[54,100]},                reqCombatLevel:36, combatStyle:'melee' },
-  { id:'mutant_rhino',name:'变异犀牛', emoji:'🦏', maxHp:940, attack:54, defence:32,xp:465,drops:{gold:[58,108],bones:6},        reqCombatLevel:37, combatStyle:'melee' },
-  { id:'rad_banshee', name:'辐射女妖', emoji:'👻', maxHp:990, attack:56, defence:16,xp:490,drops:{gold:[62,115]},                reqCombatLevel:38, combatStyle:'ranged' },
-  { id:'mutant_ogre', name:'变异食人魔',emoji:'👹',maxHp:1050,attack:58, defence:35,xp:520,drops:{gold:[66,122],bones:7},        reqCombatLevel:39, combatStyle:'melee' },
-  { id:'deathclaw_pup',name:'死亡爪幼体',emoji:'🦎',maxHp:1100,attack:60,defence:38,xp:550,drops:{gold:[70,130],bones:8},       reqCombatLevel:40, combatStyle:'ranged' },
-  { id:'rad_titan',   name:'辐射巨人', emoji:'🦣', maxHp:1160,attack:64,defence:40,xp:580,drops:{gold:[75,140],bones:8},         reqCombatLevel:41, combatStyle:'melee' },
-  { id:'mutant_drake',name:'变异龙兽', emoji:'🐉', maxHp:1220,attack:68,defence:22,xp:610,drops:{gold:[80,150],dragonBones:1},  reqCombatLevel:42, combatStyle:'magic' },
-  { id:'zombie_alpha',name:'头目丧尸',emoji:'🧠',maxHp:1280,attack:72,defence:42,xp:640,drops:{gold:[85,160],bones:10},         reqCombatLevel:43, combatStyle:'melee' },
-  { id:'rad_reaver',  name:'辐射掠夺者',emoji:'💀',maxHp:1340,attack:76,defence:25,xp:670,drops:{gold:[90,170],bones:10},        reqCombatLevel:44, combatStyle:'ranged' },
-  { id:'mutant_hulk', name:'变异巨人', emoji:'💪', maxHp:1400,attack:80,defence:45,xp:700,drops:{gold:[95,180],bones:12},        reqCombatLevel:45, combatStyle:'melee' },
-  { id:'rad_behemoth',name:'辐射巨兽', emoji:'☢️', maxHp:1470,attack:84,defence:28,xp:735,drops:{gold:[100,190],dragonBones:1}, reqCombatLevel:46, combatStyle:'magic' },
-  { id:'ghoul_king',  name:'食尸鬼王', emoji:'👑', maxHp:1540,attack:88,defence:48,xp:770,drops:{gold:[108,200],bones:15},       reqCombatLevel:47, combatStyle:'melee' },
-  { id:'mutant_tyrant',name:'变异暴君',emoji:'🦖',maxHp:1610,attack:92,defence:30,xp:805,drops:{gold:[115,215],dragonBones:2},  reqCombatLevel:48, combatStyle:'ranged' },
-  { id:'rad_leviathan',name:'辐射海兽',emoji:'🐋',maxHp:1680,attack:96,defence:50,xp:840,drops:{gold:[125,230],dragonBones:2},  reqCombatLevel:49, combatStyle:'magic' },
-  { id:'war_bot_mk1', name:'战争机甲MK1',emoji:'🤖',maxHp:1750,attack:100,defence:52,xp:880,drops:{gold:[135,250],dragonBones:2},reqCombatLevel:50,combatStyle:'ranged' },
-  { id:'war_bot_mk2', name:'战争机甲MK2',emoji:'🤖',maxHp:1830,attack:105,defence:54,xp:920,drops:{gold:[145,270],dragonBones:3},reqCombatLevel:51,combatStyle:'ranged' },
-  { id:'drone_swarm', name:'无人机群', emoji:'🛸', maxHp:1910,attack:110,defence:35,xp:960,drops:{gold:[155,290]},                reqCombatLevel:52, combatStyle:'ranged' },
-  { id:'rad_juggernaut',name:'辐射主宰',emoji:'🦾',maxHp:2000,attack:115,defence:58,xp:1000,drops:{gold:[165,310],dragonBones:3},reqCombatLevel:53,combatStyle:'melee' },
-  { id:'mutant_horror',name:'变异恐兽',emoji:'🦑',maxHp:2090,attack:120,defence:38,xp:1040,drops:{gold:[175,330]},               reqCombatLevel:54, combatStyle:'magic' },
-  { id:'deathclaw_alp',name:'死亡爪首领',emoji:'🦖',maxHp:2190,attack:125,defence:60,xp:1090,drops:{gold:[185,350],dragonBones:3},reqCombatLevel:55,combatStyle:'melee' },
-  { id:'tank_wreck',  name:'废土坦克', emoji:'🚛', maxHp:2290,attack:130,defence:65,xp:1140,drops:{gold:[195,370],dragonBones:4},reqCombatLevel:56,combatStyle:'ranged' },
-  { id:'rad_phantom', name:'辐射幻影', emoji:'👤', maxHp:2390,attack:135,defence:40,xp:1190,drops:{gold:[205,390]},               reqCombatLevel:57, combatStyle:'magic' },
-  { id:'mutant_colossus',name:'变异巨像',emoji:'🗽',maxHp:2500,attack:140,defence:68,xp:1250,drops:{gold:[215,410],dragonBones:4},reqCombatLevel:58,combatStyle:'melee' },
-  { id:'war_zeppelin',name:'武装飞艇', emoji:'🎈', maxHp:2610,attack:145,defence:45,xp:1310,drops:{gold:[225,430],dragonBones:4},reqCombatLevel:59,combatStyle:'ranged' },
-  { id:'rad_archon',  name:'辐射执政官',emoji:'😇',maxHp:2730,attack:150,defence:70,xp:1370,drops:{gold:[235,450],dragonBones:5},reqCombatLevel:60,combatStyle:'magic' },
-  { id:'doom_reaver', name:'末日掠夺者',emoji:'💀',maxHp:2850,attack:155,defence:72,xp:1430,drops:{gold:[250,470],dragonBones:5},reqCombatLevel:61,combatStyle:'melee' },
-  { id:'plague_bearer',name:'瘟疫使者',emoji:'☠️',maxHp:2980,attack:160,defence:50,xp:1490,drops:{gold:[265,490]},               reqCombatLevel:62, combatStyle:'magic' },
-  { id:'war_goliath', name:'战争巨人', emoji:'🤖', maxHp:3110,attack:165,defence:75,xp:1550,drops:{gold:[280,510],dragonBones:5},reqCombatLevel:63,combatStyle:'melee' },
-  { id:'rad_sphinx',  name:'辐射狮鹫', emoji:'🦅', maxHp:3240,attack:170,defence:55,xp:1620,drops:{gold:[295,530],dragonBones:6},reqCombatLevel:64,combatStyle:'magic' },
-  { id:'mutant_lord', name:'变异领主', emoji:'👹', maxHp:3380,attack:175,defence:78,xp:1690,drops:{gold:[310,550],dragonBones:6},reqCombatLevel:65,combatStyle:'melee' },
-  { id:'deathclaw_queen',name:'死亡爪女王',emoji:'👑',maxHp:3520,attack:180,defence:60,xp:1760,drops:{gold:[325,570],dragonBones:7},reqCombatLevel:66,combatStyle:'ranged' },
-  { id:'rad_abomination',name:'辐射憎恶',emoji:'🫠',maxHp:3670,attack:185,defence:80,xp:1830,drops:{gold:[340,590],dragonBones:7},reqCombatLevel:67,combatStyle:'melee' },
-  { id:'war_titan',   name:'战争泰坦', emoji:'🦾', maxHp:3820,attack:190,defence:85,xp:1910,drops:{gold:[355,615],dragonBones:8},reqCombatLevel:68,combatStyle:'ranged' },
-  { id:'void_rift',   name:'虚空裂隙', emoji:'🌌', maxHp:3980,attack:195,defence:65,xp:1990,drops:{gold:[370,640],dragonBones:8},reqCombatLevel:69,combatStyle:'magic' },
-  { id:'rad_dragon',  name:'辐射龙',   emoji:'🐲', maxHp:4150,attack:200,defence:88,xp:2070,drops:{gold:[390,665],dragonBones:10},reqCombatLevel:70,combatStyle:'magic' },
-  { id:'doom_knight', name:'末日骑士', emoji:'⚔️', maxHp:4320,attack:205,defence:90,xp:2160,drops:{gold:[410,690],dragonBones:10},reqCombatLevel:71,combatStyle:'melee' },
-  { id:'plague_dragon',name:'瘟疫龙',  emoji:'🐉', maxHp:4490,attack:210,defence:70,xp:2250,drops:{gold:[430,715],dragonBones:12},reqCombatLevel:72,combatStyle:'magic' },
-  { id:'war_leviathan',name:'战争海兽',emoji:'🐋',maxHp:4670,attack:215,defence:93,xp:2340,drops:{gold:[450,740],dragonBones:12},reqCombatLevel:73,combatStyle:'melee' },
-  { id:'rad_phoenix', name:'辐射凤凰', emoji:'🔥', maxHp:4860,attack:220,defence:75,xp:2430,drops:{gold:[470,765],dragonBones:15},reqCombatLevel:74,combatStyle:'magic' },
-  { id:'mutant_god',  name:'变异神',   emoji:'👁️', maxHp:5050,attack:225,defence:95,xp:2520,drops:{gold:[490,790],dragonBones:15},reqCombatLevel:75,combatStyle:'magic' },
-  { id:'deathclaw_emp',name:'死亡爪帝皇',emoji:'🦖',maxHp:5250,attack:230,defence:80,xp:2620,drops:{gold:[515,815],dragonBones:18},reqCombatLevel:76,combatStyle:'melee' },
-  { id:'rad_apocalypse',name:'辐射天启',emoji:'🌋',maxHp:5450,attack:235,defence:98,xp:2720,drops:{gold:[540,840],dragonBones:18},reqCombatLevel:77,combatStyle:'magic' },
-  { id:'war_archon',  name:'战争大君', emoji:'🤖', maxHp:5660,attack:240,defence:100,xp:2830,drops:{gold:[565,870],dragonBones:20},reqCombatLevel:78,combatStyle:'ranged' },
-  { id:'void_lord',   name:'虚空领主', emoji:'🌑', maxHp:5880,attack:245,defence:85,xp:2940,drops:{gold:[590,900],dragonBones:20},reqCombatLevel:79,combatStyle:'magic' },
-  { id:'rad_titan2',  name:'辐射泰坦', emoji:'🗿', maxHp:6100,attack:250,defence:105,xp:3050,drops:{gold:[615,930],dragonBones:25},reqCombatLevel:80,combatStyle:'melee' },
-  { id:'fission_col', name:'裂变巨像', emoji:'⚛️', maxHp:6330,attack:258,defence:108,xp:3170,drops:{gold:[640,960],dragonBones:28},reqCombatLevel:81,combatStyle:'melee' },
-  { id:'nuclear_wyrm',name:'核能巨龙', emoji:'🐲', maxHp:6570,attack:266,defence:90,xp:3290,drops:{gold:[665,995],dragonBones:30},reqCombatLevel:82,combatStyle:'magic' },
-  { id:'doom_bringer',name:'末日使者', emoji:'💀', maxHp:6810,attack:274,defence:112,xp:3410,drops:{gold:[690,1030],dragonBones:35},reqCombatLevel:83,combatStyle:'melee' },
-  { id:'rad_immortal',name:'辐射不朽者',emoji:'🦴',maxHp:7060,attack:282,defence:95,xp:3530,drops:{gold:[715,1065],dragonBones:35},reqCombatLevel:84,combatStyle:'magic' },
-  { id:'war_god',     name:'战争之神', emoji:'⚡', maxHp:7320,attack:290,defence:115,xp:3660,drops:{gold:[740,1100],dragonBones:40},reqCombatLevel:85,combatStyle:'ranged' },
-  { id:'void_emperor',name:'虚空皇帝', emoji:'🌌', maxHp:7580,attack:298,defence:100,xp:3790,drops:{gold:[765,1135],dragonBones:40},reqCombatLevel:86,combatStyle:'magic' },
-  { id:'mutant_primordial',name:'变异原初',emoji:'🧬',maxHp:7850,attack:306,defence:118,xp:3920,drops:{gold:[790,1170],dragonBones:45},reqCombatLevel:87,combatStyle:'melee' },
-  { id:'rad_eternal', name:'辐射永恒', emoji:'♾️', maxHp:8130,attack:314,defence:105,xp:4060,drops:{gold:[815,1205],dragonBones:50},reqCombatLevel:88,combatStyle:'magic' },
-  { id:'omega_drone', name:'Ω型无人机',emoji:'🛸',maxHp:8410,attack:322,defence:122,xp:4200,drops:{gold:[840,1240],dragonBones:50},reqCombatLevel:89,combatStyle:'ranged' },
-  { id:'rad_overlord',name:'辐射霸王', emoji:'👑', maxHp:8700,attack:330,defence:125,xp:4350,drops:{gold:[865,1280],dragonBones:55},reqCombatLevel:90,combatStyle:'melee' },
-  { id:'apocalypse_beast',name:'天启兽',emoji:'🐲',maxHp:9000,attack:340,defence:128,xp:4500,drops:{gold:[890,1320],dragonBones:60},reqCombatLevel:91,combatStyle:'magic' },
-  { id:'oblivion_knight',name:'湮灭骑士',emoji:'⚔️',maxHp:9310,attack:350,defence:130,xp:4650,drops:{gold:[915,1360],dragonBones:65},reqCombatLevel:92,combatStyle:'melee' },
-  { id:'rad_genesis', name:'辐射创世', emoji:'🌍', maxHp:9630,attack:360,defence:115,xp:4800,drops:{gold:[940,1400],dragonBones:70},reqCombatLevel:93,combatStyle:'magic' },
-  { id:'war_omega',   name:'Ω战争兵器',emoji:'🤖',maxHp:9960,attack:370,defence:135,xp:4970,drops:{gold:[965,1440],dragonBones:75},reqCombatLevel:94,combatStyle:'ranged' },
-  { id:'void_prime',  name:'虚空原初', emoji:'🌀', maxHp:10300,attack:380,defence:120,xp:5140,drops:{gold:[990,1480],dragonBones:80},reqCombatLevel:95,combatStyle:'magic' },
-  { id:'doom_emperor',name:'末日帝皇', emoji:'💀', maxHp:10650,attack:390,defence:138,xp:5300,drops:{gold:[1015,1520],dragonBones:85},reqCombatLevel:96,combatStyle:'melee' },
-  { id:'omega_titan', name:'Ω泰坦',   emoji:'🗿', maxHp:10920,attack:400,defence:140,xp:5440,drops:{gold:[1040,1560],dragonBones:90},reqCombatLevel:97,combatStyle:'melee' },
-  { id:'rad_ultima',  name:'辐射终焉', emoji:'☢️', maxHp:11270,attack:410,defence:125,xp:5600,drops:{gold:[1065,1600],dragonBones:100},reqCombatLevel:98,combatStyle:'magic' },
-  { id:'nuclear_god', name:'核能之神', emoji:'⚛️', maxHp:12000,attack:430,defence:145,xp:6000,drops:{gold:[1200,1800],dragonBones:120},reqCombatLevel:99,combatStyle:'magic' },
+  // ── LV 1-15 ──────────────────────────────────────────────────────────────
+  { id:'rad_roach',     name:'变异蟑螂',   emoji:'🪳',  maxHp:12,  attack:1,  defence:0,  xp:8,   drops:{gold:[1,3]},                     reqCombatLevel:1,  combatStyle:'melee' },
+  { id:'rad_rat',       name:'辐射鼠',     emoji:'🐀',  maxHp:22,  attack:2,  defence:0,  xp:16,  drops:{gold:[2,4]},                     reqCombatLevel:5,  combatStyle:'melee' },
+  { id:'stray_dog',     name:'流浪犬',     emoji:'🐕',  maxHp:45,  attack:4,  defence:1,  xp:30,  drops:{gold:[3,6],bones:1},            reqCombatLevel:10, combatStyle:'melee' },
+  { id:'mutant_spider', name:'变异蜘蛛',   emoji:'🕷️',  maxHp:80,  attack:7,  defence:2,  xp:50,  drops:{gold:[5,10]},                   reqCombatLevel:15, combatStyle:'magic' },
+  // ── LV 20-35 ──────────────────────────────────────────────────────────────
+  { id:'zombie_walk',   name:'蹒跚丧尸',   emoji:'🧟',  maxHp:140, attack:11, defence:4,  xp:80,  drops:{gold:[8,16],bones:2},           reqCombatLevel:20, combatStyle:'melee' },
+  { id:'rad_scorpion',  name:'辐射蝎',     emoji:'🦂',  maxHp:220, attack:15, defence:6,  xp:120, drops:{gold:[12,24]},                  reqCombatLevel:25, combatStyle:'ranged' },
+  { id:'ghoul_flesh',   name:'食尸鬼',     emoji:'👹',  maxHp:340, attack:20, defence:8,  xp:170, drops:{gold:[18,35],bones:3},          reqCombatLevel:30, combatStyle:'magic' },
+  { id:'mutant_hound',  name:'变异猎犬',   emoji:'🐺',  maxHp:500, attack:26, defence:12, xp:230, drops:{gold:[25,50],bones:4},          reqCombatLevel:35, combatStyle:'melee' },
+  // ── LV 40-55 ──────────────────────────────────────────────────────────────
+  { id:'bandit_scav',   name:'废土拾荒者', emoji:'🏴',  maxHp:700, attack:34, defence:16, xp:300, drops:{gold:[35,70],bones:5},          reqCombatLevel:40, combatStyle:'ranged' },
+  { id:'rad_elemental', name:'辐射元素',   emoji:'☢️',  maxHp:900, attack:42, defence:12, xp:380, drops:{gold:[45,90]},                  reqCombatLevel:45, combatStyle:'magic' },
+  { id:'mutant_bear',   name:'变异熊',     emoji:'🐻',  maxHp:1150,attack:50, defence:22, xp:470, drops:{gold:[55,110],bones:6},         reqCombatLevel:50, combatStyle:'melee' },
+  { id:'zombie_brute',  name:'壮硕丧尸',   emoji:'💪',  maxHp:1450,attack:58, defence:28, xp:570, drops:{gold:[70,140],bones:6},         reqCombatLevel:55, combatStyle:'magic' },
+  // ── LV 60-75 ──────────────────────────────────────────────────────────────
+  { id:'wasteland_raider',name:'废土掠夺者',emoji:'⚔️',maxHp:1800,attack:68, defence:34, xp:680, drops:{gold:[85,170],dragonBones:3},  reqCombatLevel:60, combatStyle:'ranged' },
+  { id:'sentry_bot',    name:'哨卫机器人', emoji:'🤖',  maxHp:2200,attack:76, defence:40, xp:800, drops:{gold:[100,200],dragonBones:4},  reqCombatLevel:65, combatStyle:'ranged' },
+  { id:'rad_drake',     name:'辐射亚龙',   emoji:'🐉',  maxHp:2700,attack:86, defence:46, xp:940, drops:{gold:[120,240],dragonBones:5}, reqCombatLevel:70, combatStyle:'magic' },
+  { id:'deathclaw',     name:'死亡爪',     emoji:'🦖',  maxHp:3300,attack:96, defence:52, xp:1100,drops:{gold:[140,280],dragonBones:6}, reqCombatLevel:75, combatStyle:'melee' },
+  // ── LV 80-90 ──────────────────────────────────────────────────────────────
+  { id:'mutant_behemoth',name:'变异巨兽',  emoji:'🦣',  maxHp:4000,attack:108,defence:58, xp:1300,drops:{gold:[170,340],dragonBones:8}, reqCombatLevel:80, combatStyle:'ranged' },
+  { id:'ancient_wraith', name:'远古幽魂',  emoji:'👻',  maxHp:4800,attack:120,defence:40, xp:1500,drops:{gold:[200,400],dragonBones:10},reqCombatLevel:85, combatStyle:'magic' },
+  { id:'warlord',        name:'废土军阀',  emoji:'👑',  maxHp:5800,attack:135,defence:65, xp:1800,drops:{gold:[250,500],dragonBones:12},reqCombatLevel:90, combatStyle:'melee' },
+  // ── HIDDEN (3) — only visible when unlocked ──────────────────────────────
+  { id:'glowing_one',    name:'辐射辉光者',emoji:'✨',  maxHp:7500,attack:155,defence:60, xp:2500,drops:{gold:[350,700],dragonBones:20},  reqCombatLevel:95, combatStyle:'ranged',  hidden:true },
+  { id:'elder_dragon',   name:'远古巨龙',   emoji:'🐲',  maxHp:10000,attack:180,defence:75, xp:3500,drops:{gold:[500,1000],dragonBones:30},reqCombatLevel:98, combatStyle:'magic',   hidden:true },
+  { id:'overlord',       name:'终末霸主',   emoji:'💀',  maxHp:15000,attack:220,defence:90, xp:5000,drops:{gold:[800,1600],dragonBones:50},reqCombatLevel:99, combatStyle:'melee',   hidden:true },
 ];
 
 // ─── Boss skills ──────────────────────────────────────────────────────────────
@@ -1809,9 +1795,36 @@ export const SMITHING_RECIPES: SmithingRecipe[] = [
   // Adamant (bar_5)
   { id: 'smith_adamant_bow',   output: 'adamant_bow',       inputs: [{ resource: 'bar_5', qty: 3 }], reqLevel: 40, xp: 180, time: 18 },
   { id: 'r_adamant_sword',     output: 'adamant_sword',     inputs: [{ resource: 'bar_5', qty: 2 }], reqLevel: 60, xp: 160, time: 10 },
+  // Obsidian (bar_3)
+  { id: 'r_obsidian_sword',    output: 'obsidian_sword',    inputs: [{ resource: 'bar_3', qty: 2 }], reqLevel: 40, xp: 100, time: 9  },
+  { id: 'r_obsidian_shield',   output: 'obsidian_shield',   inputs: [{ resource: 'bar_3', qty: 3 }], reqLevel: 40, xp: 140, time: 11 },
+  { id: 'r_obsidian_helmet',   output: 'obsidian_helmet',   inputs: [{ resource: 'bar_3', qty: 2 }], reqLevel: 40, xp: 100, time: 9  },
+  { id: 'r_obsidian_body',     output: 'obsidian_body',     inputs: [{ resource: 'bar_3', qty: 5 }], reqLevel: 45, xp: 240, time: 16 },
+  { id: 'r_obsidian_legs',     output: 'obsidian_legs',     inputs: [{ resource: 'bar_3', qty: 4 }], reqLevel: 45, xp: 190, time: 13 },
+  { id: 'r_obsidian_gauntlets',output: 'obsidian_gauntlets',inputs: [{ resource: 'bar_3', qty: 2 }], reqLevel: 40, xp: 90,  time: 8  },
+  { id: 'r_obsidian_boots',    output: 'obsidian_boots',    inputs: [{ resource: 'bar_3', qty: 2 }], reqLevel: 40, xp: 90,  time: 8  },
   // Rune (bar_6)
   { id: 'smith_rune_bow',      output: 'rune_bow_forged',   inputs: [{ resource: 'bar_6', qty: 3 }], reqLevel: 55, xp: 260, time: 22 },
   { id: 'r_rune_sword',        output: 'rune_sword',        inputs: [{ resource: 'bar_6', qty: 2 }], reqLevel: 70, xp: 220, time: 10 },
+  // Dragon (bar_7)
+  { id: 'r_dragon_sword',      output: 'dragon_sword',      inputs: [{ resource: 'bar_7', qty: 3 }], reqLevel: 75, xp: 300, time: 12 },
+  { id: 'r_dragon_shield',     output: 'dragon_shield',     inputs: [{ resource: 'bar_7', qty: 4 }], reqLevel: 75, xp: 400, time: 14 },
+  { id: 'r_dragon_helmet',     output: 'dragon_helmet',     inputs: [{ resource: 'bar_7', qty: 3 }], reqLevel: 75, xp: 300, time: 12 },
+  { id: 'r_dragon_body',       output: 'dragon_body',       inputs: [{ resource: 'bar_7', qty: 6 }], reqLevel: 80, xp: 500, time: 18 },
+  { id: 'r_dragon_legs',       output: 'dragon_legs',       inputs: [{ resource: 'bar_7', qty: 5 }], reqLevel: 80, xp: 400, time: 15 },
+  { id: 'r_dragon_gauntlets',  output: 'dragon_gauntlets',  inputs: [{ resource: 'bar_7', qty: 3 }], reqLevel: 75, xp: 280, time: 10 },
+  { id: 'r_dragon_boots',      output: 'dragon_boots',      inputs: [{ resource: 'bar_7', qty: 3 }], reqLevel: 75, xp: 280, time: 10 },
+  // Eternal (bar_8)
+  { id: 'r_eternal_sword',     output: 'eternal_sword',     inputs: [{ resource: 'bar_8', qty: 4 }], reqLevel: 85, xp: 450, time: 15 },
+  { id: 'r_eternal_shield',    output: 'eternal_shield',    inputs: [{ resource: 'bar_8', qty: 5 }], reqLevel: 85, xp: 550, time: 18 },
+  { id: 'r_eternal_helmet',    output: 'eternal_helmet',    inputs: [{ resource: 'bar_8', qty: 4 }], reqLevel: 85, xp: 450, time: 15 },
+  { id: 'r_eternal_body',      output: 'eternal_body',      inputs: [{ resource: 'bar_8', qty: 8 }], reqLevel: 90, xp: 700, time: 22 },
+  { id: 'r_eternal_legs',      output: 'eternal_legs',      inputs: [{ resource: 'bar_8', qty: 6 }], reqLevel: 90, xp: 560, time: 18 },
+  // Divine (bar_9)
+  { id: 'r_divine_sword',      output: 'divine_sword',      inputs: [{ resource: 'bar_9', qty: 5 }], reqLevel: 95, xp: 650, time: 20 },
+  { id: 'r_divine_shield',     output: 'divine_shield',     inputs: [{ resource: 'bar_9', qty: 6 }], reqLevel: 95, xp: 750, time: 24 },
+  { id: 'r_divine_helmet',     output: 'divine_helmet',     inputs: [{ resource: 'bar_9', qty: 5 }], reqLevel: 95, xp: 650, time: 20 },
+  { id: 'r_divine_body',       output: 'divine_body',       inputs: [{ resource: 'bar_9', qty: 10}], reqLevel: 99, xp: 1000,time: 30 },
 ];
 
 // ─── Universal item converter (smithed + leather + jewelry) ────────────────────
@@ -2102,6 +2115,13 @@ export const COOKING_RECIPES: { id:string;name:string;emoji:string;inputs:{resou
   { id:'fisherman_stew', name:'渔夫炖汤', emoji:'🍵', inputs:[{resource:'hide_0',qty:2},{resource:'dandelion',qty:3},{resource:'mint',qty:1}], effect:'-15%钓鱼时间', durationMin:45 },
   { id:'hunter_pie', name:'猎人馅饼', emoji:'🥟', inputs:[{resource:'hide_5',qty:2},{resource:'lingzhi',qty:2},{resource:'ginseng',qty:1}], effect:'-15%狩猎时间', durationMin:45 },
   { id:'dragon_feast', name:'龙肉盛宴', emoji:'🍗', inputs:[{resource:'hide_8',qty:3},{resource:'dragonblood',qty:2},{resource:'spiritberry',qty:2}], effect:'+10%全属性', durationMin:120 },
+  { id:'grilled_fish', name:'烤鱼', emoji:'🐟', inputs:[{resource:'fish_0',qty:3},{resource:'dandelion',qty:1}], effect:'+15%钓鱼速度', durationMin:30 },
+  { id:'fish_soup', name:'鲜鱼汤', emoji:'🍜', inputs:[{resource:'fish_2',qty:2},{resource:'mint',qty:2},{resource:'blueberry',qty:1}], effect:'+20%经验获取', durationMin:45 },
+  { id:'sushi_plate', name:'刺身拼盘', emoji:'🍣', inputs:[{resource:'fish_4',qty:2},{resource:'goji',qty:2},{resource:'rosemary',qty:1}], effect:'+20%暴击伤害', durationMin:45 },
+  { id:'seafood_platter', name:'海鲜大餐', emoji:'🦞', inputs:[{resource:'fish_6',qty:2},{resource:'dragonherb',qty:1},{resource:'spiritberry',qty:1}], effect:'+15%全属性', durationMin:90 },
+  { id:'feast_of_the_deep', name:'深渊盛宴', emoji:'🦑', inputs:[{resource:'fish_8',qty:3},{resource:'dragonblood',qty:1},{resource:'nightberry',qty:2}], effect:'+20%全属性 +10%掉率', durationMin:120 },
+  { id:'magic_brew', name:'魔莓酿', emoji:'🍷', inputs:[{resource:'nightberry',qty:3},{resource:'magicberry',qty:2}], effect:'+25%法术伤害', durationMin:45 },
+  { id:'ancient_elixir', name:'远古灵药', emoji:'🧪', inputs:[{resource:'ancientberry',qty:2},{resource:'cranberry',qty:2},{resource:'dragonblood',qty:1}], effect:'+30%全经验获取', durationMin:60 },
 ];
 export const POTION_RECIPES: { id:string;name:string;emoji:string;inputs:{resource:string;qty:number}[];effect:string;durationMin:number }[] = [
   { id:'health_potion', name:'生命药水', emoji:'❤️', inputs:[{resource:'dandelion',qty:3}], effect:'回复50%HP', durationMin:0 },
@@ -2112,6 +2132,8 @@ export const POTION_RECIPES: { id:string;name:string;emoji:string;inputs:{resour
   { id:'luck_potion', name:'幸运药水', emoji:'🍀', inputs:[{resource:'marigold',qty:3},{resource:'lingzhi',qty:2}], effect:'+15%掉率', durationMin:45 },
   { id:'crit_potion', name:'精准药水', emoji:'🎯', inputs:[{resource:'thyme',qty:3},{resource:'dragonherb',qty:1}], effect:'+15%暴击率', durationMin:30 },
   { id:'leech_potion', name:'吸血药水', emoji:'🩸', inputs:[{resource:'dragonblood',qty:2},{resource:'phoenix_flower',qty:1}], effect:'+10%吸血', durationMin:30 },
+  { id:'fish_oil', name:'鱼油精华', emoji:'🐟', inputs:[{resource:'fish_1',qty:5}], effect:'+10%掉率', durationMin:30 },
+  { id:'mercury_elixir', name:'深海灵药', emoji:'🌊', inputs:[{resource:'fish_5',qty:3},{resource:'dragonherb',qty:2}], effect:'+30%钓鱼速度', durationMin:45 },
 ];
 export const ACHIEVEMENTS: { id:string;name:string;desc:string;type:'kill'|'dungeon'|'skill';target:string;count:number;reward:string }[] = [
   { id:'kill_chicken_1000', name:'养鸡场主', desc:'击杀1000只小鸡', type:'kill', target:'chicken', count:1000, reward:'pet_chicken' },
@@ -2151,23 +2173,8 @@ export const COMBAT_SKILLS: CombatSkill[] = [
   { id:'meteor_storm',name:'陨石',emoji:'☄️',style:'magic',type:'nuke',class:'元素师',dmgMul:2.5,dotTicks:0,cooldownSec:12,desc:'250%' },
 ];
 
-// ─── Prayer system ────────────────────────────────────────────────────────────
-export interface Prayer {
-  id: string; name: string; emoji: string; effect: string;
-  baseBuff: number; // 基础加成百分比
-  buffPerLevel: number; // 每级额外加成
-}
-export const PRAYERS: Prayer[] = [
-  { id:'attack',    name:'战神祷言', emoji:'⚔️', effect:'攻击力',    baseBuff:5,  buffPerLevel:2 },
-  { id:'defence',   name:'钢铁祷言', emoji:'🛡️', effect:'防御力',    baseBuff:5,  buffPerLevel:2 },
-  { id:'fortune',   name:'幸运祷言', emoji:'🍀', effect:'掉落率',    baseBuff:3,  buffPerLevel:1.5 },
-  { id:'swiftness', name:'疾风祷言', emoji:'💨', effect:'行动速度',  baseBuff:3,  buffPerLevel:1 },
-  { id:'experience',name:'智慧祷言', emoji:'📖', effect:'经验获取',  baseBuff:5,  buffPerLevel:2 },
-];
-
-export function getPrayerLevel(xp: number): number {
-  return Math.floor(Math.sqrt(Math.max(0, xp)) / 3) + 1;
-}
+// ─── Prayers moved to shared/game-data/prayers.ts — forwarded for backward compat
+export { PRAYERS, getPrayerLevel, type Prayer } from "./game-data/prayers";
 
 // ─── Town NPCs ────────────────────────────────────────────────────────────────
 export interface TownNPC {

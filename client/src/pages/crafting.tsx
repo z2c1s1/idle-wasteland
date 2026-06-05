@@ -8,7 +8,7 @@ const T = [4,5,6,7,9,11,13,15,17,19];
 const X = [14,22,33,48,67,90,118,153,197,252];
 const RESOURCES = LV.map((lv, i) => ({
   name: ITEMS[i], emoji: "🧵", time: T[i], xp: X[i], reqLevel: lv,
-  resourceKey: `item_${i}`, actionKey: `crafting_${i}`,
+  resourceKey: `item_${i}`, actionKey: `crafting_${i}`, resourceType: "craft" as const,
 }));
 
 export default function Crafting() {

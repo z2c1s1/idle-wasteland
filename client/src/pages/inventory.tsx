@@ -3,8 +3,9 @@ import { useGameState, useEquipItem, useUnequipItem, useDestroyLoot, useSetLootF
 import { useQueryClient } from "@tanstack/react-query";
 import { api } from "@shared/routes";
 import { ItemCard } from "@/components/inventory/item-card";
+import { ItemSprite, ResourceIcon, type ResourceType } from "@/components/sprites";
 import {
-  ALL_CRAFTABLE_ITEMS, ALL_SLOTS, SLOT_LABEL, SLOT_EMOJI,
+  ALL_CRAFTABLE_ITEMS, ALL_SLOTS, SLOT_LABEL,
   RARITY_COLOR, RARITY_BORDER, RARITY_BG, RARITY_LABEL,
   AFFIX_LABEL, SKILL_EMOJI, SKILL_COLOR,
   ITEM_SETS, getEquipmentBonuses,
@@ -34,7 +35,14 @@ function EquipSlot({ slot, item, onUnequip }: {
       }`}
         onClick={item ? onUnequip : undefined}
         data-testid={`equip-slot-${slot}`}>
-        <span className="text-lg w-7 text-center flex-shrink-0">{item ? item.emoji : SLOT_EMOJI[slot]}</span>
+        <ItemSprite
+          slot={slot}
+          baseId={item ? ((item as any).baseId ?? (item as any).baseType) : undefined}
+          rarity={item?.rarity ?? 'common'}
+          ilvl={item?.ilvl ?? 0}
+          size={28}
+          className={item ? '' : 'opacity-30'}
+        />
         <div className="flex-1 min-w-0">
           <p className="text-[10px] text-muted-foreground leading-none">{SLOT_LABEL[slot]}</p>
           {item ? (
@@ -55,7 +63,7 @@ function EquipSlot({ slot, item, onUnequip }: {
             top: slotRef.current ? slotRef.current.getBoundingClientRect().top : 0,
           }}>
           <div className="flex items-center gap-2">
-            <span className="text-lg">{item.emoji}</span>
+            <ItemSprite slot={item.slot} baseId={(item as any).baseId ?? (item as any).baseType} rarity={item.rarity} ilvl={item.ilvl} size={24} />
             <div>
               <p className={`text-sm font-bold ${RARITY_COLOR[item.rarity]}`}>{item.name}</p>
               <p className="text-[10px] text-muted-foreground">{SLOT_LABEL[item.slot]} · 物品等级 {item.ilvl}</p>
@@ -85,12 +93,12 @@ function EquipSlot({ slot, item, onUnequip }: {
   );
 }
 
-const RESOURCE_SECTIONS = [
-  { label: "伐木", prefix: "wood", emoji: "🪵", names: ["橡木","柳木","柚木","枫木","桃花心木","紫杉木","魔法木","古树木","红杉木","灵木"] },
-  { label: "采矿", prefix: "ore",  emoji: "⛏️", names: ["铜矿","锡矿","铁矿","煤矿","秘银矿","精金矿","符文矿","龙矿","黑曜矿","以太矿"] },
-  { label: "冶炼", prefix: "bar",  emoji: "🔩", names: ["青铜锭","铁锭","钢锭","银锭","金锭","秘银锭","精金锭","符文锭","龙锭","永恒锭"] },
-  { label: "钓鱼", prefix: "fish", emoji: "🐟", names: ["虾","沙丁鱼","鲱鱼","鳟鱼","三文鱼","金枪鱼","龙虾","旗鱼","鲨鱼","鲸鱼"] },
-  { label: "狩猎", prefix: "hide", emoji: "🪶", names: ["兔皮","鸟羽","狐皮","狼皮","熊皮","野猪皮","鹿皮","虎皮","龙皮","凤凰羽"] },
+const RESOURCE_SECTIONS: { label: string; prefix: string; emoji: string; names: string[]; resourceType: ResourceType }[] = [
+  { label: "伐木", prefix: "wood", emoji: "🪵", names: ["橡木","柳木","柚木","枫木","桃花心木","紫杉木","魔法木","古树木","红杉木","灵木"], resourceType: "wood" },
+  { label: "采矿", prefix: "ore",  emoji: "⛏️", names: ["铜矿","锡矿","铁矿","煤矿","秘银矿","精金矿","符文矿","龙矿","黑曜矿","以太矿"], resourceType: "ore" },
+  { label: "冶炼", prefix: "bar",  emoji: "🔩", names: ["青铜锭","铁锭","钢锭","银锭","金锭","秘银锭","精金锭","符文锭","龙锭","永恒锭"], resourceType: "bar" },
+  { label: "钓鱼", prefix: "fish", emoji: "🐟", names: ["虾","沙丁鱼","鲱鱼","鳟鱼","三文鱼","金枪鱼","龙虾","旗鱼","鲨鱼","鲸鱼"], resourceType: "fish" },
+  { label: "狩猎", prefix: "hide", emoji: "🪶", names: ["兔皮","鸟羽","狐皮","狼皮","熊皮","野猪皮","鹿皮","虎皮","龙皮","凤凰羽"], resourceType: "hide" },
 ];
 
 const FILTER_RARITIES: Rarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
@@ -207,12 +215,21 @@ export default function Inventory() {
       return next;
     });
   }
-  function handleSellSelected() {
+  async function handleSellSelected() {
     if (selectedIds.size === 0) { setSellMode(false); return; }
-    selectedIds.forEach(id => destroyLoot.mutate(id));
+    const count = selectedIds.size;
     setSelectedIds(new Set());
     setSellMode(false);
-    toast({ title: `出售 ${selectedIds.size} 件装备` });
+    let failed = 0;
+    for (const id of Array.from(selectedIds)) {
+      try { await destroyLoot.mutateAsync(id); }
+      catch (e: any) { failed++; console.error(e); }
+    }
+    if (failed > 0) {
+      toast({ title: `出售 ${count - failed} 件（${failed} 件失败）`, variant: "destructive" });
+    } else {
+      toast({ title: `出售 ${count} 件装备` });
+    }
   }
 
   return (
@@ -484,7 +501,7 @@ export default function Inventory() {
               return (
                 <div key={itemId} className="flex items-center gap-2 p-2 rounded-lg border border-green-500/30 bg-green-500/5"
                   data-testid={`smithed-item-${itemId}`}>
-                  <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center text-base leading-none">{def.emoji}</span>
+                  <ItemSprite slot={def.slot} baseId={itemId} rarity="uncommon" ilvl={def.ilvl} size={20} />
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium text-green-400 truncate">{def.name}</p>
                     <p className="text-[10px] text-muted-foreground">x{qty} · 物品等级 {def.ilvl}</p>
@@ -529,8 +546,8 @@ export default function Inventory() {
                   })}
                   data-testid={`toggle-section-${section.prefix}`}
                 >
-                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider group-hover:text-foreground transition-colors">
-                    {section.emoji} {section.label}
+                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider group-hover:text-foreground transition-colors flex items-center gap-1">
+                    <ResourceIcon type={section.resourceType} size={14} /> {section.label}
                     <span className="ml-2 font-normal normal-case text-muted-foreground/60">{items.length} 种</span>
                   </h3>
                   {isCollapsed
@@ -542,7 +559,7 @@ export default function Inventory() {
                   <div className="flex flex-wrap gap-1 mt-3">
                     {items.map(item => (
                       <div key={item.key} className="flex flex-col items-center justify-center bg-muted/20 rounded-md w-14 h-14 p-0.5" data-testid={`resource-${item.key}`}>
-                        <span className="text-base leading-none">{section.emoji}</span>
+                        <ResourceIcon type={section.resourceType} size={18} />
                         <span className="text-[10px] font-bold text-foreground leading-tight">{formatNumber(item.qty)}</span>
                         <span className="text-[9px] text-muted-foreground text-center leading-none">{item.name}</span>
                       </div>

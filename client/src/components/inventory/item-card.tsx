@@ -355,7 +355,7 @@ function CompareWrapper({ item, equipped, children }: { item: GameItem; equipped
       {children}
       {show && (
         <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[99999] w-64 bg-card border border-border rounded-lg p-3 shadow-2xl space-y-1.5 text-xs">
-          <p className={`font-bold ${RARITY_COLOR[equipped.rarity]}`}>{equipped.emoji} {equipped.name}</p>
+          <p className={`font-bold ${RARITY_COLOR[equipped.rarity]}`}><ItemSprite slot={equipped.slot} baseId={(equipped as any).baseId ?? (equipped as any).baseType} rarity={equipped.rarity} ilvl={equipped.ilvl} size={14} /> {equipped.name}</p>
           <p className="text-[10px] text-muted-foreground">{SLOT_LABEL[equipped.slot]} · 物品等级 {equipped.ilvl}</p>
           <div className="flex flex-wrap gap-x-2 gap-y-0.5">
             <span className="text-red-300">⚔ +{equipped.attackBonus ?? 0}{diff(item.attackBonus, equipped.attackBonus)}</span>

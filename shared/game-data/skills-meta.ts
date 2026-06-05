@@ -288,6 +288,15 @@ export const COOKING_RECIPES: { id:string;name:string;emoji:string;inputs:{resou
   { id:'fisherman_stew', name:'渔夫炖汤', emoji:'🍵', inputs:[{resource:'hide_0',qty:2},{resource:'dandelion',qty:3},{resource:'mint',qty:1}], effect:'-15%钓鱼时间', durationMin:45 },
   { id:'hunter_pie', name:'猎人馅饼', emoji:'🥟', inputs:[{resource:'hide_5',qty:2},{resource:'lingzhi',qty:2},{resource:'ginseng',qty:1}], effect:'-15%狩猎时间', durationMin:45 },
   { id:'dragon_feast', name:'龙肉盛宴', emoji:'🍗', inputs:[{resource:'hide_8',qty:3},{resource:'dragonblood',qty:2},{resource:'spiritberry',qty:2}], effect:'+10%全属性', durationMin:120 },
+  // ── Fish-based recipes ──────────────────────────────────────────────────
+  { id:'grilled_fish', name:'烤鱼', emoji:'🐟', inputs:[{resource:'fish_0',qty:3},{resource:'dandelion',qty:1}], effect:'+15%钓鱼速度', durationMin:30 },
+  { id:'fish_soup', name:'鲜鱼汤', emoji:'🍜', inputs:[{resource:'fish_2',qty:2},{resource:'mint',qty:2},{resource:'blueberry',qty:1}], effect:'+20%经验获取', durationMin:45 },
+  { id:'sushi_plate', name:'刺身拼盘', emoji:'🍣', inputs:[{resource:'fish_4',qty:2},{resource:'goji',qty:2},{resource:'rosemary',qty:1}], effect:'+20%暴击伤害', durationMin:45 },
+  { id:'seafood_platter', name:'海鲜大餐', emoji:'🦞', inputs:[{resource:'fish_6',qty:2},{resource:'dragonherb',qty:1},{resource:'spiritberry',qty:1}], effect:'+15%全属性', durationMin:90 },
+  { id:'feast_of_the_deep', name:'深渊盛宴', emoji:'🦑', inputs:[{resource:'fish_8',qty:3},{resource:'dragonblood',qty:1},{resource:'nightberry',qty:2}], effect:'+20%全属性 +10%掉率', durationMin:120 },
+  // ── Berry gap fill ─────────────────────────────────────────────────────
+  { id:'magic_brew', name:'魔莓酿', emoji:'🍷', inputs:[{resource:'nightberry',qty:3},{resource:'magicberry',qty:2}], effect:'+25%法术伤害', durationMin:45 },
+  { id:'ancient_elixir', name:'远古灵药', emoji:'🧪', inputs:[{resource:'ancientberry',qty:2},{resource:'cranberry',qty:2},{resource:'dragonblood',qty:1}], effect:'+30%全经验获取', durationMin:60 },
 ];
 export const POTION_RECIPES: { id:string;name:string;emoji:string;inputs:{resource:string;qty:number}[];effect:string;durationMin:number }[] = [
   { id:'health_potion', name:'生命药水', emoji:'❤️', inputs:[{resource:'dandelion',qty:3}], effect:'回复50%HP', durationMin:0 },
@@ -298,6 +307,8 @@ export const POTION_RECIPES: { id:string;name:string;emoji:string;inputs:{resour
   { id:'luck_potion', name:'幸运药水', emoji:'🍀', inputs:[{resource:'marigold',qty:3},{resource:'lingzhi',qty:2}], effect:'+15%掉率', durationMin:45 },
   { id:'crit_potion', name:'精准药水', emoji:'🎯', inputs:[{resource:'thyme',qty:3},{resource:'dragonherb',qty:1}], effect:'+15%暴击率', durationMin:30 },
   { id:'leech_potion', name:'吸血药水', emoji:'🩸', inputs:[{resource:'dragonblood',qty:2},{resource:'phoenix_flower',qty:1}], effect:'+10%吸血', durationMin:30 },
+  { id:'fish_oil', name:'鱼油精华', emoji:'🐟', inputs:[{resource:'fish_1',qty:5}], effect:'+10%掉率', durationMin:30 },
+  { id:'mercury_elixir', name:'深海灵药', emoji:'🌊', inputs:[{resource:'fish_5',qty:3},{resource:'dragonherb',qty:2}], effect:'+30%钓鱼速度', durationMin:45 },
 ];
 export const ACHIEVEMENTS: { id:string;name:string;desc:string;type:'kill'|'dungeon'|'skill';target:string;count:number;reward:string }[] = [
   { id:'kill_chicken_1000', name:'养鸡场主', desc:'击杀1000只小鸡', type:'kill', target:'chicken', count:1000, reward:'pet_chicken' },
@@ -338,20 +349,6 @@ export const COMBAT_SKILLS: CombatSkill[] = [
 ];
 
 // ─── Prayer system ────────────────────────────────────────────────────────────
-export interface Prayer {
-  id: string; name: string; emoji: string; effect: string;
-  baseBuff: number; buffPerLevel: number;
-}
-export const PRAYERS: Prayer[] = [
-  { id:'attack',    name:'战神祷言', emoji:'⚔️', effect:'攻击力',    baseBuff:5,  buffPerLevel:2 },
-  { id:'defence',   name:'钢铁祷言', emoji:'🛡️', effect:'防御力',    baseBuff:5,  buffPerLevel:2 },
-  { id:'fortune',   name:'幸运祷言', emoji:'🍀', effect:'掉落率',    baseBuff:3,  buffPerLevel:1.5 },
-  { id:'swiftness', name:'疾风祷言', emoji:'💨', effect:'行动速度',  baseBuff:3,  buffPerLevel:1 },
-  { id:'experience',name:'智慧祷言', emoji:'📖', effect:'经验获取',  baseBuff:5,  buffPerLevel:2 },
-];
-
-export function getPrayerLevel(xp: number): number {
-  return Math.floor(Math.sqrt(Math.max(0, xp)) / 3) + 1;
-}
+/* Prayers moved to ./prayers.ts — barrel re-exports via index.ts */
 
 

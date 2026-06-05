@@ -44,6 +44,10 @@ export function buildResourceUpdates(
     if (parsed) {
       if (!store[parsed.prefix]) store[parsed.prefix] = {};
       store[parsed.prefix][parsed.tier] = amount;
+      // Also write to legacy column (tier 0-9) so API responses still work
+      if (parsed.tier <= 9) {
+        (updates as Record<string, number>)[key] = amount;
+      }
     } else if (key === "bones") {
       updates.bones = amount;
     } else if (key === "dragonBones") {

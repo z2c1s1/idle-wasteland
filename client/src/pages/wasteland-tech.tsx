@@ -3,6 +3,7 @@ import { postGame } from "@/lib/api";
 import { api } from "@shared/routes";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import { ItemSprite } from "@/components/sprites";
 import { parseLootBag, parseEquipment } from "@/lib/game-utils";
 import { RARITY_COLOR, RARITY_BORDER, type GameItem } from "@shared/game-data";
 import { Zap, Trash2, Skull } from "lucide-react";
@@ -67,7 +68,7 @@ export default function WastelandTech() {
             {extractableItems.map(item => (
               <div key={item.instanceId} className={`flex items-center justify-between p-2 rounded border ${RARITY_BORDER[item.rarity]}`}>
                 <div className="flex items-center gap-2">
-                  <span>{item.emoji}</span>
+                  <ItemSprite slot={item.slot} baseId={(item as any).baseId ?? (item as any).baseType} rarity={item.rarity} ilvl={item.ilvl} size={16} />
                   <span className={`text-xs font-semibold ${RARITY_COLOR[item.rarity]}`}>{item.name}</span>
                   <span className="text-[10px] text-amber-400">{item.legendaryPower || item.skills?.[0]?.name}</span>
                 </div>
@@ -110,7 +111,7 @@ export default function WastelandTech() {
             {corruptibleItems.slice(0, 20).map(item => (
               <button key={item.instanceId} onClick={() => handleCorrupt(item.instanceId)}
                 className={`p-2 rounded border text-center text-[10px] ${RARITY_BORDER[item.rarity]} hover:border-lime-400 transition-colors`}>
-                <span className="text-lg block">{item.emoji}</span>
+                <ItemSprite slot={item.slot} baseId={(item as any).baseId ?? (item as any).baseType} rarity={item.rarity} ilvl={item.ilvl} size={24} />
                 <span className={RARITY_COLOR[item.rarity]}>{item.name.slice(0, 6)}</span>
               </button>
             ))}

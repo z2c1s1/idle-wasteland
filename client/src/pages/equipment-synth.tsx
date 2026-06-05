@@ -3,6 +3,7 @@ import { parseLootBag, parseEquipment, formatNumber, calculateLevel } from "@/li
 import { SLOT_LABEL, RARITY_COLOR, RARITY_LABEL, RARITY_BORDER, RARITY_BG, type Rarity, type GameItem } from "@shared/game-data";
 import type { GameState } from "@shared/schema";
 import { Button } from "@/components/ui/button";
+import { ItemSprite } from "@/components/sprites";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Hammer, Trash2 } from "lucide-react";
@@ -67,7 +68,7 @@ export default function EquipmentSynth() {
                 <div key={item.instanceId}
                   onClick={() => toggle(item.instanceId)}
                   className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-colors ${sel ? 'border-amber-400 bg-amber-500/10' : 'border-border hover:border-muted-foreground'}`}>
-                  <span className="text-lg">{item.emoji}</span>
+                  <ItemSprite slot={item.slot} baseId={(item as any).baseId ?? (item as any).baseType} rarity={item.rarity} ilvl={item.ilvl} size={20} />
                   <div className="flex-1 min-w-0">
                     <p className={`text-xs font-semibold truncate ${RARITY_COLOR[item.rarity]}`}>{item.name}</p>
                     <p className="text-[10px] text-muted-foreground">{SLOT_LABEL[item.slot]} · ilvl {item.ilvl} · {RARITY_LABEL[item.rarity]}</p>
@@ -84,7 +85,7 @@ export default function EquipmentSynth() {
           <h2 className="text-sm font-semibold text-amber-400 uppercase">合成预览</h2>
           <div className="flex gap-2 flex-wrap min-h-[60px] border border-dashed border-border rounded-lg p-3">
             {selectedItems.map(item => (
-              <span key={item.instanceId} className="text-xl" title={item.name}>{item.emoji}</span>
+              <span key={item.instanceId} title={item.name}><ItemSprite slot={item.slot} baseId={(item as any).baseId ?? (item as any).baseType} rarity={item.rarity} ilvl={item.ilvl} size={28} /></span>
             ))}
             {count === 0 && <span className="text-xs text-muted-foreground">点击左侧装备选择3-5件</span>}
           </div>

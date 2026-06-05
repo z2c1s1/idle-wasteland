@@ -28,7 +28,7 @@ const RESOURCES = EXPLORE_LEVELS.map((lv, i) => ({
   time: ET[i], xp: EX[i],
   reqLevel: lv,
   resourceKey: `exploration_${i}`,
-  actionKey: `exploration_${i}`,
+  actionKey: `exploration_${i}`, resourceType: "exploration" as const,
 }));
 
 export default function Exploration() {

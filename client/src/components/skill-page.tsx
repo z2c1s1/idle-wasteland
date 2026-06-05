@@ -1,8 +1,13 @@
 import { useState, useEffect, useRef } from "react";
-import { calculateLevel, levelProgress, xpForLevel, formatNumber, getResourceCount } from "@/lib/game-utils";
+import { calculateLevel, levelProgress, xpForLevel, formatNumber, getResourceCount, getAgilityBonuses, getTemperatureMultiplier } from "@/lib/game-utils";
 import { useStartAction } from "@/hooks/use-game";
 import type { GameState } from "@shared/schema";
 import type { LucideIcon } from "lucide-react";
+import { ResourceIcon, type ResourceType } from "@/components/sprites";
+import { getToolBonus } from "@shared/game-data";
+import { getPlayerId } from "@/lib/api";
+import { api } from "@shared/routes";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ResourceDef {
   name: string;
@@ -14,6 +19,7 @@ interface ResourceDef {
   actionKey: string;
   requiredKey?: string;
   requiredName?: string;
+  resourceType?: ResourceType;
 }
 
 interface SkillPageProps {
@@ -34,6 +40,16 @@ export function SkillPage({ skillName, skillXp, icon: Icon, iconColor, state, re
 
   const isGlobalActive = state.activeAction !== "idle";
   const activeResource = resources.find((r) => state.activeAction === r.actionKey) ?? null;
+
+  // Effective cycle time matching server (gathering.ts)
+  const toolBonus = getToolBonus(state.tool ?? '{}');
+  const agility = getAgilityBonuses(state);
+  const tempMul = getTemperatureMultiplier(state);
+  const getEffectiveTime = (baseTime: number) => {
+    const skill = activeResource?.actionKey?.split('_')[0] ?? '';
+    const agilityMul = skill === 'fishing' ? agility.fishingMul : 1;
+    return baseTime * toolBonus.timeMult / agilityMul / Math.max(0.1, tempMul);
+  };
 
   return (
     <div className="p-4 max-w-4xl mx-auto space-y-5">
@@ -59,7 +75,7 @@ export function SkillPage({ skillName, skillXp, icon: Icon, iconColor, state, re
 
       {/* Active progress */}
       {activeResource && (
-        <ActiveBar name={activeResource.name} cycleTime={activeResource.time} startMs={new Date(state.actionUpdatedAt as unknown as string).getTime()} onStop={() => startAction("idle")} isPending={isPending} />
+        <ActiveBar name={activeResource.name} cycleTime={getEffectiveTime(activeResource.time)} startMs={new Date(state.actionUpdatedAt as unknown as string).getTime()} onStop={() => startAction("idle")} isPending={isPending} />
       )}
 
       {/* Resource list */}
@@ -78,7 +94,9 @@ export function SkillPage({ skillName, skillXp, icon: Icon, iconColor, state, re
                 isActive    ? "border-primary/40 bg-primary/10" :
                               "border-border bg-card hover:border-primary/40"
               }`}>
-              <span className="text-2xl flex-shrink-0">{res.emoji}</span>
+              {res.resourceType
+                ? <ResourceIcon type={res.resourceType} size={28} className="flex-shrink-0" />
+                : <span className="text-2xl flex-shrink-0">{res.emoji}</span>}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-medium">{res.name}</span>
@@ -123,7 +141,14 @@ export function SkillPage({ skillName, skillXp, icon: Icon, iconColor, state, re
 function ActiveBar({ name, cycleTime, startMs, onStop, isPending }: { name: string; cycleTime: number; startMs: number; onStop: () => void; isPending: boolean }) {
   const [progress, setProgress] = useState(0);
   const [timeLeft, setTimeLeft] = useState(cycleTime);
+  const lastSyncRef = useRef(0);
+  const prevStartRef = useRef(startMs);
+  const queryClient = useQueryClient();
   const rafRef = useRef<number | null>(null);
+  if (startMs !== prevStartRef.current) {
+    prevStartRef.current = startMs;
+    lastSyncRef.current = 0;
+  }
 
   useEffect(() => {
     function tick() {
@@ -131,11 +156,18 @@ function ActiveBar({ name, cycleTime, startMs, onStop, isPending }: { name: stri
       const cycleElapsed = elapsed % cycleTime;
       setProgress((cycleElapsed / cycleTime) * 100);
       setTimeLeft(Math.max(0, cycleTime - cycleElapsed));
+      const cycles = Math.floor(elapsed / cycleTime);
+      if (cycles > lastSyncRef.current) {
+        lastSyncRef.current = cycles;
+        fetch(api.game.getState.path, { headers: { "x-player-id": getPlayerId() } })
+          .then(r => r.ok && r.json().then(d => queryClient.setQueryData([api.game.getState.path], d)))
+          .catch(() => {});
+      }
       rafRef.current = requestAnimationFrame(tick);
     }
     rafRef.current = requestAnimationFrame(tick);
     return () => { if (rafRef.current !== null) cancelAnimationFrame(rafRef.current); };
-  }, [startMs, cycleTime]);
+  }, [startMs, cycleTime, queryClient]);
 
   return (
     <div className="bg-card border border-primary/30 rounded-xl p-4 space-y-2">

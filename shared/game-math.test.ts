@@ -208,11 +208,11 @@ describe("getResourceCount", () => {
 });
 
 describe("buildResourceUpdates", () => {
-  it("writes to resourceStore JSON only", () => {
+  it("writes to both resourceStore and individual columns", () => {
     const state = makeState();
     const patch = buildResourceUpdates(state, { wood_0: 12 });
-    // No longer writes to individual column
-    assert.equal(patch.wood_0, undefined);
+    // Both are updated for backward compatibility with API responses
+    assert.equal(patch.wood_0, 12);
     const store = JSON.parse(patch.resourceStore!);
     assert.equal(store.wood[0], 12);
   });

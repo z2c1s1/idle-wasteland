@@ -74,11 +74,9 @@ export function computeSkillEffects(equipment: EquipmentState): SkillEffects {
 
 // ─── Combat speed ─────────────────────────────────────────────────────────────
 
-export const BASE_COMBAT_SPEED = 3;
+import { BASE_COMBAT_SPEED, computeEffectiveCombatSpeed } from "@shared/game-math";
 
-export function computeEffectiveCombatSpeed(attackSpeed: number, tempMul: number): number {
-  return Math.max(1.5, BASE_COMBAT_SPEED * (1 - attackSpeed / 200)) / tempMul;
-}
+export { BASE_COMBAT_SPEED, computeEffectiveCombatSpeed };
 
 // ─── Per-tick skill proc effects on enemy damage ──────────────────────────────
 

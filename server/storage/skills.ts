@@ -55,8 +55,12 @@ export async function updateAction(state: GameState, action: string): Promise<Ga
     }
   }
 
+  // Combat actions: reset enemy/player HP to full
+  const isCombat = action.startsWith('combat_') || action.startsWith('dungeon_') || action === 'tower' || action.startsWith('trial_');
+  const hpReset = isCombat ? { enemyHp: -1, playerHp: -1 } : {};
+
   const [updated] = await db.update(gameStates)
-    .set({ activeAction: action, actionUpdatedAt: new Date() })
+    .set({ activeAction: action, actionUpdatedAt: new Date(), ...hpReset })
     .where(eq(gameStates.id, state.id)).returning();
   return updated;
 }

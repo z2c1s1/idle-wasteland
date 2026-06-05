@@ -1,11 +1,13 @@
+import { useMemo } from "react";
 import { useGameState } from "@/hooks/use-game";
 import { useStartAction } from "@/hooks/use-game";
 import { calculateLevel, levelProgress, formatNumber, getCombatLevel } from "@/lib/game-utils";
 import {
-  Axe, Pickaxe, Flame, Waves, PawPrint, Hammer,
-  StopCircle, Skull, Shield, HandMetal, Crosshair, Wand,
-  Footprints, Zap, Download, Upload,
+  Axe, Pickaxe, Flame, Waves, PawPrint,
+  StopCircle, Skull, Shield, HandMetal,
+  Footprints, Zap, Download, Upload, Radiation,
 } from "lucide-react";
+import { uiText } from "@/lib/text";
 import { useLocation } from "wouter";
 import { WORLD_TIER_LABEL } from "@shared/game-data";
 import type { GameState } from "@shared/schema";
@@ -14,13 +16,13 @@ import { api } from "@shared/routes";
 import { useToast } from "@/hooks/use-toast";
 
 const GATHERING_SKILLS = [
-  { title: "伐木", xpKey: "woodcuttingXp" as const, icon: Axe,      color: "text-green-400",  bg: "bg-green-900/30",  href: "/woodcutting" },
-  { title: "采矿", xpKey: "miningXp"      as const, icon: Pickaxe,  color: "text-yellow-400", bg: "bg-yellow-900/30", href: "/mining"      },
-  { title: "冶炼", xpKey: "smeltingXp"    as const, icon: Flame,    color: "text-orange-400", bg: "bg-orange-900/30", href: "/smelting"    },
-  { title: "钓鱼", xpKey: "fishingXp"     as const, icon: Waves,    color: "text-blue-400",   bg: "bg-blue-900/30",   href: "/fishing"     },
-  { title: "狩猎", xpKey: "huntingXp"     as const, icon: PawPrint, color: "text-red-400",    bg: "bg-red-900/30",    href: "/hunting"     },
-  { title: "搜刮", xpKey: "thievingXp"    as const, icon: HandMetal,color: "text-purple-400", bg: "bg-purple-900/30", href: "/thieving"    },
-  { title: "敏捷", xpKey: "agilityXp"     as const, icon: Footprints,color:"text-cyan-400",  bg: "bg-cyan-900/30",   href: "/agility"     },
+  { title: uiText.sidebar.navWoodcutting, xpKey: "woodcuttingXp" as const, icon: Axe,      color: "text-green-400",  bg: "bg-green-900/30",  href: "/woodcutting" },
+  { title: uiText.sidebar.navMining,      xpKey: "miningXp"      as const, icon: Pickaxe,  color: "text-yellow-400", bg: "bg-yellow-900/30", href: "/mining"      },
+  { title: uiText.sidebar.navSmelting,    xpKey: "smeltingXp"    as const, icon: Flame,    color: "text-orange-400", bg: "bg-orange-900/30", href: "/smelting"    },
+  { title: uiText.sidebar.navFishing,     xpKey: "fishingXp"     as const, icon: Waves,    color: "text-blue-400",   bg: "bg-blue-900/30",   href: "/fishing"     },
+  { title: uiText.sidebar.navHunting,     xpKey: "huntingXp"     as const, icon: PawPrint, color: "text-red-400",    bg: "bg-red-900/30",    href: "/hunting"     },
+  { title: uiText.sidebar.navThieving,    xpKey: "thievingXp"    as const, icon: HandMetal,color: "text-purple-400", bg: "bg-purple-900/30", href: "/thieving"    },
+  { title: uiText.sidebar.navAgility,     xpKey: "agilityXp"     as const, icon: Footprints,color:"text-cyan-400",  bg: "bg-cyan-900/30",   href: "/agility"     },
 ];
 
 const COMBAT_SKILLS = [
@@ -108,6 +110,12 @@ export default function Dashboard() {
   if (!state) return null;
   const gs = state as GameState;
 
+  // Random survival tip — stable for this render
+  const survivalTip = useMemo(() => {
+    const tips = uiText.wasteland.survivalTips;
+    return tips[Math.floor(Math.random() * tips.length)];
+  }, []);
+
   const isActive = gs.activeAction !== "idle";
   const activeSkill = isActive ? gs.activeAction.split("_")[0] : null;
   const combatLevel = getCombatLevel(gs);
@@ -115,8 +123,17 @@ export default function Dashboard() {
   return (
     <div className="p-4 max-w-4xl mx-auto space-y-5">
       <div className="pb-4 border-b border-border">
-        <h1 className="font-display text-xl font-bold text-foreground mb-0.5">辐射废土总览</h1>
-        <p className="text-xs text-muted-foreground">在废土中生存下去</p>
+        <h1 className="font-display text-xl font-bold text-foreground mb-0.5">{uiText.dashboard.title}</h1>
+        <p className="text-xs text-muted-foreground">{uiText.dashboard.subtitle}</p>
+      </div>
+
+      {/* Wasteland survival tip */}
+      <div className="bg-card border border-amber-500/20 rounded-xl px-4 py-3">
+        <div className="flex items-center gap-2 mb-1">
+          <Radiation className="w-3.5 h-3.5 text-amber-400" />
+          <span className="text-[10px] font-semibold text-amber-400 uppercase tracking-wider">废土生存法则</span>
+        </div>
+        <p className="text-xs text-muted-foreground leading-relaxed">{survivalTip}</p>
       </div>
 
       {/* World Tier banner */}
@@ -153,17 +170,17 @@ export default function Dashboard() {
       <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3">
         <div className="bg-card border border-border rounded-lg px-3 py-2 text-center">
           <Skull className="w-4 h-4 text-red-400 mx-auto mb-1" />
-          <p className="text-xs text-muted-foreground">战斗等级</p>
+          <p className="text-xs text-muted-foreground">{uiText.dashboard.combatLevel}</p>
           <p className="text-xl font-bold">{combatLevel}</p>
         </div>
         <div className="bg-card border border-border rounded-lg px-3 py-2 text-center">
           <span className="text-lg">💰</span>
-          <p className="text-xs text-muted-foreground">金币</p>
+          <p className="text-xs text-muted-foreground">{uiText.dashboard.gold}</p>
           <p className="text-xl font-bold text-yellow-400">{formatNumber(gs.gold)}</p>
         </div>
         <div className="bg-card border border-border rounded-lg px-3 py-2 text-center">
           <Shield className="w-4 h-4 text-slate-400 mx-auto mb-1" />
-          <p className="text-xs text-muted-foreground">锻造等级</p>
+          <p className="text-xs text-muted-foreground">{uiText.dashboard.smithingLevel}</p>
           <p className="text-xl font-bold">{calculateLevel(gs.smithingXp)}</p>
         </div>
       </div>
@@ -173,7 +190,7 @@ export default function Dashboard() {
         <table className="w-full text-sm min-w-[380px]">
           <thead>
             <tr className="bg-[hsl(220_13%_8%)] text-muted-foreground text-xs">
-              <th className="text-left px-3 md:px-4 py-2 font-semibold">采集技能</th>
+              <th className="text-left px-3 md:px-4 py-2 font-semibold">{uiText.dashboard.gatheringSkills}</th>
               <th className="text-center px-3 md:px-4 py-2 font-semibold">等级</th>
               <th className="text-left px-3 md:px-4 py-2 font-semibold w-32 md:w-48">进度</th>
               <th className="text-right px-3 md:px-4 py-2 font-semibold">总经验</th>
@@ -201,7 +218,7 @@ export default function Dashboard() {
         <table className="w-full text-sm min-w-[380px]">
           <thead>
             <tr className="bg-[hsl(220_13%_8%)] text-muted-foreground text-xs">
-              <th className="text-left px-3 md:px-4 py-2 font-semibold">战斗技能</th>
+              <th className="text-left px-3 md:px-4 py-2 font-semibold">{uiText.dashboard.combatSkills}</th>
               <th className="text-center px-3 md:px-4 py-2 font-semibold">等级</th>
               <th className="text-left px-3 md:px-4 py-2 font-semibold w-32 md:w-48">进度</th>
               <th className="text-right px-3 md:px-4 py-2 font-semibold">总经验</th>
@@ -247,7 +264,7 @@ export default function Dashboard() {
       <div className="flex gap-3 justify-center">
         <button onClick={handleExport}
           className="flex items-center gap-2 px-4 py-2 text-xs rounded border border-border hover:bg-muted/20 transition-colors">
-          <Download className="w-3.5 h-3.5" /> 导出存档
+          <Download className="w-3.5 h-3.5" /> {uiText.dashboard.exportTitle}
         </button>
         <button onClick={handleImport}
           className="flex items-center gap-2 px-4 py-2 text-xs rounded border border-border hover:bg-muted/20 transition-colors">

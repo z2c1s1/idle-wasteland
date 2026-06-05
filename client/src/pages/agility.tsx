@@ -8,7 +8,7 @@ const T = [5,6,7,8,10,12,14,16,18,20];
 const X = [8,13,19,27,38,51,67,88,112,144];
 const RESOURCES = LV.map((lv, i) => ({
   name: NAMES[i], emoji: "🏃", time: T[i], xp: X[i], reqLevel: lv,
-  resourceKey: `agility_${i}`, actionKey: `agility_${i}`,
+  resourceKey: `agility_${i}`, actionKey: `agility_${i}`, resourceType: "agility" as const,
 }));
 
 export default function Agility() {

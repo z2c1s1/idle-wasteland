@@ -8,7 +8,7 @@ const T = [3,4,5,6,7,9,11,13,15,17];
 const X = [10,16,24,34,48,62,80,104,132,168];
 const RESOURCES = LV.map((lv, i) => ({
   name: FISH[i], emoji: "🐟", time: T[i], xp: X[i], reqLevel: lv,
-  resourceKey: `fish_${i}`, actionKey: `fishing_${i}`,
+  resourceKey: `fish_${i}`, actionKey: `fishing_${i}`, resourceType: "fish" as const,
 }));
 
 export default function Fishing() {

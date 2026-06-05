@@ -1,35 +1,66 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// SVG 精灵组件 — 零依赖纯 SVG
+// 像素精灵组件 — 8×8 / 10×10 像素矩阵渲染
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React from "react";
+import type { SkillIconName, ResourceType } from "./spriteData";
 import {
-  ENEMY_ARCHETYPE_MAP, ARCHETYPE_COLORS, type EnemyArchetype, type ArchetypeColors,
-  SLOT_SHAPE, EQUIPMENT_SPRITES, RARITY_GLOW,
-  SKILL_SPRITES, type SkillIconName,
-  GEM_COLORS, RESOURCE_SPRITES, type ResourceType,
-  DECORATION,
-  detectWeaponShape, tierColor,
-  type SpriteDef,
+  ENEMY_PIXELS, ARCHETYPE_PIXEL_COLORS as COMBAT_COLORS,
+  EQUIPMENT_PIXELS, ITEM_COLORS,
+  SKILL_PIXELS, GEM_PIXEL,
+  RESOURCE_PIXELS,
+  type PixelColors,
 } from "./spriteData";
 
-// ─── 通用 SVG 渲染器 ─────────────────────────────────────────────────────────
+/** Convert PixelColors object to string array for PixelGrid */
+function toColors(pc: PixelColors): string[] {
+  return ["#000000", pc.dark, pc.main, pc.light, pc.highlight, pc.eye];
+}
 
-function SpriteSvg({ def, color, size = 32, className = "" }: {
-  def: SpriteDef; color?: string; size?: number; className?: string;
+/** Enemy ID → pixel archetype key */
+const ENEMY_ARCHETYPE_MAP: Record<string, string> = {
+  rad_roach: 'insect', mutant_spider: 'insect', rad_scorpion: 'insect',
+  rad_rat: 'rodent', stray_dog: 'rodent',
+  zombie_walk: 'undead', zombie_brute: 'undead', ghoul_flesh: 'undead',
+  mutant_hound: 'mutant', mutant_bear: 'mutant', mutant_behemoth: 'mutant',
+  bandit_scav: 'humanoid', wasteland_raider: 'humanoid', warlord: 'humanoid',
+  sentry_bot: 'mech',
+  rad_elemental: 'dragon', rad_drake: 'dragon', elder_dragon: 'dragon',
+  deathclaw: 'boss', glowing_one: 'boss', ancient_wraith: 'boss', overlord: 'boss',
+};
+
+const SLOT_SHAPE: Record<string, string> = {
+  weapon: 'sword', offhand: 'shield',
+  helmet: 'helmet', chest: 'chest', legs: 'legs',
+  gloves: 'gloves', boots: 'boots',
+  neck: 'neck', ring: 'ring',
+};
+
+// ─── 通用像素渲染器 ──────────────────────────────────────────────────────────
+
+function PixelGrid({ pixels, colors, cellSize = 3, className = "" }: {
+  pixels: number[][]; colors: string[]; cellSize?: number; className?: string;
 }) {
+  const h = pixels.length;
+  const w = pixels[0]?.length ?? 0;
+  const els: React.ReactNode[] = [];
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const ci = pixels[y]![x]!;
+      if (ci === 0) continue;
+      els.push(
+        <rect key={`${y}-${x}`} x={x * cellSize} y={y * cellSize}
+          width={cellSize} height={cellSize} fill={colors[ci] ?? colors[1]!} />
+      );
+    }
+  }
   return (
-    <svg viewBox={def.viewBox} width={size} height={size}
-      className={className} style={{ color, display: "block" }}
+    <svg viewBox={`0 0 ${w * cellSize} ${h * cellSize}`}
+      width={w * cellSize} height={h * cellSize} className={className}
+      style={{ display: "block", imageRendering: "pixelated" }}
+      shapeRendering="crispEdges"
     >
-      {def.paths.map((p, i) => (
-        <path key={i} d={p.d}
-          fill={p.fill ?? (p.stroke ? "none" : "currentColor")}
-          stroke={p.stroke}
-          strokeWidth={p.strokeWidth}
-          opacity={p.opacity}
-        />
-      ))}
+      {els}
     </svg>
   );
 }
@@ -40,185 +71,152 @@ interface EnemySpriteProps { enemyId: string; size?: number; className?: string;
 
 export function EnemySprite({ enemyId, size = 48, className = "" }: EnemySpriteProps) {
   const arch = ENEMY_ARCHETYPE_MAP[enemyId] ?? 'humanoid';
-  const c = ARCHETYPE_COLORS[arch];
-
-  return (
-    <svg viewBox="0 0 48 48" width={size} height={size} className={className}
-      style={{ display: "block", filter: `drop-shadow(0 2px 2px ${c.secondary}44)` }}
-    >
-      {/* Body */}
-      <EnemyBody arch={arch} color={c} />
-      {/* Eyes */}
-      <circle cx="18" cy="16" r="3" fill={c.eye} />
-      <circle cx="30" cy="16" r="3" fill={c.eye} />
-      {/* Mouth */}
-      {arch === 'mutant' && <path d="M16 26 Q24 32 32 26" fill="none" stroke={c.primary} strokeWidth="2" />}
-      {arch === 'dragon' && <path d="M16 26 L24 30 L32 26" fill="none" stroke="#ff8800" strokeWidth="2" />}
-      {arch === 'undead' && <path d="M16 26 L24 28 L32 26" fill="none" stroke={c.eye} strokeWidth="1.5" />}
-    </svg>
-  );
-}
-
-function EnemyBody({ arch, color }: { arch: EnemyArchetype; color: ArchetypeColors }) {
-  switch (arch) {
-    case 'insect':
-      return <>
-        <ellipse cx="24" cy="22" rx="14" ry="10" fill={color.primary} />
-        <ellipse cx="24" cy="20" rx="12" ry="8" fill={color.secondary} />
-        <path d="M8 18 Q4 10 10 8 M40 18 Q44 10 38 8" fill="none" stroke={color.primary} strokeWidth="2" />
-      </>;
-    case 'rodent':
-      return <>
-        <ellipse cx="24" cy="24" rx="12" ry="10" fill={color.primary} />
-        <ellipse cx="24" cy="28" rx="8" ry="6" fill={color.secondary} />
-        <circle cx="12" cy="22" r="5" fill={color.primary} />
-        <circle cx="12" cy="22" r="3" fill={color.secondary} />
-      </>;
-    case 'humanoid':
-      return <>
-        <rect x="14" y="8" width="20" height="24" rx="6" fill={color.primary} />
-        <rect x="16" y="12" width="16" height="16" rx="4" fill={color.secondary} />
-        <circle cx="24" cy="6" r="8" fill={color.primary} />
-        <rect x="6" y="18" width="8" height="3" rx="1" fill={color.primary} />
-        <rect x="34" y="18" width="8" height="3" rx="1" fill={color.primary} />
-      </>;
-    case 'mutant':
-      return <>
-        <ellipse cx="24" cy="24" rx="16" ry="12" fill={color.primary} />
-        <ellipse cx="24" cy="22" rx="13" ry="9" fill={color.secondary} />
-        <circle cx="24" cy="8" r="9" fill={color.primary} />
-        <path d="M6 20 Q2 18 4 14 M42 20 Q46 18 44 14" fill="none" stroke={color.primary} strokeWidth="3" />
-      </>;
-    case 'mech':
-      return <>
-        <rect x="10" y="10" width="28" height="26" rx="4" fill={color.primary} />
-        <rect x="14" y="14" width="20" height="18" rx="2" fill={color.secondary} />
-        <rect x="16" y="16" width="16" height="4" rx="1" fill={color.eye} />
-        <rect x="4" y="18" width="6" height="10" rx="2" fill={color.primary} />
-        <rect x="38" y="18" width="6" height="10" rx="2" fill={color.primary} />
-        <rect x="16" y="36" width="6" height="6" rx="1" fill={color.primary} />
-        <rect x="26" y="36" width="6" height="6" rx="1" fill={color.primary} />
-      </>;
-    case 'dragon':
-      return <>
-        <path d="M24 4 L36 16 L32 28 L40 36 L30 40 L24 32 L18 40 L8 36 L16 28 L12 16 Z" fill={color.primary} />
-        <path d="M18 18 L24 24 L30 18 L24 28 Z" fill={color.secondary} />
-        <path d="M6 20 L10 16 L10 24 Z" fill={color.primary} />
-        <path d="M42 20 L38 16 L38 24 Z" fill={color.primary} />
-      </>;
-    case 'undead':
-      return <>
-        <path d="M16 6 Q24 2 32 6 L36 16 L34 34 L24 38 L14 34 L12 16 Z" fill={color.primary} />
-        <path d="M18 12 L24 18 L30 12 M20 10 L24 6 L28 10" fill="none" stroke={color.secondary} strokeWidth="1.5" />
-        <rect x="8" y="18" width="6" height="12" rx="2" fill={color.primary} opacity="0.6" />
-        <rect x="34" y="18" width="6" height="12" rx="2" fill={color.primary} opacity="0.6" />
-      </>;
-    case 'boss':
-      return <>
-        <path d="M12 10 Q24 0 36 10 L40 20 L36 38 Q24 44 12 38 L8 20 Z" fill={color.primary} />
-        <path d="M16 14 Q24 10 32 14 L34 20 Q24 28 14 20 Z" fill={color.secondary} />
-        <circle cx="16" cy="24" r="3" fill={color.eye} />
-        <circle cx="32" cy="24" r="3" fill={color.eye} />
-        <path d="M14 8 L24 2 L34 8" fill="none" stroke={color.secondary} strokeWidth="3" />
-        <path d="M8 30 L4 28 M40 30 L44 28" fill="none" stroke={color.primary} strokeWidth="3" />
-      </>;
-    default:
-      return <circle cx="24" cy="24" r="16" fill={color.primary} />;
-  }
+  const pixels = ENEMY_PIXELS[arch] ?? ENEMY_PIXELS['humanoid']!;
+  const pc = COMBAT_COLORS[arch] ?? COMBAT_COLORS['humanoid']!;
+  const cs = Math.max(2, Math.floor(size / pixels.length));
+  return <PixelGrid pixels={pixels} colors={toColors(pc)} cellSize={cs} className={className} />;
 }
 
 // ─── ItemSprite ───────────────────────────────────────────────────────────────
 
 interface ItemSpriteProps {
-  slot: string;
-  baseId?: string;
-  rarity?: string;
-  ilvl?: number;
-  size?: number;
-  className?: string;
+  slot: string; baseId?: string; rarity?: string; ilvl?: number;
+  size?: number; className?: string;
 }
 
 export function ItemSprite({ slot, baseId, rarity = 'common', ilvl = 5, size = 32, className = "" }: ItemSpriteProps) {
-  const shape = slot === 'weapon' && baseId
-    ? detectWeaponShape(baseId)
-    : (SLOT_SHAPE[slot] ?? 'sword');
-
-  const def = EQUIPMENT_SPRITES[shape];
-  const color = tierColor(ilvl);
-  const glow = RARITY_GLOW[rarity] ?? RARITY_GLOW.common;
-
-  if (!def) {
-    return <SpriteSvg def={EQUIPMENT_SPRITES.sword} color={color} size={size} className={className} />;
-  }
-
-  return (
-    <svg viewBox={def.viewBox} width={size} height={size} className={className}
-      style={{ display: "block", filter: glow.glow, color }}
-    >
-      {/* Rarity border glow ring */}
-      {rarity !== 'common' && (
-        <rect x="1" y="1" width="30" height="30" rx="4"
-          fill="none" stroke={glow.stroke} strokeWidth="1.5" opacity="0.6" />
-      )}
-      {def.paths.map((p, i) => (
-        <path key={i} d={p.d}
-          fill={p.fill ?? (p.stroke ? "none" : "currentColor")}
-          stroke={p.stroke}
-          strokeWidth={p.strokeWidth}
-          opacity={p.opacity}
-        />
-      ))}
-    </svg>
-  );
+  const shape = SLOT_SHAPE[slot] ?? 'sword';
+  const pixels = EQUIPMENT_PIXELS[shape] ?? EQUIPMENT_PIXELS['sword']!;
+  const tier = Math.min(6, Math.floor(ilvl / 15));
+  const pc = ITEM_COLORS[tier] ?? ITEM_COLORS[0]!;
+  const cs = Math.max(2, Math.floor(size / pixels.length));
+  return <PixelGrid pixels={pixels} colors={toColors(pc)} cellSize={cs} className={className} />;
 }
 
 // ─── GemSprite ────────────────────────────────────────────────────────────────
 
 interface GemSpriteProps { gemKey: string; size?: number; className?: string; }
 
+const GEM_COLOR_MAP: Record<string, string[]> = {
+  ruby:     ["#0000", "#991122", "#CC2244", "#FF4466", "#FF8899"],
+  sapphire: ["#0000", "#112299", "#2244BB", "#4466DD", "#88AAFF"],
+  emerald:  ["#0000", "#116622", "#228833", "#44BB55", "#88DD99"],
+  diamond:  ["#0000", "#8899AA", "#AABBCC", "#CCDDEE", "#FFFFFF"],
+  amethyst: ["#0000", "#551188", "#7722AA", "#9944CC", "#BB88EE"],
+  topaz:    ["#0000", "#996600", "#BB8811", "#DDAA22", "#FFCC44"],
+};
+
 export function GemSprite({ gemKey, size = 24, className = "" }: GemSpriteProps) {
-  const color = GEM_COLORS[gemKey] ?? '#ccc';
-  return (
-    <svg viewBox="0 0 24 24" width={size} height={size} className={className}
-      style={{ display: "block", filter: `drop-shadow(0 0 3px ${color}66)` }}
-    >
-      <path d="M12 2 L18 8 L12 14 L6 8 Z" fill={color} opacity="0.8" />
-      <path d="M12 14 L18 8 L20 18 L12 22 L4 18 L6 8 Z" fill={color} opacity="0.5" />
-      <path d="M12 14 L18 8 L20 18 L12 22" fill="none" stroke="#fff" strokeWidth="0.5" opacity="0.4" />
-    </svg>
-  );
+  const colors = GEM_COLOR_MAP[gemKey] ?? ["#0000", "#888", "#aaa", "#ccc", "#fff"];
+  const cs = Math.max(2, Math.floor(size / GEM_PIXEL.length));
+  return <PixelGrid pixels={GEM_PIXEL} colors={colors} cellSize={cs} className={className} />;
 }
 
 // ─── SkillSprite ──────────────────────────────────────────────────────────────
 
 interface SkillSpriteProps { skill: SkillIconName; size?: number; className?: string; }
 
+const SKILL_COLOR_MAP: Record<string, string[]> = {
+  woodcutting: ["#0000", "#228B22", "#32CD32", "#90EE90"],
+  mining: ["#0000", "#8B8682", "#A9A9A9", "#D3D3D3"],
+  smelting: ["#0000", "#FF8C00", "#FFA500", "#FFD700"],
+  fishing: ["#0000", "#4169E1", "#6495ED", "#87CEEB"],
+  hunting: ["#0000", "#8B4513", "#A0522D", "#CD853F"],
+  smithing: ["#0000", "#708090", "#A0A0B0", "#D0D0E0"],
+  combat: ["#0000", "#DC143C", "#FF4444", "#FF8888"],
+  thieving: ["#0000", "#4B0082", "#8A2BE2", "#BA55D3"],
+  agility: ["#0000", "#00CED1", "#20B2AA", "#7FFFD4"],
+  exploration: ["#0000", "#8B6914", "#DAA520", "#FFD700"],
+  homestead: ["#0000", "#8B7355", "#A08060", "#D2B48C"],
+  cooking: ["#0000", "#FF6347", "#FF7F50", "#FFA07A"],
+  alchemy: ["#0000", "#9932CC", "#BA55D3", "#DDA0DD"],
+  prayer: ["#0000", "#FFD700", "#FFF8DC", "#FFFFF0"],
+};
+
 export function SkillSprite({ skill, size = 20, className = "" }: SkillSpriteProps) {
-  const def = SKILL_SPRITES[skill];
-  if (!def) return <SpriteSvg def={SKILL_SPRITES.dashboard} size={size} className={className} />;
-  return <SpriteSvg def={def} size={size} className={className} />;
+  const pixels = SKILL_PIXELS[skill] ?? SKILL_PIXELS.dashboard;
+  const colors = SKILL_COLOR_MAP[skill] ?? ["#0000", "#888", "#aaa", "#ddd"];
+  const cs = Math.max(2, Math.floor(size / pixels.length));
+  return <PixelGrid pixels={pixels} colors={colors} cellSize={cs} className={className} />;
 }
 
 // ─── ResourceIcon ─────────────────────────────────────────────────────────────
 
+const RESOURCE_COLORS: Record<string, string[]> = {
+  wood: ["#0000", "#8B4513", "#A0522D", "#DEB887"],
+  ore: ["#0000", "#696969", "#808080", "#C0C0C0"],
+  bar: ["#0000", "#CD853F", "#DAA520", "#FFD700"],
+  fish: ["#0000", "#4682B4", "#5F9EA0", "#87CEEB"],
+  hide: ["#0000", "#8B4513", "#A0522D", "#D2691E"],
+  herb: ["#0000", "#228B22", "#32CD32", "#90EE90"],
+  berry: ["#0000", "#8B008B", "#9932CC", "#DA70D6"],
+  stone: ["#0000", "#808080", "#A9A9A9", "#D3D3D3"],
+  bone: ["#0000", "#F5DEB3", "#FAEBD7", "#FFF8DC"],
+  gold: ["#0000", "#B8860B", "#DAA520", "#FFD700"],
+  agility: ["#0000", "#00CED1", "#48D1CC", "#AFEEEE"],
+  exploration: ["#0000", "#8B6914", "#DAA520", "#F0E68C"],
+  craft: ["#0000", "#8B7355", "#A08060", "#DEB887"],
+};
+
 interface ResourceIconProps { type: ResourceType; size?: number; className?: string; }
 
 export function ResourceIcon({ type, size = 20, className = "" }: ResourceIconProps) {
-  const def = RESOURCE_SPRITES[type];
-  if (!def) return <SpriteSvg def={RESOURCE_SPRITES.wood} size={size} className={className} />;
-  return <SpriteSvg def={def} size={size} className={className} />;
+  const pixels = RESOURCE_PIXELS[type] ?? RESOURCE_PIXELS.wood;
+  const colors = RESOURCE_COLORS[type] ?? ["#0000", "#888", "#aaa", "#ddd"];
+  const cs = Math.max(2, Math.floor(size / pixels.length));
+  return <PixelGrid pixels={pixels} colors={colors} cellSize={cs} className={className} />;
 }
 
 // ─── 装饰精灵 ─────────────────────────────────────────────────────────────────
 
+const DECO_PIXELS = {
+  radiation: [
+    [0,0,0,2,2,0,0,0],
+    [0,0,2,1,1,2,0,0],
+    [0,2,1,2,2,1,2,0],
+    [2,1,2,1,1,2,1,2],
+    [2,1,2,1,1,2,1,2],
+    [0,2,1,2,2,1,2,0],
+    [0,0,2,1,1,2,0,0],
+    [0,0,0,2,2,0,0,0],
+  ],
+  spark: [
+    [0,0,0,2,0,0,0],
+    [0,0,2,1,2,0,0],
+    [0,2,1,3,1,2,0],
+    [2,1,3,3,3,1,2],
+    [0,2,1,3,1,2,0],
+    [0,0,2,1,2,0,0],
+    [0,0,0,2,0,0,0],
+  ],
+};
+
+const DECO_COLORS_radiation = ["#0000", "#FFD700", "#FFA500", "#FF8C00"];
+const DECO_COLORS_spark = ["#0000", "#FFFF00", "#FFD700", "#FFFFFF"];
+
 export function RadiationIcon({ size = 24, className = "" }: { size?: number; className?: string }) {
-  return <SpriteSvg def={DECORATION.radiation} color="#ffcc00" size={size} className={className} />;
+  const cs = Math.max(2, Math.floor(size / 8));
+  return <PixelGrid pixels={DECO_PIXELS.radiation} colors={DECO_COLORS_radiation} cellSize={cs} className={className} />;
 }
 
 export function SparkIcon({ size = 16, className = "" }: { size?: number; className?: string }) {
-  return <SpriteSvg def={DECORATION.spark} color="#ffcc00" size={size} className={className} />;
+  const cs = Math.max(2, Math.floor(size / 7));
+  return <PixelGrid pixels={DECO_PIXELS.spark} colors={DECO_COLORS_spark} cellSize={cs} className={className} />;
 }
 
+const SKULL_PIXEL: number[][] = [
+  [0,1,1,1,0,1,1,1,0],
+  [1,2,2,2,1,2,2,2,1],
+  [1,2,3,2,2,2,3,2,1],
+  [0,1,2,2,2,2,2,1,0],
+  [0,0,1,2,2,2,1,0,0],
+  [0,0,0,1,1,1,0,0,0],
+  [0,0,0,1,2,1,0,0,0],
+  [0,0,1,0,0,0,1,0,0],
+];
+const SKULL_COLORS = ["#0000", "#cccccc", "#aaaaaa", "#ffffff"];
+
 export function SkullIcon({ size = 24, className = "" }: { size?: number; className?: string }) {
-  return <SpriteSvg def={DECORATION.skull} color="#cc3333" size={size} className={className} />;
+  const cs = Math.max(2, Math.floor(size / 9));
+  return <PixelGrid pixels={SKULL_PIXEL} colors={SKULL_COLORS} cellSize={cs} className={className} />;
 }

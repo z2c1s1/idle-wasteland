@@ -8,7 +8,7 @@ const T = [4,5,6,7,9,11,13,15,17,19];
 const X = [15,24,36,52,72,97,127,166,213,273];
 const RESOURCES = LV.map((lv, i) => ({
   name: `锭${i+1}`, emoji: "🔩", time: T[i], xp: X[i], reqLevel: lv,
-  resourceKey: `bar_${i}`, actionKey: `smelting_${i}`,
+  resourceKey: `bar_${i}`, actionKey: `smelting_${i}`, resourceType: "bar" as const,
   requiredKey: `ore_${i}`, requiredName: ORES[i],
 }));
 

@@ -8,7 +8,7 @@ const T = [3,4,5,6,8,10,12,14,16,18];
 const X = [10,16,24,34,48,64,84,110,140,180];
 const RESOURCES = LV.map((lv, i) => ({
   name: WOODS[i], emoji: "🪵", time: T[i], xp: X[i], reqLevel: lv,
-  resourceKey: `wood_${i}`, actionKey: `woodcutting_${i}`,
+  resourceKey: `wood_${i}`, actionKey: `woodcutting_${i}`, resourceType: "wood" as const,
 }));
 
 export default function Woodcutting() {

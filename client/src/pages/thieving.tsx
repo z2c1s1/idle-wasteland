@@ -7,6 +7,9 @@ import type { GameState } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { HandMetal, ShieldAlert, Star, Lock, Coins, Eye } from "lucide-react";
+import { getPlayerId } from "@/lib/api";
+import { api } from "@shared/routes";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Thieving() {
   const { data: state } = useGameState();
@@ -165,15 +168,30 @@ export default function Thieving() {
 
 function ThievingBar({ startMs, cycleTime }: { startMs: number; cycleTime: number }) {
   const [progress, setProgress] = useState(0);
+  const lastSyncRef = useRef(0);
+  const prevStartRef = useRef(startMs);
+  const queryClient = useQueryClient();
   const rafRef = useRef<number | null>(null);
+  // Reset sync counter when server advances actionUpdatedAt
+  if (startMs !== prevStartRef.current) {
+    prevStartRef.current = startMs;
+    lastSyncRef.current = 0;
+  }
   useEffect(() => {
     const tick = () => {
       const elapsed = (Date.now() - startMs) / 1000;
-      setProgress((elapsed % cycleTime / cycleTime) * 100);
+      setProgress(((elapsed % cycleTime) / cycleTime) * 100);
+      const cycles = Math.floor(elapsed / cycleTime);
+      if (cycles > lastSyncRef.current) {
+        lastSyncRef.current = cycles;
+        fetch(api.game.getState.path, { headers: { "x-player-id": getPlayerId() } })
+          .then(r => r.ok && r.json().then(d => queryClient.setQueryData([api.game.getState.path], d)))
+          .catch(() => {});
+      }
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
     return () => { if (rafRef.current !== null) cancelAnimationFrame(rafRef.current); };
-  }, [startMs, cycleTime]);
+  }, [startMs, cycleTime, queryClient]);
   return <div className="h-full bg-primary rounded-full transition-none" style={{ width: `${progress}%` }} />;
 }
