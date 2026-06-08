@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ItemSprite } from "@/components/sprites";
 import { Progress } from "@/components/ui/progress";
 import { Gem, CheckCircle2 } from "lucide-react";
+import { useUIText } from "@/lib/i18n";
 import { useEffect, useRef, useState } from "react";
 import { getPlayerId } from "@/lib/api";
 import { api } from "@shared/routes";
@@ -45,13 +46,19 @@ function ActionTimer({ actionUpdatedAt, time }: { actionUpdatedAt: string; time:
   );
 }
 
-const ITEM_NAMES = ["布料", "皮革", "珠宝料", "甲料", "兵器料", "神器料", "遗物料", "杰作料", "天界料", "神圣料"];
+const BAR_NAMES: Record<string, string> = {
+  bar_0: "废铁锭", bar_1: "铜丝锭", bar_2: "铝罐锭", bar_3: "铅锭", bar_4: "硫磺锭",
+  bar_5: "硝酸盐锭", bar_6: "铀锭", bar_7: "钛金锭", bar_8: "钨钢锭", bar_9: "铱金锭",
+  bones: "骨头", dragonBones: "龙骨",
+};
 
 export default function Jewelcrafting() {
   const { data: state } = useGameState();
   const startAction = useStartAction();
 
   if (!state) return null;
+  const t = useUIText();
+  const pc = t.pages.crafting;
   const gs = state as GameState;
   const level = calculateLevel(gs.jewelcraftingXp);
   const craftItems = parseCraftItems(gs.craftItems);
@@ -73,22 +80,59 @@ export default function Jewelcrafting() {
     <div className="p-4 max-w-4xl mx-auto space-y-5">
       <div>
         <h1 className="text-xl font-bold flex items-center gap-2">
-          <Gem className="w-5 h-5 text-purple-400" /> 珠宝制作
+          <Gem className="w-5 h-5 text-purple-400" /> {pc.jewelcrafting}
         </h1>
         <p className="text-sm text-muted-foreground">{level} 级 · {formatNumber(gs.jewelcraftingXp)} 经验</p>
         <Progress value={levelProgress(gs.jewelcraftingXp)} className="mt-2 h-1.5" />
       </div>
 
-      {/* Item inventory */}
+      {/* Bar inventory + crafted jewelry */}
       <div className="bg-card border border-border rounded-xl p-4">
-        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">🧵 制作材料</h2>
-        <div className="grid grid-cols-5 gap-2">
-          {ITEM_NAMES.map((name, i) => {
-            const qty = getQty(`item_${i}`);
+        {/* Crafted items — shown first inside the materials card */}
+        {Object.keys(JEWELRY_ITEMS).some(id => (craftItems[id] ?? 0) > 0) && (
+          <div className="mb-4">
+            <h2 className="text-xs font-semibold text-purple-300 uppercase tracking-wider mb-2">💍 合成产物</h2>
+            <div className="flex flex-wrap gap-2">
+              {Object.entries(JEWELRY_ITEMS).map(([itemId, def]) => {
+                const qty = craftItems[itemId] ?? 0;
+                if (qty <= 0) return null;
+                return (
+                  <div key={itemId} className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-purple-500/30 bg-purple-500/5">
+                    <ItemSprite slot={def.slot} baseId={itemId} rarity="uncommon" ilvl={def.ilvl} size={18} />
+                    <div className="min-w-0">
+                      <p className="text-xs font-medium text-purple-300 truncate">{def.name} <span className="text-muted-foreground">x{qty}</span></p>
+                      <p className="text-[10px] text-muted-foreground">
+                        ilvl {def.ilvl}
+                        {def.critRating && def.critRating > 0 && <span className="text-yellow-300 ml-1">✦{def.critRating}%</span>}
+                        {def.hpBonus && def.hpBonus > 0 && <span className="text-green-300 ml-1">❤{def.hpBonus}</span>}
+                        {def.attackBonus > 0 && <span className="text-red-300 ml-1">⚔{def.attackBonus}</span>}
+                        {def.defenceBonus > 0 && <span className="text-blue-300 ml-1">🛡{def.defenceBonus}</span>}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">🪙 金属锭 & 材料</h2>
+        <div className="grid grid-cols-6 gap-2">
+          {[...Array(10)].map((_, i) => {
+            const key = `bar_${i}`;
+            const qty = getQty(key);
             return (
-              <div key={i} className={`text-center p-2 rounded-lg border ${qty > 0 ? 'border-purple-500/30 bg-purple-500/8' : 'border-border bg-muted/10 opacity-40'}`}>
-                <p className="text-xs text-muted-foreground">{name}</p>
+              <div key={key} className={`text-center p-2 rounded-lg border ${qty > 0 ? 'border-purple-500/30 bg-purple-500/8' : 'border-border bg-muted/10 opacity-40'}`}>
+                <p className="text-xs text-muted-foreground">{BAR_NAMES[key]}</p>
                 <p className={`text-sm font-bold ${qty > 0 ? 'text-purple-300' : ''}`}>{qty}</p>
+              </div>
+            );
+          })}
+          {['bones', 'dragonBones'].map(key => {
+            const qty = getQty(key);
+            return (
+              <div key={key} className={`text-center p-2 rounded-lg border ${qty > 0 ? 'border-amber-500/30 bg-amber-500/8' : 'border-border bg-muted/10 opacity-40'}`}>
+                <p className="text-xs text-muted-foreground">{BAR_NAMES[key]}</p>
+                <p className={`text-sm font-bold ${qty > 0 ? 'text-amber-300' : ''}`}>{qty}</p>
               </div>
             );
           })}
@@ -143,11 +187,11 @@ export default function Jewelcrafting() {
                 <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-0.5 text-xs text-muted-foreground">
                   {recipe.inputs.map(inp => {
                     const have = getQty(inp.resource);
-                    const itemIdx = parseInt(inp.resource.split("_")[1]);
+                    const name = BAR_NAMES[inp.resource] ?? inp.resource;
                     const ok = have >= inp.qty;
                     return (
                       <span key={inp.resource} className={ok ? "text-green-400" : "text-red-400"}>
-                        {ITEM_NAMES[itemIdx]} x{inp.qty}（持有 {have}）
+                        {name} x{inp.qty}（持有 {have}）
                       </span>
                     );
                   })}

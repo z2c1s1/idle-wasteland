@@ -5,6 +5,7 @@ import { api } from "@shared/routes";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { CandlestickChart } from "lucide-react";
+import { useUIText } from "@/lib/i18n";
 import type { GameState } from "@shared/schema";
 import { calculateLevel } from "@/lib/game-utils";
 
@@ -12,6 +13,8 @@ export default function Prayer() {
   const { data: state } = useGameState();
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const t = useUIText();
+  const pc = t.pages.crafting;
   if (!state) return null;
   const gs = state as GameState;
   const activePrayer = gs.activePrayer ?? '';
@@ -43,7 +46,7 @@ export default function Prayer() {
   return (
     <div className="p-4 max-w-2xl mx-auto space-y-4">
       <h1 className="text-xl font-bold flex items-center gap-2">
-        <CandlestickChart className="w-5 h-5 text-amber-400" /> 祷言
+        <CandlestickChart className="w-5 h-5 text-amber-400" /> {pc.prayer}
       </h1>
 
       {/* Resources */}

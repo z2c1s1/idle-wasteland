@@ -7,40 +7,28 @@ import { eq } from "drizzle-orm";
 import { getPlayerMaxHp } from "@shared/game-math";
 import { msg } from "@shared/messages";
 
-// ─── Cooking ──────────────────────────────────────────────────────────────────
+// ─── Cooking (instant HP recovery) ────────────────────────────────────────────
 
 export async function cookFood(state: GameState, recipeId: string): Promise<GameState> {
   const recipe = COOKING_RECIPES.find(r => r.id === recipeId);
   if (!recipe) throw new Error(msg("recipeNotFound"));
+  // Check materials (hides, fish, etc.)
   for (const inp of recipe.inputs) {
-    const have = inp.resource.includes('berry') ? JSON.parse(state.berries ?? '{}')[inp.resource] ?? 0 :
-      JSON.parse(state.herbs ?? '{}')[inp.resource] ?? (state as any)[inp.resource] ?? 0;
+    const have = (state as any)[inp.resource] ?? 0;
     if (have < inp.qty) throw new Error(msg("notEnoughMaterials"));
   }
-  const berries = JSON.parse(state.berries ?? '{}');
-  const herbs = JSON.parse(state.herbs ?? '{}');
-  const hideUpdates: any = {};
+  // Consume materials
+  const materialUpdates: any = {};
   for (const inp of recipe.inputs) {
-    if (inp.resource.includes('berry')) berries[inp.resource] -= inp.qty;
-    else if (inp.resource.includes('herb') || inp.resource in herbs) herbs[inp.resource] = (herbs[inp.resource] ?? 0) - inp.qty;
-    else hideUpdates[inp.resource] = ((state as any)[inp.resource] ?? 0) - inp.qty;
+    materialUpdates[inp.resource] = ((state as any)[inp.resource] ?? 0) - inp.qty;
   }
+  // Add food to inventory
   const foods = JSON.parse(state.foods ?? '{}');
   foods[recipeId] = (foods[recipeId] ?? 0) + 1;
-  const buffMap: Record<string, { effect: string; value: number }> = {
-    roasted_meat: { effect:'hp', value:0.2 }, berry_juice: { effect:'xp', value:0.1 },
-    herb_stew: { effect:'atk', value:0.15 }, ginseng_soup: { effect:'xp', value:0.3 },
-    honey_roast: { effect:'def', value:0.2 }, elf_bread: { effect:'speed', value:0.15 },
-    miner_pie: { effect:'speed', value:0.15 }, fisherman_stew: { effect:'speed', value:0.15 },
-    hunter_pie: { effect:'speed', value:0.15 }, dragon_feast: { effect:'all', value:0.1 },
-  };
-  const buff = buffMap[recipeId];
-  if (buff) {
-    const activeBuffs: any[] = JSON.parse(state.activeBuffs ?? '[]');
-    activeBuffs.push({ id: recipeId, effect: buff.effect, value: buff.value, expiresAt: Date.now() + recipe.durationMin * 60000 });
-    await db.update(gameStates).set({ activeBuffs: JSON.stringify(activeBuffs) } as any).where(eq(gameStates.id, state.id));
-  }
-  const [u] = await db.update(gameStates).set({ foods: JSON.stringify(foods), berries: JSON.stringify(berries), herbs: JSON.stringify(herbs), ...hideUpdates } as any).where(eq(gameStates.id, state.id)).returning();
+  const [u] = await db.update(gameStates).set({
+    foods: JSON.stringify(foods),
+    ...materialUpdates,
+  } as any).where(eq(gameStates.id, state.id)).returning();
   return u;
 }
 
@@ -50,31 +38,48 @@ export async function brewPotion(state: GameState, recipeId: string): Promise<Ga
   const recipe = POTION_RECIPES.find(r => r.id === recipeId);
   if (!recipe) throw new Error(msg("potionRecipeNotFound"));
   const herbs = JSON.parse(state.herbs ?? '{}');
+  const berries = JSON.parse(state.berries ?? '{}');
+  const resourceUpdates: any = {};
   for (const inp of recipe.inputs) {
-    if ((herbs[inp.resource] ?? 0) < inp.qty) throw new Error(msg("notEnoughHerbs"));
+    const total = (herbs[inp.resource] ?? 0) + (berries[inp.resource] ?? 0) + ((state as any)[inp.resource] ?? 0);
+    if (total < inp.qty) throw new Error(msg("notEnoughHerbs"));
   }
-  for (const inp of recipe.inputs) herbs[inp.resource] -= inp.qty;
+  // Consume from herbs first, then berries, then resources
+  for (const inp of recipe.inputs) {
+    let remaining = inp.qty;
+    const h = herbs[inp.resource] ?? 0;
+    const take = Math.min(h, remaining);
+    herbs[inp.resource] = (herbs[inp.resource] ?? 0) - take;
+    remaining -= take;
+    if (remaining > 0) {
+      const b = berries[inp.resource] ?? 0;
+      const takeB = Math.min(b, remaining);
+      berries[inp.resource] = (berries[inp.resource] ?? 0) - takeB;
+      remaining -= takeB;
+    }
+    if (remaining > 0) {
+      resourceUpdates[inp.resource] = ((state as any)[inp.resource] ?? 0) - remaining;
+    }
+  }
   const potions = JSON.parse(state.potions ?? '{}');
   potions[recipeId] = (potions[recipeId] ?? 0) + 1;
   const buffMap: Record<string, { effect: string; value: number }> = {
-    health_potion: { effect:'heal', value:0.5 }, greater_health: { effect:'heal', value:1 },
-    strength_potion: { effect:'atk', value:0.25 }, iron_potion: { effect:'def', value:0.25 },
-    speed_potion: { effect:'speed', value:0.2 }, luck_potion: { effect:'drop', value:0.15 },
-    crit_potion: { effect:'crit', value:0.15 }, leech_potion: { effect:'leech', value:0.1 },
+    berry_juice: { effect:'xp', value:0.1 }, strength_potion: { effect:'atk', value:0.25 },
+    iron_potion: { effect:'def', value:0.25 }, speed_potion: { effect:'speed', value:0.2 },
+    luck_potion: { effect:'drop', value:0.15 }, crit_potion: { effect:'crit', value:0.15 },
+    leech_potion: { effect:'leech', value:0.1 }, combat_stim: { effect:'combatXp', value:0.3 },
+    woodcutter_brew: { effect:'woodSpeed', value:0.15 }, miner_brew: { effect:'mineSpeed', value:0.15 },
+    hunter_brew: { effect:'huntSpeed', value:0.15 }, dragon_elixir: { effect:'all', value:0.1 },
+    feast_of_the_deep: { effect:'all', value:0.2 }, magic_brew: { effect:'magicDmg', value:0.25 },
+    ancient_elixir: { effect:'xp', value:0.3 }, mercury_elixir: { effect:'fishSpeed', value:0.3 },
   };
   const buff = buffMap[recipeId];
   if (buff) {
     const activeBuffs: any[] = JSON.parse(state.activeBuffs ?? '[]');
-    if (buff.effect === 'heal') {
-      const maxHp = getPlayerMaxHp(state);
-      const newHp = Math.min(maxHp, (state.playerHp < 0 ? maxHp : state.playerHp) + Math.floor(maxHp * buff.value));
-      await db.update(gameStates).set({ playerHp: newHp } as any).where(eq(gameStates.id, state.id));
-    } else {
-      activeBuffs.push({ id: recipeId, effect: buff.effect, value: buff.value, expiresAt: Date.now() + recipe.durationMin * 60000 });
-      await db.update(gameStates).set({ activeBuffs: JSON.stringify(activeBuffs) } as any).where(eq(gameStates.id, state.id));
-    }
+    activeBuffs.push({ id: recipeId, effect: buff.effect, value: buff.value, expiresAt: Date.now() + recipe.durationMin * 60000 });
+    await db.update(gameStates).set({ activeBuffs: JSON.stringify(activeBuffs) } as any).where(eq(gameStates.id, state.id));
   }
-  const [u] = await db.update(gameStates).set({ potions: JSON.stringify(potions), herbs: JSON.stringify(herbs) } as any).where(eq(gameStates.id, state.id)).returning();
+  const [u] = await db.update(gameStates).set({ potions: JSON.stringify(potions), herbs: JSON.stringify(herbs), berries: JSON.stringify(berries), ...resourceUpdates } as any).where(eq(gameStates.id, state.id)).returning();
   return u;
 }
 

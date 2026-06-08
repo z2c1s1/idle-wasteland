@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import {
   Axe, Pickaxe, LayoutDashboard, Swords, Flame, Waves, PawPrint, Soup,
   Hammer, Shield, Package, Skull, Gem, HandMetal, Home, Scissors,
-  Footprints, CandlestickChart, Building2, Map, Zap, Radiation,
+  Footprints, CandlestickChart, Building2, Map, Zap, Radiation, Trophy,
 } from "lucide-react";
 import { RadiationIcon } from "@/components/sprites";
 import { useGameState } from "@/hooks/use-game";
@@ -73,9 +73,10 @@ export function AppSidebar() {
             <NavItem title={t.sidebar.navDashboard} url="/" icon={LayoutDashboard} level={null} isActive={location === "/"} />
             <NavItem title={t.sidebar.navInventory} url="/inventory" icon={Package} level={null} isActive={location === "/inventory"} color="text-yellow-400" />
             <NavItem title={t.sidebar.navGems} url="/gems" icon={Gem} level={null} isActive={location === "/gems"} color="text-purple-400" />
-            <NavItem title={t.sidebar.navHomestead} url="/homestead" icon={Home} level={null} isActive={location === "/homestead"} color="text-green-400" />
+            <NavItem title={t.sidebar.navShelter} url="/homestead" icon={Home} level={null} isActive={location === "/homestead"} color="text-green-400" />
             <NavItem title={t.sidebar.navTown} url="/town" icon={Building2} level={null} isActive={location === "/town"} color="text-amber-400" />
             <NavItem title={t.sidebar.navTalents} url="/talents" icon={Gem} level={null} isActive={location === "/talents"} color="text-amber-400" />
+            <NavItem title={t.sidebar.navPets || "Pets"} url="/pets" icon={Trophy} level={null} isActive={location === "/pets"} color="text-yellow-400" />
           </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup>

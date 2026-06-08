@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { useUIText } from "@/lib/i18n";
 import { calculateLevel, levelProgress, xpForLevel, formatNumber, getResourceCount, getAgilityBonuses, getTemperatureMultiplier } from "@/lib/game-utils";
 import { useStartAction } from "@/hooks/use-game";
 import type { GameState } from "@shared/schema";
@@ -8,6 +9,14 @@ import { getToolBonus } from "@shared/game-data";
 import { getPlayerId } from "@/lib/api";
 import { api } from "@shared/routes";
 import { useQueryClient } from "@tanstack/react-query";
+import { WorkstationLayout, RustFrame } from "@/components/wasteland";
+import { SCAVENGE_SKILLS } from "@/lib/scavenge-skills";
+
+interface DropItem {
+  name: string;
+  qty: string | number;
+  chance: string;
+}
 
 interface ResourceDef {
   name: string;
@@ -20,9 +29,12 @@ interface ResourceDef {
   requiredKey?: string;
   requiredName?: string;
   resourceType?: ResourceType;
+  extraHint?: string;
+  drops?: DropItem[];
 }
 
 interface SkillPageProps {
+  skillKey?: string;
   skillName: string;
   skillXp: number;
   icon: LucideIcon;
@@ -31,7 +43,8 @@ interface SkillPageProps {
   resources: ResourceDef[];
 }
 
-export function SkillPage({ skillName, skillXp, icon: Icon, iconColor, state, resources }: SkillPageProps) {
+export function SkillPage({ skillKey, skillName, skillXp, icon: Icon, iconColor, state, resources }: SkillPageProps) {
+  const t = useUIText();
   const { mutate: startAction, isPending } = useStartAction();
   const level = calculateLevel(skillXp);
   const progress = levelProgress(skillXp);
@@ -51,27 +64,45 @@ export function SkillPage({ skillName, skillXp, icon: Icon, iconColor, state, re
     return baseTime * toolBonus.timeMult / agilityMul / Math.max(0.1, tempMul);
   };
 
-  return (
-    <div className="p-4 max-w-4xl mx-auto space-y-5">
-      {/* Header */}
-      <div>
-        <h1 className="text-xl font-bold flex items-center gap-2">
-          <Icon className={`w-5 h-5 ${iconColor}`} /> {skillName}
-        </h1>
-        <p className="text-sm text-muted-foreground">等级 {level} · 经验 {formatNumber(skillXp)}</p>
-      </div>
+  const isScavenge = skillKey != null && SCAVENGE_SKILLS.some(s => s.id === skillKey);
+  const zoneLabel = isScavenge ? t.dashboard.scavengeZone : undefined;
 
+  return (
+    <WorkstationLayout
+      skillName={skillName}
+      subtitle={t.skillPage.subtitle(level, formatNumber(skillXp))}
+      icon={Icon}
+      iconColor={iconColor}
+      zoneLabel={zoneLabel}
+    >
       {/* XP Bar */}
-      <div className="bg-card border border-border rounded-xl p-4 space-y-2">
+      <RustFrame className="space-y-2 p-4">
         <div className="flex justify-between text-xs">
-          <span className="text-muted-foreground">经验进度</span>
+          <span className="text-muted-foreground">{t.skillPage.xpProgress}</span>
           <span className="font-bold">{progress.toFixed(1)}%</span>
         </div>
         <div className="h-3 bg-muted/30 rounded-full overflow-hidden border border-border">
           <div className="h-full rounded-full transition-all duration-500 bg-primary" style={{ width: `${progress}%` }} />
         </div>
-        <p className="text-[10px] text-muted-foreground text-right">{formatNumber(skillXp)} / {formatNumber(xpNext)} 经验 → {level + 1} 级</p>
-      </div>
+        <p className="text-[10px] text-muted-foreground text-right">{t.skillPage.xpToLevel(formatNumber(skillXp), formatNumber(xpNext), level + 1)}</p>
+      </RustFrame>
+
+      {/* Mastery */}
+      {(() => {
+        const key = skillKey || skillName.toLowerCase().replace(/\s+/g, '');
+        const mastery: Record<string, number> = (() => { try { return JSON.parse((state as any).mastery ?? '{}'); } catch { return {}; } })();
+        const count = mastery[key] ?? 0;
+        if (count === 0) return null;
+        return (
+          <RustFrame className="flex items-center gap-3 p-3">
+            <span className="text-lg">⭐</span>
+            <div>
+              <p className="text-xs font-semibold text-amber-400">Mastery</p>
+              <p className="text-[10px] text-muted-foreground">{formatNumber(count)} actions completed</p>
+            </div>
+          </RustFrame>
+        );
+      })()}
 
       {/* Active progress */}
       {activeResource && (
@@ -80,7 +111,7 @@ export function SkillPage({ skillName, skillXp, icon: Icon, iconColor, state, re
 
       {/* Resource list */}
       <div className="space-y-2">
-        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">采集资源</h2>
+        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{t.skillPage.gatheringResources}</h2>
         {resources.map(res => {
           const isActive = state.activeAction === res.actionKey;
           const isUnlocked = level >= res.reqLevel;
@@ -88,57 +119,69 @@ export function SkillPage({ skillName, skillXp, icon: Icon, iconColor, state, re
           const owned = getResourceCount(state, res.resourceKey);
 
           return (
-            <div key={res.actionKey}
-              className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${
-                !isUnlocked ? "border-border bg-muted/10 opacity-50" :
-                isActive    ? "border-primary/40 bg-primary/10" :
-                              "border-border bg-card hover:border-primary/40"
+            <React.Fragment key={res.actionKey}>
+            <div
+              className={`flex items-center gap-3 p-3 border transition-colors ${
+                !isUnlocked ? "border-[hsl(var(--border-rust))] bg-muted/10 opacity-50" :
+                isActive    ? "border-[hsl(var(--crt-green)/0.4)] bg-[hsl(120_30%_8%)]" :
+                              "border-[hsl(var(--border-rust))] bg-[hsl(var(--card))] hover:border-[hsl(var(--crt-green)/0.3)]"
               }`}>
               {res.resourceType
-                ? <ResourceIcon type={res.resourceType} size={28} className="flex-shrink-0" />
-                : <span className="text-2xl flex-shrink-0">{res.emoji}</span>}
+                ? <ResourceIcon type={res.resourceType} size={42} tier={parseInt(res.resourceKey.split('_')[1] ?? '0') || 0} className="flex-shrink-0" />
+                : <span className="text-4xl flex-shrink-0">{res.emoji}</span>}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-medium">{res.name}</span>
-                  {!isUnlocked && <span className="text-xs text-muted-foreground">（等级 {res.reqLevel}）</span>}
-                  {isActive && <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/20 text-primary font-semibold">进行中</span>}
+                  {!isUnlocked && <span className="text-xs text-muted-foreground">（{t.skillPage.levelLocked(res.reqLevel)}）</span>}
+                  {isActive && <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/20 text-primary font-semibold">{t.skillPage.activeBadge}</span>}
                 </div>
                 <div className="text-xs text-muted-foreground flex gap-3 mt-0.5 flex-wrap">
-                  <span>⏱ {res.time}s</span>
-                  <span>⭐ {res.xp} 经验</span>
-                  <span>📦 持有 {formatNumber(owned)}</span>
+                  <span>{t.skillPage.timeSeconds(res.time)}</span>
+                  <span>{t.skillPage.xpGain(res.xp)}</span>
+                  <span>{t.skillPage.resourceOwned(formatNumber(owned))}</span>
                   {res.requiredKey && (
                     <span className={((state as any)[res.requiredKey] ?? 0) > 0 ? 'text-muted-foreground' : 'text-red-400 font-medium'}>
                       🔧 {res.requiredName ?? res.requiredKey} x{((state as any)[res.requiredKey] ?? 0)}
                     </span>
                   )}
+                  {res.extraHint && <span className="text-[hsl(var(--crt-green))/0.6]">{res.extraHint}</span>}
                 </div>
               </div>
               <div className="flex-shrink-0">
                 {!isUnlocked ? (
-                  <span className="px-3 py-1 text-xs text-muted-foreground bg-muted/30 rounded">🔒 {res.reqLevel}级</span>
+                  <span className="px-3 py-1 text-xs text-muted-foreground bg-muted/30 rounded">{t.skillPage.lockedLabel(res.reqLevel)}</span>
                 ) : isActive ? (
                   <button onClick={() => startAction("idle")} disabled={isPending}
-                    className="px-3 py-1 text-xs font-semibold bg-red-600 hover:bg-red-500 text-white rounded">停止</button>
+                    className="px-3 py-1 text-xs font-semibold bg-red-600 hover:bg-red-500 text-white rounded">{t.skillPage.stop}</button>
                 ) : (
                   <button onClick={() => {
                     if (res.requiredKey && ((state as any)[res.requiredKey] ?? 0) <= 0) return;
                     startAction(res.actionKey);
                   }} disabled={isPending || isOtherActive || !!(res.requiredKey && ((state as any)[res.requiredKey] ?? 0) <= 0)}
                     className="px-3 py-1 text-xs font-semibold bg-primary hover:bg-primary/80 text-primary-foreground rounded disabled:opacity-40">
-                    开始
+                    {t.skillPage.start}
                   </button>
                 )}
               </div>
             </div>
+            {/* Detailed drops — inline like combat drops */}
+            {res.drops && res.drops.length > 0 && (
+              <div className="mt-1 ml-9 flex flex-wrap gap-x-2 gap-y-0 text-[10px] text-muted-foreground/60">
+                {res.drops!.map((d, di) => (
+                  <span key={di}>{d.name}{d.qty !== 1 && d.qty !== '' ? ` ×${d.qty}` : ''} {d.chance}{di < res.drops!.length - 1 ? ' · ' : ''}</span>
+                ))}
+              </div>
+            )}
+            </React.Fragment>
           );
         })}
       </div>
-    </div>
+    </WorkstationLayout>
   );
 }
 
 function ActiveBar({ name, cycleTime, startMs, onStop, isPending }: { name: string; cycleTime: number; startMs: number; onStop: () => void; isPending: boolean }) {
+  const t = useUIText();
   const [progress, setProgress] = useState(0);
   const [timeLeft, setTimeLeft] = useState(cycleTime);
   const lastSyncRef = useRef(0);
@@ -170,21 +213,23 @@ function ActiveBar({ name, cycleTime, startMs, onStop, isPending }: { name: stri
   }, [startMs, cycleTime, queryClient]);
 
   return (
-    <div className="bg-card border border-primary/30 rounded-xl p-4 space-y-2">
+    <RustFrame className="space-y-2 border-[hsl(var(--crt-green)/0.3)] p-4">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-xs text-muted-foreground uppercase tracking-wider">当前进行中</p>
+          <p className="text-xs text-muted-foreground uppercase tracking-wider">{t.skillPage.activeTitle}</p>
           <p className="text-sm font-semibold">{name}</p>
         </div>
         <div className="flex items-center gap-3">
           <span className="text-xs text-muted-foreground tabular-nums">{timeLeft.toFixed(1)}s</span>
           <button onClick={onStop} disabled={isPending}
-            className="px-3 py-1 text-xs font-semibold bg-red-600 hover:bg-red-500 text-white rounded disabled:opacity-50">停止</button>
+            className="px-3 py-1 text-xs font-semibold bg-red-600 hover:bg-red-500 text-white rounded disabled:opacity-50">{t.skillPage.stop}</button>
         </div>
       </div>
-      <div className="h-3 bg-muted/30 rounded-full overflow-hidden border border-border">
-        <div className="h-full bg-primary rounded-full transition-none" style={{ width: `${progress}%` }} />
+      <div className="h-3 overflow-hidden border border-[hsl(var(--border-rust))] bg-[hsl(var(--background))]">
+        <div className="progress-bar-fill h-full transition-none" style={{ width: `${progress}%` }} />
       </div>
-    </div>
+    </RustFrame>
   );
 }
+
+

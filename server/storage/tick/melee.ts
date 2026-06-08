@@ -9,6 +9,7 @@ import {
   getAgilityBonuses, getTemperatureMultiplier,
   RARITY_ORDER, DISENCHANT_GOLD, mergeGems,
   COMPANION_NPCS,
+  trackAchievement, getPetBuffs,
 } from "./_shared";
 import {
   computeSkillEffects, computeEffectiveCombatSpeed,
@@ -79,6 +80,12 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
   let gemsGained: Record<string, number> = {};
   const dropChance = getDropChance(enemyIndex);
   const agilityLuck = getAgilityBonuses(state).luckMul;
+
+  // ── Pet buffs ────────────────────────────────────────────────────────────
+  const petBuffs = getPetBuffs(state);
+  playerHp += petBuffs.maxHp; // pet HP bonus
+  const petDmgBonus = playerStyle === 'melee' ? petBuffs.meleeDmg : playerStyle === 'ranged' ? petBuffs.rangedDmg : petBuffs.magicDmg;
+  const petXpMult = 1 + petBuffs.combatXp;
   const gemPool = COMBAT_GEM_POOLS[Math.min(enemyIndex, COMBAT_GEM_POOLS.length - 1)];
 
   const updates: Partial<GameState> = {}; // declared early for companion drops
@@ -97,8 +104,10 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
     if (eff.spellbladePct > 0)  effAtk = Math.floor(effAtk * (1 + eff.spellbladePct / 100));
     if (enhancedDamage > 0) effAtk = Math.floor(effAtk * (1 + enhancedDamage / 100));
     if (eff.berserkPct > 0 && playerHp < playerMaxHp * 0.3) effAtk = Math.floor(effAtk * (1 + eff.berserkPct / 100));
+    if (petDmgBonus > 0) effAtk = Math.floor(effAtk * (1 + petDmgBonus));
 
-    const critHit = critRating > 0 && Math.random() * 100 < critRating;
+    const petCritBonus = petBuffs.critChance * 100; // convert to percentage
+  const critHit = (critRating + petCritBonus) > 0 && Math.random() * 100 < (critRating + petCritBonus);
     const critDmg = (deadlyStrike ?? 200) / 100; // default 200% = 2x
     const strikes = (eff.doubleStrikePct > 0 && Math.random() * 100 < eff.doubleStrikePct) ? 2 : 1;
     let totalDmgToEnemy = effAtk * strikes * (critHit ? critDmg : 1) + eff.poisonDmg;
@@ -128,16 +137,19 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
 
     if (enemyHp <= 0) {
       const killReward = enemy.drops.gold[0] + Math.floor(Math.random() * (enemy.drops.gold[1] - enemy.drops.gold[0] + 1));
-      goldGained += killReward * enemyQty;
+      goldGained += Math.floor(killReward * enemyQty * (1 + petBuffs.goldDrop));
       bonesGained       += (enemy.drops.bones ?? 0) * enemyQty;
       dragonBonesGained += (enemy.drops.dragonBones ?? 0) * enemyQty;
       bloodShardsGained += Math.floor((enemyIndex + 1) * 2 * enemyQty);
-      attackXpGained    += enemy.xp * enemyQty;
-      hitpointsXpGained += Math.floor(enemy.xp / 3) * enemyQty;
+      attackXpGained    += Math.floor(enemy.xp * enemyQty * petXpMult);
+      hitpointsXpGained += Math.floor(enemy.xp / 3 * enemyQty * petXpMult);
       slayerKills += enemyQty;
       enemyHp = totalMaxHp;
-      if (Math.random() < dropChance * agilityLuck * (1 + (enemyQty - 1) * 0.5)) {
-        const drop = generateDroppedItem(enemyIndex, magicFind);
+      // Track achievement progress
+      state.achievements = trackAchievement(state, 'kill', enemy.id, enemyQty);
+      state.achievements = trackAchievement(state, 'kill', '_total', enemyQty);
+      if (Math.random() < (dropChance + petBuffs.dropRate) * agilityLuck * (1 + (enemyQty - 1) * 0.5)) {
+        const drop = generateDroppedItem(enemyIndex, magicFind, (enemy as any).uniqueDropIds);
         const filterThreshold = RARITY_ORDER[state.lootFilter ?? 'common'] ?? 0;
         if ((RARITY_ORDER[drop.rarity] ?? 0) >= filterThreshold) newDrops.push(drop);
         else goldGained += DISENCHANT_GOLD[drop.rarity] ?? 5;
@@ -187,6 +199,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
 
   Object.assign(updates, {
     playerHp, enemyHp,
+    achievements: state.achievements,
     gold:        state.gold        + goldGained,
     bloodShards: (state as any).bloodShards + bloodShardsGained,
     bones:       state.bones       + bonesGained,

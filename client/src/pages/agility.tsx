@@ -14,5 +14,5 @@ const RESOURCES = LV.map((lv, i) => ({
 export default function Agility() {
   const { data: state } = useGameState();
   if (!state) return null;
-  return (<SkillPage skillName="Agility" skillXp={state.agilityXp ?? 0} icon={Footprints} iconColor="text-cyan-400" state={state} resources={RESOURCES} />);
+  return (<SkillPage skillKey="agility" skillName="Agility" skillXp={state.agilityXp ?? 0} icon={Footprints} iconColor="text-cyan-400" state={state} resources={RESOURCES} />);
 }

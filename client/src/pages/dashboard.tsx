@@ -1,85 +1,36 @@
 import { useMemo } from "react";
 import { useGameState } from "@/hooks/use-game";
-import { useStartAction } from "@/hooks/use-game";
-import { calculateLevel, levelProgress, formatNumber, getCombatLevel } from "@/lib/game-utils";
-import {
-  Axe, Pickaxe, Flame, Waves, PawPrint,
-  StopCircle, Skull, Shield, HandMetal,
-  Footprints, Zap, Download, Upload, Radiation,
-} from "lucide-react";
-import { uiText } from "@/lib/text";
+import { calculateLevel, formatNumber, getCombatLevel } from "@/lib/game-utils";
+import { Skull, Shield, Zap, Download, Upload, Radiation } from "lucide-react";
 import { useLocation } from "wouter";
 import { WORLD_TIER_LABEL } from "@shared/game-data";
 import type { GameState } from "@shared/schema";
 import { useQueryClient } from "@tanstack/react-query";
 import { api } from "@shared/routes";
 import { useToast } from "@/hooks/use-toast";
-
-const GATHERING_SKILLS = [
-  { title: uiText.sidebar.navWoodcutting, xpKey: "woodcuttingXp" as const, icon: Axe,      color: "text-green-400",  bg: "bg-green-900/30",  href: "/woodcutting" },
-  { title: uiText.sidebar.navMining,      xpKey: "miningXp"      as const, icon: Pickaxe,  color: "text-yellow-400", bg: "bg-yellow-900/30", href: "/mining"      },
-  { title: uiText.sidebar.navSmelting,    xpKey: "smeltingXp"    as const, icon: Flame,    color: "text-orange-400", bg: "bg-orange-900/30", href: "/smelting"    },
-  { title: uiText.sidebar.navFishing,     xpKey: "fishingXp"     as const, icon: Waves,    color: "text-blue-400",   bg: "bg-blue-900/30",   href: "/fishing"     },
-  { title: uiText.sidebar.navHunting,     xpKey: "huntingXp"     as const, icon: PawPrint, color: "text-red-400",    bg: "bg-red-900/30",    href: "/hunting"     },
-  { title: uiText.sidebar.navThieving,    xpKey: "thievingXp"    as const, icon: HandMetal,color: "text-purple-400", bg: "bg-purple-900/30", href: "/thieving"    },
-  { title: uiText.sidebar.navAgility,     xpKey: "agilityXp"     as const, icon: Footprints,color:"text-cyan-400",  bg: "bg-cyan-900/30",   href: "/agility"     },
-];
-
-const COMBAT_SKILLS = [
-  { title: "攻击", xpKey: "attackXp"     as const, color: "text-red-400"    },
-  { title: "防御", xpKey: "defenceXp"    as const, color: "text-blue-400"   },
-  { title: "生命", xpKey: "hitpointsXp"  as const, color: "text-green-400"  },
-  { title: "远程", xpKey: "rangedXp"     as const, color: "text-green-400"  },
-  { title: "魔法", xpKey: "magicXp"      as const, color: "text-purple-400" },
-];
-
-function SkillRow({ title, xp, icon: Icon, color, href, isActive, onClick }: {
-  title: string; xp: number; icon: React.ElementType; color: string;
-  href: string; isActive: boolean; onClick: () => void;
-}) {
-  const level = calculateLevel(xp);
-  const progress = levelProgress(xp);
-  return (
-    <tr onClick={onClick}
-      className={`border-t border-border cursor-pointer transition-colors ${isActive ? "active-row" : "skill-row-hover"}`}
-      data-testid={`skill-row-${title.toLowerCase()}`}
-    >
-      <td className="px-3 md:px-4 py-2 md:py-3">
-        <div className="flex items-center gap-2 md:gap-2.5">
-          <Icon className={`w-4 h-4 ${color}`} />
-          <span className={`font-medium text-sm md:text-base ${isActive ? "text-primary" : "text-foreground"}`}>{title}</span>
-          {isActive && (
-            <span className="text-[10px] px-1.5 py-0.5 bg-primary/20 text-primary rounded font-semibold uppercase whitespace-nowrap">进行中</span>
-          )}
-        </div>
-      </td>
-      <td className="px-3 md:px-4 py-2 md:py-3 text-center">
-        <span className="font-display font-bold text-base">{level}</span>
-      </td>
-      <td className="px-3 md:px-4 py-2 md:py-3">
-        <div className="h-2.5 bg-[hsl(220_13%_8%)] rounded overflow-hidden border border-border">
-          <div className="h-full xp-bar-fill rounded" style={{ width: `${progress}%` }} />
-        </div>
-        <div className="text-[10px] text-muted-foreground mt-0.5">{progress.toFixed(1)}%</div>
-      </td>
-      <td className="px-3 md:px-4 py-2 md:py-3 text-right tabular-nums text-muted-foreground text-xs">{formatNumber(xp)}</td>
-    </tr>
-  );
-}
+import { useUIText, useLanguage } from "@/lib/i18n";
+import {
+  BuildingGrid,
+  ActionTerminal,
+  SkillMonitor,
+  RustFrame,
+  AchievementTracker,
+} from "@/components/wasteland";
 
 export default function Dashboard() {
   const { data: state } = useGameState();
-  const { mutate: startAction, isPending } = useStartAction();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
+  const t = useUIText();
+  const { lang } = useLanguage();
 
   const handleExport = () => {
     const a = document.createElement("a");
     a.href = "/api/game/export";
     a.download = "wasteland-save.json";
     a.click();
-    toast({ title: "存档导出中…" });
+    toast({ title: t.dashboard.exportTitle });
   };
 
   const handleImport = () => {
@@ -99,176 +50,105 @@ export default function Dashboard() {
         });
         if (!res.ok) throw new Error((await res.json()).message);
         queryClient.invalidateQueries({ queryKey: [api.game.getState.path] });
-        toast({ title: "存档导入成功！刷新页面生效" });
-      } catch (e: any) {
-        toast({ title: "导入失败", description: e.message, variant: "destructive" });
+        toast({ title: t.dashboard.importSuccess });
+      } catch (e: unknown) {
+        toast({
+          title: t.dashboard.importFail,
+          description: e instanceof Error ? e.message : "Unknown error",
+          variant: "destructive",
+        });
       }
     };
     input.click();
   };
 
+  const survivalTip = useMemo(() => {
+    const tips = t.wasteland.survivalTips;
+    return tips[Math.floor(Math.random() * tips.length)];
+  }, [lang, t]);
+
   if (!state) return null;
   const gs = state as GameState;
-
-  // Random survival tip — stable for this render
-  const survivalTip = useMemo(() => {
-    const tips = uiText.wasteland.survivalTips;
-    return tips[Math.floor(Math.random() * tips.length)];
-  }, []);
-
-  const isActive = gs.activeAction !== "idle";
-  const activeSkill = isActive ? gs.activeAction.split("_")[0] : null;
   const combatLevel = getCombatLevel(gs);
 
   return (
-    <div className="p-4 max-w-4xl mx-auto space-y-5">
-      <div className="pb-4 border-b border-border">
-        <h1 className="font-display text-xl font-bold text-foreground mb-0.5">{uiText.dashboard.title}</h1>
-        <p className="text-xs text-muted-foreground">{uiText.dashboard.subtitle}</p>
+    <div className="mx-auto max-w-5xl space-y-4">
+      <div className="border-b border-[hsl(var(--border-rust))] pb-3">
+        <h1 className="font-display text-xl font-bold text-[hsl(var(--brass))]">{t.dashboard.title}</h1>
+        <p className="text-xs text-muted-foreground">{t.dashboard.subtitle}</p>
       </div>
 
-      {/* Wasteland survival tip */}
-      <div className="bg-card border border-amber-500/20 rounded-xl px-4 py-3">
-        <div className="flex items-center gap-2 mb-1">
-          <Radiation className="w-3.5 h-3.5 text-amber-400" />
-          <span className="text-[10px] font-semibold text-amber-400 uppercase tracking-wider">废土生存法则</span>
-        </div>
-        <p className="text-xs text-muted-foreground leading-relaxed">{survivalTip}</p>
-      </div>
+      <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
+        <div className="space-y-4">
+          <BuildingGrid state={gs} />
+          <ActionTerminal />
 
-      {/* World Tier banner */}
-      <div onClick={() => setLocation("/exploration")}
-        className="bg-card border border-amber-500/30 rounded-xl px-4 py-3 cursor-pointer hover:border-amber-400/50 transition-colors">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Zap className="w-4 h-4 text-amber-400" />
-            <span className="text-sm font-semibold text-amber-300">
-              {WORLD_TIER_LABEL[(gs.worldTier as 1|2|3|4|undefined) ?? 1]}
-            </span>
-          </div>
-          <span className="text-xs text-muted-foreground">切换层级 →</span>
-        </div>
-      </div>
-
-      {isActive && (
-        <div className="flex items-center justify-between bg-[hsl(217_50%_10%)] border border-primary/30 rounded px-4 py-2.5">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-sm text-foreground font-medium capitalize">
-              {gs.activeAction.replace(/_/g, " ")} 进行中
-            </span>
-          </div>
-          <button onClick={() => startAction("idle")} disabled={isPending}
-            className="flex items-center gap-1.5 px-3 py-1 text-xs font-semibold bg-red-600 hover:bg-red-500 text-white rounded transition-colors disabled:opacity-50"
-            data-testid="button-stop-all">
-            <StopCircle className="w-3.5 h-3.5" /> 停止
+          <button
+            type="button"
+            onClick={() => setLocation("/exploration")}
+            className="w-full border border-[hsl(var(--amber-warn)/0.4)] bg-[hsl(var(--card))] px-4 py-3 text-left transition-colors hover:border-[hsl(var(--amber-warn)/0.6)]"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Zap className="h-4 w-4 text-[hsl(var(--amber-warn))]" />
+                <span className="text-sm font-semibold text-[hsl(var(--amber-warn))]">
+                  {WORLD_TIER_LABEL[(gs.worldTier as 1 | 2 | 3 | 4 | undefined) ?? 1]}
+                </span>
+              </div>
+              <span className="text-xs text-muted-foreground">{t.dashboard.switchTier}</span>
+            </div>
           </button>
         </div>
-      )}
 
-      {/* Summary cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3">
-        <div className="bg-card border border-border rounded-lg px-3 py-2 text-center">
-          <Skull className="w-4 h-4 text-red-400 mx-auto mb-1" />
-          <p className="text-xs text-muted-foreground">{uiText.dashboard.combatLevel}</p>
-          <p className="text-xl font-bold">{combatLevel}</p>
-        </div>
-        <div className="bg-card border border-border rounded-lg px-3 py-2 text-center">
-          <span className="text-lg">💰</span>
-          <p className="text-xs text-muted-foreground">{uiText.dashboard.gold}</p>
-          <p className="text-xl font-bold text-yellow-400">{formatNumber(gs.gold)}</p>
-        </div>
-        <div className="bg-card border border-border rounded-lg px-3 py-2 text-center">
-          <Shield className="w-4 h-4 text-slate-400 mx-auto mb-1" />
-          <p className="text-xs text-muted-foreground">{uiText.dashboard.smithingLevel}</p>
-          <p className="text-xl font-bold">{calculateLevel(gs.smithingXp)}</p>
-        </div>
-      </div>
+        <div className="space-y-4">
+          <SkillMonitor state={gs} />
 
-      {/* Gathering skills */}
-      <div className="rounded border border-border overflow-x-auto">
-        <table className="w-full text-sm min-w-[380px]">
-          <thead>
-            <tr className="bg-[hsl(220_13%_8%)] text-muted-foreground text-xs">
-              <th className="text-left px-3 md:px-4 py-2 font-semibold">{uiText.dashboard.gatheringSkills}</th>
-              <th className="text-center px-3 md:px-4 py-2 font-semibold">等级</th>
-              <th className="text-left px-3 md:px-4 py-2 font-semibold w-32 md:w-48">进度</th>
-              <th className="text-right px-3 md:px-4 py-2 font-semibold">总经验</th>
-            </tr>
-          </thead>
-          <tbody>
-            {GATHERING_SKILLS.map((skill) => (
-              <SkillRow
-                key={skill.title}
-                title={skill.title}
-                xp={gs[skill.xpKey]}
-                icon={skill.icon}
-                color={skill.color}
-                href={skill.href}
-                isActive={activeSkill === skill.href.slice(1)}
-                onClick={() => setLocation(skill.href)}
-              />
+          <RustFrame className="grid grid-cols-3 gap-px bg-[hsl(var(--border-rust))] p-px">
+            {[
+              { icon: Skull, label: t.dashboard.combatLevel, value: String(combatLevel), color: "text-red-400" },
+              { icon: Shield, label: t.dashboard.smithingLevel, value: String(calculateLevel(gs.smithingXp)), color: "text-slate-400" },
+              { icon: null, label: t.dashboard.gold, value: formatNumber(gs.gold), color: "text-[hsl(var(--amber-warn))]" },
+            ].map((stat) => (
+              <div key={stat.label} className="bg-[hsl(var(--surface))] px-2 py-3 text-center">
+                {stat.icon ? (
+                  <stat.icon className={`mx-auto mb-1 h-5 w-5 ${stat.color}`} />
+                ) : (
+                  <span className="mx-auto mb-1 block text-lg leading-none">💰</span>
+                )}
+                <p className="text-[9px] text-muted-foreground">{stat.label}</p>
+                <p className={`font-display text-lg font-bold ${stat.color}`}>{stat.value}</p>
+              </div>
             ))}
-          </tbody>
-        </table>
+          </RustFrame>
+
+          <AchievementTracker state={gs} />
+
+          <RustFrame className="px-4 py-3">
+            <div className="mb-1 flex items-center gap-2">
+              <Radiation className="h-3.5 w-3.5 text-[hsl(var(--amber-warn))]" />
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-[hsl(var(--amber-warn))]">
+                {t.dashboard.wastelandTipTitle}
+              </span>
+            </div>
+            <p className="text-xs leading-relaxed text-muted-foreground">{survivalTip}</p>
+          </RustFrame>
+        </div>
       </div>
 
-      {/* Combat skills */}
-      <div className="rounded border border-border overflow-x-auto">
-        <table className="w-full text-sm min-w-[380px]">
-          <thead>
-            <tr className="bg-[hsl(220_13%_8%)] text-muted-foreground text-xs">
-              <th className="text-left px-3 md:px-4 py-2 font-semibold">{uiText.dashboard.combatSkills}</th>
-              <th className="text-center px-3 md:px-4 py-2 font-semibold">等级</th>
-              <th className="text-left px-3 md:px-4 py-2 font-semibold w-32 md:w-48">进度</th>
-              <th className="text-right px-3 md:px-4 py-2 font-semibold">总经验</th>
-            </tr>
-          </thead>
-          <tbody>
-            {COMBAT_SKILLS.map((skill) => (
-              <SkillRow
-                key={skill.title}
-                title={skill.title}
-                xp={gs[skill.xpKey]}
-                icon={Skull}
-                color={skill.color}
-                href="/combat"
-                isActive={false}
-                onClick={() => setLocation("/combat")}
-              />
-            ))}
-            <tr className="border-t border-border cursor-pointer skill-row-hover transition-colors"
-              onClick={() => setLocation("/smithing")} data-testid="skill-row-smithing">
-              <td className="px-3 md:px-4 py-2 md:py-3">
-                <div className="flex items-center gap-2 md:gap-2.5">
-                  <Shield className="w-4 h-4 text-slate-400" />
-                  <span className="font-medium text-sm md:text-base">锻造</span>
-                </div>
-              </td>
-              <td className="px-4 py-3 text-center">
-                <span className="font-display font-bold text-base">{calculateLevel(gs.smithingXp)}</span>
-              </td>
-              <td className="px-4 py-3">
-                <div className="h-2.5 bg-[hsl(220_13%_8%)] rounded overflow-hidden border border-border">
-                  <div className="h-full xp-bar-fill rounded" style={{ width: `${levelProgress(gs.smithingXp)}%` }} />
-                </div>
-                <div className="text-[10px] text-muted-foreground mt-0.5">{levelProgress(gs.smithingXp).toFixed(1)}%</div>
-              </td>
-              <td className="px-4 py-3 text-right tabular-nums text-muted-foreground text-xs">{formatNumber(gs.smithingXp)}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      {/* Save / Load */}
-      <div className="flex gap-3 justify-center">
-        <button onClick={handleExport}
-          className="flex items-center gap-2 px-4 py-2 text-xs rounded border border-border hover:bg-muted/20 transition-colors">
-          <Download className="w-3.5 h-3.5" /> {uiText.dashboard.exportTitle}
+      <div className="flex justify-center gap-3 pt-2">
+        <button
+          type="button"
+          onClick={handleExport}
+          className="flex items-center gap-2 border border-[hsl(var(--border-rust))] px-4 py-2 text-xs hover:bg-[hsl(var(--accent))]"
+        >
+          <Download className="h-3.5 w-3.5" /> {t.dashboard.exportTitle}
         </button>
-        <button onClick={handleImport}
-          className="flex items-center gap-2 px-4 py-2 text-xs rounded border border-border hover:bg-muted/20 transition-colors">
-          <Upload className="w-3.5 h-3.5" /> 导入存档
+        <button
+          type="button"
+          onClick={handleImport}
+          className="flex items-center gap-2 border border-[hsl(var(--border-rust))] px-4 py-2 text-xs hover:bg-[hsl(var(--accent))]"
+        >
+          <Upload className="h-3.5 w-3.5" /> {t.dashboard.importTitle}
         </button>
       </div>
     </div>

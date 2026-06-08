@@ -69,7 +69,7 @@ async function initDatabase() {
       magic_xp INTEGER NOT NULL DEFAULT 0,
       player_hp INTEGER NOT NULL DEFAULT -1,
       enemy_hp INTEGER NOT NULL DEFAULT -1,
-      gold INTEGER NOT NULL DEFAULT 0,
+      gold INTEGER NOT NULL DEFAULT 100000,
       bones INTEGER NOT NULL DEFAULT 0,
       dragon_bones INTEGER NOT NULL DEFAULT 0,
       equipment TEXT NOT NULL DEFAULT '{}',
@@ -92,6 +92,7 @@ async function initDatabase() {
       temperature INTEGER NOT NULL DEFAULT 0,
       fuel_ends_at TIMESTAMP,
       stone INTEGER NOT NULL DEFAULT 0,
+      wood INTEGER NOT NULL DEFAULT 0,
       achievements TEXT NOT NULL DEFAULT '{}',
       pets TEXT NOT NULL DEFAULT '[]',
       foods TEXT NOT NULL DEFAULT '{}',
@@ -166,6 +167,7 @@ async function initDatabase() {
     `ALTER TABLE game_states ADD COLUMN extracted_powers TEXT NOT NULL DEFAULT '[]'`,
     `ALTER TABLE game_states ADD COLUMN active_powers TEXT NOT NULL DEFAULT '["","",""]'`,
     `ALTER TABLE game_states ADD COLUMN blood_shards INTEGER NOT NULL DEFAULT 0`,
+    `ALTER TABLE game_states ADD COLUMN wood INTEGER NOT NULL DEFAULT 0`,
   ];
   for (const sql of migrations) {
     try { await client.exec(sql); } catch { /* already exists */ }

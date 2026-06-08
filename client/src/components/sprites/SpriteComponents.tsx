@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// 像素精灵组件 — 8×8 / 10×10 像素矩阵渲染
+// 像素精灵组件 — 优先使用 spritesheet PNG，回退到 SVG 像素生成
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React from "react";
@@ -11,6 +11,34 @@ import {
   RESOURCE_PIXELS,
   type PixelColors,
 } from "./spriteData";
+import { getEnemyFrame, getEquipFrame, ENEMY_FRAME, SpriteFrame } from "./SpritesheetSprite";
+
+// Atlas-order tile filenames (1-105)
+const TILE_FILES = [
+  '001_废木板','002_枯树枝','003_焦木','004_铁线木','005_石化木',
+  '006_辐射瘤木','007_骨白杉','008_黑钢木','009_泰坦木','010_核融晶木',
+  '011_废铁块','012_铜丝矿','013_铝罐矿','014_铅块','015_硫磺矿',
+  '016_硝酸盐矿','017_铀矿石','018_钛金矿','019_钨钢矿','020_铱金矿',
+  '021_辐射蝌蚪','022_癞皮鱼','023_电鳗仔','024_刺鳍鱼','025_肿眼鲶',
+  '026_荧光鳗','027_铁甲鱼','028_双头鲨','029_深渊巨口','030_核融鲸',
+  '031_辐射鼠','032_变异兔','033_铁鳞蜥','034_疯犬','035_钢鬃猪',
+  '036_双头鹿','037_灰熊','038_辐射蝎','039_死亡爪','040_巨兽',
+  '041_辐射鼠皮','042_变异兔皮','043_铁鳞蜥皮','044_疯犬皮','045_钢鬃猪皮',
+  '046_双头鹿皮','047_灰熊厚皮','048_辐射蝎壳','049_死亡爪皮','050_巨兽硬皮',
+  '051_辐射鼠肉','052_变异兔肉','053_铁鳞蜥肉','054_疯犬肉','055_钢鬃猪肉',
+  '056_双头鹿肉','057_灰熊肉','058_辐射蝎肉','059_死亡爪肉','060_巨兽肉',
+  '061_流浪汉','062_废墟乞丐','063_废品商人','064_废土行商','065_黑市走私犯',
+  '066_废土掠夺者','067_废土商人','068_废土军阀','069_避难所银行家','070_废土统治者',
+  '071_废铁锭','072_铜丝锭','073_铝罐锭','074_铅锭','075_硫磺锭',
+  '076_硝酸盐锭','077_铀锭','078_钛金锭','079_钨钢锭','080_铱金锭',
+  '081_蓝莓','082_树莓','083_接骨木莓','084_黑莓','085_枸杞',
+  '086_夜光莓','087_魔法莓','088_远古莓','089_蔓越莓','090_日光莓',
+  '091_灵魂莓','092_月光莓','093_蒲公英','094_薄荷','095_迷迭香',
+  '096_金盏花','097_人参','098_百里香','099_灵芝','100_龙草',
+  '101_龙血果','102_骨头','103_龙骨','104_木材','105_石料',
+];
+const CAT_START: Record<string, number> = { wood:0, ore:10, fish:20, animal:30, hide:40, meat:50, npc:60, ingot:70, berry:80, herb:92, material:100 };
+const PREFIX_MAP: Record<string, string> = { wood:'wood', ore:'ore', fish:'fish', hide:'hide', meat:'meat', bar:'ingot' };
 
 /** Convert PixelColors object to string array for PixelGrid */
 function toColors(pc: PixelColors): string[] {
@@ -70,6 +98,12 @@ function PixelGrid({ pixels, colors, cellSize = 3, className = "" }: {
 interface EnemySpriteProps { enemyId: string; size?: number; className?: string; }
 
 export function EnemySprite({ enemyId, size = 48, className = "" }: EnemySpriteProps) {
+  // Use spritesheet PNG if mapped
+  const frame = ENEMY_FRAME[enemyId];
+  if (frame) {
+    return <SpriteFrame frameIndex={frame} size={size} className={className} />;
+  }
+  // Fallback to SVG pixel art
   const arch = ENEMY_ARCHETYPE_MAP[enemyId] ?? 'humanoid';
   const pixels = ENEMY_PIXELS[arch] ?? ENEMY_PIXELS['humanoid']!;
   const pc = COMBAT_COLORS[arch] ?? COMBAT_COLORS['humanoid']!;
@@ -84,11 +118,22 @@ interface ItemSpriteProps {
   size?: number; className?: string;
 }
 
+// Rarity → pixel color mapping (matches RARITY_COLOR text colors)
+const RARITY_PIXEL: Record<string, number> = {
+  common: 1, uncommon: 2, rare: 6, epic: 4, legendary: 5, mythic: 5,
+};
+
 export function ItemSprite({ slot, baseId, rarity = 'common', ilvl = 5, size = 32, className = "" }: ItemSpriteProps) {
+  // Use spritesheet PNG for equipment slots
+  const frame = getEquipFrame(slot, baseId);
+  if (frame) {
+    return <SpriteFrame frameIndex={frame} size={size} className={className} />;
+  }
+  // Fallback to SVG pixel art — color by rarity, not ilvl
   const shape = SLOT_SHAPE[slot] ?? 'sword';
   const pixels = EQUIPMENT_PIXELS[shape] ?? EQUIPMENT_PIXELS['sword']!;
-  const tier = Math.min(6, Math.floor(ilvl / 15));
-  const pc = ITEM_COLORS[tier] ?? ITEM_COLORS[0]!;
+  const ci = RARITY_PIXEL[rarity] ?? 1;
+  const pc = ITEM_COLORS[ci] ?? ITEM_COLORS[1]!;
   const cs = Math.max(2, Math.floor(size / pixels.length));
   return <PixelGrid pixels={pixels} colors={toColors(pc)} cellSize={cs} className={className} />;
 }
@@ -158,9 +203,34 @@ const RESOURCE_COLORS: Record<string, string[]> = {
   craft: ["#0000", "#8B7355", "#A08060", "#DEB887"],
 };
 
-interface ResourceIconProps { type: ResourceType; size?: number; className?: string; }
+interface ResourceIconProps { type: ResourceType; size?: number; className?: string; tier?: number; resourceKey?: string; }
 
-export function ResourceIcon({ type, size = 20, className = "" }: ResourceIconProps) {
+export function ResourceIcon({ type, size = 20, className = "", tier = 0, resourceKey }: ResourceIconProps) {
+  // Try PNG from tiles directory
+  const key = resourceKey || `${type}_${tier}`;
+  let tileIdx: number | null = null;
+  
+  // Match by resource key pattern
+  const m = key.match(/^([a-z]+)_(\d+)$/);
+  if (m) {
+    const cat = PREFIX_MAP[m[1]];
+    if (cat && CAT_START[cat] !== undefined) {
+      tileIdx = CAT_START[cat] + parseInt(m[2]);
+    }
+  }
+  // Special cases
+  if (key === 'bones') tileIdx = 101;
+  if (key === 'dragonBones') tileIdx = 102;
+  
+  if (tileIdx !== null && tileIdx >= 0 && tileIdx < TILE_FILES.length && typeof window !== 'undefined') {
+    const filename = TILE_FILES[tileIdx] + '.png';
+    return (
+      <img src={`/tiles/${filename}`} alt="" className={className}
+        style={{ width: size, height: size, imageRendering: 'pixelated', flexShrink: 0 }} />
+    );
+  }
+
+  // Fallback to pixel SVG
   const pixels = RESOURCE_PIXELS[type] ?? RESOURCE_PIXELS.wood;
   const colors = RESOURCE_COLORS[type] ?? ["#0000", "#888", "#aaa", "#ddd"];
   const cs = Math.max(2, Math.floor(size / pixels.length));

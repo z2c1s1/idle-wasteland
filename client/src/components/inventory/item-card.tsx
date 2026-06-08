@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 import {
@@ -26,7 +27,7 @@ export function ItemCard({ item, onEquip, onDestroy, onUnequip, onEnhance, isEqu
 }) {
   const [expanded, setExpanded] = useState(false);
 
-  const isUnique = item.source === 'unique';
+  const isUnique = item.source === 'unique' || !!item.uniqueId || item.instanceId?.startsWith('unique_');
   const isSet    = !!item.setId;
   const setDef   = isSet ? ITEM_SETS.find(s => s.id === item.setId) : undefined;
   const uniqueDef= isUnique ? UNIQUE_ITEMS.find(u => u.id === item.uniqueId) : undefined;
@@ -67,7 +68,7 @@ export function ItemCard({ item, onEquip, onDestroy, onUnequip, onEnhance, isEqu
         >
           <ItemSprite slot={item.slot} baseId={(item as any).baseId ?? (item as any).baseType} rarity={item.rarity} ilvl={item.ilvl} size={32} />
         </div>
-        {hover && (
+        {hover && createPortal(
           <div className="fixed z-[99999] w-56 bg-card border border-border rounded-lg p-3 shadow-2xl space-y-1.5 text-xs"
             style={{
               left: iconRef.current ? Math.min(iconRef.current.getBoundingClientRect().right + 8, window.innerWidth - 240) : 0,
@@ -76,10 +77,15 @@ export function ItemCard({ item, onEquip, onDestroy, onUnequip, onEnhance, isEqu
             <div className="flex items-center gap-2">
               <ItemSprite slot={item.slot} baseId={(item as any).baseId ?? (item as any).baseType} rarity={item.rarity} ilvl={item.ilvl} size={24} />
               <div>
-                <p className={`text-sm font-bold ${RARITY_COLOR[item.rarity]}`}>{item.name}</p>
-                <p className="text-[10px] text-muted-foreground">{SLOT_LABEL[item.slot]} · ilvl {item.ilvl}</p>
+                <p className={`text-sm font-bold ${nameClass}`}>{item.name}</p>
+                <div className="flex items-center gap-1.5">
+                  <p className="text-[10px] text-muted-foreground">{SLOT_LABEL[item.slot]} · ilvl {item.ilvl}</p>
+                  {isSet && setDef && <span className="text-[9px] px-1 rounded border border-teal-400/50 text-teal-300 bg-teal-400/10">套装</span>}
+                  {isUnique && !isSet && <span className="text-[9px] px-1 rounded border border-amber-400/50 text-amber-300 bg-amber-400/10">独特</span>}
+                </div>
               </div>
             </div>
+            {isSet && setDef && <p className="text-[10px] text-teal-300">{setDef.name} ({setDef.pieces.length}件套)</p>}
             <p className="text-orange-200">⚔ {item.minDamage ?? 0}-{item.maxDamage ?? 0} 武器伤害</p>
             <div className="flex flex-wrap gap-x-2 gap-y-0.5">
               {(item.attackBonus ?? 0) !== 0 && <span className="text-red-300">⚔ +{item.attackBonus} 攻击</span>}
@@ -124,7 +130,8 @@ export function ItemCard({ item, onEquip, onDestroy, onUnequip, onEnhance, isEqu
               </div>
             )}
 
-          </div>
+          </div>,
+          document.body
         )}
       </div>
     );
@@ -353,7 +360,7 @@ function CompareWrapper({ item, equipped, children }: { item: GameItem; equipped
   return (
     <div className="relative" onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
       {children}
-      {show && (
+      {show && createPortal(
         <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[99999] w-64 bg-card border border-border rounded-lg p-3 shadow-2xl space-y-1.5 text-xs">
           <p className={`font-bold ${RARITY_COLOR[equipped.rarity]}`}><ItemSprite slot={equipped.slot} baseId={(equipped as any).baseId ?? (equipped as any).baseType} rarity={equipped.rarity} ilvl={equipped.ilvl} size={14} /> {equipped.name}</p>
           <p className="text-[10px] text-muted-foreground">{SLOT_LABEL[equipped.slot]} · 物品等级 {equipped.ilvl}</p>
@@ -362,7 +369,8 @@ function CompareWrapper({ item, equipped, children }: { item: GameItem; equipped
             <span className="text-blue-300">🛡 +{equipped.defenceBonus ?? 0}{diff(item.defenceBonus, equipped.defenceBonus)}</span>
             <span className="text-green-300">❤ +{equipped.hpBonus ?? 0}{diff(item.hpBonus, equipped.hpBonus)}</span>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

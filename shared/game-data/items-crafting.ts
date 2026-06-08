@@ -91,71 +91,111 @@ export function smithedToGameItem(itemId: string): GameItem | null {
   };
 }
 
-// ─── Leather equipment items ───────────────────────────────────────────────────
-// Uses hides from Hunting (hide_0..9)
+// ─── Leather equipment items — 完整 10 级套装 ────────────────────────────────
 export const LEATHER_ITEMS: Record<string, SmithedItemDef> = {
-  // Rabbit hide (hide_0) — Tier 1
-  leather_cap:       { id: 'leather_cap',       name: '皮革帽',     emoji: '🎩', slot: 'helmet',  attackBonus: 0,  defenceBonus: 3,   ilvl: 4  },
-  leather_vest:      { id: 'leather_vest',      name: '皮革战衣',   emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 6,   ilvl: 4  },
-  leather_pants:     { id: 'leather_pants',     name: '皮革裤',     emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 4,   ilvl: 4  },
-  leather_gloves:    { id: 'leather_gloves',    name: '皮革手套',   emoji: '🥊', slot: 'gloves',  attackBonus: 3,  defenceBonus: 2,   ilvl: 4  },
-  wooden_staff:      { id: 'wooden_staff',      name: '木制法杖', emoji: '🪄', slot: 'weapon',  attackBonus: 6,  defenceBonus: 0,  ilvl: 4,  combatStyle: 'magic'  },
-  bone_staff:        { id: 'bone_staff',        name: '骨制法杖', emoji: '🪄', slot: 'weapon',  attackBonus: 13, defenceBonus: 0,  ilvl: 13, combatStyle: 'magic'  },
-  enchanted_staff:   { id: 'enchanted_staff',   name: '附魔法杖', emoji: '🪄', slot: 'weapon',  attackBonus: 22, defenceBonus: 0,  ilvl: 24, combatStyle: 'magic'  },
-  crystal_staff:     { id: 'crystal_staff',     name: '水晶法杖', emoji: '🪄', slot: 'weapon',  attackBonus: 35, defenceBonus: 0,  ilvl: 38, combatStyle: 'magic'  },
-  dragonbone_staff:  { id: 'dragonbone_staff',  name: '龙骨法杖', emoji: '🪄', slot: 'weapon',  attackBonus: 52, defenceBonus: 0,  ilvl: 52, combatStyle: 'magic'  },
-  etherial_staff:    { id: 'etherial_staff',    name: '以太法杖', emoji: '🪄', slot: 'weapon',  attackBonus: 74, defenceBonus: 0,  ilvl: 68, combatStyle: 'magic'  },
-  leather_boots:     { id: 'leather_boots',     name: '皮革靴',     emoji: '👢', slot: 'boots',   attackBonus: 0,  defenceBonus: 3,   ilvl: 4  },
-  // Fox hide (hide_2) — Tier 2
-  studded_cap:       { id: 'studded_cap',       name: '铆钉帽',     emoji: '⛑️', slot: 'helmet',  attackBonus: 0,  defenceBonus: 10,  ilvl: 14 },
-  studded_vest:      { id: 'studded_vest',      name: '铆钉战衣',   emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 18,  ilvl: 14 },
-  studded_pants:     { id: 'studded_pants',     name: '铆钉裤',     emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 13,  ilvl: 14 },
-  studded_gloves:    { id: 'studded_gloves',    name: '铆钉手套',   emoji: '🥊', slot: 'gloves',  attackBonus: 7,  defenceBonus: 5,   ilvl: 14 },
-  // Wolf hide (hide_3) — Tier 3
-  wolf_cap:          { id: 'wolf_cap',          name: '狼皮帽',     emoji: '⛑️', slot: 'helmet',  attackBonus: 0,  defenceBonus: 15,  ilvl: 22 },
-  wolf_vest:         { id: 'wolf_vest',         name: '狼皮战衣',   emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 26,  ilvl: 22 },
-  wolf_pants:        { id: 'wolf_pants',        name: '狼皮裤',     emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 20,  ilvl: 22 },
-  wolf_gloves:       { id: 'wolf_gloves',       name: '狼皮手套',   emoji: '🥊', slot: 'gloves',  attackBonus: 12, defenceBonus: 7,   ilvl: 22 },
-  // Bear hide (hide_4) — Tier 4
-  bear_vest:         { id: 'bear_vest',         name: '熊皮战衣',   emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 38,  ilvl: 32 },
-  bear_pants:        { id: 'bear_pants',        name: '熊皮裤',     emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 28,  ilvl: 32 },
-  // Dragon hide (hide_8) — Tier 5
-  dragonhide_vest:   { id: 'dragonhide_vest',   name: '龙皮战衣',   emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 72,  ilvl: 58 },
-  dragonhide_boots:  { id: 'dragonhide_boots',  name: '龙皮靴',     emoji: '👢', slot: 'boots',   attackBonus: 0,  defenceBonus: 38,  ilvl: 58 },
-  // Phoenix hide (hide_9) — Tier 6
-  phoenix_vest:      { id: 'phoenix_vest',      name: '凤凰羽战衣', emoji: '🧥', slot: 'chest',   attackBonus: 5,  defenceBonus: 90,  ilvl: 72 },
+  // ── hide_0: 辐射鼠皮 ──
+  rat_helm:   { id:'rat_helm',   name:'辐射鼠皮帽', emoji:'🎩', slot:'helmet', attackBonus:0, defenceBonus:3,  ilvl:3  },
+  rat_vest:   { id:'rat_vest',   name:'辐射鼠皮衣', emoji:'🧥', slot:'chest',  attackBonus:0, defenceBonus:6,  ilvl:3  },
+  rat_pants:  { id:'rat_pants',  name:'辐射鼠皮裤', emoji:'👖', slot:'legs',   attackBonus:0, defenceBonus:4,  ilvl:3  },
+  rat_gloves: { id:'rat_gloves', name:'辐射鼠皮手套',emoji:'🥊',slot:'gloves', attackBonus:2, defenceBonus:2,  ilvl:3  },
+  rat_boots:  { id:'rat_boots',  name:'辐射鼠皮靴', emoji:'👢', slot:'boots',  attackBonus:0, defenceBonus:2,  ilvl:3  },
+  // ── hide_1: 变异兔皮 ──
+  rabbit_helm:   { id:'rabbit_helm',   name:'变异兔皮帽', emoji:'⛑️', slot:'helmet', attackBonus:0, defenceBonus:8,  ilvl:8  },
+  rabbit_vest:   { id:'rabbit_vest',   name:'变异兔皮衣', emoji:'🧥', slot:'chest',  attackBonus:0, defenceBonus:14, ilvl:8  },
+  rabbit_pants:  { id:'rabbit_pants',  name:'变异兔皮裤', emoji:'👖', slot:'legs',   attackBonus:0, defenceBonus:10, ilvl:8  },
+  rabbit_gloves: { id:'rabbit_gloves', name:'变异兔皮手套',emoji:'🥊',slot:'gloves',attackBonus:5, defenceBonus:3,  ilvl:8  },
+  rabbit_boots:  { id:'rabbit_boots',  name:'变异兔皮靴', emoji:'👢', slot:'boots',  attackBonus:0, defenceBonus:5,  ilvl:8  },
+  // ── hide_2: 铁鳞蜥皮 ──
+  scale_helm:   { id:'scale_helm',   name:'铁鳞蜥皮盔',   emoji:'🪖', slot:'helmet', attackBonus:0, defenceBonus:14, ilvl:14 },
+  scale_vest:   { id:'scale_vest',   name:'铁鳞蜥皮甲',   emoji:'🧥', slot:'chest',  attackBonus:0, defenceBonus:24, ilvl:14 },
+  scale_pants:  { id:'scale_pants',  name:'铁鳞蜥皮裤',   emoji:'👖', slot:'legs',   attackBonus:0, defenceBonus:18, ilvl:14 },
+  scale_gloves: { id:'scale_gloves', name:'铁鳞蜥皮手套', emoji:'🥊', slot:'gloves', attackBonus:9, defenceBonus:6,  ilvl:14 },
+  scale_boots:  { id:'scale_boots',  name:'铁鳞蜥皮靴',   emoji:'👢', slot:'boots',  attackBonus:0, defenceBonus:10, ilvl:14 },
+  // ── hide_3: 疯犬皮 ──
+  dog_helm:   { id:'dog_helm',   name:'疯犬皮帽',   emoji:'⛑️', slot:'helmet', attackBonus:0, defenceBonus:20, ilvl:20 },
+  dog_vest:   { id:'dog_vest',   name:'疯犬皮甲',   emoji:'🧥', slot:'chest',  attackBonus:0, defenceBonus:34, ilvl:20 },
+  dog_pants:  { id:'dog_pants',  name:'疯犬皮裤',   emoji:'👖', slot:'legs',   attackBonus:0, defenceBonus:26, ilvl:20 },
+  dog_gloves: { id:'dog_gloves', name:'疯犬皮手套', emoji:'🥊', slot:'gloves', attackBonus:13,defenceBonus:9,  ilvl:20 },
+  dog_boots:  { id:'dog_boots',  name:'疯犬皮靴',   emoji:'👢', slot:'boots',  attackBonus:0, defenceBonus:14, ilvl:20 },
+  // ── hide_4: 钢鬃猪皮 ──
+  boar_helm:   { id:'boar_helm',   name:'钢鬃猪皮盔', emoji:'⛑️', slot:'helmet', attackBonus:0, defenceBonus:28, ilvl:28 },
+  boar_vest:   { id:'boar_vest',   name:'钢鬃猪皮甲', emoji:'🧥', slot:'chest',  attackBonus:0, defenceBonus:46, ilvl:28 },
+  boar_pants:  { id:'boar_pants',  name:'钢鬃猪皮裤', emoji:'👖', slot:'legs',   attackBonus:0, defenceBonus:34, ilvl:28 },
+  boar_gloves: { id:'boar_gloves', name:'钢鬃猪皮手套',emoji:'🥊',slot:'gloves',attackBonus:18,defenceBonus:12, ilvl:28 },
+  boar_boots:  { id:'boar_boots',  name:'钢鬃猪皮靴', emoji:'👢', slot:'boots',  attackBonus:0, defenceBonus:20, ilvl:28 },
+  // ── hide_5: 双头鹿皮 ──
+  deer_helm:   { id:'deer_helm',   name:'双头鹿皮帽', emoji:'⛑️', slot:'helmet', attackBonus:0, defenceBonus:36, ilvl:36 },
+  deer_vest:   { id:'deer_vest',   name:'双头鹿皮衣', emoji:'🧥', slot:'chest',  attackBonus:0, defenceBonus:58, ilvl:36 },
+  deer_pants:  { id:'deer_pants',  name:'双头鹿皮裤', emoji:'👖', slot:'legs',   attackBonus:0, defenceBonus:44, ilvl:36 },
+  deer_gloves: { id:'deer_gloves', name:'双头鹿皮手套',emoji:'🥊',slot:'gloves',attackBonus:22,defenceBonus:15, ilvl:36 },
+  deer_boots:  { id:'deer_boots',  name:'双头鹿皮靴', emoji:'👢', slot:'boots',  attackBonus:0, defenceBonus:26, ilvl:36 },
+  // ── hide_6: 灰熊厚皮 ──
+  bear_helm:   { id:'bear_helm',   name:'灰熊厚皮盔', emoji:'⛑️', slot:'helmet', attackBonus:0, defenceBonus:44, ilvl:45 },
+  bear_vest:   { id:'bear_vest',   name:'灰熊厚皮衣', emoji:'🧥', slot:'chest',  attackBonus:0, defenceBonus:70, ilvl:45 },
+  bear_pants:  { id:'bear_pants',  name:'灰熊厚皮裤', emoji:'👖', slot:'legs',   attackBonus:0, defenceBonus:52, ilvl:45 },
+  bear_gloves: { id:'bear_gloves', name:'灰熊厚皮手套',emoji:'🥊',slot:'gloves',attackBonus:28,defenceBonus:19, ilvl:45 },
+  bear_boots:  { id:'bear_boots',  name:'灰熊厚皮靴', emoji:'👢', slot:'boots',  attackBonus:0, defenceBonus:34, ilvl:45 },
+  // ── hide_7: 辐射蝎壳 ──
+  chitin_helm:   { id:'chitin_helm',   name:'辐射蝎壳盔', emoji:'🦂', slot:'helmet', attackBonus:4, defenceBonus:54, ilvl:55 },
+  chitin_vest:   { id:'chitin_vest',   name:'辐射蝎壳铠', emoji:'🧥', slot:'chest',  attackBonus:6, defenceBonus:84, ilvl:55 },
+  chitin_pants:  { id:'chitin_pants',  name:'辐射蝎壳裤', emoji:'👖', slot:'legs',   attackBonus:3, defenceBonus:62, ilvl:55 },
+  chitin_gloves: { id:'chitin_gloves', name:'辐射蝎壳手', emoji:'🥊', slot:'gloves', attackBonus:34,defenceBonus:23, ilvl:55 },
+  chitin_boots:  { id:'chitin_boots',  name:'辐射蝎壳靴', emoji:'👢', slot:'boots',  attackBonus:4, defenceBonus:42, ilvl:55 },
+  // ── hide_8: 死亡爪皮 ──
+  claw_helm:   { id:'claw_helm',   name:'死亡爪皮盔', emoji:'💀', slot:'helmet', attackBonus:8, defenceBonus:64, ilvl:66 },
+  claw_vest:   { id:'claw_vest',   name:'死亡爪皮甲', emoji:'🧥', slot:'chest',  attackBonus:12,defenceBonus:96, ilvl:66 },
+  claw_pants:  { id:'claw_pants',  name:'死亡爪皮裤', emoji:'👖', slot:'legs',   attackBonus:5, defenceBonus:72, ilvl:66 },
+  claw_gloves: { id:'claw_gloves', name:'死亡爪皮手套',emoji:'🥊',slot:'gloves',attackBonus:40,defenceBonus:28, ilvl:66 },
+  claw_boots:  { id:'claw_boots',  name:'死亡爪皮靴', emoji:'👢', slot:'boots',  attackBonus:8, defenceBonus:50, ilvl:66 },
+  // ── hide_9: 巨兽硬皮 ──
+  behemoth_helm:   { id:'behemoth_helm',   name:'巨兽硬皮盔',   emoji:'👑', slot:'helmet', attackBonus:12,defenceBonus:78, ilvl:80 },
+  behemoth_vest:   { id:'behemoth_vest',   name:'巨兽硬皮战甲', emoji:'🧥', slot:'chest',  attackBonus:18,defenceBonus:110,ilvl:80 },
+  behemoth_pants:  { id:'behemoth_pants',  name:'巨兽硬皮护腿', emoji:'👖', slot:'legs',   attackBonus:8, defenceBonus:86, ilvl:80 },
+  behemoth_gloves: { id:'behemoth_gloves', name:'巨兽硬皮护手', emoji:'🥊', slot:'gloves', attackBonus:48,defenceBonus:34, ilvl:80 },
+  behemoth_boots:  { id:'behemoth_boots',  name:'巨兽硬皮战靴', emoji:'👢', slot:'boots',  attackBonus:12,defenceBonus:62, ilvl:80 },
+  // ── 法杖 ──
+  scrap_staff:    { id:'scrap_staff',    name:'废料法杖', emoji:'🪄', slot:'weapon', attackBonus:4, defenceBonus:0, ilvl:3,  combatStyle:'magic' },
+  bone_staff:     { id:'bone_staff',     name:'骨制法杖', emoji:'🪄', slot:'weapon', attackBonus:12,defenceBonus:0, ilvl:12, combatStyle:'magic' },
+  ironbark_staff: { id:'ironbark_staff', name:'铁线木杖', emoji:'🪄', slot:'weapon', attackBonus:24,defenceBonus:0, ilvl:22, combatStyle:'magic' },
+  crystal_staff:  { id:'crystal_staff',  name:'水晶法杖', emoji:'🪄', slot:'weapon', attackBonus:38,defenceBonus:0, ilvl:34, combatStyle:'magic' },
+  uranium_staff:  { id:'uranium_staff',  name:'辐射法杖', emoji:'🪄', slot:'weapon', attackBonus:54,defenceBonus:0, ilvl:46, combatStyle:'magic' },
+  plasma_staff:   { id:'plasma_staff',   name:'等离子杖', emoji:'🪄', slot:'weapon', attackBonus:72,defenceBonus:0, ilvl:58, combatStyle:'magic' },
+  gauss_staff:    { id:'gauss_staff',    name:'高斯法杖', emoji:'🪄', slot:'weapon', attackBonus:88,defenceBonus:0, ilvl:72, combatStyle:'magic' },
 };
 
 // ─── Jewelry items ─────────────────────────────────────────────────────────────
 // Uses crafting items (item_0..9) from the Crafting skill
 export const JEWELRY_ITEMS: Record<string, SmithedItemDef> = {
-  // Cloth (item_0) — Tier 1
-  copper_ring:      { id: 'copper_ring',     name: '铜戒指',     emoji: '💍', slot: 'ring', attackBonus: 0, defenceBonus: 0, critRating: 1.5, ilvl: 3  },
-  leather_amulet:   { id: 'leather_amulet',  name: '皮革护符',   emoji: '📿', slot: 'neck', attackBonus: 0, defenceBonus: 0, hpBonus: 10,     ilvl: 3  },
-  // Leather (item_1) — Tier 2
-  tin_band:         { id: 'tin_band',        name: '锡指环',     emoji: '💍', slot: 'ring', attackBonus: 0, defenceBonus: 0, critRating: 2.5, ilvl: 9  },
-  cord_pendant:     { id: 'cord_pendant',    name: '绳吊坠',     emoji: '📿', slot: 'neck', attackBonus: 0, defenceBonus: 0, hpBonus: 20,     ilvl: 9  },
-  // Jewelry (item_2) — Tier 3
-  bronze_signet:    { id: 'bronze_signet',   name: '青铜印戒',   emoji: '💍', slot: 'ring', attackBonus: 2, defenceBonus: 0, critRating: 3.0, ilvl: 15 },
-  iron_chain:       { id: 'iron_chain',      name: '铁项链',     emoji: '📿', slot: 'neck', attackBonus: 0, defenceBonus: 0, hpBonus: 30,     ilvl: 15 },
-  // Armor (item_3) — Tier 4
-  silver_ring:      { id: 'silver_ring',     name: '银戒指',     emoji: '💍', slot: 'ring', attackBonus: 0, defenceBonus: 0, critRating: 5.0, ilvl: 22 },
-  silver_chain:     { id: 'silver_chain',    name: '银链',       emoji: '📿', slot: 'neck', attackBonus: 3, defenceBonus: 0, hpBonus: 35,     ilvl: 22 },
-  // Weapon (item_4) — Tier 5
-  gold_ring:        { id: 'gold_ring',       name: '金戒指',     emoji: '💍', slot: 'ring', attackBonus: 5, defenceBonus: 0, critRating: 6.0, ilvl: 30 },
-  gold_locket:      { id: 'gold_locket',     name: '金锁扣',     emoji: '📿', slot: 'neck', attackBonus: 0, defenceBonus: 0, hpBonus: 50,     ilvl: 30 },
-  // Artifact (item_5) — Tier 6
-  mithril_signet:   { id: 'mithril_signet',  name: '秘银印戒',   emoji: '💍', slot: 'ring', attackBonus: 5, defenceBonus: 0, critRating: 8.0, ilvl: 38 },
-  runed_pendant:    { id: 'runed_pendant',   name: '符文吊坠',   emoji: '📿', slot: 'neck', attackBonus: 5, defenceBonus: 5, hpBonus: 65,     ilvl: 38 },
-  // Relic (item_6) — Tier 7
-  arcane_band:      { id: 'arcane_band',     name: '奥术指环',   emoji: '💍', slot: 'ring', attackBonus: 8, defenceBonus: 0, critRating: 10.5,ilvl: 48 },
-  arcane_locket:    { id: 'arcane_locket',   name: '奥术锁扣',   emoji: '📿', slot: 'neck', attackBonus: 5, defenceBonus: 5, hpBonus: 80,     ilvl: 48 },
-  // Dragon ring (item_8) — Tier 8
-  dragon_ring:      { id: 'dragon_ring',     name: '龙火戒指',   emoji: '💍', slot: 'ring', attackBonus:12, defenceBonus: 0, critRating: 13.0,ilvl: 62 },
-  dragon_pendant:   { id: 'dragon_pendant',  name: '龙鳞吊坠',   emoji: '📿', slot: 'neck', attackBonus: 8, defenceBonus: 8, hpBonus: 100,    ilvl: 62 },
-  // Divine (item_9) — Tier 9
-  eternal_ring:     { id: 'eternal_ring',    name: '永恒戒指',   emoji: '💍', slot: 'ring', attackBonus:18, defenceBonus: 0, critRating: 18.0,ilvl: 78 },
-  eternal_pendant:  { id: 'eternal_pendant', name: '永恒吊坠',   emoji: '📿', slot: 'neck', attackBonus:10, defenceBonus:10, hpBonus: 130,    ilvl: 78 },
+  // bar_0: 废铁锭 + bones
+  scrap_ring:   { id:'scrap_ring',   name:'废铁戒指', emoji:'💍', slot:'ring', attackBonus:0, defenceBonus:0, critRating:1.0, ilvl:2  },
+  scrap_neck:   { id:'scrap_neck',   name:'废铁吊坠', emoji:'📿', slot:'neck', attackBonus:0, defenceBonus:0, hpBonus:8,      ilvl:2  },
+  // bar_1: 铜锭 + bones
+  copper_ring:  { id:'copper_ring',  name:'铜戒指',   emoji:'💍', slot:'ring', attackBonus:2, defenceBonus:0, critRating:2.0, ilvl:6  },
+  copper_neck:  { id:'copper_neck',  name:'铜吊坠',   emoji:'📿', slot:'neck', attackBonus:0, defenceBonus:0, hpBonus:18,     ilvl:6  },
+  // bar_2: 铝锭 + bones
+  alum_ring:    { id:'alum_ring',    name:'铝戒指',   emoji:'💍', slot:'ring', attackBonus:3, defenceBonus:0, critRating:3.5, ilvl:12 },
+  alum_neck:    { id:'alum_neck',    name:'铝吊坠',   emoji:'📿', slot:'neck', attackBonus:2, defenceBonus:0, hpBonus:28,     ilvl:12 },
+  // bar_3: 铅锭 + bones
+  lead_ring:    { id:'lead_ring',    name:'铅戒指',   emoji:'💍', slot:'ring', attackBonus:5, defenceBonus:0, critRating:5.0, ilvl:20 },
+  lead_neck:    { id:'lead_neck',    name:'铅吊坠',   emoji:'📿', slot:'neck', attackBonus:3, defenceBonus:3, hpBonus:40,     ilvl:20 },
+  // bar_4: 硫磺锭 (special, no bones)
+  sulfur_ring:  { id:'sulfur_ring',  name:'硫磺指环', emoji:'💍', slot:'ring', attackBonus:0, defenceBonus:3, critRating:7.0, ilvl:28 },
+  sulfur_neck:  { id:'sulfur_neck',  name:'硫磺护符', emoji:'📿', slot:'neck', attackBonus:5, defenceBonus:0, hpBonus:55,     ilvl:28 },
+  // bar_5: 硝酸盐锭 + dragonBones
+  nitrate_ring: { id:'nitrate_ring', name:'硝酸盐戒', emoji:'💍', slot:'ring', attackBonus:8, defenceBonus:0, critRating:9.0, ilvl:36 },
+  nitrate_neck: { id:'nitrate_neck', name:'硝酸盐坠', emoji:'📿', slot:'neck', attackBonus:5, defenceBonus:5, hpBonus:70,     ilvl:36 },
+  // bar_6: 铀锭 + dragonBones
+  uranium_ring: { id:'uranium_ring', name:'铀能戒指', emoji:'💍', slot:'ring', attackBonus:10,defenceBonus:0, critRating:12.0,ilvl:46 },
+  uranium_neck: { id:'uranium_neck', name:'铀能吊坠', emoji:'📿', slot:'neck', attackBonus:8, defenceBonus:8, hpBonus:90,     ilvl:46 },
+  // bar_7: 钛金锭 + dragonBones
+  titanium_ring:{ id:'titanium_ring',name:'钛金戒指', emoji:'💍', slot:'ring', attackBonus:14,defenceBonus:0, critRating:15.0,ilvl:56 },
+  titanium_neck:{ id:'titanium_neck',name:'钛金吊坠', emoji:'📿', slot:'neck', attackBonus:10,defenceBonus:10,hpBonus:110,    ilvl:56 },
+  // bar_8: 钨钢锭 + dragonBones
+  tungsten_ring:{ id:'tungsten_ring',name:'钨钢戒指', emoji:'💍', slot:'ring', attackBonus:18,defenceBonus:3, critRating:18.0,ilvl:68 },
+  tungsten_neck:{ id:'tungsten_neck',name:'钨钢吊坠', emoji:'📿', slot:'neck', attackBonus:14,defenceBonus:14,hpBonus:140,    ilvl:68 },
+  // bar_9: 铱金锭 + dragonBones
+  iridium_ring: { id:'iridium_ring', name:'铱金戒指', emoji:'💍', slot:'ring', attackBonus:24,defenceBonus:5, critRating:22.0,ilvl:80 },
+  iridium_neck: { id:'iridium_neck', name:'铱金吊坠', emoji:'📿', slot:'neck', attackBonus:18,defenceBonus:18,hpBonus:180,    ilvl:80 },
 };
 
 // Merged lookup including smithed, leather, and jewelry
@@ -211,65 +251,71 @@ export const LEATHERWORKING_RECIPES: CraftingRecipe[] = [
 
 // ─── Jewelcrafting recipes ──────────────────────────────────────────────────────
 export const JEWELCRAFTING_RECIPES: CraftingRecipe[] = [
-  // Cloth items (item_0)
-  { id: 'jc_copper_ring',    output: 'copper_ring',    inputs: [{ resource: 'item_0', qty: 3 }], reqLevel: 1,  xp: 25,  time: 8  },
-  { id: 'jc_leather_amulet', output: 'leather_amulet', inputs: [{ resource: 'item_0', qty: 4 }], reqLevel: 1,  xp: 30,  time: 10 },
-  // Leather (item_1)
-  { id: 'jc_tin_band',       output: 'tin_band',       inputs: [{ resource: 'item_1', qty: 3 }], reqLevel: 10, xp: 45,  time: 8  },
-  { id: 'jc_cord_pendant',   output: 'cord_pendant',   inputs: [{ resource: 'item_1', qty: 4 }], reqLevel: 10, xp: 55,  time: 10 },
-  // Jewelry (item_2)
-  { id: 'jc_bronze_signet',  output: 'bronze_signet',  inputs: [{ resource: 'item_2', qty: 3 }], reqLevel: 20, xp: 70,  time: 9  },
-  { id: 'jc_iron_chain',     output: 'iron_chain',     inputs: [{ resource: 'item_2', qty: 4 }], reqLevel: 20, xp: 85,  time: 12 },
-  // Armor (item_3)
-  { id: 'jc_silver_ring',    output: 'silver_ring',    inputs: [{ resource: 'item_3', qty: 3 }], reqLevel: 28, xp: 100, time: 10 },
-  { id: 'jc_silver_chain',   output: 'silver_chain',   inputs: [{ resource: 'item_3', qty: 4 }], reqLevel: 28, xp: 120, time: 12 },
-  // Weapon (item_4)
-  { id: 'jc_gold_ring',      output: 'gold_ring',      inputs: [{ resource: 'item_4', qty: 3 }], reqLevel: 38, xp: 140, time: 10 },
-  { id: 'jc_gold_locket',    output: 'gold_locket',    inputs: [{ resource: 'item_4', qty: 4 }], reqLevel: 38, xp: 165, time: 12 },
-  // Artifact (item_5)
-  { id: 'jc_mithril_signet', output: 'mithril_signet', inputs: [{ resource: 'item_5', qty: 3 }], reqLevel: 48, xp: 200, time: 12 },
-  { id: 'jc_runed_pendant',  output: 'runed_pendant',  inputs: [{ resource: 'item_5', qty: 4 }], reqLevel: 48, xp: 240, time: 14 },
-  // Relic (item_6)
-  { id: 'jc_arcane_band',    output: 'arcane_band',    inputs: [{ resource: 'item_6', qty: 3 }], reqLevel: 55, xp: 270, time: 12 },
-  { id: 'jc_arcane_locket',  output: 'arcane_locket',  inputs: [{ resource: 'item_6', qty: 4 }], reqLevel: 55, xp: 320, time: 15 },
-  // Dragon (item_8)
-  { id: 'jc_dragon_ring',    output: 'dragon_ring',    inputs: [{ resource: 'item_8', qty: 2 }], reqLevel: 65, xp: 400, time: 14 },
-  { id: 'jc_dragon_pendant', output: 'dragon_pendant', inputs: [{ resource: 'item_8', qty: 3 }], reqLevel: 65, xp: 480, time: 16 },
-  // Divine (item_9)
-  { id: 'jc_eternal_ring',   output: 'eternal_ring',   inputs: [{ resource: 'item_9', qty: 2 }], reqLevel: 72, xp: 600, time: 16 },
-  { id: 'jc_eternal_pendant',output: 'eternal_pendant', inputs: [{ resource: 'item_9', qty: 3 }], reqLevel: 72, xp: 720, time: 20 },
+  // bar_0: 废铁锭 + bones
+  { id:'jc_scrap_ring',  output:'scrap_ring',  inputs:[{resource:'bar_0',qty:2},{resource:'bones',qty:2}],  reqLevel:1,  xp:20,time:8},
+  { id:'jc_scrap_neck',  output:'scrap_neck',  inputs:[{resource:'bar_0',qty:3},{resource:'bones',qty:3}],  reqLevel:1,  xp:28,time:10},
+  // bar_1: 铜锭 + bones
+  { id:'jc_copper_ring', output:'copper_ring', inputs:[{resource:'bar_1',qty:2},{resource:'bones',qty:3}],  reqLevel:8,  xp:40,time:8},
+  { id:'jc_copper_neck', output:'copper_neck', inputs:[{resource:'bar_1',qty:3},{resource:'bones',qty:4}],  reqLevel:8,  xp:50,time:10},
+  // bar_2: 铝锭 + bones
+  { id:'jc_alum_ring',   output:'alum_ring',   inputs:[{resource:'bar_2',qty:2},{resource:'bones',qty:4}],  reqLevel:16,xp:60,time:9},
+  { id:'jc_alum_neck',   output:'alum_neck',   inputs:[{resource:'bar_2',qty:3},{resource:'bones',qty:5}],  reqLevel:16,xp:75,time:11},
+  // bar_3: 铅锭 + bones
+  { id:'jc_lead_ring',   output:'lead_ring',   inputs:[{resource:'bar_3',qty:2},{resource:'bones',qty:6}],  reqLevel:24,xp:90,time:10},
+  { id:'jc_lead_neck',   output:'lead_neck',   inputs:[{resource:'bar_3',qty:3},{resource:'bones',qty:8}],  reqLevel:24,xp:110,time:12},
+  // bar_4: 硫磺锭 (no bones)
+  { id:'jc_sulfur_ring', output:'sulfur_ring', inputs:[{resource:'bar_4',qty:2}],                          reqLevel:32,xp:130,time:10},
+  { id:'jc_sulfur_neck', output:'sulfur_neck', inputs:[{resource:'bar_4',qty:3}],                          reqLevel:32,xp:160,time:12},
+  // bar_5: 硝酸盐锭 + dragonBones
+  { id:'jc_nitrate_ring',output:'nitrate_ring',inputs:[{resource:'bar_5',qty:2},{resource:'dragonBones',qty:1}],reqLevel:40,xp:180,time:12},
+  { id:'jc_nitrate_neck',output:'nitrate_neck',inputs:[{resource:'bar_5',qty:3},{resource:'dragonBones',qty:2}],reqLevel:40,xp:220,time:14},
+  // bar_6: 铀锭 + dragonBones
+  { id:'jc_uranium_ring',output:'uranium_ring',inputs:[{resource:'bar_6',qty:2},{resource:'dragonBones',qty:2}],reqLevel:50,xp:260,time:14},
+  { id:'jc_uranium_neck',output:'uranium_neck',inputs:[{resource:'bar_6',qty:3},{resource:'dragonBones',qty:3}],reqLevel:50,xp:310,time:16},
+  // bar_7: 钛金锭 + dragonBones
+  { id:'jc_titanium_ring',output:'titanium_ring',inputs:[{resource:'bar_7',qty:3},{resource:'dragonBones',qty:3}],reqLevel:62,xp:360,time:16},
+  { id:'jc_titanium_neck',output:'titanium_neck',inputs:[{resource:'bar_7',qty:4},{resource:'dragonBones',qty:4}],reqLevel:62,xp:420,time:18},
+  // bar_8: 钨钢锭 + dragonBones
+  { id:'jc_tungsten_ring',output:'tungsten_ring',inputs:[{resource:'bar_8',qty:3},{resource:'dragonBones',qty:4}],reqLevel:74,xp:500,time:18},
+  { id:'jc_tungsten_neck',output:'tungsten_neck',inputs:[{resource:'bar_8',qty:4},{resource:'dragonBones',qty:5}],reqLevel:74,xp:580,time:22},
+  // bar_9: 铱金锭 + dragonBones
+  { id:'jc_iridium_ring',output:'iridium_ring',inputs:[{resource:'bar_9',qty:4},{resource:'dragonBones',qty:6}],reqLevel:86,xp:680,time:22},
+  { id:'jc_iridium_neck',output:'iridium_neck',inputs:[{resource:'bar_9',qty:5},{resource:'dragonBones',qty:8}],reqLevel:86,xp:800,time:26},
 ];
 
 // ─── Tool crafting recipes ────────────────────────────────────────────────────
 export const TOOL_RECIPES: CraftingRecipe[] = [
   // Axes: wood + bars
-  { id:'tool_bronze_axe',   output:'bronze_axe',   inputs:[{resource:'wood_0',qty:3},{resource:'bar_0',qty:2}], reqLevel:1,  xp:15, time:8 },
-  { id:'tool_iron_axe',     output:'iron_axe',     inputs:[{resource:'wood_1',qty:3},{resource:'bar_1',qty:2}], reqLevel:10, xp:30, time:10 },
-  { id:'tool_steel_axe',    output:'steel_axe',    inputs:[{resource:'wood_2',qty:3},{resource:'bar_2',qty:2}], reqLevel:20, xp:50, time:12 },
-  { id:'tool_mithril_axe',  output:'mithril_axe',  inputs:[{resource:'wood_4',qty:3},{resource:'bar_4',qty:2}], reqLevel:35, xp:80, time:14 },
-  { id:'tool_adamant_axe',  output:'adamant_axe',  inputs:[{resource:'wood_5',qty:3},{resource:'bar_5',qty:2}], reqLevel:45, xp:120,time:16 },
-  { id:'tool_rune_axe',     output:'rune_axe',     inputs:[{resource:'wood_6',qty:3},{resource:'bar_6',qty:2},{resource:'dragonBones',qty:1}], reqLevel:55, xp:180,time:18 },
-  { id:'tool_dragon_axe',   output:'dragon_axe',   inputs:[{resource:'wood_8',qty:3},{resource:'bar_8',qty:2},{resource:'dragonBones',qty:3}], reqLevel:70, xp:280,time:22 },
+  { id:'tool_scrap_axe',    output:'scrap_axe',    inputs:[{resource:'wood_0',qty:3},{resource:'bar_0',qty:2}], reqLevel:1,  xp:15, time:8 },
+  { id:'tool_copper_axe',   output:'copper_axe',   inputs:[{resource:'wood_1',qty:3},{resource:'bar_1',qty:2}], reqLevel:8,  xp:30, time:10 },
+  { id:'tool_alum_axe',     output:'alum_axe',     inputs:[{resource:'wood_2',qty:3},{resource:'bar_2',qty:2}], reqLevel:16, xp:50, time:12 },
+  { id:'tool_lead_axe',     output:'lead_axe',     inputs:[{resource:'wood_3',qty:3},{resource:'bar_3',qty:2}], reqLevel:28, xp:80, time:14 },
+  { id:'tool_uranium_axe',  output:'uranium_axe',  inputs:[{resource:'wood_5',qty:3},{resource:'bar_6',qty:2},{resource:'dragonBones',qty:1}], reqLevel:42, xp:130,time:16 },
+  { id:'tool_titanium_axe', output:'titanium_axe', inputs:[{resource:'wood_7',qty:3},{resource:'bar_7',qty:2},{resource:'dragonBones',qty:2}], reqLevel:60, xp:200,time:18 },
+  { id:'tool_iridium_axe',  output:'iridium_axe',  inputs:[{resource:'wood_9',qty:3},{resource:'bar_9',qty:2},{resource:'dragonBones',qty:4}], reqLevel:80, xp:320,time:24 },
   // Pickaxes: bars + bones
-  { id:'tool_bronze_pick',  output:'bronze_pick',  inputs:[{resource:'bar_0',qty:2},{resource:'bones',qty:2}],  reqLevel:1,  xp:15, time:8 },
-  { id:'tool_iron_pick',    output:'iron_pick',    inputs:[{resource:'bar_1',qty:2},{resource:'bones',qty:3}],  reqLevel:10, xp:30, time:10 },
-  { id:'tool_steel_pick',   output:'steel_pick',   inputs:[{resource:'bar_2',qty:2},{resource:'bones',qty:5}],  reqLevel:20, xp:50, time:12 },
-  { id:'tool_mithril_pick', output:'mithril_pick', inputs:[{resource:'bar_4',qty:2},{resource:'bones',qty:8}],  reqLevel:35, xp:80, time:14 },
-  { id:'tool_adamant_pick', output:'adamant_pick', inputs:[{resource:'bar_5',qty:2},{resource:'bones',qty:12}], reqLevel:45, xp:120,time:16 },
-  { id:'tool_rune_pick',    output:'rune_pick',    inputs:[{resource:'bar_6',qty:2},{resource:'dragonBones',qty:1}], reqLevel:55, xp:180,time:18 },
-  { id:'tool_dragon_pick',  output:'dragon_pick',  inputs:[{resource:'bar_8',qty:2},{resource:'dragonBones',qty:3}], reqLevel:70, xp:280,time:22 },
+  { id:'tool_scrap_pick',    output:'scrap_pick',    inputs:[{resource:'bar_0',qty:2},{resource:'bones',qty:2}],  reqLevel:1,  xp:15, time:8 },
+  { id:'tool_copper_pick',   output:'copper_pick',   inputs:[{resource:'bar_1',qty:2},{resource:'bones',qty:3}],  reqLevel:8,  xp:30, time:10 },
+  { id:'tool_alum_pick',     output:'alum_pick',     inputs:[{resource:'bar_2',qty:2},{resource:'bones',qty:5}],  reqLevel:16, xp:50, time:12 },
+  { id:'tool_lead_pick',     output:'lead_pick',     inputs:[{resource:'bar_3',qty:2},{resource:'bones',qty:8}],  reqLevel:28, xp:80, time:14 },
+  { id:'tool_uranium_pick',  output:'uranium_pick',  inputs:[{resource:'bar_6',qty:2},{resource:'dragonBones',qty:1}], reqLevel:42, xp:130,time:16 },
+  { id:'tool_titanium_pick', output:'titanium_pick', inputs:[{resource:'bar_7',qty:2},{resource:'dragonBones',qty:2}], reqLevel:60, xp:200,time:18 },
+  { id:'tool_iridium_pick',  output:'iridium_pick',  inputs:[{resource:'bar_9',qty:2},{resource:'dragonBones',qty:4}], reqLevel:80, xp:320,time:24 },
   // Fishing rods: wood
-  { id:'tool_basic_rod',    output:'basic_rod',    inputs:[{resource:'wood_0',qty:5}],  reqLevel:1,  xp:12, time:5 },
-  { id:'tool_oak_rod',      output:'oak_rod',      inputs:[{resource:'wood_1',qty:5}],  reqLevel:8,  xp:25, time:8 },
-  { id:'tool_steel_rod',    output:'steel_rod',    inputs:[{resource:'wood_2',qty:4},{resource:'bar_2',qty:1}], reqLevel:20, xp:45, time:10 },
-  { id:'tool_mithril_rod',  output:'mithril_rod',  inputs:[{resource:'wood_4',qty:4},{resource:'bar_4',qty:1}], reqLevel:35, xp:75, time:12 },
-  { id:'tool_rune_rod',     output:'rune_rod',     inputs:[{resource:'wood_6',qty:4},{resource:'bar_6',qty:1},{resource:'dragonBones',qty:1}], reqLevel:55, xp:170,time:16 },
-  // Hunting knives: bars + hide
-  { id:'tool_bone_knife',   output:'bone_knife',   inputs:[{resource:'hide_0',qty:2},{resource:'bones',qty:3}], reqLevel:1,  xp:15, time:8 },
-  { id:'tool_iron_knife',   output:'iron_knife',   inputs:[{resource:'hide_1',qty:2},{resource:'bar_1',qty:1}], reqLevel:10, xp:30, time:10 },
-  { id:'tool_steel_knife',  output:'steel_knife',  inputs:[{resource:'hide_2',qty:2},{resource:'bar_2',qty:1}], reqLevel:20, xp:50, time:12 },
-  { id:'tool_mithril_knife',output:'mithril_knife', inputs:[{resource:'hide_4',qty:2},{resource:'bar_4',qty:1}], reqLevel:35, xp:80, time:14 },
-  { id:'tool_rune_knife',   output:'rune_knife',   inputs:[{resource:'hide_6',qty:2},{resource:'bar_6',qty:1},{resource:'dragonBones',qty:1}], reqLevel:55, xp:170,time:18 },
+  { id:'tool_scrap_rod',    output:'scrap_rod',    inputs:[{resource:'wood_0',qty:5}],  reqLevel:1,  xp:12, time:5 },
+  { id:'tool_copper_rod',   output:'copper_rod',   inputs:[{resource:'wood_1',qty:5}],  reqLevel:6,  xp:25, time:8 },
+  { id:'tool_alum_rod',     output:'alum_rod',     inputs:[{resource:'wood_2',qty:4},{resource:'bar_2',qty:1}], reqLevel:16, xp:45, time:10 },
+  { id:'tool_lead_rod',     output:'lead_rod',     inputs:[{resource:'wood_3',qty:4},{resource:'bar_3',qty:1}], reqLevel:28, xp:75, time:12 },
+  { id:'tool_titanium_rod', output:'titanium_rod', inputs:[{resource:'wood_7',qty:4},{resource:'bar_7',qty:1},{resource:'dragonBones',qty:1}], reqLevel:55, xp:170,time:16 },
+  { id:'tool_iridium_rod',  output:'iridium_rod',  inputs:[{resource:'wood_9',qty:4},{resource:'bar_9',qty:1},{resource:'dragonBones',qty:3}], reqLevel:72, xp:250,time:20 },
+  // Hunting knives: hide + bars
+  { id:'tool_scrap_knife',   output:'scrap_knife',   inputs:[{resource:'hide_0',qty:2},{resource:'bones',qty:3}], reqLevel:1,  xp:15, time:8 },
+  { id:'tool_copper_knife',  output:'copper_knife',  inputs:[{resource:'hide_1',qty:2},{resource:'bar_1',qty:1}], reqLevel:8,  xp:30, time:10 },
+  { id:'tool_alum_knife',    output:'alum_knife',    inputs:[{resource:'hide_2',qty:2},{resource:'bar_2',qty:1}], reqLevel:16, xp:50, time:12 },
+  { id:'tool_lead_knife',    output:'lead_knife',    inputs:[{resource:'hide_3',qty:2},{resource:'bar_3',qty:1}], reqLevel:28, xp:80, time:14 },
+  { id:'tool_uranium_knife', output:'uranium_knife', inputs:[{resource:'hide_5',qty:2},{resource:'bar_6',qty:1},{resource:'dragonBones',qty:1}], reqLevel:42, xp:130,time:16 },
+  { id:'tool_titanium_knife',output:'titanium_knife',inputs:[{resource:'hide_7',qty:2},{resource:'bar_7',qty:1},{resource:'dragonBones',qty:2}], reqLevel:58, xp:200,time:18 },
+  { id:'tool_iridium_knife', output:'iridium_knife', inputs:[{resource:'hide_9',qty:2},{resource:'bar_9',qty:1},{resource:'dragonBones',qty:4}], reqLevel:75, xp:300,time:24 },
 ];
 
 // ─── Item generation (Diablo-style) ───────────────────────────────────────────

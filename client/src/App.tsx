@@ -5,9 +5,7 @@ import { LanguageProvider } from "./lib/i18n";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useGameState } from "./hooks/use-game";
-import { AppSidebar } from "./components/layout/app-sidebar";
-import { Header } from "./components/layout/header";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { WastelandShell } from "@/components/wasteland";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import Woodcutting from "@/pages/woodcutting";
@@ -25,7 +23,7 @@ import Thieving from "@/pages/thieving";
 import Tools from "@/pages/tools";
 import Talents from "@/pages/talents";
 import EquipmentSynth from "@/pages/equipment-synth";
-import Homestead from "@/pages/homestead";
+import Shelter from "@/pages/shelter";
 import Cooking from "@/pages/cooking";
 import Alchemy from "@/pages/alchemy";
 import Agility from "@/pages/agility";
@@ -33,6 +31,8 @@ import Prayer from "@/pages/prayer";
 import Town from "@/pages/town";
 import Exploration from "@/pages/exploration";
 import WastelandTech from "@/pages/wasteland-tech";
+import Materials from "@/pages/materials";
+import Pets from "@/pages/pets";
 
 function Router() {
   return (
@@ -45,6 +45,7 @@ function Router() {
       <Route path="/hunting" component={Hunting} />
       <Route path="/combat" component={Combat} />
       <Route path="/inventory" component={Inventory} />
+      <Route path="/materials" component={Materials} />
       <Route path="/smithing" component={Smithing} />
       <Route path="/leatherworking" component={Leatherworking} />
       <Route path="/jewelcrafting" component={Jewelcrafting} />
@@ -53,7 +54,7 @@ function Router() {
       <Route path="/tools" component={Tools} />
       <Route path="/talents" component={Talents} />
       <Route path="/equipment-synth" component={EquipmentSynth} />
-      <Route path="/homestead" component={Homestead} />
+      <Route path="/shelter" component={Shelter} />
       <Route path="/wasteland-tech" component={WastelandTech} />
       <Route path="/cooking" component={Cooking} />
       <Route path="/alchemy" component={Alchemy} />
@@ -61,6 +62,7 @@ function Router() {
       <Route path="/prayer" component={Prayer} />
       <Route path="/town" component={Town} />
       <Route path="/exploration" component={Exploration} />
+      <Route path="/pets" component={Pets} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -72,8 +74,8 @@ function GameWrapper({ children }: { children: React.ReactNode }) {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-sm text-muted-foreground">Loading...</p>
+          <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          <p className="font-mono text-sm text-[hsl(var(--crt-green))] crt-glow">BOOTING TERMINAL...</p>
         </div>
       </div>
     );
@@ -87,15 +89,9 @@ function App() {
       <LanguageProvider>
       <TooltipProvider>
         <GameWrapper>
-          <SidebarProvider>
-            <AppSidebar />
-            <SidebarInset>
-              <Header />
-              <main className="flex-1 overflow-y-auto p-2 md:p-4">
-                <Router />
-              </main>
-            </SidebarInset>
-          </SidebarProvider>
+          <WastelandShell>
+            <Router />
+          </WastelandShell>
         </GameWrapper>
         <Toaster />
       </TooltipProvider>

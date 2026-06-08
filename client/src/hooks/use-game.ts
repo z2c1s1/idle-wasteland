@@ -128,3 +128,5 @@ export const useEquipSkill = () =>
   useGameMutation((skillId: string) => postGame(api.game.equipSkill.path, { skillId }));
 export const useEnhanceItem = () =>
   useGameMutation((instanceId: string) => postGame(api.game.enhance.path, { instanceId }));
+export const useClaimPet = () =>
+  useGameMutation((achievementId: string) => postGame(api.game.claimPet.path, { achievementId }));

@@ -201,14 +201,20 @@ export async function synthEquip(state: GameState, instanceIds: string[]): Promi
   const count = items.length;
   if (count < 3 || count > 5) throw new Error(msg("need3to5Items"));
   const chance = count === 3 ? 0.25 : count === 4 ? 0.5 : 1;
-  const costMul = count === 3 ? 1 : count === 4 ? 2 : 5;
   const avgIlvl = Math.max(1, Math.floor(items.reduce((s,i) => s + i.ilvl, 0) / count) - 5);
-  const rarityCost: Record<string,number> = { normal:10, fine:50, rare:200, epic:800, legendary:3000, mythic:10000 };
-  const maxR = items.reduce((r,i) => (rarityCost[i.rarity]||0) > (rarityCost[r]||0) ? i.rarity : r, 'normal');
-  const baseCost = Math.floor(avgIlvl * (rarityCost[maxR]||50) * costMul);
+  // Cost = baseGold × rarityWeight × ilvlFactor, per-item sum (sync with client)
+  const RARITY_WEIGHT: Record<string, number> = {
+    common: 0.2, uncommon: 0.6, rare: 1.0, epic: 1.8, legendary: 3.0, mythic: 5.0,
+  };
+  const combatLevel = getCombatLevel(state);
+  const baseGold = 500 + combatLevel * 300;
+  const baseCost = items.reduce((sum, item) => {
+    const ilvlFactor = item.ilvl / 10;
+    return sum + baseGold * (RARITY_WEIGHT[item.rarity] ?? 0.6) * ilvlFactor;
+  }, 0);
   const synthLevel = calcLevel(state.synthesisXp ?? 0);
-  const discount = 1 - (synthLevel / 100);
-  const finalCost = Math.max(1, Math.floor(baseCost * discount));
+  const discount = Math.min(0.5, synthLevel / 200);
+  const finalCost = Math.max(1, Math.floor(baseCost * (1 - discount)));
   if (state.gold < finalCost) throw new Error(msg("notEnoughGold", finalCost));
 
   const remaining = loot.filter(i => !instanceIds.includes(i.instanceId));

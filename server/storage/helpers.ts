@@ -34,13 +34,15 @@ export async function handleProductionRecipe(
   recipeIndex: number,
   xpKey: keyof GameState,
   now: Date,
+  speedMul: number = 1,
 ): Promise<{ updates: Partial<GameState> } | null> {
   const recipe = recipes[recipeIndex];
   if (!recipe) return null;
 
   const elapsedSeconds =
     (now.getTime() - new Date(state.actionUpdatedAt).getTime()) / 1000;
-  const ticks = Math.floor(elapsedSeconds / recipe.time);
+  const effectiveTime = recipe.time / Math.max(0.1, speedMul);
+  const ticks = Math.floor(elapsedSeconds / effectiveTime);
   if (ticks <= 0) return null;
 
   const craftItems = parseCraftItems(state.craftItems);
@@ -62,7 +64,7 @@ export async function handleProductionRecipe(
     [xpKey]: (state[xpKey] as number) + actualTicks * recipe.xp,
     craftItems: JSON.stringify(craftItems),
     actionUpdatedAt: new Date(
-      new Date(state.actionUpdatedAt).getTime() + actualTicks * recipe.time * 1000,
+      new Date(state.actionUpdatedAt).getTime() + actualTicks * effectiveTime * 1000,
     ),
     ...resourcePatch,
   };

@@ -11,30 +11,30 @@ export const RARITY_LABEL: Record<Rarity, string> = {
 };
 
 export const RARITY_COLOR: Record<Rarity, string> = {
-  common:    'text-gray-400',
-  uncommon:  'text-blue-400',
-  rare:      'text-yellow-400',
-  epic:      'text-amber-300',
-  legendary: 'text-orange-400',
-  mythic:    'text-red-400',
+  common:    'text-gray-300',      // 普通 — 白
+  uncommon:  'text-blue-400',      // 魔法 — 蓝
+  rare:      'text-purple-400',    // 稀有 — 紫
+  epic:      'text-yellow-400',    // 神圣 — 黄
+  legendary: 'text-orange-400',    // 独特 — 橙
+  mythic:    'text-red-400',       // 神话 — 红
 };
 
 export const RARITY_BORDER: Record<Rarity, string> = {
-  common:    'border-gray-500/40',
+  common:    'border-gray-400/40',
   uncommon:  'border-blue-500/40',
-  rare:      'border-yellow-500/40',
-  epic:      'border-amber-400/60',
+  rare:      'border-purple-500/40',
+  epic:      'border-yellow-500/40',
   legendary: 'border-orange-500/60',
   mythic:    'border-red-500/60',
 };
 
 export const RARITY_BG: Record<Rarity, string> = {
-  common:    'bg-gray-500/5',
-  uncommon:  'bg-blue-500/8',
-  rare:      'bg-yellow-500/10',
-  epic:      'bg-amber-500/12',
-  legendary: 'bg-orange-500/15',
-  mythic:    'bg-red-500/15',
+  common:    'bg-gray-300/8',
+  uncommon:  'bg-blue-400/10',
+  rare:      'bg-purple-400/10',
+  epic:      'bg-yellow-400/12',
+  legendary: 'bg-orange-400/15',
+  mythic:    'bg-red-400/15',
 };
 
 // ─── Equipment slots ────────────────────────────────────────────────────────────

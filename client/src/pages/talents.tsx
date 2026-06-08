@@ -4,6 +4,7 @@ import { calculateLevel, getTotalTalentPoints } from "@/lib/game-utils";
 import { useToast } from "@/hooks/use-toast";
 import type { GameState } from "@shared/schema";
 import { Gem } from "lucide-react";
+import { useUIText } from "@/lib/i18n";
 
 const STYLE_LABELS: Record<CombatStyle, string> = { melee: '近战', ranged: '远程', magic: '魔法' };
 
@@ -22,6 +23,7 @@ function TalentTreeSVG({ style, nodes, unlocked, combatLevel, centerId, onUnlock
   onUnlock: (nodeId: string) => void;
   onCenterInfo?: () => void;
 }) {
+  const t = useUIText();
   const centerUnlocked = combatLevel >= 15;
   return (
     <div className="bg-card border border-border rounded-xl p-3">
@@ -99,14 +101,15 @@ function TalentTreeSVG({ style, nodes, unlocked, combatLevel, centerId, onUnlock
         })}
       </div>
       <div className="flex justify-center gap-4 mt-2 text-[10px] text-muted-foreground">
-        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-amber-500 inline-block"></span> 已解锁</span>
-        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-slate-700 inline-block border border-slate-500"></span> 可解锁</span>
+        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-amber-500 inline-block"></span> {t.pages.talents.unlocked}</span>
+        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-slate-700 inline-block border border-slate-500"></span> {t.pages.talents.canUnlock}</span>
       </div>
     </div>
   );
 }
 
 export default function Talents() {
+  const t = useUIText();
   const { data: state } = useGameState();
   const unlockTalent = useUnlockTalent();
   const resetTalents = useResetTalents();
@@ -136,11 +139,11 @@ export default function Talents() {
   const unlock = async (style: CombatStyle, nodeId: string) => {
     try {
       await unlockTalent.mutateAsync({ style, nodeId });
-      toast({ title: "天赋解锁成功" });
+      toast({ title: t.pages.talents.unlockSuccess });
     } catch (e: unknown) {
       toast({
-        title: "解锁失败",
-        description: e instanceof Error ? e.message : "未知错误",
+        title: t.pages.talents.unlockFail,
+        description: e instanceof Error ? e.message : "Unknown error",
         variant: "destructive",
       });
     }
@@ -151,22 +154,22 @@ export default function Talents() {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-xl font-bold flex items-center gap-2">
-            <Gem className="w-5 h-5 text-amber-400" /> 天赋树
+            <Gem className="w-5 h-5 text-amber-400" /> {t.pages.talents.title}
           </h1>
           <p className="text-sm text-muted-foreground">
-            可用 {points} 点 · 已用 {spent} 点 · 剩余 {points - spent} 点
+            {t.pages.talents.available} {points} · {t.pages.talents.used} {spent} · {t.pages.talents.remaining} {points - spent}
           </p>
         </div>
         <button
           onClick={async () => {
-            if (!confirm('确定重置所有天赋点？已解锁的天赋将全部清空。')) return;
+            if (!confirm(t.pages.talents.resetConfirm)) return;
             try {
               await resetTalents.mutateAsync();
-              toast({ title: "天赋点已重置" });
+              toast({ title: t.pages.talents.resetSuccess });
             } catch (e: unknown) {
               toast({
-                title: "重置失败",
-                description: e instanceof Error ? e.message : "未知错误",
+                title: t.pages.talents.resetFail,
+                description: e instanceof Error ? e.message : "Unknown error",
                 variant: "destructive",
               });
             }

@@ -8,6 +8,7 @@ import {
   calculateLevel, getPlayerMaxHp, getPlayerAttack, getPlayerDefence,
   parseEquipment, parseLootBag, parseGems, parseDungeonStats,
   RARITY_ORDER, DISENCHANT_GOLD, mergeGems,
+  trackAchievement,
 } from "./_shared";
 
 const calcLevel = calculateLevel;
@@ -199,6 +200,7 @@ export async function tickDungeon(state: GameState, elapsedSeconds: number): Pro
     const dungeonId = DUNGEONS[dungeonIndex].id;
     const current = dungeonStatsObj[dungeonId] ?? { clears: 0, fastestSec: null };
     current.clears = (current.clears ?? 0) + 1;
+    state.achievements = trackAchievement(state, 'dungeon', String(dungeonIndex), 1);
     if (current.fastestSec === null || usedTime < current.fastestSec) {
       current.fastestSec = usedTime;
     }
@@ -207,6 +209,7 @@ export async function tickDungeon(state: GameState, elapsedSeconds: number): Pro
 
   const updates: Partial<GameState> = {
     playerHp,
+    achievements: state.achievements,
     enemyHp: (playerDied || bossKilled) ? -1 : enemyHp,
     activeAction: (playerDied) ? "idle" as const : (bossKilled ? "idle" as const : nextAction as any),
     gold:        state.gold        + goldGained,

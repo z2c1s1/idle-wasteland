@@ -104,5 +104,11 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     } catch (e: any) { res.status(400).json({ message: e.message }); }
   });
 
+  app.post("/api/game/claim-pet", async (req, res) => {
+    try {
+      res.json(await getStorage(req).claimPet(req.body.achievementId));
+    } catch (e: any) { res.status(400).json({ message: e.message }); }
+  });
+
   return httpServer;
 }

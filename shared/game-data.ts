@@ -11,30 +11,30 @@ export const RARITY_LABEL: Record<Rarity, string> = {
 };
 
 export const RARITY_COLOR: Record<Rarity, string> = {
-  common:    'text-gray-400',
-  uncommon:  'text-blue-400',
-  rare:      'text-yellow-400',
-  epic:      'text-amber-300',
-  legendary: 'text-orange-400',
-  mythic:    'text-red-400',
+  common:    'text-gray-300',      // 普通 — 白
+  uncommon:  'text-blue-400',      // 魔法 — 蓝
+  rare:      'text-purple-400',    // 稀有 — 紫
+  epic:      'text-yellow-400',    // 神圣 — 黄
+  legendary: 'text-orange-400',    // 独特 — 橙
+  mythic:    'text-red-400',       // 神话 — 红
 };
 
 export const RARITY_BORDER: Record<Rarity, string> = {
-  common:    'border-gray-500/40',
+  common:    'border-gray-400/40',
   uncommon:  'border-blue-500/40',
-  rare:      'border-yellow-500/40',
-  epic:      'border-amber-400/60',
+  rare:      'border-purple-500/40',
+  epic:      'border-yellow-500/40',
   legendary: 'border-orange-500/60',
   mythic:    'border-red-500/60',
 };
 
 export const RARITY_BG: Record<Rarity, string> = {
-  common:    'bg-gray-500/5',
-  uncommon:  'bg-blue-500/8',
-  rare:      'bg-yellow-500/10',
-  epic:      'bg-amber-500/12',
-  legendary: 'bg-orange-500/15',
-  mythic:    'bg-red-500/15',
+  common:    'bg-gray-300/8',
+  uncommon:  'bg-blue-400/10',
+  rare:      'bg-purple-400/10',
+  epic:      'bg-yellow-400/12',
+  legendary: 'bg-orange-400/15',
+  mythic:    'bg-red-400/15',
 };
 
 // ─── Equipment slots ────────────────────────────────────────────────────────────
@@ -421,206 +421,244 @@ export interface UniqueItemDef {
 
 export const UNIQUE_ITEMS: UniqueItemDef[] = [
   {
-    id:'frost_fang', name:'冰霜之牙', emoji:'⚔️', slot:'weapon', ilvl:8, minEnemyIndex:1,
-    flavorText:'寒意从刀身渗入每一个伤口，令敌人冻僵战栗。',
+    id:'frost_fang', name:'急冻水管', emoji:'🔧', slot:'weapon', ilvl:8, minEnemyIndex:1,
+    flavorText:'从废弃冷库拆下的液氮冷却管，缠上布条就是一把致命的冰冻武器。',
     affixes:[{type:'strength',value:8},{type:'dexterity',value:6},{type:'damage_percent',value:15}],
-    skills:[{type:"poison",name:"寒毒",chance:4,magnitude:4,description:"每次攻击追加 4 点冰毒伤害"}],
-    legendaryPower:'攻击时 15% 概率触发冰霜新星，冻结敌人 1 回合',
+    skills:[{type:"poison",name:"冻伤",chance:4,magnitude:4,description:"每次攻击追加 4 点冷冻伤害"}],
+    legendaryPower:'攻击时 15% 概率触发急冻，冻结敌人 1 回合',
   },
   {
-    id:'goblin_lucky_ring', name:'哥布林幸运戒', emoji:'💍', slot:'ring', ilvl:12, minEnemyIndex:2,
-    flavorText:'哥布林囤积一生的幸运，随戒指归你所有。',
+    id:'goblin_lucky_ring', name:'幸运瓶盖戒', emoji:'💍', slot:'ring', ilvl:12, minEnemyIndex:2,
+    flavorText:'用核子可乐瓶盖打磨成的戒指，据说能带来战前的运气。',
     affixes:[{type:'lucky_hit',value:25},{type:'intelligence',value:30},{type:'dexterity',value:4}],
   },
   {
-    id:'skeletal_crown', name:'骷髅王冠', emoji:'👑', slot:'helmet', ilvl:22, minEnemyIndex:3,
-    flavorText:'骷髅王的意志令黑暗力量加身，令弱者闻风丧胆。',
+    id:'skeletal_crown', name:'防化头盔', emoji:'⛑️', slot:'helmet', ilvl:22, minEnemyIndex:3,
+    flavorText:'战前军方遗留的防化装备，滤芯虽已过期，但外壳仍坚不可摧。',
     affixes:[{type:'vitality',value:12},{type:'armour',value:15},{type:'life_regen',value:5},{type:'resist_all',value:8}],
-    skills:[{type:"thorns",name:"骸骨",chance:10,magnitude:10,description:"被击中时反弹 10 点伤害"}],
+    skills:[{type:"thorns",name:"碎片",chance:10,magnitude:10,description:"被击中时反弹 10 点伤害"}],
   },
   {
-    id:'phantom_steps', name:'幽灵之踪', emoji:'👢', slot:'boots', ilvl:22, minEnemyIndex:3,
-    flavorText:'步伐如鬼魅，触地无声，敌人难以追踪。',
+    id:'phantom_steps', name:'消音战术靴', emoji:'👢', slot:'boots', ilvl:22, minEnemyIndex:3,
+    flavorText:'特种部队遗留的消音作战靴，橡胶底垫让你在废墟中悄然穿行。',
     affixes:[{type:'dexterity',value:10},{type:'lucky_hit',value:20},{type:'intelligence',value:15}],
-    skills:[{type:"dodge",name:"幻影",chance:18,magnitude:18,description:"18% 概率闪避所有伤害"}],
+    skills:[{type:"dodge",name:"规避",chance:18,magnitude:18,description:"18% 概率闪避所有伤害"}],
   },
   {
-    id:'berserker_gloves', name:'狂战士之拳', emoji:'🥊', slot:'gloves', ilvl:28, minEnemyIndex:4,
-    flavorText:'佩戴此手套后，战士体内涌现出原始的暴怒。',
+    id:'berserker_gloves', name:'动力拳套', emoji:'🥊', slot:'gloves', ilvl:28, minEnemyIndex:4,
+    flavorText:'改装过的液压助力拳套，一拳下去连钢板都能打穿。',
     affixes:[{type:'strength',value:14},{type:'damage_percent',value:20},{type:'crit_damage',value:12},{type:'overpower',value:8}],
-    skills:[{type:"berserk",name:"暴怒",chance:35,magnitude:35,description:"HP < 30% 时攻击力提升 35%"}],
+    skills:[{type:"berserk",name:"过载",chance:35,magnitude:35,description:"HP < 30% 时攻击力提升 35%"}],
   },
   {
-    id:'andariel_visage', name:'安达里尔的凝视', emoji:'⛑️', slot:'helmet', ilvl:35, minEnemyIndex:4,
-    flavorText:'毁灭之女神的目光令所有人恐惧战栗，她的力量注入其中。',
+    id:'andariel_visage', name:'辐射面罩', emoji:'⛑️', slot:'helmet', ilvl:35, minEnemyIndex:4,
+    flavorText:'从医疗实验室搜刮来的防护面罩，绿色的目镜能过滤辐射尘埃。',
     affixes:[{type:'vitality',value:18},{type:'life_leech',value:8},{type:'crit_damage',value:15},{type:'damage_percent',value:15}],
-    skills:[{type:"poison",name:"安达里尔毒液",chance:8,magnitude:8,description:"每次攻击追加 8 点毒素伤害"}],
+    skills:[{type:"poison",name:"辐射毒",chance:8,magnitude:8,description:"每次攻击追加 8 点辐射伤害"}],
   },
   {
-    id:'tyrant_shield', name:'暴君之盾', emoji:'🛡️', slot:'offhand', ilvl:35, minEnemyIndex:4,
-    flavorText:'这面盾牌见证了无数霸主的统治，本身也承载着无上的威严。',
+    id:'tyrant_shield', name:'防暴盾牌', emoji:'🛡️', slot:'offhand', ilvl:35, minEnemyIndex:4,
+    flavorText:'警局军械库里的最后一面防暴盾，承受过无数次暴乱冲击。',
     affixes:[{type:'armour',value:30},{type:'resist_all',value:12},{type:'thorns',value:15},{type:'vitality',value:10}],
   },
   {
-    id:'shadow_blade', name:'影刃', emoji:'🗡️', slot:'weapon', ilvl:38, minEnemyIndex:4,
-    flavorText:'此刃生于黑暗，游走于光影之间，致命而隐秘。',
+    id:'shadow_blade', name:'战术匕首', emoji:'🗡️', slot:'weapon', ilvl:38, minEnemyIndex:4,
+    flavorText:'特种部队标配的近战武器，涂层吸收光线，在暗处几乎看不见。',
     affixes:[{type:'dexterity',value:16},{type:'crit_damage',value:20},{type:'life_leech',value:10},{type:'attack_speed',value:15}],
-    skills:[{type:"doublestrike",name:"影分身",chance:25,magnitude:25,description:"25% 概率每回合攻击两次"}],
-    legendaryPower:'攻击时 10% 概率召唤暗影分身，复制本次全部伤害',
+    skills:[{type:"doublestrike",name:"连刺",chance:25,magnitude:25,description:"25% 概率每回合攻击两次"}],
+    legendaryPower:'攻击时 10% 概率触发快速连击，复制本次全部伤害',
   },
   {
-    id:'giant_smash_axe', name:'巨人粉碎斧', emoji:'🪓', slot:'weapon', ilvl:42, minEnemyIndex:5,
-    flavorText:'锻造自巨人骨骼，一击足以粉碎磐石。',
+    id:'giant_smash_axe', name:'液压战斧', emoji:'🪓', slot:'weapon', ilvl:42, minEnemyIndex:5,
+    flavorText:'改装自工业液压锤，一击足以砸碎混凝土墙。',
     affixes:[{type:'strength',value:22},{type:'overpower',value:20},{type:'damage_percent',value:25}],
-    skills:[{type:"berserk",name:"巨怒",chance:30,magnitude:30,description:"HP < 30% 时攻击力提升 30%"}],
+    skills:[{type:"berserk",name:"暴怒",chance:30,magnitude:30,description:"HP < 30% 时攻击力提升 30%"}],
   },
   {
-    id:'hellhound_boots', name:'地狱猎犬靴', emoji:'👢', slot:'boots', ilvl:42, minEnemyIndex:5,
-    flavorText:'穿上此靴，战士的速度媲美地狱犬的追猎。',
+    id:'hellhound_boots', name:'机动战靴', emoji:'👢', slot:'boots', ilvl:42, minEnemyIndex:5,
+    flavorText:'军用级动力辅助战靴，穿戴者可长时间高速奔袭。',
     affixes:[{type:'dexterity',value:14},{type:'attack_speed',value:20},{type:'life_on_hit',value:12}],
-    skills:[{type:"vampiric",name:"猎杀",chance:15,magnitude:15,description:"击杀时恢复 15 点生命"}],
+    skills:[{type:"vampiric",name:"追击",chance:15,magnitude:15,description:"击杀时恢复 15 点生命"}],
   },
   {
-    id:'vampire_ring', name:'吸血鬼戒指', emoji:'💍', slot:'ring', ilvl:45, minEnemyIndex:5,
-    flavorText:'戴上此戒，战士可汲取敌人的生命维系自身。',
+    id:'vampire_ring', name:'吸血义体', emoji:'💍', slot:'ring', ilvl:45, minEnemyIndex:5,
+    flavorText:'黑市医生植入的皮下芯片，能从每次攻击中汲取敌人的生命力。',
     affixes:[{type:'life_leech',value:12},{type:'life_on_hit',value:15},{type:'dexterity',value:8}],
-    skills:[{type:"lifesteal",name:"吸血鬼",chance:10,magnitude:10,description:"击中时吸取 10% 伤害恢复生命"}],
+    skills:[{type:"lifesteal",name:"生命吸取",chance:10,magnitude:10,description:"击中时吸取 10% 伤害恢复生命"}],
   },
   {
-    id:'giant_chest', name:'巨人铠甲', emoji:'🧥', slot:'chest', ilvl:45, minEnemyIndex:5,
-    flavorText:'只有最强壮的战士才能穿戴此甲，但同时力量也会倍增。',
+    id:'giant_chest', name:'重型钢板甲', emoji:'🧥', slot:'chest', ilvl:45, minEnemyIndex:5,
+    flavorText:'用废弃车辆钢板焊接而成的重型护甲，虽笨重但能扛住变异熊的一爪。',
     affixes:[{type:'vitality',value:24},{type:'armour',value:35},{type:'resist_all',value:15},{type:'life_regen',value:8}],
   },
   {
-    id:'dragon_eye_necklace', name:'龙眼项链', emoji:'📿', slot:'neck', ilvl:55, minEnemyIndex:6,
-    flavorText:'龙之眼珠注入其中，佩戴者可感知一切宝物的气息。',
+    id:'dragon_eye_necklace', name:'探测器挂坠', emoji:'📿', slot:'neck', ilvl:55, minEnemyIndex:6,
+    flavorText:'改装自战前辐射探测器的核心芯片，佩戴者能感知附近的有价值物资。',
     affixes:[{type:'lucky_hit',value:40},{type:'intelligence',value:35},{type:'vitality',value:15},{type:'life_on_hit',value:20}],
   },
   {
-    id:'dragonblood_plate', name:'龙血甲', emoji:'🧥', slot:'chest', ilvl:55, minEnemyIndex:6,
-    flavorText:'以真龙之血淬炼而成，坚若磐石，防御无双。',
+    id:'dragonblood_plate', name:'动力装甲', emoji:'🧥', slot:'chest', ilvl:55, minEnemyIndex:6,
+    flavorText:'T-60 动力装甲的胸甲部件，核能电池驱动，坚如磐石。',
     affixes:[{type:'armour',value:55},{type:'vitality',value:30},{type:'resist_all',value:20},{type:'thorns',value:20}],
-    skills:[{type:"thorns",name:"龙鳞",chance:20,magnitude:20,description:"被击中时反弹 20 点伤害"}],
+    skills:[{type:"thorns",name:"装甲反冲",chance:20,magnitude:20,description:"被击中时反弹 20 点伤害"}],
   },
   {
-    id:'dragonblood_legs', name:'龙血护腿', emoji:'👖', slot:'legs', ilvl:55, minEnemyIndex:6,
-    flavorText:'龙血注入护腿，坚不可摧，让穿戴者屹立不倒。',
+    id:'dragonblood_legs', name:'动力护腿', emoji:'👖', slot:'legs', ilvl:55, minEnemyIndex:6,
+    flavorText:'T-60 动力装甲的护腿部件，液压助力，让穿戴者屹立不倒。',
     affixes:[{type:'armour',value:42},{type:'vitality',value:22},{type:'resist_all',value:15},{type:'life_regen',value:10}],
   },
   {
-    id:'touch_of_darkness', name:'黑暗之触', emoji:'🥊', slot:'gloves', ilvl:58, minEnemyIndex:6,
-    flavorText:'黑暗本身化为双手，所及之处皆为虚无。',
+    id:'touch_of_darkness', name:'黑色行动手套', emoji:'🥊', slot:'gloves', ilvl:58, minEnemyIndex:6,
+    flavorText:'特种作战部队的遗产，指尖的碳纤维刀刃能切开一切。',
     affixes:[{type:'strength',value:20},{type:'crit_damage',value:25},{type:'life_leech',value:15},{type:'attack_speed',value:20}],
-    skills:[{type:"doublestrike",name:"黑暗双击",chance:30,magnitude:30,description:"30% 概率每回合攻击两次"}],
+    skills:[{type:"doublestrike",name:"双连击",chance:30,magnitude:30,description:"30% 概率每回合攻击两次"}],
   },
   {
-    id:'flame_tongue_sword', name:'炎语之剑', emoji:'⚔️', slot:'weapon', ilvl:58, minEnemyIndex:6,
-    flavorText:'剑身常燃烈焰，斩出的每一剑都灼烧敌人的灵魂。',
+    id:'flame_tongue_sword', name:'燃烧电锯', emoji:'🔧', slot:'weapon', ilvl:58, minEnemyIndex:6,
+    flavorText:'改装过的工业电锯，灌满了从废弃加油站抽出的混合燃料。',
     affixes:[{type:'damage_percent',value:35},{type:'strength',value:24},{type:'crit_damage',value:18},{type:'life_leech',value:10}],
-    skills:[{type:"spellblade",name:"炎语",chance:25,magnitude:25,description:"攻击力额外提升 25%"}],
+    skills:[{type:"spellblade",name:"燃烧",chance:25,magnitude:25,description:"攻击力额外提升 25%"}],
   },
   {
-    id:'hellfire_plate', name:'炼狱铠甲', emoji:'🧥', slot:'chest', ilvl:65, minEnemyIndex:7,
-    flavorText:'地狱烈火锻造，穿戴者如站在炼狱核心，烈焰护体。',
+    id:'hellfire_plate', name:'核能反应甲', emoji:'🧥', slot:'chest', ilvl:65, minEnemyIndex:7,
+    flavorText:'用报废反应堆的外壳锻造而成，炽热的辐射让靠近的敌人自焚。',
     affixes:[{type:'armour',value:70},{type:'vitality',value:35},{type:'thorns',value:25},{type:'resist_all',value:25},{type:'life_regen',value:15}],
-    skills:[{type:"thorns",name:"地狱之焰",chance:30,magnitude:30,description:"被击中时反弹 30 点伤害"}],
+    skills:[{type:"thorns",name:"辐射灼烧",chance:30,magnitude:30,description:"被击中时反弹 30 点伤害"}],
   },
   {
-    id:'inferno_crown', name:'炼狱王冠', emoji:'👑', slot:'helmet', ilvl:65, minEnemyIndex:7,
-    flavorText:'戴上此冠，战士的意志如炼狱之火，永不熄灭。',
+    id:'inferno_crown', name:'动力头盔', emoji:'⛑️', slot:'helmet', ilvl:65, minEnemyIndex:7,
+    flavorText:'完整的 T-60 动力装甲头盔，HUD 显示器仍能正常运作。',
     affixes:[{type:'vitality',value:28},{type:'life_leech',value:18},{type:'lucky_hit',value:30},{type:'life_on_hit',value:25}],
-    skills:[{type:"vampiric",name:"火龙嗜血",chance:20,magnitude:20,description:"击杀时恢复 20 点生命"}],
+    skills:[{type:"vampiric",name:"战斗亢奋",chance:20,magnitude:20,description:"击杀时恢复 20 点生命"}],
   },
   {
-    id:'time_keeper_ring', name:'时间守护戒', emoji:'💍', slot:'ring', ilvl:65, minEnemyIndex:7,
-    flavorText:'时间的主宰，万物皆在其掌控之中。',
+    id:'time_keeper_ring', name:'精确计时器', emoji:'💍', slot:'ring', ilvl:65, minEnemyIndex:7,
+    flavorText:'战前军事实验室的精密计时芯片，让你在战斗中快人一步。',
     affixes:[{type:'attack_speed',value:30},{type:'dexterity',value:20},{type:'crit_damage',value:20},{type:'lucky_hit',value:25}],
-    skills:[{type:"doublestrike",name:"时之双击",chance:35,magnitude:35,description:"35% 概率每回合攻击两次"}],
+    skills:[{type:"doublestrike",name:"快速反应",chance:35,magnitude:35,description:"35% 概率每回合攻击两次"}],
   },
   {
-    id:'eternity_blade', name:'永恒之刃', emoji:'⚔️', slot:'weapon', ilvl:70, minEnemyIndex:7,
-    flavorText:'自混沌之初便存在的神器，凡持有者皆无敌于天下。',
+    id:'eternity_blade', name:'废土制裁者', emoji:'🔧', slot:'weapon', ilvl:70, minEnemyIndex:7,
+    flavorText:'用报废核反应堆的废料锻造的动力锤，一击足以粉碎任何变异生物。',
     affixes:[{type:'strength',value:35},{type:'damage_percent',value:50},{type:'crit_damage',value:25},{type:'overpower',value:20},{type:'life_leech',value:15}],
-    skills:[{type:"spellblade",name:"永恒剑意",chance:30,magnitude:30,description:"攻击力额外提升 30%"}],
+    skills:[{type:"spellblade",name:"核能驱动",chance:30,magnitude:30,description:"攻击力额外提升 30%"}],
   },
   {
-    id:'eternity_shield', name:'永恒之盾', emoji:'🛡️', slot:'offhand', ilvl:70, minEnemyIndex:7,
-    flavorText:'护佑者永恒不灭的意志铸成此盾，任何攻击都无法将其击碎。',
+    id:'eternity_shield', name:'反应堆护盾', emoji:'🛡️', slot:'offhand', ilvl:70, minEnemyIndex:7,
+    flavorText:'用反应堆控制棒材料铸成的盾牌，辐射本身成为了最强的防护。',
     affixes:[{type:'armour',value:80},{type:'vitality',value:40},{type:'resist_all',value:30},{type:'thorns',value:30},{type:'life_regen',value:20}],
   },
   // ── Dungeon-exclusive unique items ─────────────────────────────────────────
   // Dungeon 1: 腐化矿穴
   {
-    id:'d_rotten_core', name:'腐核护甲', emoji:'🪨', slot:'chest', ilvl:15, minEnemyIndex:99,
-    flavorText:'深渊矿脉中提炼的腐化结晶铸造而成，穿戴者散发出令敌人恐惧的腐臭。',
+    id:'d_rotten_core', name:'矿坑护甲', emoji:'🪨', slot:'chest', ilvl:15, minEnemyIndex:99,
+    flavorText:'从废弃矿洞中回收的防爆护甲，矿工们在塌方中全靠它活命。',
     affixes:[{type:'armour',value:18},{type:'vitality',value:10},{type:'life_regen',value:4},{type:'resist_all',value:6}],
   },
   {
-    id:'d_corrosion_pick', name:'腐蚀鹤嘴锄', emoji:'⛏️', slot:'weapon', ilvl:13, minEnemyIndex:99,
-    flavorText:'每次击中都会在敌人体内注入腐化毒素，令其溃烂至死。',
+    id:'d_corrosion_pick', name:'酸蚀镐', emoji:'⛏️', slot:'weapon', ilvl:13, minEnemyIndex:99,
+    flavorText:'长期浸泡在化学废料中的矿镐，金属已腐蚀出致命的毒性。',
     affixes:[{type:'strength',value:10},{type:'damage_percent',value:12}],
-    skills:[{type:"poison",name:"腐化毒液",chance:6,magnitude:6,description:"每次攻击追加 6 点腐化伤害"}],
+    skills:[{type:"poison",name:"酸蚀",chance:6,magnitude:6,description:"每次攻击追加 6 点酸性伤害"}],
   },
   // Dungeon 2: 幽影迷宫
   {
-    id:'d_specter_cloak', name:'幽灵披风', emoji:'🌑', slot:'chest', ilvl:25, minEnemyIndex:99,
-    flavorText:'由亡灵的幽光编织而成，穿戴者如同幽灵般难以捕捉。',
+    id:'d_specter_cloak', name:'隐身斗篷', emoji:'🌑', slot:'chest', ilvl:25, minEnemyIndex:99,
+    flavorText:'军用光学迷彩斗篷的残骸，虽然破损但仍能扭曲光线。',
     affixes:[{type:'armour',value:22},{type:'dexterity',value:14},{type:'life_leech',value:6}],
-    skills:[{type:"dodge",name:"幻影步",chance:22,magnitude:22,description:"22% 概率闪避所有伤害"}],
+    skills:[{type:"dodge",name:"迷彩",chance:22,magnitude:22,description:"22% 概率闪避所有伤害"}],
   },
   {
-    id:'d_shadow_sigil', name:'暗影符印', emoji:'🔮', slot:'ring', ilvl:23, minEnemyIndex:99,
-    flavorText:'刻有古老幽影印记的戒指，令持有者行动如鬼魅迅疾。',
+    id:'d_shadow_sigil', name:'战术芯片', emoji:'🔮', slot:'ring', ilvl:23, minEnemyIndex:99,
+    flavorText:'嵌入了特种作战算法的微型芯片，显著提升反应速度。',
     affixes:[{type:'lucky_hit',value:30},{type:'dexterity',value:12},{type:'attack_speed',value:12}],
   },
   // Dungeon 3: 裂焰神殿
   {
-    id:'d_flame_crown', name:'裂焰王冠', emoji:'👑', slot:'helmet', ilvl:40, minEnemyIndex:99,
-    flavorText:'神殿祭司用千年焰火淬炼而成，冠上的烈焰永不熄灭。',
+    id:'d_flame_crown', name:'耐热头盔', emoji:'👑', slot:'helmet', ilvl:40, minEnemyIndex:99,
+    flavorText:'消防队遗留的耐高温头盔，能在熔炉般的环境中保护头部。',
     affixes:[{type:'vitality',value:20},{type:'damage_percent',value:22},{type:'crit_damage',value:18}],
-    skills:[{type:"poison",name:"裂焰灼烧",chance:10,magnitude:10,description:"每次攻击追加 10 点灼烧伤害"}],
+    skills:[{type:"poison",name:"高温灼烧",chance:10,magnitude:10,description:"每次攻击追加 10 点灼烧伤害"}],
   },
   {
-    id:'d_ember_ring', name:'余烬戒环', emoji:'💍', slot:'ring', ilvl:38, minEnemyIndex:99,
-    flavorText:'神殿深处永燃的余烬凝结成戒，赋予佩戴者炽热的战斗意志。',
+    id:'d_ember_ring', name:'火种戒指', emoji:'💍', slot:'ring', ilvl:38, minEnemyIndex:99,
+    flavorText:'从废弃发电站找到的微型核电池，散发的热量令人热血沸腾。',
     affixes:[{type:'dexterity',value:18},{type:'attack_speed',value:18},{type:'intelligence',value:20}],
-    skills:[{type:"spellblade",name:"裂焰剑气",chance:18,magnitude:18,description:"攻击力额外提升 18%"}],
+    skills:[{type:"spellblade",name:"热能爆发",chance:18,magnitude:18,description:"攻击力额外提升 18%"}],
   },
   // Dungeon 4: 虚空要塞
   {
-    id:'d_void_blade', name:'虚空裂剑', emoji:'🗡️', slot:'weapon', ilvl:55, minEnemyIndex:99,
-    flavorText:'由虚空之力锻造，斩击时会撕裂空间本身，造成无法抵御的伤害。',
+    id:'d_void_blade', name:'实验性振动刀', emoji:'🗡️', slot:'weapon', ilvl:55, minEnemyIndex:99,
+    flavorText:'高频振动分子刃，战前军工科技的最高机密之一。',
     affixes:[{type:'strength',value:28},{type:'damage_percent',value:35},{type:'crit_damage',value:22},{type:'overpower',value:18}],
-    skills:[{type:"doublestrike",name:"虚空双裂",chance:30,magnitude:30,description:"30% 概率每回合攻击两次"}],
+    skills:[{type:"doublestrike",name:"高频切割",chance:30,magnitude:30,description:"30% 概率每回合攻击两次"}],
   },
   {
-    id:'d_nullity_plate', name:'虚无重甲', emoji:'🛡️', slot:'chest', ilvl:58, minEnemyIndex:99,
-    flavorText:'以虚空金属锻造，能够吸收来自任何维度的攻击。',
+    id:'d_nullity_plate', name:'军用复合装甲', emoji:'🛡️', slot:'chest', ilvl:58, minEnemyIndex:99,
+    flavorText:'多层复合材料压制的军用级装甲，能抵御多种攻击类型。',
     affixes:[{type:'armour',value:55},{type:'vitality',value:30},{type:'resist_all',value:18},{type:'life_regen',value:12}],
   },
   // Dungeon 5: 龙冢秘境
   {
-    id:'d_bone_dragon_shield', name:'龙骸圣盾', emoji:'🦴', slot:'offhand', ilvl:68, minEnemyIndex:99,
-    flavorText:'以古龙骸骨铸成，每次受击都会让攻击者付出痛苦的代价。',
+    id:'d_bone_dragon_shield', name:'反应堆护盾', emoji:'🛡️', slot:'offhand', ilvl:68, minEnemyIndex:99,
+    flavorText:'用反应堆控制棒材料铸成的防护盾，每次受击都会反弹辐射能量。',
     affixes:[{type:'armour',value:65},{type:'resist_all',value:22},{type:'thorns',value:25}],
-    skills:[{type:"vampiric",name:"骨血汲取",chance:20,magnitude:20,description:"击杀时恢复 20 点生命"}],
+    skills:[{type:"vampiric",name:"能量回收",chance:20,magnitude:20,description:"击杀时恢复 20 点生命"}],
   },
   {
-    id:'d_dracolich_mantle', name:'龙灵战甲', emoji:'🧥', slot:'chest', ilvl:72, minEnemyIndex:99,
-    flavorText:'龙冢中沉睡的龙灵将自身力量灌注其中，赋予佩戴者近乎不死的生命力。',
+    id:'d_dracolich_mantle', name:'辐射防护服', emoji:'🧥', slot:'chest', ilvl:72, minEnemyIndex:99,
+    flavorText:'全套军用级辐射防护装备，能在反应堆核心区域存活数小时。',
     affixes:[{type:'vitality',value:40},{type:'armour',value:50},{type:'life_leech',value:14},{type:'crit_damage',value:20}],
   },
   // Dungeon 6: 混沌熔炉
   {
-    id:'d_chaos_edge', name:'混沌熔刃', emoji:'⚔️', slot:'weapon', ilvl:85, minEnemyIndex:99,
-    flavorText:'混沌熔炉中诞生的终极之刃，集所有破坏力量于一身，斩断一切存在。',
+    id:'d_chaos_edge', name:'避难所科技原型刀', emoji:'⚔️', slot:'weapon', ilvl:85, minEnemyIndex:99,
+    flavorText:'使用未知合金锻造的 Vault-Tec 原型武器，切割能力远超现有科技。',
     affixes:[{type:'strength',value:45},{type:'damage_percent',value:55},{type:'crit_damage',value:30},{type:'overpower',value:25},{type:'attack_speed',value:20}],
-    skills:[{type:'spellblade',name:'混沌剑意',value:35,description:'攻击力额外提升 35%'},{type:'doublestrike',name:'混沌双裂',value:30,description:'30% 概率每回合攻击两次'}],
+    skills:[{type:'spellblade',name:'超频',value:35,description:'攻击力额外提升 35%'},{type:'doublestrike',name:'双频切割',value:30,description:'30% 概率每回合攻击两次'}],
   },
   {
     id:'d_primal_forge_armor', name:'原始熔炉甲', emoji:'🔱', slot:'chest', ilvl:88, minEnemyIndex:99,
     flavorText:'混沌熔炉最终产物，集混沌能量与宇宙秩序于一身，堪称神器之首。',
     affixes:[{type:'armour',value:90},{type:'vitality',value:55},{type:'resist_all',value:35},{type:'life_regen',value:25},{type:'life_leech',value:18}],
+  },
+  // Dungeon 7: 毒液下水道
+  {
+    id:'d_toxic_plate', name:'毒液护甲', emoji:'🟢', slot:'chest', ilvl:32, minEnemyIndex:99,
+    flavorText:'以变异毒液淬炼的护甲，穿戴者在剧毒中如鱼得水。',
+    affixes:[{type:'armour',value:25},{type:'resist_all',value:10},{type:'life_regen',value:6}],
+    skills:[{type:'poison',name:'毒液反噬',chance:15,magnitude:15,description:'被击中时对敌人造成15点毒伤'}],
+  },
+  {
+    id:'d_poison_dagger', name:'毒液匕首', emoji:'🗡️', slot:'weapon', ilvl:30, minEnemyIndex:99,
+    flavorText:'匕首刃上永远滴落着致命的绿色毒液。',
+    affixes:[{type:'strength',value:16},{type:'damage_percent',value:20}],
+    skills:[{type:'poison',name:'致命毒液',chance:20,magnitude:20,description:'每次攻击追加20点毒伤'}],
+  },
+  // Dungeon 8: 冰封陵墓
+  {
+    id:'d_frost_crown', name:'冰霜王冠', emoji:'👑', slot:'helmet', ilvl:58, minEnemyIndex:99,
+    flavorText:'戴上此冠，永冻之冰的力量环绕佩戴者。',
+    affixes:[{type:'vitality',value:30},{type:'intelligence',value:22},{type:'damage_percent',value:28}],
+    skills:[{type:'chain_lightning',name:'冰霜新星',chance:20,magnitude:100,description:'20%概率释放冰霜新星'}],
+  },
+  {
+    id:'d_ice_shard', name:'寒冰碎片', emoji:'❄️', slot:'offhand', ilvl:56, minEnemyIndex:99,
+    flavorText:'永冻之冰的核心碎片，触碰即冻结一切。',
+    affixes:[{type:'armour',value:35},{type:'resist_all',value:16},{type:'attack_speed',value:15}],
+    skills:[{type:'spellblade',name:'冰冻',chance:15,magnitude:15,description:'攻击力额外提升15%'}],
+  },
+  // Dungeon 9: 淹没古城
+  {
+    id:'d_abyssal_blade', name:'深渊之刃', emoji:'⚔️', slot:'weapon', ilvl:75, minEnemyIndex:99,
+    flavorText:'从深海中打捞出的上古兵器，蕴含着海洋的狂暴之力。',
+    affixes:[{type:'strength',value:40},{type:'damage_percent',value:45},{type:'overpower',value:20},{type:'life_leech',value:12}],
+    skills:[{type:'doublestrike',name:'波涛双击',chance:28,magnitude:28,description:'28%概率每回合攻击两次'},{type:'vampiric',name:'漩涡',chance:18,magnitude:18,description:'击杀时恢复18点生命'}],
+  },
+  {
+    id:'d_tide_armor', name:'潮汐重甲', emoji:'🌊', slot:'chest', ilvl:78, minEnemyIndex:99,
+    flavorText:'深海之底的金属铸造，海水本身成为了穿戴者的盾牌。',
+    affixes:[{type:'armour',value:72},{type:'vitality',value:38},{type:'resist_all',value:22},{type:'life_regen',value:18},{type:'life_leech',value:10}],
   },
 
   // ── Ranged unique weapons ───────────────────────────────────────────────────
@@ -991,71 +1029,110 @@ export function smithedToGameItem(itemId: string): GameItem | null {
   };
 }
 
-// ─── Leather equipment items ───────────────────────────────────────────────────
-// Uses hides from Hunting (hide_0..9)
+// ─── Leather equipment items — 完整 10 级套装 ────────────────────────────────
 export const LEATHER_ITEMS: Record<string, SmithedItemDef> = {
-  // Rabbit hide (hide_0) — Tier 1
-  leather_cap:       { id: 'leather_cap',       name: '皮革帽',     emoji: '🎩', slot: 'helmet',  attackBonus: 0,  defenceBonus: 3,   ilvl: 4  },
-  leather_vest:      { id: 'leather_vest',      name: '皮革战衣',   emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 6,   ilvl: 4  },
-  leather_pants:     { id: 'leather_pants',     name: '皮革裤',     emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 4,   ilvl: 4  },
-  leather_gloves:    { id: 'leather_gloves',    name: '皮革手套',   emoji: '🥊', slot: 'gloves',  attackBonus: 3,  defenceBonus: 2,   ilvl: 4  },
-  wooden_staff:      { id: 'wooden_staff',      name: '木制法杖', emoji: '🪄', slot: 'weapon',  attackBonus: 6,  defenceBonus: 0,  ilvl: 4,  combatStyle: 'magic'  },
-  bone_staff:        { id: 'bone_staff',        name: '骨制法杖', emoji: '🪄', slot: 'weapon',  attackBonus: 13, defenceBonus: 0,  ilvl: 13, combatStyle: 'magic'  },
-  enchanted_staff:   { id: 'enchanted_staff',   name: '附魔法杖', emoji: '🪄', slot: 'weapon',  attackBonus: 22, defenceBonus: 0,  ilvl: 24, combatStyle: 'magic'  },
-  crystal_staff:     { id: 'crystal_staff',     name: '水晶法杖', emoji: '🪄', slot: 'weapon',  attackBonus: 35, defenceBonus: 0,  ilvl: 38, combatStyle: 'magic'  },
-  dragonbone_staff:  { id: 'dragonbone_staff',  name: '龙骨法杖', emoji: '🪄', slot: 'weapon',  attackBonus: 52, defenceBonus: 0,  ilvl: 52, combatStyle: 'magic'  },
-  etherial_staff:    { id: 'etherial_staff',    name: '以太法杖', emoji: '🪄', slot: 'weapon',  attackBonus: 74, defenceBonus: 0,  ilvl: 68, combatStyle: 'magic'  },
-  leather_boots:     { id: 'leather_boots',     name: '皮革靴',     emoji: '👢', slot: 'boots',   attackBonus: 0,  defenceBonus: 3,   ilvl: 4  },
-  // Fox hide (hide_2) — Tier 2
-  studded_cap:       { id: 'studded_cap',       name: '铆钉帽',     emoji: '⛑️', slot: 'helmet',  attackBonus: 0,  defenceBonus: 10,  ilvl: 14 },
-  studded_vest:      { id: 'studded_vest',      name: '铆钉战衣',   emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 18,  ilvl: 14 },
-  studded_pants:     { id: 'studded_pants',     name: '铆钉裤',     emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 13,  ilvl: 14 },
-  studded_gloves:    { id: 'studded_gloves',    name: '铆钉手套',   emoji: '🥊', slot: 'gloves',  attackBonus: 7,  defenceBonus: 5,   ilvl: 14 },
-  // Wolf hide (hide_3) — Tier 3
-  wolf_cap:          { id: 'wolf_cap',          name: '狼皮帽',     emoji: '⛑️', slot: 'helmet',  attackBonus: 0,  defenceBonus: 15,  ilvl: 22 },
-  wolf_vest:         { id: 'wolf_vest',         name: '狼皮战衣',   emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 26,  ilvl: 22 },
-  wolf_pants:        { id: 'wolf_pants',        name: '狼皮裤',     emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 20,  ilvl: 22 },
-  wolf_gloves:       { id: 'wolf_gloves',       name: '狼皮手套',   emoji: '🥊', slot: 'gloves',  attackBonus: 12, defenceBonus: 7,   ilvl: 22 },
-  // Bear hide (hide_4) — Tier 4
-  bear_vest:         { id: 'bear_vest',         name: '熊皮战衣',   emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 38,  ilvl: 32 },
-  bear_pants:        { id: 'bear_pants',        name: '熊皮裤',     emoji: '👖', slot: 'legs',    attackBonus: 0,  defenceBonus: 28,  ilvl: 32 },
-  // Dragon hide (hide_8) — Tier 5
-  dragonhide_vest:   { id: 'dragonhide_vest',   name: '龙皮战衣',   emoji: '🧥', slot: 'chest',   attackBonus: 0,  defenceBonus: 72,  ilvl: 58 },
-  dragonhide_boots:  { id: 'dragonhide_boots',  name: '龙皮靴',     emoji: '👢', slot: 'boots',   attackBonus: 0,  defenceBonus: 38,  ilvl: 58 },
-  // Phoenix hide (hide_9) — Tier 6
-  phoenix_vest:      { id: 'phoenix_vest',      name: '凤凰羽战衣', emoji: '🧥', slot: 'chest',   attackBonus: 5,  defenceBonus: 90,  ilvl: 72 },
+  // ── hide_0: 辐射鼠皮 ──
+  rat_helm:   { id:'rat_helm',   name:'辐射鼠皮帽', emoji:'🎩', slot:'helmet', attackBonus:0, defenceBonus:3,  ilvl:3  },
+  rat_vest:   { id:'rat_vest',   name:'辐射鼠皮衣', emoji:'🧥', slot:'chest',  attackBonus:0, defenceBonus:6,  ilvl:3  },
+  rat_pants:  { id:'rat_pants',  name:'辐射鼠皮裤', emoji:'👖', slot:'legs',   attackBonus:0, defenceBonus:4,  ilvl:3  },
+  rat_gloves: { id:'rat_gloves', name:'辐射鼠皮手套',emoji:'🥊',slot:'gloves', attackBonus:2, defenceBonus:2,  ilvl:3  },
+  rat_boots:  { id:'rat_boots',  name:'辐射鼠皮靴', emoji:'👢', slot:'boots',  attackBonus:0, defenceBonus:2,  ilvl:3  },
+  // ── hide_1: 变异兔皮 ──
+  rabbit_helm:   { id:'rabbit_helm',   name:'变异兔皮帽', emoji:'⛑️', slot:'helmet', attackBonus:0, defenceBonus:8,  ilvl:8  },
+  rabbit_vest:   { id:'rabbit_vest',   name:'变异兔皮衣', emoji:'🧥', slot:'chest',  attackBonus:0, defenceBonus:14, ilvl:8  },
+  rabbit_pants:  { id:'rabbit_pants',  name:'变异兔皮裤', emoji:'👖', slot:'legs',   attackBonus:0, defenceBonus:10, ilvl:8  },
+  rabbit_gloves: { id:'rabbit_gloves', name:'变异兔皮手套',emoji:'🥊',slot:'gloves',attackBonus:5, defenceBonus:3,  ilvl:8  },
+  rabbit_boots:  { id:'rabbit_boots',  name:'变异兔皮靴', emoji:'👢', slot:'boots',  attackBonus:0, defenceBonus:5,  ilvl:8  },
+  // ── hide_2: 铁鳞蜥皮 ──
+  scale_helm:   { id:'scale_helm',   name:'铁鳞蜥皮盔',   emoji:'🪖', slot:'helmet', attackBonus:0, defenceBonus:14, ilvl:14 },
+  scale_vest:   { id:'scale_vest',   name:'铁鳞蜥皮甲',   emoji:'🧥', slot:'chest',  attackBonus:0, defenceBonus:24, ilvl:14 },
+  scale_pants:  { id:'scale_pants',  name:'铁鳞蜥皮裤',   emoji:'👖', slot:'legs',   attackBonus:0, defenceBonus:18, ilvl:14 },
+  scale_gloves: { id:'scale_gloves', name:'铁鳞蜥皮手套', emoji:'🥊', slot:'gloves', attackBonus:9, defenceBonus:6,  ilvl:14 },
+  scale_boots:  { id:'scale_boots',  name:'铁鳞蜥皮靴',   emoji:'👢', slot:'boots',  attackBonus:0, defenceBonus:10, ilvl:14 },
+  // ── hide_3: 疯犬皮 ──
+  dog_helm:   { id:'dog_helm',   name:'疯犬皮帽',   emoji:'⛑️', slot:'helmet', attackBonus:0, defenceBonus:20, ilvl:20 },
+  dog_vest:   { id:'dog_vest',   name:'疯犬皮甲',   emoji:'🧥', slot:'chest',  attackBonus:0, defenceBonus:34, ilvl:20 },
+  dog_pants:  { id:'dog_pants',  name:'疯犬皮裤',   emoji:'👖', slot:'legs',   attackBonus:0, defenceBonus:26, ilvl:20 },
+  dog_gloves: { id:'dog_gloves', name:'疯犬皮手套', emoji:'🥊', slot:'gloves', attackBonus:13,defenceBonus:9,  ilvl:20 },
+  dog_boots:  { id:'dog_boots',  name:'疯犬皮靴',   emoji:'👢', slot:'boots',  attackBonus:0, defenceBonus:14, ilvl:20 },
+  // ── hide_4: 钢鬃猪皮 ──
+  boar_helm:   { id:'boar_helm',   name:'钢鬃猪皮盔', emoji:'⛑️', slot:'helmet', attackBonus:0, defenceBonus:28, ilvl:28 },
+  boar_vest:   { id:'boar_vest',   name:'钢鬃猪皮甲', emoji:'🧥', slot:'chest',  attackBonus:0, defenceBonus:46, ilvl:28 },
+  boar_pants:  { id:'boar_pants',  name:'钢鬃猪皮裤', emoji:'👖', slot:'legs',   attackBonus:0, defenceBonus:34, ilvl:28 },
+  boar_gloves: { id:'boar_gloves', name:'钢鬃猪皮手套',emoji:'🥊',slot:'gloves',attackBonus:18,defenceBonus:12, ilvl:28 },
+  boar_boots:  { id:'boar_boots',  name:'钢鬃猪皮靴', emoji:'👢', slot:'boots',  attackBonus:0, defenceBonus:20, ilvl:28 },
+  // ── hide_5: 双头鹿皮 ──
+  deer_helm:   { id:'deer_helm',   name:'双头鹿皮帽', emoji:'⛑️', slot:'helmet', attackBonus:0, defenceBonus:36, ilvl:36 },
+  deer_vest:   { id:'deer_vest',   name:'双头鹿皮衣', emoji:'🧥', slot:'chest',  attackBonus:0, defenceBonus:58, ilvl:36 },
+  deer_pants:  { id:'deer_pants',  name:'双头鹿皮裤', emoji:'👖', slot:'legs',   attackBonus:0, defenceBonus:44, ilvl:36 },
+  deer_gloves: { id:'deer_gloves', name:'双头鹿皮手套',emoji:'🥊',slot:'gloves',attackBonus:22,defenceBonus:15, ilvl:36 },
+  deer_boots:  { id:'deer_boots',  name:'双头鹿皮靴', emoji:'👢', slot:'boots',  attackBonus:0, defenceBonus:26, ilvl:36 },
+  // ── hide_6: 灰熊厚皮 ──
+  bear_helm:   { id:'bear_helm',   name:'灰熊厚皮盔', emoji:'⛑️', slot:'helmet', attackBonus:0, defenceBonus:44, ilvl:45 },
+  bear_vest:   { id:'bear_vest',   name:'灰熊厚皮衣', emoji:'🧥', slot:'chest',  attackBonus:0, defenceBonus:70, ilvl:45 },
+  bear_pants:  { id:'bear_pants',  name:'灰熊厚皮裤', emoji:'👖', slot:'legs',   attackBonus:0, defenceBonus:52, ilvl:45 },
+  bear_gloves: { id:'bear_gloves', name:'灰熊厚皮手套',emoji:'🥊',slot:'gloves',attackBonus:28,defenceBonus:19, ilvl:45 },
+  bear_boots:  { id:'bear_boots',  name:'灰熊厚皮靴', emoji:'👢', slot:'boots',  attackBonus:0, defenceBonus:34, ilvl:45 },
+  // ── hide_7: 辐射蝎壳 ──
+  chitin_helm:   { id:'chitin_helm',   name:'辐射蝎壳盔', emoji:'🦂', slot:'helmet', attackBonus:4, defenceBonus:54, ilvl:55 },
+  chitin_vest:   { id:'chitin_vest',   name:'辐射蝎壳铠', emoji:'🧥', slot:'chest',  attackBonus:6, defenceBonus:84, ilvl:55 },
+  chitin_pants:  { id:'chitin_pants',  name:'辐射蝎壳裤', emoji:'👖', slot:'legs',   attackBonus:3, defenceBonus:62, ilvl:55 },
+  chitin_gloves: { id:'chitin_gloves', name:'辐射蝎壳手', emoji:'🥊', slot:'gloves', attackBonus:34,defenceBonus:23, ilvl:55 },
+  chitin_boots:  { id:'chitin_boots',  name:'辐射蝎壳靴', emoji:'👢', slot:'boots',  attackBonus:4, defenceBonus:42, ilvl:55 },
+  // ── hide_8: 死亡爪皮 ──
+  claw_helm:   { id:'claw_helm',   name:'死亡爪皮盔', emoji:'💀', slot:'helmet', attackBonus:8, defenceBonus:64, ilvl:66 },
+  claw_vest:   { id:'claw_vest',   name:'死亡爪皮甲', emoji:'🧥', slot:'chest',  attackBonus:12,defenceBonus:96, ilvl:66 },
+  claw_pants:  { id:'claw_pants',  name:'死亡爪皮裤', emoji:'👖', slot:'legs',   attackBonus:5, defenceBonus:72, ilvl:66 },
+  claw_gloves: { id:'claw_gloves', name:'死亡爪皮手套',emoji:'🥊',slot:'gloves',attackBonus:40,defenceBonus:28, ilvl:66 },
+  claw_boots:  { id:'claw_boots',  name:'死亡爪皮靴', emoji:'👢', slot:'boots',  attackBonus:8, defenceBonus:50, ilvl:66 },
+  // ── hide_9: 巨兽硬皮 ──
+  behemoth_helm:   { id:'behemoth_helm',   name:'巨兽硬皮盔',   emoji:'👑', slot:'helmet', attackBonus:12,defenceBonus:78, ilvl:80 },
+  behemoth_vest:   { id:'behemoth_vest',   name:'巨兽硬皮战甲', emoji:'🧥', slot:'chest',  attackBonus:18,defenceBonus:110,ilvl:80 },
+  behemoth_pants:  { id:'behemoth_pants',  name:'巨兽硬皮护腿', emoji:'👖', slot:'legs',   attackBonus:8, defenceBonus:86, ilvl:80 },
+  behemoth_gloves: { id:'behemoth_gloves', name:'巨兽硬皮护手', emoji:'🥊', slot:'gloves', attackBonus:48,defenceBonus:34, ilvl:80 },
+  behemoth_boots:  { id:'behemoth_boots',  name:'巨兽硬皮战靴', emoji:'👢', slot:'boots',  attackBonus:12,defenceBonus:62, ilvl:80 },
+  // ── 法杖 ──
+  scrap_staff:    { id:'scrap_staff',    name:'废料法杖', emoji:'🪄', slot:'weapon', attackBonus:4, defenceBonus:0, ilvl:3,  combatStyle:'magic' },
+  bone_staff:     { id:'bone_staff',     name:'骨制法杖', emoji:'🪄', slot:'weapon', attackBonus:12,defenceBonus:0, ilvl:12, combatStyle:'magic' },
+  ironbark_staff: { id:'ironbark_staff', name:'铁线木杖', emoji:'🪄', slot:'weapon', attackBonus:24,defenceBonus:0, ilvl:22, combatStyle:'magic' },
+  crystal_staff:  { id:'crystal_staff',  name:'水晶法杖', emoji:'🪄', slot:'weapon', attackBonus:38,defenceBonus:0, ilvl:34, combatStyle:'magic' },
+  uranium_staff:  { id:'uranium_staff',  name:'辐射法杖', emoji:'🪄', slot:'weapon', attackBonus:54,defenceBonus:0, ilvl:46, combatStyle:'magic' },
+  plasma_staff:   { id:'plasma_staff',   name:'等离子杖', emoji:'🪄', slot:'weapon', attackBonus:72,defenceBonus:0, ilvl:58, combatStyle:'magic' },
+  gauss_staff:    { id:'gauss_staff',    name:'高斯法杖', emoji:'🪄', slot:'weapon', attackBonus:88,defenceBonus:0, ilvl:72, combatStyle:'magic' },
 };
 
-// ─── Jewelry items ─────────────────────────────────────────────────────────────
-// Uses crafting items (item_0..9) from the Crafting skill
+// ─── Jewelry items — 金属锭 + 战斗材料 ──────────────────────────────────────
 export const JEWELRY_ITEMS: Record<string, SmithedItemDef> = {
-  // Cloth (item_0) — Tier 1
-  copper_ring:      { id: 'copper_ring',     name: '铜戒指',     emoji: '💍', slot: 'ring', attackBonus: 0, defenceBonus: 0, critRating: 1.5, ilvl: 3  },
-  leather_amulet:   { id: 'leather_amulet',  name: '皮革护符',   emoji: '📿', slot: 'neck', attackBonus: 0, defenceBonus: 0, hpBonus: 10,     ilvl: 3  },
-  // Leather (item_1) — Tier 2
-  tin_band:         { id: 'tin_band',        name: '锡指环',     emoji: '💍', slot: 'ring', attackBonus: 0, defenceBonus: 0, critRating: 2.5, ilvl: 9  },
-  cord_pendant:     { id: 'cord_pendant',    name: '绳吊坠',     emoji: '📿', slot: 'neck', attackBonus: 0, defenceBonus: 0, hpBonus: 20,     ilvl: 9  },
-  // Jewelry (item_2) — Tier 3
-  bronze_signet:    { id: 'bronze_signet',   name: '青铜印戒',   emoji: '💍', slot: 'ring', attackBonus: 2, defenceBonus: 0, critRating: 3.0, ilvl: 15 },
-  iron_chain:       { id: 'iron_chain',      name: '铁项链',     emoji: '📿', slot: 'neck', attackBonus: 0, defenceBonus: 0, hpBonus: 30,     ilvl: 15 },
-  // Armor (item_3) — Tier 4
-  silver_ring:      { id: 'silver_ring',     name: '银戒指',     emoji: '💍', slot: 'ring', attackBonus: 0, defenceBonus: 0, critRating: 5.0, ilvl: 22 },
-  silver_chain:     { id: 'silver_chain',    name: '银链',       emoji: '📿', slot: 'neck', attackBonus: 3, defenceBonus: 0, hpBonus: 35,     ilvl: 22 },
-  // Weapon (item_4) — Tier 5
-  gold_ring:        { id: 'gold_ring',       name: '金戒指',     emoji: '💍', slot: 'ring', attackBonus: 5, defenceBonus: 0, critRating: 6.0, ilvl: 30 },
-  gold_locket:      { id: 'gold_locket',     name: '金锁扣',     emoji: '📿', slot: 'neck', attackBonus: 0, defenceBonus: 0, hpBonus: 50,     ilvl: 30 },
-  // Artifact (item_5) — Tier 6
-  mithril_signet:   { id: 'mithril_signet',  name: '秘银印戒',   emoji: '💍', slot: 'ring', attackBonus: 5, defenceBonus: 0, critRating: 8.0, ilvl: 38 },
-  runed_pendant:    { id: 'runed_pendant',   name: '符文吊坠',   emoji: '📿', slot: 'neck', attackBonus: 5, defenceBonus: 5, hpBonus: 65,     ilvl: 38 },
-  // Relic (item_6) — Tier 7
-  arcane_band:      { id: 'arcane_band',     name: '奥术指环',   emoji: '💍', slot: 'ring', attackBonus: 8, defenceBonus: 0, critRating: 10.5,ilvl: 48 },
-  arcane_locket:    { id: 'arcane_locket',   name: '奥术锁扣',   emoji: '📿', slot: 'neck', attackBonus: 5, defenceBonus: 5, hpBonus: 80,     ilvl: 48 },
-  // Dragon ring (item_8) — Tier 8
-  dragon_ring:      { id: 'dragon_ring',     name: '龙火戒指',   emoji: '💍', slot: 'ring', attackBonus:12, defenceBonus: 0, critRating: 13.0,ilvl: 62 },
-  dragon_pendant:   { id: 'dragon_pendant',  name: '龙鳞吊坠',   emoji: '📿', slot: 'neck', attackBonus: 8, defenceBonus: 8, hpBonus: 100,    ilvl: 62 },
-  // Divine (item_9) — Tier 9
-  eternal_ring:     { id: 'eternal_ring',    name: '永恒戒指',   emoji: '💍', slot: 'ring', attackBonus:18, defenceBonus: 0, critRating: 18.0,ilvl: 78 },
-  eternal_pendant:  { id: 'eternal_pendant', name: '永恒吊坠',   emoji: '📿', slot: 'neck', attackBonus:10, defenceBonus:10, hpBonus: 130,    ilvl: 78 },
+  // bar_0: 废铁锭 + bones
+  scrap_ring:   { id:'scrap_ring',   name:'废铁戒指', emoji:'💍', slot:'ring', attackBonus:0, defenceBonus:0, critRating:1.0, ilvl:2  },
+  scrap_neck:   { id:'scrap_neck',   name:'废铁吊坠', emoji:'📿', slot:'neck', attackBonus:0, defenceBonus:0, hpBonus:8,      ilvl:2  },
+  // bar_1: 铜锭 + bones
+  copper_ring:  { id:'copper_ring',  name:'铜戒指',   emoji:'💍', slot:'ring', attackBonus:2, defenceBonus:0, critRating:2.0, ilvl:6  },
+  copper_neck:  { id:'copper_neck',  name:'铜吊坠',   emoji:'📿', slot:'neck', attackBonus:0, defenceBonus:0, hpBonus:18,     ilvl:6  },
+  // bar_2: 铝锭 + bones
+  alum_ring:    { id:'alum_ring',    name:'铝戒指',   emoji:'💍', slot:'ring', attackBonus:3, defenceBonus:0, critRating:3.5, ilvl:12 },
+  alum_neck:    { id:'alum_neck',    name:'铝吊坠',   emoji:'📿', slot:'neck', attackBonus:2, defenceBonus:0, hpBonus:28,     ilvl:12 },
+  // bar_3: 铅锭 + bones
+  lead_ring:    { id:'lead_ring',    name:'铅戒指',   emoji:'💍', slot:'ring', attackBonus:5, defenceBonus:0, critRating:5.0, ilvl:20 },
+  lead_neck:    { id:'lead_neck',    name:'铅吊坠',   emoji:'📿', slot:'neck', attackBonus:3, defenceBonus:3, hpBonus:40,     ilvl:20 },
+  // bar_4: 硫磺锭 (special, no bones)
+  sulfur_ring:  { id:'sulfur_ring',  name:'硫磺指环', emoji:'💍', slot:'ring', attackBonus:0, defenceBonus:3, critRating:7.0, ilvl:28 },
+  sulfur_neck:  { id:'sulfur_neck',  name:'硫磺护符', emoji:'📿', slot:'neck', attackBonus:5, defenceBonus:0, hpBonus:55,     ilvl:28 },
+  // bar_5: 硝酸盐锭 + dragonBones
+  nitrate_ring: { id:'nitrate_ring', name:'硝酸盐戒', emoji:'💍', slot:'ring', attackBonus:8, defenceBonus:0, critRating:9.0, ilvl:36 },
+  nitrate_neck: { id:'nitrate_neck', name:'硝酸盐坠', emoji:'📿', slot:'neck', attackBonus:5, defenceBonus:5, hpBonus:70,     ilvl:36 },
+  // bar_6: 铀锭 + dragonBones
+  uranium_ring: { id:'uranium_ring', name:'铀能戒指', emoji:'💍', slot:'ring', attackBonus:10,defenceBonus:0, critRating:12.0,ilvl:46 },
+  uranium_neck: { id:'uranium_neck', name:'铀能吊坠', emoji:'📿', slot:'neck', attackBonus:8, defenceBonus:8, hpBonus:90,     ilvl:46 },
+  // bar_7: 钛金锭 + dragonBones
+  titanium_ring:{ id:'titanium_ring',name:'钛金戒指', emoji:'💍', slot:'ring', attackBonus:14,defenceBonus:0, critRating:15.0,ilvl:56 },
+  titanium_neck:{ id:'titanium_neck',name:'钛金吊坠', emoji:'📿', slot:'neck', attackBonus:10,defenceBonus:10,hpBonus:110,    ilvl:56 },
+  // bar_8: 钨钢锭 + dragonBones
+  tungsten_ring:{ id:'tungsten_ring',name:'钨钢戒指', emoji:'💍', slot:'ring', attackBonus:18,defenceBonus:3, critRating:18.0,ilvl:68 },
+  tungsten_neck:{ id:'tungsten_neck',name:'钨钢吊坠', emoji:'📿', slot:'neck', attackBonus:14,defenceBonus:14,hpBonus:140,    ilvl:68 },
+  // bar_9: 铱金锭 + dragonBones
+  iridium_ring: { id:'iridium_ring', name:'铱金戒指', emoji:'💍', slot:'ring', attackBonus:24,defenceBonus:5, critRating:22.0,ilvl:80 },
+  iridium_neck: { id:'iridium_neck', name:'铱金吊坠', emoji:'📿', slot:'neck', attackBonus:18,defenceBonus:18,hpBonus:180,    ilvl:80 },
 };
 
 // Merged lookup including smithed, leather, and jewelry
@@ -1076,100 +1153,143 @@ export interface CraftingRecipe {
 }
 
 export const LEATHERWORKING_RECIPES: CraftingRecipe[] = [
-  // Rabbit hides (hide_0) — basic leather
-  { id: 'lw_leather_cap',     output: 'leather_cap',     inputs: [{ resource: 'hide_0', qty: 2 }], reqLevel: 1,  xp: 20,  time: 6  },
-  { id: 'lw_leather_vest',    output: 'leather_vest',    inputs: [{ resource: 'hide_0', qty: 4 }], reqLevel: 1,  xp: 40,  time: 12 },
-  { id: 'lw_leather_pants',   output: 'leather_pants',   inputs: [{ resource: 'hide_0', qty: 3 }], reqLevel: 1,  xp: 30,  time: 9  },
-  { id: 'lw_leather_gloves',  output: 'leather_gloves',  inputs: [{ resource: 'hide_0', qty: 2 }], reqLevel: 1,  xp: 20,  time: 6  },
-  { id: 'lw_leather_boots',   output: 'leather_boots',   inputs: [{ resource: 'hide_0', qty: 2 }], reqLevel: 1,  xp: 20,  time: 6  },
-  // Fox hides (hide_2) — studded leather
-  { id: 'lw_studded_cap',     output: 'studded_cap',     inputs: [{ resource: 'hide_2', qty: 2 }], reqLevel: 15, xp: 55,  time: 8  },
-  { id: 'lw_studded_vest',    output: 'studded_vest',    inputs: [{ resource: 'hide_2', qty: 4 }], reqLevel: 15, xp: 110, time: 15 },
-  { id: 'lw_studded_pants',   output: 'studded_pants',   inputs: [{ resource: 'hide_2', qty: 3 }], reqLevel: 15, xp: 82,  time: 12 },
-  { id: 'lw_studded_gloves',  output: 'studded_gloves',  inputs: [{ resource: 'hide_2', qty: 2 }], reqLevel: 15, xp: 55,  time: 8  },
-  // Wolf hides (hide_3) — wolf leather
-  { id: 'lw_wolf_cap',        output: 'wolf_cap',        inputs: [{ resource: 'hide_3', qty: 2 }], reqLevel: 25, xp: 85,  time: 8  },
-  { id: 'lw_wolf_vest',       output: 'wolf_vest',       inputs: [{ resource: 'hide_3', qty: 4 }], reqLevel: 25, xp: 170, time: 15 },
-  { id: 'lw_wolf_pants',      output: 'wolf_pants',      inputs: [{ resource: 'hide_3', qty: 3 }], reqLevel: 25, xp: 128, time: 12 },
-  { id: 'lw_wolf_gloves',     output: 'wolf_gloves',     inputs: [{ resource: 'hide_3', qty: 2 }], reqLevel: 25, xp: 85,  time: 8  },
-  // Bear hides (hide_4) — bear leather
-  { id: 'lw_bear_vest',       output: 'bear_vest',       inputs: [{ resource: 'hide_4', qty: 5 }], reqLevel: 35, xp: 230, time: 18 },
-  { id: 'lw_bear_pants',      output: 'bear_pants',      inputs: [{ resource: 'hide_4', qty: 4 }], reqLevel: 35, xp: 185, time: 15 },
-  // Dragon hides (hide_8) — dragonhide
-  { id: 'lw_dragonhide_vest', output: 'dragonhide_vest', inputs: [{ resource: 'hide_8', qty: 4 }], reqLevel: 60, xp: 480, time: 22 },
-  { id: 'lw_dragonhide_boots',output: 'dragonhide_boots',inputs: [{ resource: 'hide_8', qty: 3 }], reqLevel: 60, xp: 360, time: 18 },
-  // Phoenix hides (hide_9) — phoenix
-  { id: 'lw_phoenix_vest',    output: 'phoenix_vest',    inputs: [{ resource: 'hide_9', qty: 4 }], reqLevel: 70, xp: 650, time: 25 },
-  // Magic staves
-  { id: 'lw_wooden_staff',      output: 'wooden_staff',      inputs: [{ resource: 'hide_0', qty: 1 }], reqLevel: 1,  xp: 20,  time: 6  },
-  { id: 'lw_bone_staff',        output: 'bone_staff',        inputs: [{ resource: 'hide_2', qty: 2 }], reqLevel: 10, xp: 50,  time: 8  },
-  { id: 'lw_enchanted_staff',   output: 'enchanted_staff',   inputs: [{ resource: 'hide_4', qty: 2 }], reqLevel: 20, xp: 80,  time: 12 },
-  { id: 'lw_crystal_staff',     output: 'crystal_staff',     inputs: [{ resource: 'hide_6', qty: 3 }], reqLevel: 32, xp: 130, time: 16 },
-  { id: 'lw_dragonbone_staff',  output: 'dragonbone_staff',  inputs: [{ resource: 'hide_7', qty: 3 }], reqLevel: 48, xp: 200, time: 22 },
-  { id: 'lw_etherial_staff',    output: 'etherial_staff',    inputs: [{ resource: 'hide_9', qty: 4 }], reqLevel: 62, xp: 300, time: 28 },
+  // hide_0: 鼠皮
+  { id:'lw_rat_helm',   output:'rat_helm',   inputs:[{resource:'hide_0',qty:2}],reqLevel:1, xp:15,time:5},
+  { id:'lw_rat_vest',   output:'rat_vest',   inputs:[{resource:'hide_0',qty:4}],reqLevel:1, xp:30,time:10},
+  { id:'lw_rat_pants',  output:'rat_pants',  inputs:[{resource:'hide_0',qty:3}],reqLevel:1, xp:22,time:7},
+  { id:'lw_rat_gloves', output:'rat_gloves', inputs:[{resource:'hide_0',qty:2}],reqLevel:1, xp:15,time:5},
+  { id:'lw_rat_boots',  output:'rat_boots',  inputs:[{resource:'hide_0',qty:2}],reqLevel:1, xp:15,time:5},
+  // hide_1: 兔皮
+  { id:'lw_rabbit_helm',   output:'rabbit_helm',   inputs:[{resource:'hide_1',qty:2}],reqLevel:8, xp:35,time:7},
+  { id:'lw_rabbit_vest',   output:'rabbit_vest',   inputs:[{resource:'hide_1',qty:4}],reqLevel:8, xp:70,time:14},
+  { id:'lw_rabbit_pants',  output:'rabbit_pants',  inputs:[{resource:'hide_1',qty:3}],reqLevel:8, xp:52,time:10},
+  { id:'lw_rabbit_gloves', output:'rabbit_gloves', inputs:[{resource:'hide_1',qty:2}],reqLevel:8, xp:35,time:7},
+  { id:'lw_rabbit_boots',  output:'rabbit_boots',  inputs:[{resource:'hide_1',qty:2}],reqLevel:8, xp:35,time:7},
+  // hide_2: 蜥蜴鳞皮
+  { id:'lw_scale_helm',   output:'scale_helm',   inputs:[{resource:'hide_2',qty:3}],reqLevel:16,xp:60,time:9},
+  { id:'lw_scale_vest',   output:'scale_vest',   inputs:[{resource:'hide_2',qty:5}],reqLevel:16,xp:120,time:16},
+  { id:'lw_scale_pants',  output:'scale_pants',  inputs:[{resource:'hide_2',qty:4}],reqLevel:16,xp:90,time:13},
+  { id:'lw_scale_gloves', output:'scale_gloves', inputs:[{resource:'hide_2',qty:3}],reqLevel:16,xp:60,time:9},
+  { id:'lw_scale_boots',  output:'scale_boots',  inputs:[{resource:'hide_2',qty:3}],reqLevel:16,xp:60,time:9},
+  // hide_3: 犬皮
+  { id:'lw_dog_helm',   output:'dog_helm',   inputs:[{resource:'hide_3',qty:3}],reqLevel:24,xp:90,time:10},
+  { id:'lw_dog_vest',   output:'dog_vest',   inputs:[{resource:'hide_3',qty:5}],reqLevel:24,xp:180,time:18},
+  { id:'lw_dog_pants',  output:'dog_pants',  inputs:[{resource:'hide_3',qty:4}],reqLevel:24,xp:135,time:14},
+  { id:'lw_dog_gloves', output:'dog_gloves', inputs:[{resource:'hide_3',qty:3}],reqLevel:24,xp:90,time:10},
+  { id:'lw_dog_boots',  output:'dog_boots',  inputs:[{resource:'hide_3',qty:3}],reqLevel:24,xp:90,time:10},
+  // hide_4: 野猪硬皮
+  { id:'lw_boar_helm',   output:'boar_helm',   inputs:[{resource:'hide_4',qty:4}],reqLevel:34,xp:140,time:12},
+  { id:'lw_boar_vest',   output:'boar_vest',   inputs:[{resource:'hide_4',qty:6}],reqLevel:34,xp:260,time:22},
+  { id:'lw_boar_pants',  output:'boar_pants',  inputs:[{resource:'hide_4',qty:5}],reqLevel:34,xp:200,time:18},
+  { id:'lw_boar_gloves', output:'boar_gloves', inputs:[{resource:'hide_4',qty:4}],reqLevel:34,xp:140,time:12},
+  { id:'lw_boar_boots',  output:'boar_boots',  inputs:[{resource:'hide_4',qty:4}],reqLevel:34,xp:140,time:12},
+  // hide_5: 变异鹿皮
+  { id:'lw_deer_helm',   output:'deer_helm',   inputs:[{resource:'hide_5',qty:4}],reqLevel:42,xp:200,time:14},
+  { id:'lw_deer_vest',   output:'deer_vest',   inputs:[{resource:'hide_5',qty:6}],reqLevel:42,xp:350,time:24},
+  { id:'lw_deer_pants',  output:'deer_pants',  inputs:[{resource:'hide_5',qty:5}],reqLevel:42,xp:270,time:20},
+  { id:'lw_deer_gloves', output:'deer_gloves', inputs:[{resource:'hide_5',qty:4}],reqLevel:42,xp:200,time:14},
+  { id:'lw_deer_boots',  output:'deer_boots',  inputs:[{resource:'hide_5',qty:4}],reqLevel:42,xp:200,time:14},
+  // hide_6: 熊皮
+  { id:'lw_bear_helm',   output:'bear_helm',   inputs:[{resource:'hide_6',qty:5}],reqLevel:52,xp:280,time:16},
+  { id:'lw_bear_vest',   output:'bear_vest',   inputs:[{resource:'hide_6',qty:8}],reqLevel:52,xp:480,time:26},
+  { id:'lw_bear_pants',  output:'bear_pants',  inputs:[{resource:'hide_6',qty:6}],reqLevel:52,xp:370,time:22},
+  { id:'lw_bear_gloves', output:'bear_gloves', inputs:[{resource:'hide_6',qty:5}],reqLevel:52,xp:280,time:16},
+  { id:'lw_bear_boots',  output:'bear_boots',  inputs:[{resource:'hide_6',qty:5}],reqLevel:52,xp:280,time:16},
+  // hide_7: 巨蝎甲壳
+  { id:'lw_chitin_helm',   output:'chitin_helm',   inputs:[{resource:'hide_7',qty:5}],reqLevel:64,xp:380,time:18},
+  { id:'lw_chitin_vest',   output:'chitin_vest',   inputs:[{resource:'hide_7',qty:8}],reqLevel:64,xp:620,time:28},
+  { id:'lw_chitin_pants',  output:'chitin_pants',  inputs:[{resource:'hide_7',qty:6}],reqLevel:64,xp:480,time:24},
+  { id:'lw_chitin_gloves', output:'chitin_gloves', inputs:[{resource:'hide_7',qty:5}],reqLevel:64,xp:380,time:18},
+  { id:'lw_chitin_boots',  output:'chitin_boots',  inputs:[{resource:'hide_7',qty:5}],reqLevel:64,xp:380,time:18},
+  // hide_8: 死亡爪皮
+  { id:'lw_claw_helm',   output:'claw_helm',   inputs:[{resource:'hide_8',qty:6}],reqLevel:76,xp:520,time:22},
+  { id:'lw_claw_vest',   output:'claw_vest',   inputs:[{resource:'hide_8',qty:9}],reqLevel:76,xp:800,time:30},
+  { id:'lw_claw_pants',  output:'claw_pants',  inputs:[{resource:'hide_8',qty:7}],reqLevel:76,xp:640,time:26},
+  { id:'lw_claw_gloves', output:'claw_gloves', inputs:[{resource:'hide_8',qty:6}],reqLevel:76,xp:520,time:22},
+  { id:'lw_claw_boots',  output:'claw_boots',  inputs:[{resource:'hide_8',qty:6}],reqLevel:76,xp:520,time:22},
+  // hide_9: 巨兽厚皮
+  { id:'lw_behemoth_helm',   output:'behemoth_helm',   inputs:[{resource:'hide_9',qty:7}],reqLevel:88,xp:700,time:26},
+  { id:'lw_behemoth_vest',   output:'behemoth_vest',   inputs:[{resource:'hide_9',qty:10}],reqLevel:88,xp:1050,time:34},
+  { id:'lw_behemoth_pants',  output:'behemoth_pants',  inputs:[{resource:'hide_9',qty:8}],reqLevel:88,xp:850,time:30},
+  { id:'lw_behemoth_gloves', output:'behemoth_gloves', inputs:[{resource:'hide_9',qty:7}],reqLevel:88,xp:700,time:26},
+  { id:'lw_behemoth_boots',  output:'behemoth_boots',  inputs:[{resource:'hide_9',qty:7}],reqLevel:88,xp:700,time:26},
+  // ── 法杖 ──
+  { id:'lw_scrap_staff',    output:'scrap_staff',    inputs:[{resource:'hide_0',qty:2}],reqLevel:1, xp:18,time:5},
+  { id:'lw_bone_staff',     output:'bone_staff',     inputs:[{resource:'hide_2',qty:3}],reqLevel:12,xp:50,time:8},
+  { id:'lw_ironbark_staff', output:'ironbark_staff', inputs:[{resource:'hide_4',qty:4}],reqLevel:26,xp:100,time:12},
+  { id:'lw_crystal_staff',  output:'crystal_staff',  inputs:[{resource:'hide_5',qty:4}],reqLevel:38,xp:160,time:16},
+  { id:'lw_uranium_staff',  output:'uranium_staff',  inputs:[{resource:'hide_6',qty:4}],reqLevel:50,xp:240,time:20},
+  { id:'lw_plasma_staff',   output:'plasma_staff',   inputs:[{resource:'hide_7',qty:5}],reqLevel:62,xp:340,time:24},
+  { id:'lw_gauss_staff',    output:'gauss_staff',    inputs:[{resource:'hide_8',qty:5}],reqLevel:74,xp:460,time:28},
 ];
 
 // ─── Jewelcrafting recipes ──────────────────────────────────────────────────────
 export const JEWELCRAFTING_RECIPES: CraftingRecipe[] = [
-  // Cloth items (item_0)
-  { id: 'jc_copper_ring',    output: 'copper_ring',    inputs: [{ resource: 'item_0', qty: 3 }], reqLevel: 1,  xp: 25,  time: 8  },
-  { id: 'jc_leather_amulet', output: 'leather_amulet', inputs: [{ resource: 'item_0', qty: 4 }], reqLevel: 1,  xp: 30,  time: 10 },
-  // Leather (item_1)
-  { id: 'jc_tin_band',       output: 'tin_band',       inputs: [{ resource: 'item_1', qty: 3 }], reqLevel: 10, xp: 45,  time: 8  },
-  { id: 'jc_cord_pendant',   output: 'cord_pendant',   inputs: [{ resource: 'item_1', qty: 4 }], reqLevel: 10, xp: 55,  time: 10 },
-  // Jewelry (item_2)
-  { id: 'jc_bronze_signet',  output: 'bronze_signet',  inputs: [{ resource: 'item_2', qty: 3 }], reqLevel: 20, xp: 70,  time: 9  },
-  { id: 'jc_iron_chain',     output: 'iron_chain',     inputs: [{ resource: 'item_2', qty: 4 }], reqLevel: 20, xp: 85,  time: 12 },
-  // Armor (item_3)
-  { id: 'jc_silver_ring',    output: 'silver_ring',    inputs: [{ resource: 'item_3', qty: 3 }], reqLevel: 28, xp: 100, time: 10 },
-  { id: 'jc_silver_chain',   output: 'silver_chain',   inputs: [{ resource: 'item_3', qty: 4 }], reqLevel: 28, xp: 120, time: 12 },
-  // Weapon (item_4)
-  { id: 'jc_gold_ring',      output: 'gold_ring',      inputs: [{ resource: 'item_4', qty: 3 }], reqLevel: 38, xp: 140, time: 10 },
-  { id: 'jc_gold_locket',    output: 'gold_locket',    inputs: [{ resource: 'item_4', qty: 4 }], reqLevel: 38, xp: 165, time: 12 },
-  // Artifact (item_5)
-  { id: 'jc_mithril_signet', output: 'mithril_signet', inputs: [{ resource: 'item_5', qty: 3 }], reqLevel: 48, xp: 200, time: 12 },
-  { id: 'jc_runed_pendant',  output: 'runed_pendant',  inputs: [{ resource: 'item_5', qty: 4 }], reqLevel: 48, xp: 240, time: 14 },
-  // Relic (item_6)
-  { id: 'jc_arcane_band',    output: 'arcane_band',    inputs: [{ resource: 'item_6', qty: 3 }], reqLevel: 55, xp: 270, time: 12 },
-  { id: 'jc_arcane_locket',  output: 'arcane_locket',  inputs: [{ resource: 'item_6', qty: 4 }], reqLevel: 55, xp: 320, time: 15 },
-  // Dragon (item_8)
-  { id: 'jc_dragon_ring',    output: 'dragon_ring',    inputs: [{ resource: 'item_8', qty: 2 }], reqLevel: 65, xp: 400, time: 14 },
-  { id: 'jc_dragon_pendant', output: 'dragon_pendant', inputs: [{ resource: 'item_8', qty: 3 }], reqLevel: 65, xp: 480, time: 16 },
-  // Divine (item_9)
-  { id: 'jc_eternal_ring',   output: 'eternal_ring',   inputs: [{ resource: 'item_9', qty: 2 }], reqLevel: 72, xp: 600, time: 16 },
-  { id: 'jc_eternal_pendant',output: 'eternal_pendant', inputs: [{ resource: 'item_9', qty: 3 }], reqLevel: 72, xp: 720, time: 20 },
+  // bar_0: 废铁锭 + bones
+  { id:'jc_scrap_ring',  output:'scrap_ring',  inputs:[{resource:'bar_0',qty:2},{resource:'bones',qty:2}],  reqLevel:1,  xp:20,time:8},
+  { id:'jc_scrap_neck',  output:'scrap_neck',  inputs:[{resource:'bar_0',qty:3},{resource:'bones',qty:3}],  reqLevel:1,  xp:28,time:10},
+  // bar_1: 铜锭 + bones
+  { id:'jc_copper_ring', output:'copper_ring', inputs:[{resource:'bar_1',qty:2},{resource:'bones',qty:3}],  reqLevel:8,  xp:40,time:8},
+  { id:'jc_copper_neck', output:'copper_neck', inputs:[{resource:'bar_1',qty:3},{resource:'bones',qty:4}],  reqLevel:8,  xp:50,time:10},
+  // bar_2: 铝锭 + bones
+  { id:'jc_alum_ring',   output:'alum_ring',   inputs:[{resource:'bar_2',qty:2},{resource:'bones',qty:4}],  reqLevel:16,xp:60,time:9},
+  { id:'jc_alum_neck',   output:'alum_neck',   inputs:[{resource:'bar_2',qty:3},{resource:'bones',qty:5}],  reqLevel:16,xp:75,time:11},
+  // bar_3: 铅锭 + bones
+  { id:'jc_lead_ring',   output:'lead_ring',   inputs:[{resource:'bar_3',qty:2},{resource:'bones',qty:6}],  reqLevel:24,xp:90,time:10},
+  { id:'jc_lead_neck',   output:'lead_neck',   inputs:[{resource:'bar_3',qty:3},{resource:'bones',qty:8}],  reqLevel:24,xp:110,time:12},
+  // bar_4: 硫磺锭 (no bones)
+  { id:'jc_sulfur_ring', output:'sulfur_ring', inputs:[{resource:'bar_4',qty:2}],                          reqLevel:32,xp:130,time:10},
+  { id:'jc_sulfur_neck', output:'sulfur_neck', inputs:[{resource:'bar_4',qty:3}],                          reqLevel:32,xp:160,time:12},
+  // bar_5: 硝酸盐锭 + dragonBones
+  { id:'jc_nitrate_ring',output:'nitrate_ring',inputs:[{resource:'bar_5',qty:2},{resource:'dragonBones',qty:1}],reqLevel:40,xp:180,time:12},
+  { id:'jc_nitrate_neck',output:'nitrate_neck',inputs:[{resource:'bar_5',qty:3},{resource:'dragonBones',qty:2}],reqLevel:40,xp:220,time:14},
+  // bar_6: 铀锭 + dragonBones
+  { id:'jc_uranium_ring',output:'uranium_ring',inputs:[{resource:'bar_6',qty:2},{resource:'dragonBones',qty:2}],reqLevel:50,xp:260,time:14},
+  { id:'jc_uranium_neck',output:'uranium_neck',inputs:[{resource:'bar_6',qty:3},{resource:'dragonBones',qty:3}],reqLevel:50,xp:310,time:16},
+  // bar_7: 钛金锭 + dragonBones
+  { id:'jc_titanium_ring',output:'titanium_ring',inputs:[{resource:'bar_7',qty:3},{resource:'dragonBones',qty:3}],reqLevel:62,xp:360,time:16},
+  { id:'jc_titanium_neck',output:'titanium_neck',inputs:[{resource:'bar_7',qty:4},{resource:'dragonBones',qty:4}],reqLevel:62,xp:420,time:18},
+  // bar_8: 钨钢锭 + dragonBones
+  { id:'jc_tungsten_ring',output:'tungsten_ring',inputs:[{resource:'bar_8',qty:3},{resource:'dragonBones',qty:4}],reqLevel:74,xp:500,time:18},
+  { id:'jc_tungsten_neck',output:'tungsten_neck',inputs:[{resource:'bar_8',qty:4},{resource:'dragonBones',qty:5}],reqLevel:74,xp:580,time:22},
+  // bar_9: 铱金锭 + dragonBones
+  { id:'jc_iridium_ring',output:'iridium_ring',inputs:[{resource:'bar_9',qty:4},{resource:'dragonBones',qty:6}],reqLevel:86,xp:680,time:22},
+  { id:'jc_iridium_neck',output:'iridium_neck',inputs:[{resource:'bar_9',qty:5},{resource:'dragonBones',qty:8}],reqLevel:86,xp:800,time:26},
 ];
 
 // ─── Tool crafting recipes ────────────────────────────────────────────────────
 export const TOOL_RECIPES: CraftingRecipe[] = [
   // Axes: wood + bars
-  { id:'tool_bronze_axe',   output:'bronze_axe',   inputs:[{resource:'wood_0',qty:3},{resource:'bar_0',qty:2}], reqLevel:1,  xp:15, time:8 },
-  { id:'tool_iron_axe',     output:'iron_axe',     inputs:[{resource:'wood_1',qty:3},{resource:'bar_1',qty:2}], reqLevel:10, xp:30, time:10 },
-  { id:'tool_steel_axe',    output:'steel_axe',    inputs:[{resource:'wood_2',qty:3},{resource:'bar_2',qty:2}], reqLevel:20, xp:50, time:12 },
-  { id:'tool_mithril_axe',  output:'mithril_axe',  inputs:[{resource:'wood_4',qty:3},{resource:'bar_4',qty:2}], reqLevel:35, xp:80, time:14 },
-  { id:'tool_adamant_axe',  output:'adamant_axe',  inputs:[{resource:'wood_5',qty:3},{resource:'bar_5',qty:2}], reqLevel:45, xp:120,time:16 },
-  { id:'tool_rune_axe',     output:'rune_axe',     inputs:[{resource:'wood_6',qty:3},{resource:'bar_6',qty:2},{resource:'dragonBones',qty:1}], reqLevel:55, xp:180,time:18 },
-  { id:'tool_dragon_axe',   output:'dragon_axe',   inputs:[{resource:'wood_8',qty:3},{resource:'bar_8',qty:2},{resource:'dragonBones',qty:3}], reqLevel:70, xp:280,time:22 },
+  { id:'tool_scrap_axe',    output:'scrap_axe',    inputs:[{resource:'wood_0',qty:3},{resource:'bar_0',qty:2}], reqLevel:1,  xp:15, time:8 },
+  { id:'tool_copper_axe',   output:'copper_axe',   inputs:[{resource:'wood_1',qty:3},{resource:'bar_1',qty:2}], reqLevel:8,  xp:30, time:10 },
+  { id:'tool_alum_axe',     output:'alum_axe',     inputs:[{resource:'wood_2',qty:3},{resource:'bar_2',qty:2}], reqLevel:16, xp:50, time:12 },
+  { id:'tool_lead_axe',     output:'lead_axe',     inputs:[{resource:'wood_3',qty:3},{resource:'bar_3',qty:2}], reqLevel:28, xp:80, time:14 },
+  { id:'tool_uranium_axe',  output:'uranium_axe',  inputs:[{resource:'wood_5',qty:3},{resource:'bar_6',qty:2},{resource:'dragonBones',qty:1}], reqLevel:42, xp:130,time:16 },
+  { id:'tool_titanium_axe', output:'titanium_axe', inputs:[{resource:'wood_7',qty:3},{resource:'bar_7',qty:2},{resource:'dragonBones',qty:2}], reqLevel:60, xp:200,time:18 },
+  { id:'tool_iridium_axe',  output:'iridium_axe',  inputs:[{resource:'wood_9',qty:3},{resource:'bar_9',qty:2},{resource:'dragonBones',qty:4}], reqLevel:80, xp:320,time:24 },
   // Pickaxes: bars + bones
-  { id:'tool_bronze_pick',  output:'bronze_pick',  inputs:[{resource:'bar_0',qty:2},{resource:'bones',qty:2}],  reqLevel:1,  xp:15, time:8 },
-  { id:'tool_iron_pick',    output:'iron_pick',    inputs:[{resource:'bar_1',qty:2},{resource:'bones',qty:3}],  reqLevel:10, xp:30, time:10 },
-  { id:'tool_steel_pick',   output:'steel_pick',   inputs:[{resource:'bar_2',qty:2},{resource:'bones',qty:5}],  reqLevel:20, xp:50, time:12 },
-  { id:'tool_mithril_pick', output:'mithril_pick', inputs:[{resource:'bar_4',qty:2},{resource:'bones',qty:8}],  reqLevel:35, xp:80, time:14 },
-  { id:'tool_adamant_pick', output:'adamant_pick', inputs:[{resource:'bar_5',qty:2},{resource:'bones',qty:12}], reqLevel:45, xp:120,time:16 },
-  { id:'tool_rune_pick',    output:'rune_pick',    inputs:[{resource:'bar_6',qty:2},{resource:'dragonBones',qty:1}], reqLevel:55, xp:180,time:18 },
-  { id:'tool_dragon_pick',  output:'dragon_pick',  inputs:[{resource:'bar_8',qty:2},{resource:'dragonBones',qty:3}], reqLevel:70, xp:280,time:22 },
+  { id:'tool_scrap_pick',    output:'scrap_pick',    inputs:[{resource:'bar_0',qty:2},{resource:'bones',qty:2}],  reqLevel:1,  xp:15, time:8 },
+  { id:'tool_copper_pick',   output:'copper_pick',   inputs:[{resource:'bar_1',qty:2},{resource:'bones',qty:3}],  reqLevel:8,  xp:30, time:10 },
+  { id:'tool_alum_pick',     output:'alum_pick',     inputs:[{resource:'bar_2',qty:2},{resource:'bones',qty:5}],  reqLevel:16, xp:50, time:12 },
+  { id:'tool_lead_pick',     output:'lead_pick',     inputs:[{resource:'bar_3',qty:2},{resource:'bones',qty:8}],  reqLevel:28, xp:80, time:14 },
+  { id:'tool_uranium_pick',  output:'uranium_pick',  inputs:[{resource:'bar_6',qty:2},{resource:'dragonBones',qty:1}], reqLevel:42, xp:130,time:16 },
+  { id:'tool_titanium_pick', output:'titanium_pick', inputs:[{resource:'bar_7',qty:2},{resource:'dragonBones',qty:2}], reqLevel:60, xp:200,time:18 },
+  { id:'tool_iridium_pick',  output:'iridium_pick',  inputs:[{resource:'bar_9',qty:2},{resource:'dragonBones',qty:4}], reqLevel:80, xp:320,time:24 },
   // Fishing rods: wood
-  { id:'tool_basic_rod',    output:'basic_rod',    inputs:[{resource:'wood_0',qty:5}],  reqLevel:1,  xp:12, time:5 },
-  { id:'tool_oak_rod',      output:'oak_rod',      inputs:[{resource:'wood_1',qty:5}],  reqLevel:8,  xp:25, time:8 },
-  { id:'tool_steel_rod',    output:'steel_rod',    inputs:[{resource:'wood_2',qty:4},{resource:'bar_2',qty:1}], reqLevel:20, xp:45, time:10 },
-  { id:'tool_mithril_rod',  output:'mithril_rod',  inputs:[{resource:'wood_4',qty:4},{resource:'bar_4',qty:1}], reqLevel:35, xp:75, time:12 },
-  { id:'tool_rune_rod',     output:'rune_rod',     inputs:[{resource:'wood_6',qty:4},{resource:'bar_6',qty:1},{resource:'dragonBones',qty:1}], reqLevel:55, xp:170,time:16 },
-  // Hunting knives: bars + hide
-  { id:'tool_bone_knife',   output:'bone_knife',   inputs:[{resource:'hide_0',qty:2},{resource:'bones',qty:3}], reqLevel:1,  xp:15, time:8 },
-  { id:'tool_iron_knife',   output:'iron_knife',   inputs:[{resource:'hide_1',qty:2},{resource:'bar_1',qty:1}], reqLevel:10, xp:30, time:10 },
-  { id:'tool_steel_knife',  output:'steel_knife',  inputs:[{resource:'hide_2',qty:2},{resource:'bar_2',qty:1}], reqLevel:20, xp:50, time:12 },
-  { id:'tool_mithril_knife',output:'mithril_knife', inputs:[{resource:'hide_4',qty:2},{resource:'bar_4',qty:1}], reqLevel:35, xp:80, time:14 },
-  { id:'tool_rune_knife',   output:'rune_knife',   inputs:[{resource:'hide_6',qty:2},{resource:'bar_6',qty:1},{resource:'dragonBones',qty:1}], reqLevel:55, xp:170,time:18 },
+  { id:'tool_scrap_rod',    output:'scrap_rod',    inputs:[{resource:'wood_0',qty:5}],  reqLevel:1,  xp:12, time:5 },
+  { id:'tool_copper_rod',   output:'copper_rod',   inputs:[{resource:'wood_1',qty:5}],  reqLevel:6,  xp:25, time:8 },
+  { id:'tool_alum_rod',     output:'alum_rod',     inputs:[{resource:'wood_2',qty:4},{resource:'bar_2',qty:1}], reqLevel:16, xp:45, time:10 },
+  { id:'tool_lead_rod',     output:'lead_rod',     inputs:[{resource:'wood_3',qty:4},{resource:'bar_3',qty:1}], reqLevel:28, xp:75, time:12 },
+  { id:'tool_titanium_rod', output:'titanium_rod', inputs:[{resource:'wood_7',qty:4},{resource:'bar_7',qty:1},{resource:'dragonBones',qty:1}], reqLevel:55, xp:170,time:16 },
+  { id:'tool_iridium_rod',  output:'iridium_rod',  inputs:[{resource:'wood_9',qty:4},{resource:'bar_9',qty:1},{resource:'dragonBones',qty:3}], reqLevel:72, xp:250,time:20 },
+  // Hunting knives: hide + bars
+  { id:'tool_scrap_knife',   output:'scrap_knife',   inputs:[{resource:'hide_0',qty:2},{resource:'bones',qty:3}], reqLevel:1,  xp:15, time:8 },
+  { id:'tool_copper_knife',  output:'copper_knife',  inputs:[{resource:'hide_1',qty:2},{resource:'bar_1',qty:1}], reqLevel:8,  xp:30, time:10 },
+  { id:'tool_alum_knife',    output:'alum_knife',    inputs:[{resource:'hide_2',qty:2},{resource:'bar_2',qty:1}], reqLevel:16, xp:50, time:12 },
+  { id:'tool_lead_knife',    output:'lead_knife',    inputs:[{resource:'hide_3',qty:2},{resource:'bar_3',qty:1}], reqLevel:28, xp:80, time:14 },
+  { id:'tool_uranium_knife', output:'uranium_knife', inputs:[{resource:'hide_5',qty:2},{resource:'bar_6',qty:1},{resource:'dragonBones',qty:1}], reqLevel:42, xp:130,time:16 },
+  { id:'tool_titanium_knife',output:'titanium_knife',inputs:[{resource:'hide_7',qty:2},{resource:'bar_7',qty:1},{resource:'dragonBones',qty:2}], reqLevel:58, xp:200,time:18 },
+  { id:'tool_iridium_knife', output:'iridium_knife', inputs:[{resource:'hide_9',qty:2},{resource:'bar_9',qty:1},{resource:'dragonBones',qty:4}], reqLevel:75, xp:300,time:24 },
 ];
 
 // ─── Item generation (Diablo-style) ───────────────────────────────────────────
@@ -1342,11 +1462,18 @@ export function buildUniqueGameItem(def: UniqueItemDef): GameItem {
   };
 }
 
-export function generateDroppedItem(enemyIndex: number, playerMagicFind = 0): GameItem {
+export function generateDroppedItem(enemyIndex: number, playerMagicFind = 0, enemyUniqueDropIds?: string[]): GameItem {
   const band = ENEMY_ILVL_BANDS[Math.min(enemyIndex, ENEMY_ILVL_BANDS.length - 1)];
   const ilvl = band[0] + randInt(0, band[1] - band[0]);
 
-  // ── Unique drop check (enemy tier + ilvl gate) ───────────────────────────────
+  // ── Enemy-specific unique drop check (per-enemy loot table) ─────────────────
+  if (enemyUniqueDropIds && enemyUniqueDropIds.length > 0 && Math.random() < 0.03) {
+    const uid = enemyUniqueDropIds[randInt(0, enemyUniqueDropIds.length - 1)];
+    const item = UNIQUE_ITEMS.find(u => u.id === uid);
+    if (item) return buildUniqueGameItem(item);
+  }
+
+  // ── Generic unique drop check (enemy tier + ilvl gate) ──────────────────────
   const eligibleUniques = UNIQUE_ITEMS.filter(u => u.minEnemyIndex <= enemyIndex && u.ilvl <= ilvl + 10);
   const uniqueDropChance = 0.02 + enemyIndex * 0.005; // 2%–5.5%
   if (eligibleUniques.length && Math.random() < uniqueDropChance) {
@@ -1531,12 +1658,14 @@ export function getCombatStyle(item: { combatStyle?: CombatStyle } | null | unde
 export interface Enemy {
   id: string;
   name: string;
+  nameEn?: string;
   emoji: string;
   maxHp: number;
   attack: number;
   defence: number;
   xp: number;
   drops: { gold: [number, number]; bones?: number; dragonBones?: number };
+  uniqueDropIds?: string[];
   reqCombatLevel: number;
   combatStyle?: CombatStyle;
   critRating?: number;
@@ -1548,43 +1677,44 @@ export interface Enemy {
 // ═══ Melvor-style: 19 regular + 3 hidden — balanced 1-99 ════════════════════
 export const ENEMIES: Enemy[] = [
   // ── LV 1-15 ──────────────────────────────────────────────────────────────
-  { id:'rad_roach',     name:'变异蟑螂',   emoji:'🪳',  maxHp:12,  attack:1,  defence:0,  xp:8,   drops:{gold:[1,3]},                     reqCombatLevel:1,  combatStyle:'melee' },
-  { id:'rad_rat',       name:'辐射鼠',     emoji:'🐀',  maxHp:22,  attack:2,  defence:0,  xp:16,  drops:{gold:[2,4]},                     reqCombatLevel:5,  combatStyle:'melee' },
-  { id:'stray_dog',     name:'流浪犬',     emoji:'🐕',  maxHp:45,  attack:4,  defence:1,  xp:30,  drops:{gold:[3,6],bones:1},            reqCombatLevel:10, combatStyle:'melee' },
-  { id:'mutant_spider', name:'变异蜘蛛',   emoji:'🕷️',  maxHp:80,  attack:7,  defence:2,  xp:50,  drops:{gold:[5,10]},                   reqCombatLevel:15, combatStyle:'magic' },
+  { id:'rad_roach',     name:'变异蟑螂',   nameEn:'Mutant Roach',    emoji:'🪳',  maxHp:12,  attack:1,  defence:0,  xp:8,   drops:{gold:[1,3]},                     reqCombatLevel:1,  combatStyle:'melee',  uniqueDropIds:['storm_bow'] },
+  { id:'rad_rat',       name:'辐射鼠',     nameEn:'Rad Rat',         emoji:'🐀',  maxHp:22,  attack:2,  defence:0,  xp:16,  drops:{gold:[2,4]},                     reqCombatLevel:5,  combatStyle:'melee',  uniqueDropIds:['eagle_eye_crossbow'] },
+  { id:'stray_dog',     name:'流浪犬',     nameEn:'Stray Dog',       emoji:'🐕',  maxHp:45,  attack:4,  defence:1,  xp:30,  drops:{gold:[3,6],bones:1},            reqCombatLevel:10, combatStyle:'melee',  uniqueDropIds:['shadow_hunter_bow'] },
+  { id:'mutant_spider', name:'变异蜘蛛',   nameEn:'Mutant Spider',   emoji:'🕷️',  maxHp:80,  attack:7,  defence:2,  xp:50,  drops:{gold:[5,10]},                   reqCombatLevel:15, combatStyle:'magic',  uniqueDropIds:['dragon_horn_bow'] },
   // ── LV 20-35 ──────────────────────────────────────────────────────────────
-  { id:'zombie_walk',   name:'蹒跚丧尸',   emoji:'🧟',  maxHp:140, attack:11, defence:4,  xp:80,  drops:{gold:[8,16],bones:2},           reqCombatLevel:20, combatStyle:'melee' },
-  { id:'rad_scorpion',  name:'辐射蝎',     emoji:'🦂',  maxHp:220, attack:15, defence:6,  xp:120, drops:{gold:[12,24]},                  reqCombatLevel:25, combatStyle:'ranged' },
-  { id:'ghoul_flesh',   name:'食尸鬼',     emoji:'👹',  maxHp:340, attack:20, defence:8,  xp:170, drops:{gold:[18,35],bones:3},          reqCombatLevel:30, combatStyle:'magic' },
-  { id:'mutant_hound',  name:'变异猎犬',   emoji:'🐺',  maxHp:500, attack:26, defence:12, xp:230, drops:{gold:[25,50],bones:4},          reqCombatLevel:35, combatStyle:'melee' },
+  { id:'zombie_walk',   name:'蹒跚丧尸',   nameEn:'Shambling Zombie',emoji:'🧟',  maxHp:140, attack:11, defence:4,  xp:80,  drops:{gold:[8,16],bones:2},           reqCombatLevel:20, combatStyle:'melee',  uniqueDropIds:['touch_of_darkness'] },
+  { id:'rad_scorpion',  name:'辐射蝎',     nameEn:'Rad Scorpion',    emoji:'🦂',  maxHp:220, attack:15, defence:6,  xp:120, drops:{gold:[12,24]},                  reqCombatLevel:25, combatStyle:'ranged', uniqueDropIds:['dragonblood_plate'] },
+  { id:'ghoul_flesh',   name:'食尸鬼',     nameEn:'Flesh Ghoul',     emoji:'👹',  maxHp:340, attack:20, defence:8,  xp:170, drops:{gold:[18,35],bones:3},          reqCombatLevel:30, combatStyle:'magic',  uniqueDropIds:['dragonblood_legs'] },
+  { id:'mutant_hound',  name:'变异猎犬',   nameEn:'Mutant Hound',    emoji:'🐺',  maxHp:500, attack:26, defence:12, xp:230, drops:{gold:[25,50],bones:4},          reqCombatLevel:35, combatStyle:'melee',  uniqueDropIds:['flame_tongue_sword'] },
   // ── LV 40-55 ──────────────────────────────────────────────────────────────
-  { id:'bandit_scav',   name:'废土拾荒者', emoji:'🏴',  maxHp:700, attack:34, defence:16, xp:300, drops:{gold:[35,70],bones:5},          reqCombatLevel:40, combatStyle:'ranged' },
-  { id:'rad_elemental', name:'辐射元素',   emoji:'☢️',  maxHp:900, attack:42, defence:12, xp:380, drops:{gold:[45,90]},                  reqCombatLevel:45, combatStyle:'magic' },
-  { id:'mutant_bear',   name:'变异熊',     emoji:'🐻',  maxHp:1150,attack:50, defence:22, xp:470, drops:{gold:[55,110],bones:6},         reqCombatLevel:50, combatStyle:'melee' },
-  { id:'zombie_brute',  name:'壮硕丧尸',   emoji:'💪',  maxHp:1450,attack:58, defence:28, xp:570, drops:{gold:[70,140],bones:6},         reqCombatLevel:55, combatStyle:'magic' },
+  { id:'bandit_scav',   name:'废土拾荒者', nameEn:'Wasteland Scav',   emoji:'🏴', maxHp:700, attack:34, defence:16, xp:300, drops:{gold:[35,70],bones:5},          reqCombatLevel:40, combatStyle:'ranged', uniqueDropIds:['void_piercer'] },
+  { id:'rad_elemental', name:'辐射元素',   nameEn:'Rad Elemental',    emoji:'☢️', maxHp:900, attack:42, defence:12, xp:380, drops:{gold:[45,90]},                  reqCombatLevel:45, combatStyle:'magic',  uniqueDropIds:['hellfire_plate'] },
+  { id:'mutant_bear',   name:'变异熊',     nameEn:'Mutant Bear',      emoji:'🐻', maxHp:1150,attack:50, defence:22, xp:470, drops:{gold:[55,110],bones:6},         reqCombatLevel:50, combatStyle:'melee',  uniqueDropIds:['inferno_crown'] },
+  { id:'zombie_brute',  name:'壮硕丧尸',   nameEn:'Zombie Brute',     emoji:'💪', maxHp:1450,attack:58, defence:28, xp:570, drops:{gold:[70,140],bones:6},         reqCombatLevel:55, combatStyle:'magic',  uniqueDropIds:['time_keeper_ring'] },
   // ── LV 60-75 ──────────────────────────────────────────────────────────────
-  { id:'wasteland_raider',name:'废土掠夺者',emoji:'⚔️',maxHp:1800,attack:68, defence:34, xp:680, drops:{gold:[85,170],dragonBones:3},  reqCombatLevel:60, combatStyle:'ranged' },
-  { id:'sentry_bot',    name:'哨卫机器人', emoji:'🤖',  maxHp:2200,attack:76, defence:40, xp:800, drops:{gold:[100,200],dragonBones:4},  reqCombatLevel:65, combatStyle:'ranged' },
-  { id:'rad_drake',     name:'辐射亚龙',   emoji:'🐉',  maxHp:2700,attack:86, defence:46, xp:940, drops:{gold:[120,240],dragonBones:5}, reqCombatLevel:70, combatStyle:'magic' },
-  { id:'deathclaw',     name:'死亡爪',     emoji:'🦖',  maxHp:3300,attack:96, defence:52, xp:1100,drops:{gold:[140,280],dragonBones:6}, reqCombatLevel:75, combatStyle:'melee' },
+  { id:'wasteland_raider',name:'废土掠夺者',nameEn:'Wasteland Raider',emoji:'⚔️',maxHp:1800,attack:68, defence:34, xp:680, drops:{gold:[85,170],dragonBones:3},  reqCombatLevel:60, combatStyle:'ranged', uniqueDropIds:['eternity_blade'] },
+  { id:'sentry_bot',    name:'哨卫机器人', nameEn:'Sentry Bot',       emoji:'🤖', maxHp:2200,attack:76, defence:40, xp:800, drops:{gold:[100,200],dragonBones:4},  reqCombatLevel:65, combatStyle:'ranged', uniqueDropIds:['eternity_shield'] },
+  { id:'rad_drake',     name:'辐射亚龙',   nameEn:'Rad Drake',        emoji:'🐉', maxHp:2700,attack:86, defence:46, xp:940, drops:{gold:[120,240],dragonBones:5}, reqCombatLevel:70, combatStyle:'magic', uniqueDropIds:['dracolich_mantle'] },
+  { id:'deathclaw',     name:'死亡爪',     nameEn:'Deathclaw',        emoji:'🦖', maxHp:3300,attack:96, defence:52, xp:1100,drops:{gold:[140,280],dragonBones:6}, reqCombatLevel:75, combatStyle:'melee', uniqueDropIds:['void_blade'] },
   // ── LV 80-90 ──────────────────────────────────────────────────────────────
-  { id:'mutant_behemoth',name:'变异巨兽',  emoji:'🦣',  maxHp:4000,attack:108,defence:58, xp:1300,drops:{gold:[170,340],dragonBones:8}, reqCombatLevel:80, combatStyle:'ranged' },
-  { id:'ancient_wraith', name:'远古幽魂',  emoji:'👻',  maxHp:4800,attack:120,defence:40, xp:1500,drops:{gold:[200,400],dragonBones:10},reqCombatLevel:85, combatStyle:'magic' },
-  { id:'warlord',        name:'废土军阀',  emoji:'👑',  maxHp:5800,attack:135,defence:65, xp:1800,drops:{gold:[250,500],dragonBones:12},reqCombatLevel:90, combatStyle:'melee' },
+  { id:'mutant_behemoth',name:'变异巨兽',  nameEn:'Mutant Behemoth',  emoji:'🦣', maxHp:4000,attack:108,defence:58, xp:1300,drops:{gold:[170,340],dragonBones:8}, reqCombatLevel:80, combatStyle:'ranged', uniqueDropIds:['nullity_plate'] },
+  { id:'ancient_wraith', name:'远古幽魂',  nameEn:'Ancient Wraith',   emoji:'👻', maxHp:4800,attack:120,defence:40, xp:1500,drops:{gold:[200,400],dragonBones:10},reqCombatLevel:85, combatStyle:'magic',  uniqueDropIds:['void_piercer','chaos_edge'] },
+  { id:'warlord',        name:'废土军阀',  nameEn:'Wasteland Warlord',emoji:'👑', maxHp:5800,attack:135,defence:65, xp:1800,drops:{gold:[250,500],dragonBones:12},reqCombatLevel:90, combatStyle:'melee',  uniqueDropIds:['eternity_blade','inferno_crown'] },
   // ── HIDDEN (3) — only visible when unlocked ──────────────────────────────
-  { id:'glowing_one',    name:'辐射辉光者',emoji:'✨',  maxHp:7500,attack:155,defence:60, xp:2500,drops:{gold:[350,700],dragonBones:20},  reqCombatLevel:95, combatStyle:'ranged',  hidden:true },
-  { id:'elder_dragon',   name:'远古巨龙',   emoji:'🐲',  maxHp:10000,attack:180,defence:75, xp:3500,drops:{gold:[500,1000],dragonBones:30},reqCombatLevel:98, combatStyle:'magic',   hidden:true },
-  { id:'overlord',       name:'终末霸主',   emoji:'💀',  maxHp:15000,attack:220,defence:90, xp:5000,drops:{gold:[800,1600],dragonBones:50},reqCombatLevel:99, combatStyle:'melee',   hidden:true },
+  { id:'glowing_one',    name:'辐射辉光者',nameEn:'Glowing One',      emoji:'✨', maxHp:7500,attack:155,defence:60, xp:2500,drops:{gold:[350,700],dragonBones:20},  reqCombatLevel:95, combatStyle:'ranged',  hidden:true, uniqueDropIds:['bone_dragon_shield','chaos_edge'] },
+  { id:'elder_dragon',   name:'远古巨龙',  nameEn:'Elder Dragon',     emoji:'🐲', maxHp:10000,attack:180,defence:75, xp:3500,drops:{gold:[500,1000],dragonBones:30},reqCombatLevel:98, combatStyle:'magic',   hidden:true, uniqueDropIds:['primal_forge_armor','flame_crown'] },
+  { id:'overlord',       name:'终末霸主',  nameEn:'The Overlord',     emoji:'💀', maxHp:15000,attack:220,defence:90, xp:5000,drops:{gold:[800,1600],dragonBones:50},reqCombatLevel:99, combatStyle:'melee',   hidden:true, uniqueDropIds:['wasteland_plate','voidblade'] },
 ];
 
 // ─── Boss skills ──────────────────────────────────────────────────────────────
-export type BossSkillType = 'shield' | 'aoe' | 'heal' | 'enrage';
+export type BossSkillType = 'shield' | 'aoe' | 'heal' | 'enrage' | 'poison';
 
 export const BOSS_SKILL_LABEL: Record<BossSkillType, string> = {
   shield: '护盾',
   aoe: '范围攻击',
   heal: '自愈',
   enrage: '狂暴',
+  poison: '毒液',
 };
 
 export const BOSS_SKILL_DESC: Record<BossSkillType, string> = {
@@ -1592,6 +1722,7 @@ export const BOSS_SKILL_DESC: Record<BossSkillType, string> = {
   aoe: '对所有玩家造成额外伤害',
   heal: '恢复部分生命值',
   enrage: '攻击力大幅提升',
+  poison: '持续造成毒素伤害',
 };
 
 export interface BossSkill {
@@ -1616,6 +1747,7 @@ export interface DungeonBoss {
 export interface Dungeon {
   id: string;
   name: string;
+  nameEn?: string;
   emoji: string;
   theme: string;
   reqCombatLevel: number;
@@ -1636,100 +1768,132 @@ export interface DungeonWave {
 export const DUNGEONS: Dungeon[] = [
   {
     id: 'corrupted_mine',
-    name: '腐化矿穴',
+    name: '废弃矿坑',    nameEn: 'Abandoned Mine',
     emoji: '⛏️',
-    theme: '地下矿洞中滋生的腐化怪物统治着这片黑暗领域，矿工们再也无法入内。',
+    theme: '战前的铀矿在被废弃后成了变异生物的巢穴，辐射瓦斯弥漫每一条通道。',
     reqCombatLevel: 10,
     cost: { gold: 100 },
-    boss: { name: '矿坑蠕变怪', emoji: '🦠', maxHp: 500, attack: 14, defence: 4, xp: 200, skills: [{ type: 'shield', name: '腐化甲壳', cooldownSec: 12, value: 50, duration: 1 }] },
+    boss: { name: '矿坑变异体', emoji: '🦠', maxHp: 500, attack: 14, defence: 4, xp: 200, skills: [{ type: 'shield', name: '辐射甲壳', cooldownSec: 12, value: 50, duration: 1 }] },
     uniqueDropIds: ['d_rotten_core', 'd_corrosion_pick'],
     dropChance: 0.6,
     waves: [
-      { name:'矿鼠', emoji:'🐀', hpMul:0.15, atkMul:0.3 },
-      { name:'矿蝠', emoji:'🦇', hpMul:0.25, atkMul:0.4 },
-      { name:'腐化蠕虫', emoji:'🐛', hpMul:0.35, atkMul:0.5 },
-      { name:'暗影矿工', emoji:'👤', hpMul:0.45, atkMul:0.6 },
-      { name:'岩石魔像', emoji:'🗿', hpMul:0.55, atkMul:0.7 },
-      { name:'腐化矿工', emoji:'🧟', hpMul:0.65, atkMul:0.8 },
-      { name:'矿坑蜘蛛', emoji:'🕷️', hpMul:0.7, atkMul:0.9 },
-      { name:'地下毒蛇', emoji:'🐍', hpMul:0.75, atkMul:1.0 },
-      { name:'腐化巨虫', emoji:'🪱', hpMul:0.85, atkMul:1.1 },
-      { name:'矿坑守卫', emoji:'⛑️', hpMul:0.95, atkMul:1.2 },
+      { name:'矿坑鼠', emoji:'🐀', hpMul:0.15, atkMul:0.3 },{ name:'变异蝙蝠', emoji:'🦇', hpMul:0.25, atkMul:0.4 },{ name:'辐射蠕虫', emoji:'🐛', hpMul:0.35, atkMul:0.5 },{ name:'矿工丧尸', emoji:'🧟', hpMul:0.45, atkMul:0.6 },{ name:'碎石魔像', emoji:'🗿', hpMul:0.55, atkMul:0.7 },{ name:'狂犬变异体', emoji:'🐕', hpMul:0.65, atkMul:0.8 },{ name:'矿坑蜘蛛', emoji:'🕷️', hpMul:0.7, atkMul:0.9 },{ name:'变异蝮蛇', emoji:'🐍', hpMul:0.75, atkMul:1.0 },{ name:'巨型蠕虫', emoji:'🪱', hpMul:0.85, atkMul:1.1 },{ name:'矿坑守卫者', emoji:'⛑️', hpMul:0.95, atkMul:1.2 },
     ],
   },
   {
     id: 'shadow_maze',
-    name: '幽影迷宫',
-    emoji: '🌑',
-    theme: '无尽的黑暗走廊中，幽魂在迷宫深处永无止境地游荡，等待活人进入。',
+    name: '废弃地铁站',    nameEn: 'Abandoned Station',
+    emoji: '🚇',
+    theme: '战前的地铁枢纽现在成了拾荒者的迷宫，黑暗的隧道深处潜伏着无数危险。',
     reqCombatLevel: 20,
     cost: { gold: 400, bones: 10 },
-    boss: { name: '幽魂领主', emoji: '👻', maxHp: 1100, attack: 26, defence: 9, xp: 450, skills: [{ type: 'aoe', name: '幽魂嚎叫', cooldownSec: 15, value: 20, duration: 0 }] },
+    boss: { name: '隧道食人魔', emoji: '👹', maxHp: 1100, attack: 26, defence: 9, xp: 450, skills: [{ type: 'aoe', name: '隧道咆哮', cooldownSec: 15, value: 20, duration: 0 }] },
     uniqueDropIds: ['d_specter_cloak', 'd_shadow_sigil'],
     dropChance: 0.55,
-
     waves: [
-      { name:'迷途幽魂', emoji:'👻', hpMul:0.2, atkMul:0.4 },{ name:'暗影触手', emoji:'🦑', hpMul:0.3, atkMul:0.5 },{ name:'迷宫蜘蛛', emoji:'🕷️', hpMul:0.4, atkMul:0.6 },{ name:'黑暗幽灵', emoji:'👻', hpMul:0.5, atkMul:0.7 },{ name:'迷宫哨兵', emoji:'🗿', hpMul:0.6, atkMul:0.8 },{ name:'暗影刺客', emoji:'🗡️', hpMul:0.65, atkMul:0.9 },{ name:'幽魂护卫', emoji:'👤', hpMul:0.7, atkMul:1 },{ name:'迷宫巨虫', emoji:'🪱', hpMul:0.75, atkMul:1.1 },{ name:'暗影法师', emoji:'🧙', hpMul:0.82, atkMul:1.15 },{ name:'迷宫领主', emoji:'👑', hpMul:0.95, atkMul:1.25 }
+      { name:'流浪者', emoji:'🏃', hpMul:0.2, atkMul:0.4 },{ name:'变异鼠群', emoji:'🐀', hpMul:0.3, atkMul:0.5 },{ name:'隧道蜘蛛', emoji:'🕷️', hpMul:0.4, atkMul:0.6 },{ name:'暗影拾荒者', emoji:'🥷', hpMul:0.5, atkMul:0.7 },{ name:'铁轨哨兵', emoji:'🗿', hpMul:0.6, atkMul:0.8 },{ name:'隧道刺客', emoji:'🗡️', hpMul:0.65, atkMul:0.9 },{ name:'变异守卫', emoji:'👤', hpMul:0.7, atkMul:1 },{ name:'巨型蟑螂', emoji:'🪳', hpMul:0.75, atkMul:1.1 },{ name:'毒气僵尸', emoji:'🧟', hpMul:0.82, atkMul:1.15 },{ name:'地铁领主', emoji:'👑', hpMul:0.95, atkMul:1.25 }
     ],
   },
   {
     id: 'flame_sanctum',
-    name: '裂焰神殿',
-    emoji: '🔥',
-    theme: '炽热的熔岩在神殿中流淌，祭司们用永恒的焰火维系着古老神明的意志。',
+    name: '废弃炼油厂',    nameEn: 'Abandoned Refinery',
+    emoji: '🏭',
+    theme: '废弃的炼油厂充满了易燃气体和变异的火焰生物，任何火花都可能引发爆炸。',
     reqCombatLevel: 35,
     cost: { gold: 1200, bones: 35 },
-    boss: { name: '炎核祭司', emoji: '🧙', maxHp: 2400, attack: 44, defence: 17, xp: 900, skills: [{ type: 'heal', name: '烈焰洗礼', cooldownSec: 18, value: 300, duration: 0 }, { type: 'enrage', name: '火焰狂怒', cooldownSec: 24, value: 30, duration: 2 }] },
+    boss: { name: '炼油厂主管', emoji: '🧑‍🏭', maxHp: 2400, attack: 44, defence: 17, xp: 900, skills: [{ type: 'heal', name: '紧急注油', cooldownSec: 18, value: 300, duration: 0 }, { type: 'enrage', name: '过载燃烧', cooldownSec: 24, value: 30, duration: 2 }] },
     uniqueDropIds: ['d_flame_crown', 'd_ember_ring'],
     dropChance: 0.5,
-
     waves: [
-      { name:'火焰小鬼', emoji:'👿', hpMul:0.25, atkMul:0.45 },{ name:'熔岩蜗牛', emoji:'🐌', hpMul:0.35, atkMul:0.55 },{ name:'火焰蜥蜴', emoji:'🦎', hpMul:0.45, atkMul:0.65 },{ name:'熔岩傀儡', emoji:'🗿', hpMul:0.55, atkMul:0.75 },{ name:'炎蛇', emoji:'🐍', hpMul:0.65, atkMul:0.85 },{ name:'烈火精灵', emoji:'🔥', hpMul:0.7, atkMul:0.95 },{ name:'火焰巨魔', emoji:'👹', hpMul:0.78, atkMul:1.05 },{ name:'熔岩元素', emoji:'🪨', hpMul:0.82, atkMul:1.12 },{ name:'炎核信徒', emoji:'🧟', hpMul:0.88, atkMul:1.18 },{ name:'神殿狂战士', emoji:'💢', hpMul:0.95, atkMul:1.3 }
+      { name:'燃油史莱姆', emoji:'🟤', hpMul:0.25, atkMul:0.45 },{ name:'管道蠕虫', emoji:'🐛', hpMul:0.35, atkMul:0.55 },{ name:'火蜥蜴', emoji:'🦎', hpMul:0.45, atkMul:0.65 },{ name:'燃烧魔像', emoji:'🗿', hpMul:0.55, atkMul:0.75 },{ name:'烈焰蛇', emoji:'🐍', hpMul:0.65, atkMul:0.85 },{ name:'火焰精魂', emoji:'🔥', hpMul:0.7, atkMul:0.95 },{ name:'燃油巨人', emoji:'👹', hpMul:0.78, atkMul:1.05 },{ name:'熔渣元素', emoji:'🪨', hpMul:0.82, atkMul:1.12 },{ name:'炼油工人', emoji:'🧟', hpMul:0.88, atkMul:1.18 },{ name:'工厂保安', emoji:'💢', hpMul:0.95, atkMul:1.3 }
     ],
   },
   {
     id: 'void_fortress',
-    name: '虚空要塞',
-    emoji: '🌌',
-    theme: '漂浮于虚空之中的要塞，守卫着通往另一个维度的裂口，一切逻辑在此失效。',
+    name: '军事基地废墟',    nameEn: 'Military Base Ruins',
+    emoji: '🏚️',
+    theme: '废弃的军事基地中，失控的自动防御系统和变异士兵仍在执行最后的命令。',
     reqCombatLevel: 50,
     cost: { gold: 4000, bones: 80 },
-    boss: { name: '虚空铁卫', emoji: '🤖', maxHp: 4500, attack: 68, defence: 28, xp: 1800, skills: [{ type: 'shield', name: '虚空屏障', cooldownSec: 15, value: 50, duration: 1 }, { type: 'aoe', name: '虚空裂隙', cooldownSec: 20, value: 35, duration: 0 }] },
+    boss: { name: '军事AI核心', emoji: '🤖', maxHp: 4500, attack: 68, defence: 28, xp: 1800, skills: [{ type: 'shield', name: '能量护盾', cooldownSec: 15, value: 50, duration: 1 }, { type: 'aoe', name: '导弹齐射', cooldownSec: 20, value: 35, duration: 0 }] },
     uniqueDropIds: ['d_void_blade', 'd_nullity_plate'],
     dropChance: 0.45,
-
     waves: [
-      { name:'虚空蠕虫', emoji:'🐛', hpMul:0.3, atkMul:0.5 },{ name:'虚空蝙蝠', emoji:'🦇', hpMul:0.4, atkMul:0.6 },{ name:'虚空哨兵', emoji:'👁️', hpMul:0.5, atkMul:0.7 },{ name:'虚空蜘蛛', emoji:'🕷️', hpMul:0.6, atkMul:0.8 },{ name:'虚空卫士', emoji:'🛡️', hpMul:0.68, atkMul:0.9 },{ name:'虚空刺客', emoji:'🗡️', hpMul:0.74, atkMul:1 },{ name:'虚空术士', emoji:'🧙', hpMul:0.8, atkMul:1.1 },{ name:'虚空巨兽', emoji:'🦣', hpMul:0.85, atkMul:1.15 },{ name:'虚空骑士', emoji:'⚔️', hpMul:0.9, atkMul:1.22 },{ name:'虚空守护者', emoji:'🛡️', hpMul:0.96, atkMul:1.3 }
+      { name:'哨兵无人机', emoji:'🛸', hpMul:0.3, atkMul:0.5 },{ name:'机械蝙蝠', emoji:'🦇', hpMul:0.4, atkMul:0.6 },{ name:'自动炮台', emoji:'📡', hpMul:0.5, atkMul:0.7 },{ name:'机甲蜘蛛', emoji:'🕷️', hpMul:0.6, atkMul:0.8 },{ name:'重装卫兵', emoji:'🛡️', hpMul:0.68, atkMul:0.9 },{ name:'隐形刺客', emoji:'🗡️', hpMul:0.74, atkMul:1 },{ name:'战术军官', emoji:'🎖️', hpMul:0.8, atkMul:1.1 },{ name:'机甲巨兽', emoji:'🦣', hpMul:0.85, atkMul:1.15 },{ name:'精英骑士', emoji:'⚔️', hpMul:0.9, atkMul:1.22 },{ name:'基地指挥官', emoji:'🛡️', hpMul:0.96, atkMul:1.3 }
     ],
   },
   {
     id: 'dragon_tomb',
-    name: '龙冢秘境',
-    emoji: '🐲',
-    theme: '远古龙族的最后安息之地，亡龙的灵魂守护着传说中的神器，非强者莫入。',
+    name: '辐射废料场',    nameEn: 'Radiation Dump',
+    emoji: '☢️',
+    theme: '高浓度辐射废料的填埋场，变异生物在此进化成了前所未有的恐怖形态。',
     reqCombatLevel: 65,
     cost: { gold: 10000, dragonBones: 8 },
-    boss: { name: '古龙亡灵', emoji: '💀', maxHp: 8000, attack: 100, defence: 44, xp: 3500, skills: [{ type: 'aoe', name: '龙息烈焰', cooldownSec: 15, value: 45, duration: 0 }, { type: 'heal', name: '龙骨再生', cooldownSec: 22, value: 600, duration: 0 }, { type: 'enrage', name: '龙怒', cooldownSec: 30, value: 40, duration: 2 }] },
+    boss: { name: '辐射巨兽', emoji: '☣️', maxHp: 8000, attack: 100, defence: 44, xp: 3500, skills: [{ type: 'aoe', name: '辐射喷涌', cooldownSec: 15, value: 45, duration: 0 }, { type: 'heal', name: '细胞再生', cooldownSec: 22, value: 600, duration: 0 }, { type: 'enrage', name: '基因狂暴', cooldownSec: 30, value: 40, duration: 2 }] },
     uniqueDropIds: ['d_bone_dragon_shield', 'd_dracolich_mantle'],
     dropChance: 0.4,
-
     waves: [
-      { name:'幼龙', emoji:'🐉', hpMul:0.35, atkMul:0.55 },{ name:'龙骨战士', emoji:'💀', hpMul:0.45, atkMul:0.65 },{ name:'龙血蠕虫', emoji:'🐛', hpMul:0.55, atkMul:0.75 },{ name:'龙墓守卫', emoji:'🗿', hpMul:0.62, atkMul:0.85 },{ name:'龙魂幻影', emoji:'👻', hpMul:0.7, atkMul:0.95 },{ name:'远古龙卫', emoji:'🛡️', hpMul:0.75, atkMul:1.05 },{ name:'龙火元素', emoji:'🔥', hpMul:0.82, atkMul:1.12 },{ name:'龙骨巨兽', emoji:'🦴', hpMul:0.86, atkMul:1.18 },{ name:'龙祭司', emoji:'🧙', hpMul:0.92, atkMul:1.24 },{ name:'龙王守卫', emoji:'⚔️', hpMul:0.97, atkMul:1.32 }
+      { name:'辐射鼠群', emoji:'🐀', hpMul:0.35, atkMul:0.55 },{ name:'废料魔像', emoji:'🗿', hpMul:0.45, atkMul:0.65 },{ name:'辐射蠕虫', emoji:'🐛', hpMul:0.55, atkMul:0.75 },{ name:'废料守卫', emoji:'🛡️', hpMul:0.62, atkMul:0.85 },{ name:'辐射幻影', emoji:'👻', hpMul:0.7, atkMul:0.95 },{ name:'变异卫兵', emoji:'💂', hpMul:0.75, atkMul:1.05 },{ name:'辐射元素', emoji:'☢️', hpMul:0.82, atkMul:1.12 },{ name:'巨型变异体', emoji:'🦣', hpMul:0.86, atkMul:1.18 },{ name:'辐射祭司', emoji:'🧙', hpMul:0.92, atkMul:1.24 },{ name:'废料之王', emoji:'👑', hpMul:0.97, atkMul:1.32 }
     ],
   },
   {
     id: 'chaos_forge',
-    name: '混沌熔炉',
-    emoji: '⚗️',
-    theme: '宇宙尽头的熔炉，混沌能量在此汇聚，锻造出超越神器的传说装备，唯有最强者方能通关。',
+    name: '反应堆核心',    nameEn: 'Reactor Core',
+    emoji: '⚛️',
+    theme: '失控的核反应堆内部，辐射浓度极高，只有最强悍的幸存者才能在这里存活。',
     reqCombatLevel: 80,
     cost: { gold: 25000, dragonBones: 20 },
-    boss: { name: '混沌熔魂', emoji: '😈', maxHp: 16000, attack: 160, defence: 70, xp: 8000, skills: [{ type: 'shield', name: '混沌壁垒', cooldownSec: 18, value: 60, duration: 1 }, { type: 'aoe', name: '混沌风暴', cooldownSec: 15, value: 55, duration: 0 }, { type: 'enrage', name: '混沌狂怒', cooldownSec: 30, value: 50, duration: 3 }] },
+    boss: { name: '核心守护者', emoji: '🤖', maxHp: 16000, attack: 160, defence: 70, xp: 8000, skills: [{ type: 'shield', name: '防护屏障', cooldownSec: 18, value: 60, duration: 1 }, { type: 'aoe', name: '辐射风暴', cooldownSec: 15, value: 55, duration: 0 }, { type: 'enrage', name: '核心过载', cooldownSec: 30, value: 50, duration: 3 }] },
     uniqueDropIds: ['d_chaos_edge', 'd_primal_forge_armor'],
     dropChance: 0.35,
 
     waves: [
       { name:'混沌火苗', emoji:'🔥', hpMul:0.38, atkMul:0.58 },{ name:'熔炉傀儡', emoji:'🗿', hpMul:0.48, atkMul:0.68 },{ name:'混沌蝙蝠', emoji:'🦇', hpMul:0.56, atkMul:0.78 },{ name:'锻造恶魔', emoji:'👿', hpMul:0.64, atkMul:0.88 },{ name:'熔岩卫士', emoji:'🛡️', hpMul:0.72, atkMul:0.98 },{ name:'混沌刺客', emoji:'🗡️', hpMul:0.78, atkMul:1.08 },{ name:'熔炉元素', emoji:'🪨', hpMul:0.84, atkMul:1.14 },{ name:'混沌巨兽', emoji:'🦣', hpMul:0.88, atkMul:1.2 },{ name:'熔炉祭司', emoji:'🧙', hpMul:0.93, atkMul:1.26 },{ name:'混沌守卫', emoji:'🛡️', hpMul:0.98, atkMul:1.35 }
+    ],
+  },
+  // ── NEW: Dungeon 7 (Lv 30) ────────────────────────────────────────────────
+  {
+    id: 'toxic_sewer',
+    name: '毒液下水道', nameEn: 'Toxic Sewer',
+    emoji: '☣️',
+    theme: '城市废墟之下的下水道系统，变异生物在毒液中繁衍生息，散发致命的化学废料。',
+    reqCombatLevel: 30,
+    cost: { gold: 800, bones: 25 },
+    boss: { name: '毒液巨蜥', emoji: '🦎', maxHp: 2800, attack: 38, defence: 14, xp: 700, skills: [{ type: 'poison', name: '毒液喷溅', cooldownSec: 12, value: 25, duration: 2 }] },
+    uniqueDropIds: ['d_toxic_plate', 'd_poison_dagger'],
+    dropChance: 0.5,
+    waves: [
+      { name:'下水道鼠', emoji:'🐀', hpMul:0.3, atkMul:0.45 },{ name:'毒液蠕虫', emoji:'🐛', hpMul:0.4, atkMul:0.55 },{ name:'变异水蛭', emoji:'🪱', hpMul:0.5, atkMul:0.65 },{ name:'化学废料团', emoji:'🟢', hpMul:0.58, atkMul:0.75 },{ name:'毒雾幽灵', emoji:'👻', hpMul:0.65, atkMul:0.85 },{ name:'下水道爬行者', emoji:'🕷️', hpMul:0.72, atkMul:0.95 },{ name:'酸蚀傀儡', emoji:'🗿', hpMul:0.78, atkMul:1.05 },{ name:'毒液喷射者', emoji:'🐍', hpMul:0.84, atkMul:1.12 },{ name:'化学巨兽', emoji:'🦠', hpMul:0.9, atkMul:1.2 },{ name:'下水道守卫', emoji:'🛡️', hpMul:0.96, atkMul:1.28 }
+    ],
+  },
+  // ── NEW: Dungeon 8 (Lv 55) ────────────────────────────────────────────────
+  {
+    id: 'frozen_tomb',
+    name: '冰封陵墓', nameEn: 'Frozen Tomb',
+    emoji: '❄️',
+    theme: '核冬天将这座古墓永远冰封，墓中亡魂在永恒的寒冷中嘶吼，守卫着冰封的宝藏。',
+    reqCombatLevel: 55,
+    cost: { gold: 6000, dragonBones: 5 },
+    boss: { name: '冰霜女巫', emoji: '🧙‍♀️', maxHp: 6000, attack: 80, defence: 36, xp: 2200, skills: [{ type: 'aoe', name: '暴风雪', cooldownSec: 14, value: 40, duration: 0 }, { type: 'shield', name: '冰霜护盾', cooldownSec: 16, value: 55, duration: 1 }, { type: 'heal', name: '寒冰再生', cooldownSec: 20, value: 400, duration: 0 }] },
+    uniqueDropIds: ['d_frost_crown', 'd_ice_shard'],
+    dropChance: 0.45,
+    waves: [
+      { name:'冰霜小鬼', emoji:'👿', hpMul:0.32, atkMul:0.48 },{ name:'寒冰蝙蝠', emoji:'🦇', hpMul:0.42, atkMul:0.58 },{ name:'雪地僵尸', emoji:'🧟', hpMul:0.52, atkMul:0.68 },{ name:'冰刺魔像', emoji:'🗿', hpMul:0.6, atkMul:0.78 },{ name:'寒冰射手', emoji:'🏹', hpMul:0.68, atkMul:0.88 },{ name:'冰霜骑士', emoji:'⚔️', hpMul:0.74, atkMul:0.98 },{ name:'雪崩元素', emoji:'🌨️', hpMul:0.8, atkMul:1.08 },{ name:'冰封龙兽', emoji:'🐉', hpMul:0.85, atkMul:1.15 },{ name:'寒冰祭司', emoji:'🧙', hpMul:0.9, atkMul:1.22 },{ name:'陵墓守护者', emoji:'🛡️', hpMul:0.95, atkMul:1.3 }
+    ],
+  },
+  // ── NEW: Dungeon 9 (Lv 72) ────────────────────────────────────────────────
+  {
+    id: 'sunken_city',
+    name: '淹没古城', nameEn: 'Sunken City',
+    emoji: '🌊',
+    theme: '洪水淹没的古城遗迹，深水之下潜伏着变异的深海怪物，上古秘密等待发掘。',
+    reqCombatLevel: 72,
+    cost: { gold: 16000, dragonBones: 12 },
+    boss: { name: '深渊巨人', emoji: '🦑', maxHp: 12000, attack: 135, defence: 55, xp: 5000, skills: [{ type: 'aoe', name: '漩涡', cooldownSec: 13, value: 50, duration: 0 }, { type: 'heal', name: '深海再生', cooldownSec: 18, value: 800, duration: 0 }, { type: 'enrage', name: '深渊狂怒', cooldownSec: 25, value: 45, duration: 2 }] },
+    uniqueDropIds: ['d_abyssal_blade', 'd_tide_armor'],
+    dropChance: 0.4,
+    waves: [
+      { name:'深水鱼人', emoji:'🐟', hpMul:0.34, atkMul:0.5 },{ name:'海藻缠绕者', emoji:'🌿', hpMul:0.44, atkMul:0.6 },{ name:'珊瑚傀儡', emoji:'🪸', hpMul:0.54, atkMul:0.7 },{ name:'电鳗', emoji:'⚡', hpMul:0.62, atkMul:0.8 },{ name:'深海鲨鱼', emoji:'🦈', hpMul:0.7, atkMul:0.9 },{ name:'水元素', emoji:'💧', hpMul:0.76, atkMul:1.0 },{ name:'沧龙', emoji:'🦎', hpMul:0.82, atkMul:1.1 },{ name:'深渊守卫', emoji:'🛡️', hpMul:0.87, atkMul:1.18 },{ name:'深海祭司', emoji:'🧙', hpMul:0.92, atkMul:1.25 },{ name:'古城守护者', emoji:'🔱', hpMul:0.97, atkMul:1.32 }
     ],
   },
 ];
@@ -1795,36 +1959,9 @@ export const SMITHING_RECIPES: SmithingRecipe[] = [
   // Adamant (bar_5)
   { id: 'smith_adamant_bow',   output: 'adamant_bow',       inputs: [{ resource: 'bar_5', qty: 3 }], reqLevel: 40, xp: 180, time: 18 },
   { id: 'r_adamant_sword',     output: 'adamant_sword',     inputs: [{ resource: 'bar_5', qty: 2 }], reqLevel: 60, xp: 160, time: 10 },
-  // Obsidian (bar_3)
-  { id: 'r_obsidian_sword',    output: 'obsidian_sword',    inputs: [{ resource: 'bar_3', qty: 2 }], reqLevel: 40, xp: 100, time: 9  },
-  { id: 'r_obsidian_shield',   output: 'obsidian_shield',   inputs: [{ resource: 'bar_3', qty: 3 }], reqLevel: 40, xp: 140, time: 11 },
-  { id: 'r_obsidian_helmet',   output: 'obsidian_helmet',   inputs: [{ resource: 'bar_3', qty: 2 }], reqLevel: 40, xp: 100, time: 9  },
-  { id: 'r_obsidian_body',     output: 'obsidian_body',     inputs: [{ resource: 'bar_3', qty: 5 }], reqLevel: 45, xp: 240, time: 16 },
-  { id: 'r_obsidian_legs',     output: 'obsidian_legs',     inputs: [{ resource: 'bar_3', qty: 4 }], reqLevel: 45, xp: 190, time: 13 },
-  { id: 'r_obsidian_gauntlets',output: 'obsidian_gauntlets',inputs: [{ resource: 'bar_3', qty: 2 }], reqLevel: 40, xp: 90,  time: 8  },
-  { id: 'r_obsidian_boots',    output: 'obsidian_boots',    inputs: [{ resource: 'bar_3', qty: 2 }], reqLevel: 40, xp: 90,  time: 8  },
   // Rune (bar_6)
   { id: 'smith_rune_bow',      output: 'rune_bow_forged',   inputs: [{ resource: 'bar_6', qty: 3 }], reqLevel: 55, xp: 260, time: 22 },
   { id: 'r_rune_sword',        output: 'rune_sword',        inputs: [{ resource: 'bar_6', qty: 2 }], reqLevel: 70, xp: 220, time: 10 },
-  // Dragon (bar_7)
-  { id: 'r_dragon_sword',      output: 'dragon_sword',      inputs: [{ resource: 'bar_7', qty: 3 }], reqLevel: 75, xp: 300, time: 12 },
-  { id: 'r_dragon_shield',     output: 'dragon_shield',     inputs: [{ resource: 'bar_7', qty: 4 }], reqLevel: 75, xp: 400, time: 14 },
-  { id: 'r_dragon_helmet',     output: 'dragon_helmet',     inputs: [{ resource: 'bar_7', qty: 3 }], reqLevel: 75, xp: 300, time: 12 },
-  { id: 'r_dragon_body',       output: 'dragon_body',       inputs: [{ resource: 'bar_7', qty: 6 }], reqLevel: 80, xp: 500, time: 18 },
-  { id: 'r_dragon_legs',       output: 'dragon_legs',       inputs: [{ resource: 'bar_7', qty: 5 }], reqLevel: 80, xp: 400, time: 15 },
-  { id: 'r_dragon_gauntlets',  output: 'dragon_gauntlets',  inputs: [{ resource: 'bar_7', qty: 3 }], reqLevel: 75, xp: 280, time: 10 },
-  { id: 'r_dragon_boots',      output: 'dragon_boots',      inputs: [{ resource: 'bar_7', qty: 3 }], reqLevel: 75, xp: 280, time: 10 },
-  // Eternal (bar_8)
-  { id: 'r_eternal_sword',     output: 'eternal_sword',     inputs: [{ resource: 'bar_8', qty: 4 }], reqLevel: 85, xp: 450, time: 15 },
-  { id: 'r_eternal_shield',    output: 'eternal_shield',    inputs: [{ resource: 'bar_8', qty: 5 }], reqLevel: 85, xp: 550, time: 18 },
-  { id: 'r_eternal_helmet',    output: 'eternal_helmet',    inputs: [{ resource: 'bar_8', qty: 4 }], reqLevel: 85, xp: 450, time: 15 },
-  { id: 'r_eternal_body',      output: 'eternal_body',      inputs: [{ resource: 'bar_8', qty: 8 }], reqLevel: 90, xp: 700, time: 22 },
-  { id: 'r_eternal_legs',      output: 'eternal_legs',      inputs: [{ resource: 'bar_8', qty: 6 }], reqLevel: 90, xp: 560, time: 18 },
-  // Divine (bar_9)
-  { id: 'r_divine_sword',      output: 'divine_sword',      inputs: [{ resource: 'bar_9', qty: 5 }], reqLevel: 95, xp: 650, time: 20 },
-  { id: 'r_divine_shield',     output: 'divine_shield',     inputs: [{ resource: 'bar_9', qty: 6 }], reqLevel: 95, xp: 750, time: 24 },
-  { id: 'r_divine_helmet',     output: 'divine_helmet',     inputs: [{ resource: 'bar_9', qty: 5 }], reqLevel: 95, xp: 650, time: 20 },
-  { id: 'r_divine_body',       output: 'divine_body',       inputs: [{ resource: 'bar_9', qty: 10}], reqLevel: 99, xp: 1000,time: 30 },
 ];
 
 // ─── Universal item converter (smithed + leather + jewelry) ────────────────────
@@ -1863,22 +2000,22 @@ export interface ThievingNPC {
 }
 
 export const THIEVING_NPCS: ThievingNPC[] = [
-  { id:'drunkard',name:'醉汉',emoji:'🍺',level:1,perception:40,maxHit:2,interval:3,xp:5,gpMin:5,gpMax:15,
+  { id:'drunkard',name:'流浪汉',emoji:'🤢',level:1,perception:40,maxHit:2,interval:3,xp:5,gpMin:5,gpMax:15,
     commonDrops:[{name:'空瓶盖',emoji:'🍾',qty:1,chance:0.3},{name:'发霉面包',emoji:'🍞',qty:1,chance:0.2}],
     uniqueDrop:{id:'lucky_coin',name:'幸运硬币',emoji:'🪙',chance:250} },
-  { id:'beggar',name:'乞丐',emoji:'🧙',level:8,perception:80,maxHit:3,interval:3,xp:10,gpMin:10,gpMax:30,
+  { id:'beggar',name:'废墟乞丐',emoji:'🧙',level:8,perception:80,maxHit:3,interval:3,xp:10,gpMin:10,gpMax:30,
     commonDrops:[{name:'破布',emoji:'🧶',qty:1,chance:0.25},{name:'幸运草',emoji:'🍀',qty:1,chance:0.15}],
     uniqueDrop:{id:'beggar_pouch',name:'乞丐钱袋',emoji:'💰',chance:300} },
-  { id:'peddler',name:'小贩',emoji:'🧑',level:15,perception:120,maxHit:5,interval:3,xp:18,gpMin:20,gpMax:50,
+  { id:'peddler',name:'废品商人',emoji:'🧑',level:15,perception:120,maxHit:5,interval:3,xp:18,gpMin:20,gpMax:50,
     commonDrops:[{name:'旧布料',emoji:'🧵',qty:1,chance:0.2},{name:'植物种子',emoji:'🌱',qty:1,chance:0.15}],
     uniqueDrop:{id:'discount_coupon',name:'打折券',emoji:'🎫',chance:250} },
-  { id:'scavenger',name:'拾荒者',emoji:'🎒',level:25,perception:180,maxHit:8,interval:3,xp:30,gpMin:35,gpMax:80,
+  { id:'scavenger',name:'废土行商',emoji:'🎒',level:25,perception:180,maxHit:8,interval:3,xp:30,gpMin:35,gpMax:80,
     commonDrops:[{name:'废金属',emoji:'🔩',qty:1,chance:0.2},{name:'机械零件',emoji:'⚙️',qty:1,chance:0.12}],
     uniqueDrop:{id:'scrap_backpack',name:'废料背包',emoji:'🎒',chance:220} },
-  { id:'smuggler',name:'走私贩',emoji:'🕵️',level:35,perception:250,maxHit:12,interval:3,xp:50,gpMin:60,gpMax:130,
+  { id:'smuggler',name:'黑市走私犯',emoji:'🕵️',level:35,perception:250,maxHit:12,interval:3,xp:50,gpMin:60,gpMax:130,
     commonDrops:[{name:'走私品',emoji:'📦',qty:1,chance:0.15},{name:'稀有草药',emoji:'🌿',qty:1,chance:0.1}],
     uniqueDrop:{id:'smuggler_map',name:'走私地图',emoji:'🗺️',chance:200} },
-  { id:'raider',name:'掠夺者',emoji:'🏴',level:45,perception:340,maxHit:16,interval:3,xp:80,gpMin:100,gpMax:200,
+  { id:'raider',name:'废土掠夺者',emoji:'🏴',level:45,perception:340,maxHit:16,interval:3,xp:80,gpMin:100,gpMax:200,
     commonDrops:[{name:'弹药箱',emoji:'🔫',qty:1,chance:0.12},{name:'手雷',emoji:'💣',qty:1,chance:0.06}],
     uniqueDrop:{id:'raider_gloves',name:'掠夺者手套',emoji:'🧤',chance:180},
     hidden:true, unlockCondition:'combat_50', unlockHint:'击杀 50 个敌人' },
@@ -1894,7 +2031,7 @@ export const THIEVING_NPCS: ThievingNPC[] = [
     commonDrops:[{name:'债券',emoji:'📄',qty:1,chance:0.06},{name:'金币袋',emoji:'💰',qty:1,chance:0.04}],
     uniqueDrop:{id:'banker_key',name:'银行家钥匙',emoji:'🔑',chance:120},
     hidden:true, unlockCondition:'tier_2', unlockHint:'世界层级达到 2' },
-  { id:'ancient_king',name:'远古王者之魂',emoji:'👑',level:90,perception:1000,maxHit:60,interval:3,xp:500,gpMin:800,gpMax:1600,
+  { id:'ancient_king',name:'废土统治者',emoji:'👑',level:90,perception:1000,maxHit:60,interval:3,xp:500,gpMin:800,gpMax:1600,
     commonDrops:[{name:'不朽碎片',emoji:'🌟',qty:1,chance:0.06},{name:'龙鳞',emoji:'🛡️',qty:1,chance:0.03}],
     uniqueDrop:{id:'immortal_badge',name:'不朽徽章',emoji:'🏅',chance:80},
     hidden:true, unlockCondition:'thieving_90', unlockHint:'搜刮等级达到 90' },
@@ -1917,33 +2054,36 @@ export interface GameTool {
 
 export const ALL_TOOLS: GameTool[] = [
   // Axes (woodcutting)
-  { id:'bronze_axe',   name:'青铜斧', emoji:'🟢🪓', skill:'woodcutting', timeMult:0.95, yieldBonus:0 },
-  { id:'iron_axe',     name:'铁斧',   emoji:'⬜🪓', skill:'woodcutting', timeMult:0.90, yieldBonus:0 },
-  { id:'steel_axe',    name:'钢斧',   emoji:'🔵🪓', skill:'woodcutting', timeMult:0.85, yieldBonus:0 },
-  { id:'mithril_axe',  name:'秘银斧', emoji:'🤍🪓', skill:'woodcutting', timeMult:0.80, yieldBonus:1 },
-  { id:'adamant_axe',  name:'精金斧', emoji:'🟡🪓', skill:'woodcutting', timeMult:0.75, yieldBonus:1 },
-  { id:'rune_axe',     name:'符文斧', emoji:'🔴🪓', skill:'woodcutting', timeMult:0.70, yieldBonus:2 },
-  { id:'dragon_axe',   name:'龙斧',   emoji:'🌈🪓', skill:'woodcutting', timeMult:0.60, yieldBonus:2 },
+  { id:'scrap_axe',    name:'废铁斧', emoji:'🟤🪓', skill:'woodcutting', timeMult:0.95, yieldBonus:0 },
+  { id:'copper_axe',   name:'铜斧',   emoji:'🟠🪓', skill:'woodcutting', timeMult:0.90, yieldBonus:0 },
+  { id:'alum_axe',     name:'铝斧',   emoji:'⬜🪓', skill:'woodcutting', timeMult:0.85, yieldBonus:0 },
+  { id:'lead_axe',     name:'铅斧',   emoji:'🔘🪓', skill:'woodcutting', timeMult:0.80, yieldBonus:1 },
+  { id:'uranium_axe',  name:'铀斧',   emoji:'🟢🪓', skill:'woodcutting', timeMult:0.75, yieldBonus:1 },
+  { id:'titanium_axe', name:'钛金斧', emoji:'🔵🪓', skill:'woodcutting', timeMult:0.70, yieldBonus:2 },
+  { id:'iridium_axe',  name:'铱金斧', emoji:'🟣🪓', skill:'woodcutting', timeMult:0.60, yieldBonus:2 },
   // Pickaxes (mining)
-  { id:'bronze_pick',  name:'青铜镐', emoji:'🟢⛏️', skill:'mining', timeMult:0.95, yieldBonus:0 },
-  { id:'iron_pick',    name:'铁镐',   emoji:'⬜⛏️', skill:'mining', timeMult:0.90, yieldBonus:0 },
-  { id:'steel_pick',   name:'钢镐',   emoji:'🔵⛏️', skill:'mining', timeMult:0.85, yieldBonus:0 },
-  { id:'mithril_pick', name:'秘银镐', emoji:'🤍⛏️', skill:'mining', timeMult:0.80, yieldBonus:1 },
-  { id:'adamant_pick', name:'精金镐', emoji:'🟡⛏️', skill:'mining', timeMult:0.75, yieldBonus:1 },
-  { id:'rune_pick',    name:'符文镐', emoji:'🔴⛏️', skill:'mining', timeMult:0.70, yieldBonus:2 },
-  { id:'dragon_pick',  name:'龙镐',   emoji:'🌈⛏️', skill:'mining', timeMult:0.60, yieldBonus:2 },
+  { id:'scrap_pick',    name:'废铁镐', emoji:'🟤⛏️', skill:'mining', timeMult:0.95, yieldBonus:0 },
+  { id:'copper_pick',   name:'铜镐',   emoji:'🟠⛏️', skill:'mining', timeMult:0.90, yieldBonus:0 },
+  { id:'alum_pick',     name:'铝镐',   emoji:'⬜⛏️', skill:'mining', timeMult:0.85, yieldBonus:0 },
+  { id:'lead_pick',     name:'铅镐',   emoji:'🔘⛏️', skill:'mining', timeMult:0.80, yieldBonus:1 },
+  { id:'uranium_pick',  name:'铀镐',   emoji:'🟢⛏️', skill:'mining', timeMult:0.75, yieldBonus:1 },
+  { id:'titanium_pick', name:'钛金镐', emoji:'🔵⛏️', skill:'mining', timeMult:0.70, yieldBonus:2 },
+  { id:'iridium_pick',  name:'铱金镐', emoji:'🟣⛏️', skill:'mining', timeMult:0.60, yieldBonus:2 },
   // Fishing rods
-  { id:'basic_rod',    name:'基础鱼竿',emoji:'🟢🎣',skill:'fishing', timeMult:0.95, yieldBonus:0 },
-  { id:'oak_rod',      name:'橡木鱼竿',emoji:'⬜🎣',skill:'fishing', timeMult:0.90, yieldBonus:0 },
-  { id:'steel_rod',    name:'钢鱼竿',  emoji:'🔵🎣',skill:'fishing', timeMult:0.85, yieldBonus:0 },
-  { id:'mithril_rod',  name:'秘银鱼竿',emoji:'🤍🎣',skill:'fishing', timeMult:0.80, yieldBonus:1 },
-  { id:'rune_rod',     name:'符文鱼竿',emoji:'🔴🎣',skill:'fishing', timeMult:0.70, yieldBonus:2 },
+  { id:'scrap_rod',     name:'废铁竿', emoji:'🟤🎣', skill:'fishing', timeMult:0.95, yieldBonus:0 },
+  { id:'copper_rod',    name:'铜鱼竿', emoji:'🟠🎣', skill:'fishing', timeMult:0.90, yieldBonus:0 },
+  { id:'alum_rod',      name:'铝鱼竿', emoji:'⬜🎣', skill:'fishing', timeMult:0.85, yieldBonus:0 },
+  { id:'lead_rod',      name:'铅鱼竿', emoji:'🔘🎣', skill:'fishing', timeMult:0.80, yieldBonus:1 },
+  { id:'titanium_rod',  name:'钛金竿', emoji:'🔵🎣', skill:'fishing', timeMult:0.70, yieldBonus:2 },
+  { id:'iridium_rod',   name:'铱金竿', emoji:'🟣🎣', skill:'fishing', timeMult:0.60, yieldBonus:2 },
   // Hunting knives
-  { id:'bone_knife',   name:'骨刀',   emoji:'🟢🔪', skill:'hunting', timeMult:0.95, yieldBonus:0 },
-  { id:'iron_knife',   name:'铁猎刀', emoji:'⬜🔪', skill:'hunting', timeMult:0.90, yieldBonus:0 },
-  { id:'steel_knife',  name:'钢猎刀', emoji:'🔵🔪', skill:'hunting', timeMult:0.85, yieldBonus:0 },
-  { id:'mithril_knife',name:'秘银猎刀',emoji:'🤍🔪', skill:'hunting', timeMult:0.80, yieldBonus:1 },
-  { id:'rune_knife',   name:'符文猎刀',emoji:'🔴🔪', skill:'hunting', timeMult:0.70, yieldBonus:2 },
+  { id:'scrap_knife',   name:'废铁刀', emoji:'🟤🔪', skill:'hunting', timeMult:0.95, yieldBonus:0 },
+  { id:'copper_knife',  name:'铜猎刀', emoji:'🟠🔪', skill:'hunting', timeMult:0.90, yieldBonus:0 },
+  { id:'alum_knife',    name:'铝猎刀', emoji:'⬜🔪', skill:'hunting', timeMult:0.85, yieldBonus:0 },
+  { id:'lead_knife',    name:'铅猎刀', emoji:'🔘🔪', skill:'hunting', timeMult:0.80, yieldBonus:1 },
+  { id:'uranium_knife', name:'铀猎刀', emoji:'🟢🔪', skill:'hunting', timeMult:0.75, yieldBonus:1 },
+  { id:'titanium_knife',name:'钛金刀', emoji:'🔵🔪', skill:'hunting', timeMult:0.70, yieldBonus:2 },
+  { id:'iridium_knife', name:'铱金刀', emoji:'🟣🔪', skill:'hunting', timeMult:0.60, yieldBonus:2 },
 ];
 
 export function getToolBonus(toolJson: string): { timeMult: number; yieldBonus: number } {
@@ -2058,7 +2198,7 @@ export interface HomesteadBuilding {
   effect: string; effectPerLevel: string;
   reqTier?: number;
 }
-export const HOMESTEAD_BUILDINGS: HomesteadBuilding[] = [
+export const SHELTER_BUILDINGS: HomesteadBuilding[] = [
   { id:'shelter', name:'庇护所', emoji:'🏠', maxLevel:10, costWood:30, costStone:0, costGold:0, effect:'最大HP', effectPerLevel:'+10 HP' },
   { id:'farm', name:'农田', emoji:'🌾', maxLevel:10, costWood:30, costStone:0, costGold:0, effect:'金币产量', effectPerLevel:'+3金/分钟' },
   { id:'lumbermill', name:'伐木场', emoji:'🪓', maxLevel:5, costWood:50, costStone:0, costGold:0, effect:'伐木时间', effectPerLevel:'-3%' },
@@ -2086,11 +2226,14 @@ export const WOODCUTTING_BERRY_DROPS: { woodTier: number; berryId: string; name:
   { woodTier:2, berryId:'elderberry', name:'接骨木莓', emoji:'🫛', chance:0.20 },
   { woodTier:3, berryId:'blackberry', name:'黑莓', emoji:'🍇', chance:0.18 },
   { woodTier:4, berryId:'goji', name:'枸杞', emoji:'🔴', chance:0.16 },
-  { woodTier:5, berryId:'nightberry', name:'紫莓', emoji:'🍇', chance:0.15 },
+  { woodTier:5, berryId:'nightberry', name:'夜光莓', emoji:'🌙', chance:0.15 },
+  { woodTier:5, berryId:'moonberry', name:'月光莓', emoji:'🌝', chance:0.08 },
   { woodTier:6, berryId:'magicberry', name:'魔法莓', emoji:'✨', chance:0.14 },
   { woodTier:7, berryId:'ancientberry', name:'远古莓', emoji:'🍇', chance:0.13 },
   { woodTier:8, berryId:'cranberry', name:'蔓越莓', emoji:'🍒', chance:0.12 },
+  { woodTier:8, berryId:'sunberry', name:'日光莓', emoji:'☀️', chance:0.06 },
   { woodTier:9, berryId:'spiritberry', name:'灵魂莓', emoji:'👻', chance:0.10 },
+  { woodTier:9, berryId:'dragonblood', name:'龙血果', emoji:'🩸', chance:0.05 },
 ];
 export const HUNTING_HERB_DROPS: { hideTier: number; herbId: string; name: string; emoji: string; chance: number }[] = [
   { hideTier:0, herbId:'dandelion', name:'蒲公英', emoji:'🌼', chance:0.30 },
@@ -2104,46 +2247,252 @@ export const HUNTING_HERB_DROPS: { hideTier: number; herbId: string; name: strin
   { hideTier:8, herbId:'dragonblood', name:'龙血草', emoji:'🩸', chance:0.12 },
   { hideTier:9, herbId:'phoenix_flower', name:'凤凰花', emoji:'🔥', chance:0.10 },
 ];
-export const COOKING_RECIPES: { id:string;name:string;emoji:string;inputs:{resource:string;qty:number}[];effect:string;durationMin:number }[] = [
-  { id:'roasted_meat', name:'烤兔肉', emoji:'🍖', inputs:[{resource:'hide_0',qty:2},{resource:'blueberry',qty:1}], effect:'+20%最大HP', durationMin:60 },
-  { id:'berry_juice', name:'浆果汁', emoji:'🧃', inputs:[{resource:'blueberry',qty:3},{resource:'raspberry',qty:2}], effect:'+10%全局经验', durationMin:30 },
-  { id:'herb_stew', name:'草药炖狼肉', emoji:'🍲', inputs:[{resource:'hide_3',qty:2},{resource:'dandelion',qty:2},{resource:'mint',qty:1}], effect:'+15%攻击力', durationMin:45 },
-  { id:'ginseng_soup', name:'参鸡汤', emoji:'🍜', inputs:[{resource:'hide_1',qty:3},{resource:'ginseng',qty:2}], effect:'+30%战斗经验', durationMin:60 },
-  { id:'honey_roast', name:'蜜汁熊肉', emoji:'🍯', inputs:[{resource:'hide_4',qty:3},{resource:'blackberry',qty:3},{resource:'rosemary',qty:1}], effect:'+20%防御力', durationMin:60 },
-  { id:'elf_bread', name:'精灵面包', emoji:'🍞', inputs:[{resource:'goji',qty:3},{resource:'thyme',qty:2}], effect:'-15%伐木时间', durationMin:45 },
-  { id:'miner_pie', name:'矿工派', emoji:'🥧', inputs:[{resource:'hide_2',qty:2},{resource:'elderberry',qty:2},{resource:'marigold',qty:1}], effect:'-15%采矿时间', durationMin:45 },
-  { id:'fisherman_stew', name:'渔夫炖汤', emoji:'🍵', inputs:[{resource:'hide_0',qty:2},{resource:'dandelion',qty:3},{resource:'mint',qty:1}], effect:'-15%钓鱼时间', durationMin:45 },
-  { id:'hunter_pie', name:'猎人馅饼', emoji:'🥟', inputs:[{resource:'hide_5',qty:2},{resource:'lingzhi',qty:2},{resource:'ginseng',qty:1}], effect:'-15%狩猎时间', durationMin:45 },
-  { id:'dragon_feast', name:'龙肉盛宴', emoji:'🍗', inputs:[{resource:'hide_8',qty:3},{resource:'dragonblood',qty:2},{resource:'spiritberry',qty:2}], effect:'+10%全属性', durationMin:120 },
-  { id:'grilled_fish', name:'烤鱼', emoji:'🐟', inputs:[{resource:'fish_0',qty:3},{resource:'dandelion',qty:1}], effect:'+15%钓鱼速度', durationMin:30 },
-  { id:'fish_soup', name:'鲜鱼汤', emoji:'🍜', inputs:[{resource:'fish_2',qty:2},{resource:'mint',qty:2},{resource:'blueberry',qty:1}], effect:'+20%经验获取', durationMin:45 },
-  { id:'sushi_plate', name:'刺身拼盘', emoji:'🍣', inputs:[{resource:'fish_4',qty:2},{resource:'goji',qty:2},{resource:'rosemary',qty:1}], effect:'+20%暴击伤害', durationMin:45 },
-  { id:'seafood_platter', name:'海鲜大餐', emoji:'🦞', inputs:[{resource:'fish_6',qty:2},{resource:'dragonherb',qty:1},{resource:'spiritberry',qty:1}], effect:'+15%全属性', durationMin:90 },
-  { id:'feast_of_the_deep', name:'深渊盛宴', emoji:'🦑', inputs:[{resource:'fish_8',qty:3},{resource:'dragonblood',qty:1},{resource:'nightberry',qty:2}], effect:'+20%全属性 +10%掉率', durationMin:120 },
-  { id:'magic_brew', name:'魔莓酿', emoji:'🍷', inputs:[{resource:'nightberry',qty:3},{resource:'magicberry',qty:2}], effect:'+25%法术伤害', durationMin:45 },
-  { id:'ancient_elixir', name:'远古灵药', emoji:'🧪', inputs:[{resource:'ancientberry',qty:2},{resource:'cranberry',qty:2},{resource:'dragonblood',qty:1}], effect:'+30%全经验获取', durationMin:60 },
+// ─── Cooking = instant HP recovery (1 ingredient → HP restore) ─────────────────
+export const COOKING_RECIPES: { id:string;name:string;emoji:string;inputs:{resource:string;qty:number}[];effect:string;hpRestore:number }[] = [
+  { id:'grilled_rat', name:'烤鼠肉串', emoji:'🍢', inputs:[{resource:'meat_0',qty:1}], effect:'回复50HP', hpRestore:50 },
+  { id:'roast_rabbit', name:'烤兔腿', emoji:'🍗', inputs:[{resource:'meat_1',qty:1}], effect:'回复100HP', hpRestore:100 },
+  { id:'lizard_steak', name:'蜥蜴肉排', emoji:'🥩', inputs:[{resource:'meat_2',qty:1}], effect:'回复150HP', hpRestore:150 },
+  { id:'dog_jerky', name:'疯犬肉干', emoji:'🥓', inputs:[{resource:'meat_3',qty:1}], effect:'回复200HP', hpRestore:200 },
+  { id:'boar_chop', name:'猪排', emoji:'🍖', inputs:[{resource:'meat_4',qty:1}], effect:'回复250HP', hpRestore:250 },
+  { id:'deer_roast', name:'烤鹿肉', emoji:'🍗', inputs:[{resource:'meat_5',qty:1}], effect:'回复300HP', hpRestore:300 },
+  { id:'bear_ribs', name:'熊肋排', emoji:'🦴', inputs:[{resource:'meat_6',qty:1}], effect:'回复350HP', hpRestore:350 },
+  { id:'scorpion_tail', name:'炸蝎尾', emoji:'🦂', inputs:[{resource:'meat_7',qty:1}], effect:'回复400HP', hpRestore:400 },
+  { id:'deathclaw_steak', name:'死亡爪排', emoji:'🥩', inputs:[{resource:'meat_8',qty:1}], effect:'回复450HP', hpRestore:450 },
+  { id:'behemoth_fillet', name:'巨兽肉片', emoji:'🍖', inputs:[{resource:'meat_9',qty:1}], effect:'回复500HP', hpRestore:500 },
+  { id:'grilled_tadpole', name:'烤蝌蚪', emoji:'🐟', inputs:[{resource:'fish_0',qty:1}], effect:'回复75HP', hpRestore:75 },
+  { id:'smoked_eel', name:'熏鳗鱼', emoji:'🐟', inputs:[{resource:'fish_1',qty:1}], effect:'回复125HP', hpRestore:125 },
+  { id:'fried_fin', name:'炸鱼鳍', emoji:'🐟', inputs:[{resource:'fish_2',qty:1}], effect:'回复175HP', hpRestore:175 },
+  { id:'catfish_grill', name:'烤鲶鱼', emoji:'🐟', inputs:[{resource:'fish_4',qty:1}], effect:'回复225HP', hpRestore:225 },
+  { id:'eel_kabob', name:'鳗鱼串', emoji:'🐟', inputs:[{resource:'fish_5',qty:1}], effect:'回复275HP', hpRestore:275 },
+  { id:'armorfish_soup', name:'铁甲鱼汤', emoji:'🍲', inputs:[{resource:'fish_6',qty:1}], effect:'回复325HP', hpRestore:325 },
+  { id:'shark_fin', name:'鲨鱼翅', emoji:'🦈', inputs:[{resource:'fish_7',qty:1}], effect:'回复375HP', hpRestore:375 },
+  { id:'abyss_roast', name:'深渊烤鱼', emoji:'🐙', inputs:[{resource:'fish_8',qty:1}], effect:'回复425HP', hpRestore:425 },
+  { id:'whale_steak', name:'巨鲸排', emoji:'🐋', inputs:[{resource:'fish_9',qty:1}], effect:'回复500HP', hpRestore:500 },
 ];
+
+// ─── Alchemy = buff potions (all duration-based) ───────────────────────────────
 export const POTION_RECIPES: { id:string;name:string;emoji:string;inputs:{resource:string;qty:number}[];effect:string;durationMin:number }[] = [
-  { id:'health_potion', name:'生命药水', emoji:'❤️', inputs:[{resource:'dandelion',qty:3}], effect:'回复50%HP', durationMin:0 },
-  { id:'greater_health', name:'强效生命药水', emoji:'💖', inputs:[{resource:'ginseng',qty:2},{resource:'lingzhi',qty:1},{resource:'dandelion',qty:2}], effect:'回复100%HP', durationMin:0 },
+  { id:'berry_juice', name:'浆果汁', emoji:'🧃', inputs:[{resource:'blueberry',qty:3},{resource:'raspberry',qty:2}], effect:'+10%全局经验', durationMin:30 },
   { id:'strength_potion', name:'力量药水', emoji:'💪', inputs:[{resource:'rosemary',qty:3},{resource:'ginseng',qty:1}], effect:'+25%攻击力', durationMin:30 },
   { id:'iron_potion', name:'铁皮药水', emoji:'🛡️', inputs:[{resource:'marigold',qty:3},{resource:'thyme',qty:2}], effect:'+25%防御力', durationMin:30 },
   { id:'speed_potion', name:'速度药水', emoji:'⚡', inputs:[{resource:'mint',qty:4},{resource:'rosemary',qty:1}], effect:'+20%采集速度', durationMin:30 },
   { id:'luck_potion', name:'幸运药水', emoji:'🍀', inputs:[{resource:'marigold',qty:3},{resource:'lingzhi',qty:2}], effect:'+15%掉率', durationMin:45 },
   { id:'crit_potion', name:'精准药水', emoji:'🎯', inputs:[{resource:'thyme',qty:3},{resource:'dragonherb',qty:1}], effect:'+15%暴击率', durationMin:30 },
-  { id:'leech_potion', name:'吸血药水', emoji:'🩸', inputs:[{resource:'dragonblood',qty:2},{resource:'phoenix_flower',qty:1}], effect:'+10%吸血', durationMin:30 },
-  { id:'fish_oil', name:'鱼油精华', emoji:'🐟', inputs:[{resource:'fish_1',qty:5}], effect:'+10%掉率', durationMin:30 },
+  { id:'leech_potion', name:'吸血药水', emoji:'🩸', inputs:[{resource:'dragonblood',qty:2},{resource:'dragonherb',qty:1}], effect:'+10%吸血', durationMin:30 },
   { id:'mercury_elixir', name:'深海灵药', emoji:'🌊', inputs:[{resource:'fish_5',qty:3},{resource:'dragonherb',qty:2}], effect:'+30%钓鱼速度', durationMin:45 },
+  { id:'combat_stim', name:'战斗兴奋剂', emoji:'💉', inputs:[{resource:'ginseng',qty:3},{resource:'dandelion',qty:2}], effect:'+30%战斗经验', durationMin:60 },
+  { id:'woodcutter_brew', name:'伐木工酿', emoji:'🪓', inputs:[{resource:'goji',qty:3},{resource:'thyme',qty:2}], effect:'-15%伐木时间', durationMin:45 },
+  { id:'miner_brew', name:'矿工酿', emoji:'⛏️', inputs:[{resource:'elderberry',qty:3},{resource:'marigold',qty:2}], effect:'-15%采矿时间', durationMin:45 },
+  { id:'hunter_brew', name:'猎手酿', emoji:'🏹', inputs:[{resource:'blackberry',qty:3},{resource:'lingzhi',qty:2}], effect:'-15%狩猎时间', durationMin:45 },
+  { id:'dragon_elixir', name:'龙息灵药', emoji:'🐲', inputs:[{resource:'dragonblood',qty:2},{resource:'spiritberry',qty:2}], effect:'+10%全属性', durationMin:120 },
+  { id:'feast_of_the_deep', name:'深渊盛宴', emoji:'🦑', inputs:[{resource:'fish_8',qty:3},{resource:'dragonblood',qty:1},{resource:'nightberry',qty:2}], effect:'+20%全属性 +10%掉率', durationMin:120 },
+  { id:'magic_brew', name:'魔莓酿', emoji:'🍷', inputs:[{resource:'nightberry',qty:3},{resource:'magicberry',qty:2}], effect:'+25%元素伤害', durationMin:45 },
+  { id:'ancient_elixir', name:'远古灵药', emoji:'🧪', inputs:[{resource:'ancientberry',qty:2},{resource:'cranberry',qty:2},{resource:'dragonblood',qty:1}], effect:'+30%全经验获取', durationMin:60 },
 ];
+// ═══════════════════════ Achievements (Melvor-style) ════════════════════════════
+// type: 'kill' = kill specific enemy, 'skill' = reach skill level, 'dungeon' = clear dungeon
+// target: enemy id / skill xp key / dungeon index
+// reward: pet id to grant on claim
 export const ACHIEVEMENTS: { id:string;name:string;desc:string;type:'kill'|'dungeon'|'skill';target:string;count:number;reward:string }[] = [
-  { id:'kill_chicken_1000', name:'养鸡场主', desc:'击杀1000只小鸡', type:'kill', target:'chicken', count:1000, reward:'pet_chicken' },
-  { id:'kill_cow_500', name:'牧场主人', desc:'击杀500头牛', type:'kill', target:'cow', count:500, reward:'pet_cow' },
-  { id:'skill_wood_50', name:'伐木大师', desc:'伐木50级', type:'skill', target:'woodcutting', count:50, reward:'pet_beaver' },
+  // ── Skill milestones (Lv 20 & Lv 50 & Lv 99) ───────────────────────────
+  // Gathering
+  { id:'skill_wood_20',  name:'伐木新手',  desc:'伐木达到20级',  type:'skill',target:'woodcuttingXp',count:20, reward:'pet_beaver' },
+  { id:'skill_wood_60',  name:'伐木大师',  desc:'伐木达到60级',  type:'skill',target:'woodcuttingXp',count:60, reward:'pet_ent' },
+  { id:'skill_wood_99',  name:'伐木传奇',  desc:'伐木达到99级',  type:'skill',target:'woodcuttingXp',count:99, reward:'' },
+  { id:'skill_mine_20',  name:'采矿新手',  desc:'采矿达到20级',  type:'skill',target:'miningXp',     count:20, reward:'pet_mole' },
+  { id:'skill_mine_60',  name:'采矿大师',  desc:'采矿达到60级',  type:'skill',target:'miningXp',     count:60, reward:'pet_golem' },
+  { id:'skill_mine_99',  name:'采矿传奇',  desc:'采矿达到99级',  type:'skill',target:'miningXp',     count:99, reward:'' },
+  { id:'skill_smelt_20', name:'冶炼新手',  desc:'冶炼达到20级',  type:'skill',target:'smeltingXp',   count:20, reward:'pet_salamander' },
+  { id:'skill_smelt_60', name:'冶炼大师',  desc:'冶炼达到60级',  type:'skill',target:'smeltingXp',   count:60, reward:'pet_phoenix' },
+  { id:'skill_fish_20',  name:'钓鱼新手',  desc:'钓鱼达到20级',  type:'skill',target:'fishingXp',    count:20, reward:'pet_pelican' },
+  { id:'skill_fish_60',  name:'钓鱼大师',  desc:'钓鱼达到60级',  type:'skill',target:'fishingXp',    count:60, reward:'pet_shark' },
+  { id:'skill_hunt_20',  name:'狩猎新手',  desc:'狩猎达到20级',  type:'skill',target:'huntingXp',    count:20, reward:'pet_wolf' },
+  { id:'skill_hunt_60',  name:'狩猎大师',  desc:'狩猎达到60级',  type:'skill',target:'huntingXp',    count:60, reward:'pet_falcon' },
+  { id:'skill_thief_20', name:'搜刮新手',  desc:'搜刮达到20级',  type:'skill',target:'thievingXp',   count:20, reward:'pet_raccoon' },
+  { id:'skill_thief_60', name:'搜刮大师',  desc:'搜刮达到60级',  type:'skill',target:'thievingXp',   count:60, reward:'pet_fox' },
+  { id:'skill_agile_20', name:'敏捷新手',  desc:'敏捷达到20级',  type:'skill',target:'agilityXp',    count:20, reward:'pet_monkey' },
+  { id:'skill_agile_60', name:'敏捷大师',  desc:'敏捷达到60级',  type:'skill',target:'agilityXp',    count:60, reward:'pet_cheetah' },
+  { id:'skill_explore_20',name:'探索新手', desc:'探索达到20级',  type:'skill',target:'explorationXp',count:20, reward:'pet_eagle' },
+  { id:'skill_explore_60',name:'探索大师', desc:'探索达到60级',  type:'skill',target:'explorationXp',count:60, reward:'pet_owl' },
+  // Production
+  { id:'skill_smith_20', name:'锻造新手',  desc:'锻造达到20级',  type:'skill',target:'smithingXp',   count:20, reward:'pet_anvil' },
+  { id:'skill_smith_60', name:'锻造大师',  desc:'锻造达到60级',  type:'skill',target:'smithingXp',   count:60, reward:'pet_dragon' },
+  { id:'skill_leather_20',name:'皮革新手', desc:'皮革制作20级',  type:'skill',target:'leatherworkingXp',count:20,reward:'pet_deer' },
+  { id:'skill_leather_60',name:'皮革大师', desc:'皮革制作60级',  type:'skill',target:'leatherworkingXp',count:60,reward:'pet_bear' },
+  { id:'skill_jewel_20', name:'珠宝新手',  desc:'珠宝制作20级',  type:'skill',target:'jewelcraftingXp',count:20,reward:'pet_magpie' },
+  { id:'skill_jewel_60', name:'珠宝大师',  desc:'珠宝制作60级',  type:'skill',target:'jewelcraftingXp',count:60,reward:'pet_dragonfly' },
+  // Combat
+  { id:'skill_att_20',   name:'攻击新手',  desc:'攻击达到20级',  type:'skill',target:'attackXp',     count:20, reward:'pet_tiger' },
+  { id:'skill_att_60',   name:'攻击大师',  desc:'攻击达到60级',  type:'skill',target:'attackXp',     count:60, reward:'pet_lion' },
+  { id:'skill_def_20',   name:'防御新手',  desc:'防御达到20级',  type:'skill',target:'defenceXp',    count:20, reward:'pet_tortoise' },
+  { id:'skill_def_60',   name:'防御大师',  desc:'防御达到60级',  type:'skill',target:'defenceXp',    count:60, reward:'pet_rhino' },
+  { id:'skill_hp_20',    name:'生命新手',  desc:'生命达到20级',  type:'skill',target:'hitpointsXp',  count:20, reward:'pet_boar' },
+  { id:'skill_hp_60',    name:'生命大师',  desc:'生命达到60级',  type:'skill',target:'hitpointsXp',  count:60, reward:'pet_elephant' },
+  { id:'skill_ranged_20',name:'远程新手',  desc:'远程达到20级',  type:'skill',target:'rangedXp',     count:20, reward:'pet_hawk' },
+  { id:'skill_ranged_60',name:'远程大师',  desc:'远程达到60级',  type:'skill',target:'rangedXp',     count:60, reward:'pet_eagle_owl' },
+  { id:'skill_magic_20', name:'魔法新手',  desc:'魔法达到20级',  type:'skill',target:'magicXp',      count:20, reward:'pet_imp' },
+  { id:'skill_magic_60', name:'魔法大师',  desc:'魔法达到60级',  type:'skill',target:'magicXp',      count:60, reward:'pet_wisp' },
+  // Support
+  { id:'skill_cook_20',  name:'烹饪新手',  desc:'烹饪达到20级',  type:'skill',target:'cookingXp',    count:20, reward:'pet_rat' },
+  { id:'skill_cook_60',  name:'烹饪大师',  desc:'烹饪达到60级',  type:'skill',target:'cookingXp',    count:60, reward:'pet_pig' },
+  { id:'skill_alch_20',  name:'炼金新手',  desc:'炼金达到20级',  type:'skill',target:'alchemyXp',    count:20, reward:'pet_snake' },
+  { id:'skill_alch_60',  name:'炼金大师',  desc:'炼金达到60级',  type:'skill',target:'alchemyXp',    count:60, reward:'pet_slime' },
+  { id:'skill_pray_20',  name:'祷言新手',  desc:'祷言达到20级',  type:'skill',target:'prayerXp',     count:20, reward:'pet_dove' },
+  { id:'skill_pray_60',  name:'祷言大师',  desc:'祷言达到60级',  type:'skill',target:'prayerXp',     count:60, reward:'pet_angel' },
+
+  // ── Enemy kill milestones (10 / 100 kills) ──────────────────────────────
+  { id:'kill_rad_roach_10',    name:'害虫克星',   desc:'击杀10只变异蟑螂',   type:'kill',target:'rad_roach',     count:10,  reward:'pet_scorpion' },
+  { id:'kill_rad_roach_100',   name:'灭虫专家',   desc:'击杀100只变异蟑螂',  type:'kill',target:'rad_roach',     count:100, reward:'pet_ant' },
+  { id:'kill_rad_rat_10',      name:'灭鼠能手',   desc:'击杀10只辐射鼠',     type:'kill',target:'rad_rat',       count:10,  reward:'pet_mouse' },
+  { id:'kill_rad_rat_100',     name:'鼠患终结者', desc:'击杀100只辐射鼠',    type:'kill',target:'rad_rat',       count:100, reward:'pet_rat_king' },
+  { id:'kill_stray_dog_10',    name:'流浪动物救助',desc:'击杀10只流浪犬',    type:'kill',target:'stray_dog',     count:10,  reward:'pet_hyena' },
+  { id:'kill_stray_dog_100',   name:'狗王猎手',   desc:'击杀100只流浪犬',    type:'kill',target:'stray_dog',     count:100, reward:'pet_wolf_dire' },
+  { id:'kill_mutant_spider_10',name:'驱蛛人',     desc:'击杀10只变异蜘蛛',   type:'kill',target:'mutant_spider', count:10,  reward:'pet_tarantula' },
+  { id:'kill_mutant_spider_100',name:'蜘蛛女王克星',desc:'击杀100只变异蜘蛛',type:'kill',target:'mutant_spider', count:100, reward:'pet_spider_queen' },
+  { id:'kill_zombie_walk_10',  name:'丧尸杀手',   desc:'击杀10只蹒跚丧尸',   type:'kill',target:'zombie_walk',   count:10,  reward:'pet_zombie' },
+  { id:'kill_zombie_walk_100', name:'亡灵天灾',   desc:'击杀100只蹒跚丧尸',  type:'kill',target:'zombie_walk',   count:100, reward:'pet_lich' },
+  { id:'kill_rad_scorpion_10', name:'蝎子杀手',   desc:'击杀10只辐射蝎',     type:'kill',target:'rad_scorpion',  count:10,  reward:'pet_scorpion_king' },
+  { id:'kill_rad_scorpion_100',name:'沙漠之王',   desc:'击杀100只辐射蝎',    type:'kill',target:'rad_scorpion',  count:100, reward:'pet_scorpion_god' },
+  { id:'kill_ghoul_flesh_10',  name:'食尸鬼猎人', desc:'击杀10只食尸鬼',     type:'kill',target:'ghoul_flesh',   count:10,  reward:'pet_ghost' },
+  { id:'kill_ghoul_flesh_100', name:'亡灵克星',   desc:'击杀100只食尸鬼',    type:'kill',target:'ghoul_flesh',   count:100, reward:'pet_wraith' },
+  { id:'kill_mutant_hound_10', name:'猎犬训练师', desc:'击杀10只变异猎犬',   type:'kill',target:'mutant_hound',  count:10,  reward:'pet_hellhound' },
+  { id:'kill_mutant_hound_100',name:'犬王',       desc:'击杀100只变异猎犬',  type:'kill',target:'mutant_hound',  count:100, reward:'pet_cerberus' },
+  { id:'kill_bandit_scav_10',  name:'治安官',     desc:'击杀10名废土拾荒者', type:'kill',target:'bandit_scav',   count:10,  reward:'pet_bandit' },
+  { id:'kill_bandit_scav_100', name:'荒野警长',   desc:'击杀100名废土拾荒者',type:'kill',target:'bandit_scav',   count:100, reward:'pet_outlaw' },
+  { id:'kill_rad_elemental_10',name:'元素使',     desc:'击杀10只辐射元素',   type:'kill',target:'rad_elemental', count:10,  reward:'pet_elemental' },
+  { id:'kill_rad_elemental_100',name:'元素领主',  desc:'击杀100只辐射元素',  type:'kill',target:'rad_elemental', count:100, reward:'pet_elemental_lord' },
+  { id:'kill_mutant_bear_10',  name:'猎熊人',     desc:'击杀10只变异熊',     type:'kill',target:'mutant_bear',   count:10,  reward:'pet_bear_cub' },
+  { id:'kill_mutant_bear_100', name:'巨熊杀手',   desc:'击杀100只变异熊',    type:'kill',target:'mutant_bear',   count:100, reward:'pet_bear_grizzly' },
+  { id:'kill_zombie_brute_10', name:'巨人杀手',   desc:'击杀10只壮硕丧尸',   type:'kill',target:'zombie_brute',  count:10,  reward:'pet_ogre' },
+  { id:'kill_zombie_brute_100',name:'屠魔勇士',   desc:'击杀100只壮硕丧尸',  type:'kill',target:'zombie_brute',  count:100, reward:'pet_titan' },
+  { id:'kill_wasteland_raider_10',name:'废土游侠',desc:'击杀10名废土掠夺者', type:'kill',target:'wasteland_raider',count:10,reward:'pet_raider' },
+  { id:'kill_wasteland_raider_100',name:'废土霸主',desc:'击杀100名废土掠夺者',type:'kill',target:'wasteland_raider',count:100,reward:'pet_warlord' },
+  { id:'kill_sentry_bot_10',  name:'技工',       desc:'击杀10台哨卫机器人',  type:'kill',target:'sentry_bot',    count:10,  reward:'pet_drone' },
+  { id:'kill_sentry_bot_100', name:'机械师',     desc:'击杀100台哨卫机器人', type:'kill',target:'sentry_bot',    count:100, reward:'pet_mech' },
+  { id:'kill_rad_drake_10',   name:'屠龙者',     desc:'击杀10只辐射亚龙',    type:'kill',target:'rad_drake',     count:10,  reward:'pet_drake' },
+  { id:'kill_rad_drake_100',  name:'龙骑士',     desc:'击杀100只辐射亚龙',   type:'kill',target:'rad_drake',     count:100, reward:'pet_wyvern' },
+  { id:'kill_deathclaw_10',   name:'死亡爪猎手', desc:'击杀10只死亡爪',      type:'kill',target:'deathclaw',     count:10,  reward:'pet_raptor' },
+  { id:'kill_deathclaw_100',  name:'传奇猎人',   desc:'击杀100只死亡爪',     type:'kill',target:'deathclaw',     count:100, reward:'pet_rex' },
+  { id:'kill_ancient_wraith_10',name:'灵魂收割者',desc:'击杀10只远古幽魂',   type:'kill',target:'ancient_wraith',count:10,  reward:'pet_spectre' },
+  { id:'kill_ancient_wraith_100',name:'冥界之王',desc:'击杀100只远古幽魂',   type:'kill',target:'ancient_wraith',count:100,reward:'pet_reaper' },
+  { id:'kill_warlord_10',     name:'挑战者',     desc:'击杀10名废土军阀',    type:'kill',target:'warlord',       count:10,  reward:'pet_knight' },
+  { id:'kill_warlord_100',    name:'征服者',     desc:'击杀100名废土军阀',   type:'kill',target:'warlord',       count:100, reward:'pet_paladin' },
+
+  // ── Dungeon milestones ──────────────────────────────────────────────────
+  { id:'dungeon_0_1',  name:'深入矿穴',   desc:'通关腐化矿穴1次',  type:'dungeon',target:'0',count:1,  reward:'pet_bat' },
+  { id:'dungeon_0_10', name:'矿穴常客',   desc:'通关腐化矿穴10次', type:'dungeon',target:'0',count:10, reward:'pet_cave_spider' },
+  { id:'dungeon_1_1',  name:'迷宫探险家', desc:'通关幽影迷宫1次',  type:'dungeon',target:'1',count:1,  reward:'pet_shade' },
+  { id:'dungeon_1_10', name:'迷宫征服者', desc:'通关幽影迷宫10次', type:'dungeon',target:'1',count:10, reward:'pet_shadow' },
+  { id:'dungeon_2_1',  name:'火焰行者',   desc:'通关裂焰神殿1次',  type:'dungeon',target:'2',count:1,  reward:'pet_ember' },
+  { id:'dungeon_2_10', name:'火神眷顾',   desc:'通关裂焰神殿10次', type:'dungeon',target:'2',count:10, reward:'pet_ifrit' },
+  { id:'dungeon_3_1',  name:'虚空行者',   desc:'通关虚空要塞1次',  type:'dungeon',target:'3',count:1,  reward:'pet_voidling' },
+  { id:'dungeon_3_10', name:'虚空领主',   desc:'通关虚空要塞10次', type:'dungeon',target:'3',count:10, reward:'pet_voidlord' },
+  { id:'dungeon_4_1',  name:'龙墓探险家', desc:'通关龙冢秘境1次',  type:'dungeon',target:'4',count:1,  reward:'pet_whelp' },
+  { id:'dungeon_4_10', name:'龙墓霸主',   desc:'通关龙冢秘境10次', type:'dungeon',target:'4',count:10, reward:'pet_draconic' },
+  { id:'dungeon_5_1',  name:'混沌探索者', desc:'通关混沌熔炉1次',  type:'dungeon',target:'5',count:1,  reward:'pet_chaos_spark' },
+  { id:'dungeon_5_10', name:'混沌之主',   desc:'通关混沌熔炉10次', type:'dungeon',target:'5',count:10, reward:'pet_chaos_lord' },
+
+  // ── Special milestones ──────────────────────────────────────────────────
+  { id:'kill_total_100',  name:'百人斩',   desc:'累计击杀100个敌人',  type:'kill',target:'_total', count:100,  reward:'pet_skeleton' },
+  { id:'kill_total_1000', name:'千人斩',   desc:'累计击杀1000个敌人', type:'kill',target:'_total', count:1000, reward:'pet_reaver' },
+  { id:'kill_total_5000', name:'万人屠',   desc:'累计击杀5000个敌人', type:'kill',target:'_total', count:5000, reward:'pet_death_knight' },
 ];
-export const PETS: { id:string;name:string;emoji:string;achievement:string;buff:string;buffDesc:string }[] = [
-  { id:'pet_chicken', name:'小鸡', emoji:'🐔', achievement:'kill_chicken_1000', buff:'combatXp', buffDesc:'+5%战斗XP' },
-  { id:'pet_cow', name:'小牛', emoji:'🐄', achievement:'kill_cow_500', buff:'gold', buffDesc:'+10%金币' },
-  { id:'pet_beaver', name:'河狸', emoji:'🦫', achievement:'skill_wood_50', buff:'woodSpeed', buffDesc:'-10%伐木时间' },
+
+// ═══════════════════════ Pets (Melvor-style) ═══════════════════════════════════
+export const PETS: { id:string;name:string;nameEn:string;emoji:string;achievement:string;buff:string;buffDesc:string;buffDescEn:string }[] = [
+  // Skill pets
+  { id:'pet_beaver',     name:'河狸',   nameEn:'Beaver',   emoji:'🦫', achievement:'skill_wood_20',  buff:'woodSpeed',  buffDesc:'-5%伐木时间',    buffDescEn:'-5% Woodcutting Time' },
+  { id:'pet_ent',        name:'树精',   nameEn:'Ent',      emoji:'🌳', achievement:'skill_wood_60',  buff:'woodSpeed',  buffDesc:'-10%伐木时间',   buffDescEn:'-10% Woodcutting Time' },
+  { id:'pet_mole',       name:'鼹鼠',   nameEn:'Mole',     emoji:'🐹', achievement:'skill_mine_20',  buff:'mineSpeed',  buffDesc:'-5%采矿时间',    buffDescEn:'-5% Mining Time' },
+  { id:'pet_golem',      name:'石魔像', nameEn:'Golem',    emoji:'🗿', achievement:'skill_mine_60',  buff:'mineSpeed',  buffDesc:'-10%采矿时间',   buffDescEn:'-10% Mining Time' },
+  { id:'pet_salamander', name:'火蜥蜴', nameEn:'Salamander',emoji:'🦎', achievement:'skill_smelt_20', buff:'smeltSpeed', buffDesc:'-5%冶炼时间',    buffDescEn:'-5% Smelting Time' },
+  { id:'pet_phoenix',    name:'凤凰',   nameEn:'Phoenix',  emoji:'🔥', achievement:'skill_smelt_60', buff:'smeltSpeed', buffDesc:'-10%冶炼时间',   buffDescEn:'-10% Smelting Time' },
+  { id:'pet_pelican',    name:'鹈鹕',   nameEn:'Pelican',  emoji:'🦤', achievement:'skill_fish_20',  buff:'fishSpeed',  buffDesc:'-5%钓鱼时间',    buffDescEn:'-5% Fishing Time' },
+  { id:'pet_shark',      name:'鲨鱼',   nameEn:'Shark',    emoji:'🦈', achievement:'skill_fish_60',  buff:'fishSpeed',  buffDesc:'-10%钓鱼时间',   buffDescEn:'-10% Fishing Time' },
+  { id:'pet_wolf',       name:'狼',     nameEn:'Wolf',     emoji:'🐺', achievement:'skill_hunt_20',  buff:'huntSpeed',  buffDesc:'-5%狩猎时间',    buffDescEn:'-5% Hunting Time' },
+  { id:'pet_falcon',     name:'猎鹰',   nameEn:'Falcon',   emoji:'🦅', achievement:'skill_hunt_60',  buff:'huntSpeed',  buffDesc:'-10%狩猎时间',   buffDescEn:'-10% Hunting Time' },
+  { id:'pet_raccoon',    name:'浣熊',   nameEn:'Raccoon',  emoji:'🦝', achievement:'skill_thief_20', buff:'thiefRate',  buffDesc:'+5%偷窃成功率',  buffDescEn:'+5% Thieving Success' },
+  { id:'pet_fox',        name:'狐狸',   nameEn:'Fox',      emoji:'🦊', achievement:'skill_thief_60', buff:'thiefRate',  buffDesc:'+10%偷窃成功率', buffDescEn:'+10% Thieving Success' },
+  { id:'pet_monkey',     name:'猴子',   nameEn:'Monkey',   emoji:'🐒', achievement:'skill_agile_20', buff:'agileSpeed', buffDesc:'-5%敏捷时间',    buffDescEn:'-5% Agility Time' },
+  { id:'pet_cheetah',    name:'猎豹',   nameEn:'Cheetah',  emoji:'🐆', achievement:'skill_agile_60', buff:'agileSpeed', buffDesc:'-10%敏捷时间',   buffDescEn:'-10% Agility Time' },
+  { id:'pet_eagle',      name:'鹰',     nameEn:'Eagle',    emoji:'🦅', achievement:'skill_explore_20',buff:'exploreSpeed',buffDesc:'-5%探索时间',  buffDescEn:'-5% Exploration Time' },
+  { id:'pet_owl',        name:'猫头鹰', nameEn:'Owl',      emoji:'🦉', achievement:'skill_explore_60',buff:'exploreSpeed',buffDesc:'-10%探索时间', buffDescEn:'-10% Exploration Time' },
+  { id:'pet_anvil',      name:'铁砧精', nameEn:'Anvil Sprite',emoji:'⚒️', achievement:'skill_smith_20',buff:'smithSpeed',buffDesc:'-5%锻造时间',  buffDescEn:'-5% Smithing Time' },
+  { id:'pet_dragon',     name:'小龙',   nameEn:'Drake',    emoji:'🐲', achievement:'skill_smith_60', buff:'smithSpeed',buffDesc:'-10%锻造时间', buffDescEn:'-10% Smithing Time' },
+  { id:'pet_deer',       name:'鹿',     nameEn:'Deer',     emoji:'🦌', achievement:'skill_leather_20',buff:'leatherSpeed',buffDesc:'-5%皮革时间',buffDescEn:'-5% Leatherworking Time' },
+  { id:'pet_bear',       name:'熊',     nameEn:'Bear',     emoji:'🐻', achievement:'skill_leather_60',buff:'leatherSpeed',buffDesc:'-10%皮革时间',buffDescEn:'-10% Leatherworking Time' },
+  { id:'pet_magpie',     name:'喜鹊',   nameEn:'Magpie',   emoji:'🐦', achievement:'skill_jewel_20', buff:'jewelSpeed',buffDesc:'-5%珠宝时间',  buffDescEn:'-5% Jewelcrafting Time' },
+  { id:'pet_dragonfly',  name:'蜻蜓',   nameEn:'Dragonfly',emoji:'🪰', achievement:'skill_jewel_60', buff:'jewelSpeed',buffDesc:'-10%珠宝时间', buffDescEn:'-10% Jewelcrafting Time' },
+  { id:'pet_tiger',      name:'虎',     nameEn:'Tiger',    emoji:'🐯', achievement:'skill_att_20',   buff:'meleeDmg',  buffDesc:'+5%近战伤害',   buffDescEn:'+5% Melee Damage' },
+  { id:'pet_lion',       name:'狮',     nameEn:'Lion',     emoji:'🦁', achievement:'skill_att_60',   buff:'meleeDmg',  buffDesc:'+10%近战伤害',  buffDescEn:'+10% Melee Damage' },
+  { id:'pet_tortoise',   name:'龟',     nameEn:'Tortoise', emoji:'🐢', achievement:'skill_def_20',   buff:'defence',    buffDesc:'+5防御',         buffDescEn:'+5 Defence' },
+  { id:'pet_rhino',      name:'犀牛',   nameEn:'Rhino',    emoji:'🦏', achievement:'skill_def_60',   buff:'defence',    buffDesc:'+10防御',        buffDescEn:'+10 Defence' },
+  { id:'pet_boar',       name:'野猪',   nameEn:'Boar',     emoji:'🐗', achievement:'skill_hp_20',    buff:'maxHp',      buffDesc:'+20生命上限',    buffDescEn:'+20 Max HP' },
+  { id:'pet_elephant',   name:'大象',   nameEn:'Elephant', emoji:'🐘', achievement:'skill_hp_60',    buff:'maxHp',      buffDesc:'+50生命上限',    buffDescEn:'+50 Max HP' },
+  { id:'pet_hawk',       name:'隼',     nameEn:'Hawk',     emoji:'🦅', achievement:'skill_ranged_20',buff:'rangedDmg', buffDesc:'+5%远程伤害',   buffDescEn:'+5% Ranged Damage' },
+  { id:'pet_eagle_owl',  name:'雕鸮',   nameEn:'Eagle Owl',emoji:'🦉', achievement:'skill_ranged_60',buff:'rangedDmg', buffDesc:'+10%远程伤害',  buffDescEn:'+10% Ranged Damage' },
+  { id:'pet_imp',        name:'辐射蝠', nameEn:'Rad Bat',   emoji:'🦇', achievement:'skill_magic_20', buff:'magicDmg',  buffDesc:'+5%能量伤害',   buffDescEn:'+5% Energy Damage' },
+  { id:'pet_wisp',       name:'荧光蛾', nameEn:'Glow Moth', emoji:'🦋', achievement:'skill_magic_60', buff:'magicDmg',  buffDesc:'+10%能量伤害',  buffDescEn:'+10% Energy Damage' },
+  { id:'pet_rat',        name:'老鼠',   nameEn:'Rat',      emoji:'🐀', achievement:'skill_cook_20',  buff:'cookSpeed', buffDesc:'-5%烹饪时间',   buffDescEn:'-5% Cooking Time' },
+  { id:'pet_pig',        name:'猪',     nameEn:'Pig',      emoji:'🐖', achievement:'skill_cook_60',  buff:'cookSpeed', buffDesc:'-10%烹饪时间',  buffDescEn:'-10% Cooking Time' },
+  { id:'pet_snake',      name:'蛇',     nameEn:'Snake',    emoji:'🐍', achievement:'skill_alch_20',  buff:'alchSpeed', buffDesc:'-5%炼金时间',   buffDescEn:'-5% Alchemy Time' },
+  { id:'pet_slime',      name:'史莱姆', nameEn:'Slime',    emoji:'🟢', achievement:'skill_alch_60',  buff:'alchSpeed', buffDesc:'-10%炼金时间',  buffDescEn:'-10% Alchemy Time' },
+  { id:'pet_dove',       name:'鸽子',   nameEn:'Dove',     emoji:'🕊️', achievement:'skill_pray_20',  buff:'prayerXp',  buffDesc:'+10%祷言经验',  buffDescEn:'+10% Prayer XP' },
+  { id:'pet_angel',      name:'无人机', nameEn:'Drone Buddy',emoji:'🛸', achievement:'skill_pray_60',  buff:'prayerXp',  buffDesc:'+25%祷言经验',  buffDescEn:'+25% Prayer XP' },
+  // Combat pets
+  { id:'pet_scorpion',   name:'蝎子',   nameEn:'Scorpion', emoji:'🦂', achievement:'kill_rad_roach_10',  buff:'critChance', buffDesc:'+2%暴击率', buffDescEn:'+2% Crit Chance' },
+  { id:'pet_ant',        name:'蚂蚁',   nameEn:'Ant',      emoji:'🐜', achievement:'kill_rad_roach_100', buff:'goldDrop', buffDesc:'+5%瓶盖掉落',buffDescEn:'+5% Cap Drop' },
+  { id:'pet_mouse',      name:'小鼠',   nameEn:'Mouse',    emoji:'🐭', achievement:'kill_rad_rat_10',    buff:'combatXp', buffDesc:'+3%战斗XP',buffDescEn:'+3% Combat XP' },
+  { id:'pet_rat_king',   name:'鼠王',   nameEn:'Rat King', emoji:'👑', achievement:'kill_rad_rat_100',   buff:'combatXp', buffDesc:'+8%战斗XP',buffDescEn:'+8% Combat XP' },
+  { id:'pet_hyena',      name:'鬣狗',   nameEn:'Hyena',    emoji:'🐕', achievement:'kill_stray_dog_10',  buff:'lifeLeech', buffDesc:'+2%吸血',  buffDescEn:'+2% Life Leech' },
+  { id:'pet_wolf_dire',  name:'恐狼',   nameEn:'Dire Wolf',emoji:'🐺', achievement:'kill_stray_dog_100', buff:'lifeLeech', buffDesc:'+6%吸血',  buffDescEn:'+6% Life Leech' },
+  { id:'pet_tarantula',  name:'狼蛛',   nameEn:'Tarantula',emoji:'🕷️', achievement:'kill_mutant_spider_10',buff:'poisonDmg',buffDesc:'+5%毒伤',  buffDescEn:'+5% Poison Damage' },
+  { id:'pet_spider_queen',name:'蜘蛛女王',nameEn:'Spider Queen',emoji:'🕸️',achievement:'kill_mutant_spider_100',buff:'poisonDmg',buffDesc:'+12%毒伤',buffDescEn:'+12% Poison Damage' },
+  { id:'pet_zombie',     name:'小丧尸', nameEn:'Zombie',   emoji:'🧟', achievement:'kill_zombie_walk_10', buff:'maxHp',  buffDesc:'+15生命', buffDescEn:'+15 Max HP' },
+  { id:'pet_lich',       name:'辐化丧尸',nameEn:'Rad Zombie',emoji:'🧟', achievement:'kill_zombie_walk_100',buff:'maxHp',  buffDesc:'+40生命', buffDescEn:'+40 Max HP' },
+  { id:'pet_scorpion_king',name:'蝎子王',nameEn:'Scorpion King',emoji:'🦂',achievement:'kill_rad_scorpion_10',buff:'thorns',buffDesc:'+3%荆棘',buffDescEn:'+3% Thorns' },
+  { id:'pet_scorpion_god',name:'巨蝎王',  nameEn:'Scorpion King',emoji:'🦂',achievement:'kill_rad_scorpion_100',buff:'thorns',buffDesc:'+8%荆棘',buffDescEn:'+8% Thorns' },
+  { id:'pet_ghost',      name:'辐射幻影',nameEn:'Rad Shade',emoji:'👻', achievement:'kill_ghoul_flesh_10',  buff:'dodge',    buffDesc:'+2%闪避',  buffDescEn:'+2% Dodge' },
+  { id:'pet_wraith',     name:'变异怨魂',nameEn:'Mutant Soul',emoji:'💫', achievement:'kill_ghoul_flesh_100', buff:'dodge',    buffDesc:'+6%闪避',  buffDescEn:'+6% Dodge' },
+  { id:'pet_hellhound',  name:'烈焰犬', nameEn:'Flame Hound',emoji:'🐕', achievement:'kill_mutant_hound_10',  buff:'fireDmg',  buffDesc:'+5%火焰伤害',buffDescEn:'+5% Fire Damage' },
+  { id:'pet_cerberus',   name:'三头变异犬',nameEn:'Tri-Head Dog',emoji:'🐕',achievement:'kill_mutant_hound_100', buff:'fireDmg',buffDesc:'+12%火焰伤害',buffDescEn:'+12% Fire Damage' },
+  { id:'pet_bandit',     name:'土匪',   nameEn:'Bandit',   emoji:'🥷', achievement:'kill_bandit_scav_10',  buff:'goldDrop', buffDesc:'+10%瓶盖',  buffDescEn:'+10% Caps' },
+  { id:'pet_outlaw',     name:'亡命徒', nameEn:'Outlaw',   emoji:'🤠', achievement:'kill_bandit_scav_100', buff:'goldDrop',buffDesc:'+25%瓶盖',  buffDescEn:'+25% Caps' },
+  { id:'pet_elemental',  name:'辐射尘暴',nameEn:'Rad Storm',emoji:'🌪️',achievement:'kill_rad_elemental_10',buff:'magicDmg',buffDesc:'+5%魔法伤害',buffDescEn:'+5% Magic Damage' },
+  { id:'pet_elemental_lord',name:'辐射领主',nameEn:'Rad Lord',emoji:'☢️',achievement:'kill_rad_elemental_100',buff:'magicDmg',buffDesc:'+12%魔法伤害',buffDescEn:'+12% Magic Damage' },
+  { id:'pet_bear_cub',   name:'小熊',   nameEn:'Bear Cub', emoji:'🐻', achievement:'kill_mutant_bear_10',  buff:'meleeDmg', buffDesc:'+5%近战伤害',buffDescEn:'+5% Melee Damage' },
+  { id:'pet_bear_grizzly',name:'灰熊',  nameEn:'Grizzly',  emoji:'🐻', achievement:'kill_mutant_bear_100', buff:'meleeDmg',buffDesc:'+12%近战伤害',buffDescEn:'+12% Melee Damage' },
+  { id:'pet_ogre',       name:'巨魔人', nameEn:'Brute',    emoji:'👹', achievement:'kill_zombie_brute_10', buff:'crushRate',buffDesc:'+3%碾压率',buffDescEn:'+3% Crush Rate' },
+  { id:'pet_titan',      name:'巨像',   nameEn:'Colossus', emoji:'🗿', achievement:'kill_zombie_brute_100',buff:'crushRate',buffDesc:'+8%碾压率',buffDescEn:'+8% Crush Rate' },
+  { id:'pet_raider',     name:'掠夺者', nameEn:'Raider',   emoji:'🏴', achievement:'kill_wasteland_raider_10',buff:'dropRate',buffDesc:'+5%掉率',buffDescEn:'+5% Drop Rate' },
+  { id:'pet_warlord',    name:'军阀',   nameEn:'Warlord',  emoji:'⚔️', achievement:'kill_wasteland_raider_100',buff:'dropRate',buffDesc:'+12%掉率',buffDescEn:'+12% Drop Rate' },
+  { id:'pet_drone',      name:'无人机', nameEn:'Drone',    emoji:'🛸', achievement:'kill_sentry_bot_10',   buff:'rangedDmg',buffDesc:'+5%远程伤害',buffDescEn:'+5% Ranged Damage' },
+  { id:'pet_mech',       name:'机甲',   nameEn:'Mech',     emoji:'🤖', achievement:'kill_sentry_bot_100',  buff:'rangedDmg',buffDesc:'+12%远程伤害',buffDescEn:'+12% Ranged Damage' },
+  { id:'pet_drake',      name:'幼龙',   nameEn:'Drake',    emoji:'🐉', achievement:'kill_rad_drake_10',    buff:'fireDmg',  buffDesc:'+5%火焰伤害',buffDescEn:'+5% Fire Damage' },
+  { id:'pet_wyvern',     name:'双足飞龙',nameEn:'Wyvern',  emoji:'🐲', achievement:'kill_rad_drake_100',   buff:'fireDmg',  buffDesc:'+15%火焰伤害',buffDescEn:'+15% Fire Damage' },
+  { id:'pet_raptor',     name:'迅猛龙', nameEn:'Raptor',   emoji:'🦖', achievement:'kill_deathclaw_10',    buff:'bleedDmg', buffDesc:'+5%流血伤害',buffDescEn:'+5% Bleed Damage' },
+  { id:'pet_rex',        name:'霸王龙', nameEn:'Rex',      emoji:'🦖', achievement:'kill_deathclaw_100',   buff:'bleedDmg', buffDesc:'+15%流血伤害',buffDescEn:'+15% Bleed Damage' },
+  { id:'pet_spectre',    name:'幽灵',   nameEn:'Spectre',  emoji:'👻', achievement:'kill_ancient_wraith_10',buff:'frostDmg',buffDesc:'+5%冰霜伤害',buffDescEn:'+5% Frost Damage' },
+  { id:'pet_reaper',     name:'死神',   nameEn:'Reaper',   emoji:'💀', achievement:'kill_ancient_wraith_100',buff:'frostDmg',buffDesc:'+15%冰霜伤害',buffDescEn:'+15% Frost Damage' },
+  { id:'pet_knight',     name:'重装兵', nameEn:'Heavy Trooper',emoji:'🛡️', achievement:'kill_warlord_10',      buff:'defence',  buffDesc:'+8防御', buffDescEn:'+8 Defence' },
+  { id:'pet_paladin',    name:'精英守卫',nameEn:'Elite Guard',emoji:'🎖️', achievement:'kill_warlord_100',     buff:'defence',  buffDesc:'+20防御',buffDescEn:'+20 Defence' },
+  // Dungeon pets
+  { id:'pet_bat',        name:'蝙蝠',   nameEn:'Bat',      emoji:'🦇', achievement:'dungeon_0_1',  buff:'dungeonSpeed',buffDesc:'-5%副本时间',buffDescEn:'-5% Dungeon Time' },
+  { id:'pet_cave_spider',name:'洞窟蜘蛛',nameEn:'Cave Spider',emoji:'🕷️',achievement:'dungeon_0_10',buff:'dungeonSpeed',buffDesc:'-10%副本时间',buffDescEn:'-10% Dungeon Time' },
+  { id:'pet_shade',      name:'隧道漫步者',nameEn:'Tunnel Walker',emoji:'🚶', achievement:'dungeon_1_1',  buff:'shadowDmg', buffDesc:'+5%暗影伤害',buffDescEn:'+5% Shadow Damage' },
+  { id:'pet_shadow',     name:'地铁幽灵',nameEn:'Metro Ghost',emoji:'👻', achievement:'dungeon_1_10', buff:'shadowDmg', buffDesc:'+12%暗影伤害',buffDescEn:'+12% Shadow Damage' },
+  { id:'pet_ember',      name:'余烬',   nameEn:'Ember',    emoji:'🔥', achievement:'dungeon_2_1',  buff:'fireDmg',   buffDesc:'+8%火焰伤害',buffDescEn:'+8% Fire Damage' },
+  { id:'pet_ifrit',      name:'燃烧者',  nameEn:'Burner',   emoji:'🔥', achievement:'dungeon_2_10', buff:'fireDmg',   buffDesc:'+18%火焰伤害',buffDescEn:'+18% Fire Damage' },
+  { id:'pet_voidling',   name:'机械哨兵',nameEn:'Mech Sentry',emoji:'🤖', achievement:'dungeon_3_1',  buff:'voidDmg',   buffDesc:'+5%虚空伤害',buffDescEn:'+5% Void Damage' },
+  { id:'pet_voidlord',   name:'钢铁巨人',nameEn:'Steel Giant',emoji:'🦾', achievement:'dungeon_3_10', buff:'voidDmg',   buffDesc:'+15%虚空伤害',buffDescEn:'+15% Void Damage' },
+  { id:'pet_whelp',      name:'小变异体',nameEn:'Mutant Hatchling',emoji:'🐣', achievement:'dungeon_4_1',  buff:'dragonDmg', buffDesc:'+5%龙系伤害',buffDescEn:'+5% Dragon Damage' },
+  { id:'pet_draconic',   name:'超级变异体',nameEn:'Super Mutant',emoji:'🦎', achievement:'dungeon_4_10', buff:'dragonDmg', buffDesc:'+15%龙系伤害',buffDescEn:'+15% Dragon Damage' },
+  { id:'pet_chaos_spark',name:'核心火花',nameEn:'Core Spark',emoji:'⚡',achievement:'dungeon_5_1', buff:'chaosDmg',buffDesc:'+5%混沌伤害',buffDescEn:'+5% Chaos Damage' },
+  { id:'pet_chaos_lord', name:'核心卫士',nameEn:'Core Guardian',emoji:'⚛️',achievement:'dungeon_5_10',buff:'chaosDmg',buffDesc:'+15%混沌伤害',buffDescEn:'+15% Chaos Damage' },
+  // Special pets
+  { id:'pet_skeleton',   name:'骷髅幸存者',nameEn:'Bone Survivor',emoji:'💀', achievement:'kill_total_100',  buff:'combatXp',  buffDesc:'+5%战斗XP',  buffDescEn:'+5% Combat XP' },
+  { id:'pet_reaver',     name:'屠戮者', nameEn:'Slayer',   emoji:'⚔️', achievement:'kill_total_1000', buff:'combatXp',  buffDesc:'+12%战斗XP', buffDescEn:'+12% Combat XP' },
+  { id:'pet_death_knight',name:'废土骑士',nameEn:'Wasteland Knight',emoji:'⚔️',achievement:'kill_total_5000',buff:'combatXp',buffDesc:'+25%战斗XP',buffDescEn:'+25% Combat XP' },
 ];
 
 // ─── Combat Skills ─────────────────────────────────────────────────────
@@ -2160,17 +2509,17 @@ export const COMBAT_SKILLS: CombatSkill[] = [
   { id:'arrow_rain',name:'箭雨',emoji:'🏹',style:'ranged',type:'aoe',dmgMul:0.7,dotTicks:0,cooldownSec:12,desc:'群体70%' },
   { id:'poison_arrow',name:'毒箭',emoji:'☠️',style:'ranged',type:'dot',dmgMul:0.18,dotTicks:4,cooldownSec:14,desc:'Dot18%×4' },
   { id:'fireball',name:'火球',emoji:'🔥',style:'magic',type:'nuke',dmgMul:1.7,dotTicks:0,cooldownSec:8,desc:'单体170%' },
-  { id:'blizzard',name:'暴风雪',emoji:'❄️',style:'magic',type:'aoe',dmgMul:0.65,dotTicks:0,cooldownSec:12,desc:'群体65%' },
-  { id:'curse',name:'诅咒',emoji:'👁️',style:'magic',type:'dot',dmgMul:0.15,dotTicks:3,cooldownSec:14,desc:'Dot15%×3' },
-  { id:'holy_strike',name:'圣光打击',emoji:'⚡',style:'melee',type:'nuke',class:'圣骑士',dmgMul:2.0,dotTicks:0,cooldownSec:10,desc:'200%' },
+  { id:'blizzard',name:'冰风暴',emoji:'❄️',style:'magic',type:'aoe',dmgMul:0.65,dotTicks:0,cooldownSec:12,desc:'群体65%' },
+  { id:'curse',name:'辐射标记',emoji:'☢️',style:'magic',type:'dot',dmgMul:0.15,dotTicks:3,cooldownSec:14,desc:'Dot15%×3' },
+  { id:'holy_strike',name:'高压电击',emoji:'⚡',style:'melee',type:'nuke',class:'突击兵',dmgMul:2.0,dotTicks:0,cooldownSec:10,desc:'200%' },
   { id:'furious_slash',name:'狂暴斩',emoji:'💢',style:'melee',type:'nuke',class:'狂战士',dmgMul:2.5,dotTicks:0,cooldownSec:10,desc:'250%' },
-  { id:'iaido',name:'居合斩',emoji:'⚔️',style:'melee',type:'nuke',class:'武士',dmgMul:2.8,dotTicks:0,cooldownSec:12,desc:'280%' },
-  { id:'assassinate',name:'暗杀',emoji:'🗡️',style:'ranged',type:'nuke',class:'刺客',dmgMul:2.8,dotTicks:0,cooldownSec:14,desc:'280%' },
-  { id:'power_shot',name:'强力射击',emoji:'🏹',style:'ranged',type:'nuke',class:'游侠',dmgMul:2.2,dotTicks:0,cooldownSec:9,desc:'220%' },
-  { id:'piercing_shot',name:'穿甲箭',emoji:'🎯',style:'ranged',type:'nuke',class:'神射手',dmgMul:2.4,dotTicks:0,cooldownSec:8,desc:'240%' },
-  { id:'soul_drain',name:'灵魂吸取',emoji:'💀',style:'magic',type:'nuke',class:'死灵法师',dmgMul:2.1,dotTicks:0,cooldownSec:9,desc:'210%' },
-  { id:'toxic_burst',name:'毒爆',emoji:'🧪',style:'magic',type:'nuke',class:'剧毒术士',dmgMul:2.0,dotTicks:0,cooldownSec:8,desc:'200%' },
-  { id:'meteor_storm',name:'陨石',emoji:'☄️',style:'magic',type:'nuke',class:'元素师',dmgMul:2.5,dotTicks:0,cooldownSec:12,desc:'250%' },
+  { id:'iaido',name:'精确打击',emoji:'⚔️',style:'melee',type:'nuke',class:'剑术大师',dmgMul:2.8,dotTicks:0,cooldownSec:12,desc:'280%' },
+  { id:'assassinate',name:'暗杀',emoji:'🗡️',style:'ranged',type:'nuke',class:'渗透者',dmgMul:2.8,dotTicks:0,cooldownSec:14,desc:'280%' },
+  { id:'power_shot',name:'强力射击',emoji:'🏹',style:'ranged',type:'nuke',class:'侦察兵',dmgMul:2.2,dotTicks:0,cooldownSec:9,desc:'220%' },
+  { id:'piercing_shot',name:'穿甲弹',emoji:'🎯',style:'ranged',type:'nuke',class:'狙击手',dmgMul:2.4,dotTicks:0,cooldownSec:8,desc:'240%' },
+  { id:'soul_drain',name:'能量吸取',emoji:'⚡',style:'magic',type:'nuke',class:'生化兵',dmgMul:2.1,dotTicks:0,cooldownSec:9,desc:'210%' },
+  { id:'toxic_burst',name:'毒雾弹',emoji:'🧪',style:'magic',type:'nuke',class:'化学兵',dmgMul:2.0,dotTicks:0,cooldownSec:8,desc:'200%' },
+  { id:'meteor_storm',name:'燃烧弹',emoji:'🔥',style:'magic',type:'nuke',class:'爆破手',dmgMul:2.5,dotTicks:0,cooldownSec:12,desc:'250%' },
 ];
 
 // ─── Prayers moved to shared/game-data/prayers.ts — forwarded for backward compat

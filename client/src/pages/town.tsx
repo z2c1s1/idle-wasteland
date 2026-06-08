@@ -5,6 +5,7 @@ import { api } from "@shared/routes";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { Building2, Users } from "lucide-react";
+import { useUIText } from "@/lib/i18n";
 import type { GameState } from "@shared/schema";
 import { RARITY_COLOR, RARITY_LABEL, ALL_SLOTS, SLOT_LABEL } from "@shared/game-data";
 import { useState } from "react";
@@ -12,9 +13,11 @@ import { useState } from "react";
 export default function Town() {
   const { data: state } = useGameState();
   const queryClient = useQueryClient();
+  const t = useUIText();
   const { toast } = useToast();
   if (!state) return null;
   const gs = state as GameState;
+  const p = t.pages.town;
 
   const homestead: Record<string, number> = JSON.parse(gs.homestead ?? '{}');
   const townLevel = Object.values(homestead).reduce((s, v) => s + (v ?? 0), 0);
@@ -36,34 +39,32 @@ export default function Town() {
     try {
       const next = await postGame(api.game.npcAction.path, { npcId: npc.id, actionIndex });
       queryClient.setQueryData([api.game.getState.path], next);
-      toast({ title: '操作成功' });
-    } catch (e: any) { toast({ title: '操作失败', description: e.message, variant: 'destructive' }); }
+      toast({ title: p.operateSuccess });
+    } catch (e: any) { toast({ title: p.operateFail, description: e.message, variant: 'destructive' }); }
   };
 
   const dismiss = async () => {
     try {
       const next = await postGame(api.game.dismissNpc.path);
       queryClient.setQueryData([api.game.getState.path], next);
-      toast({ title: 'NPC已离开' });
-    } catch (e: any) { toast({ title: '操作失败', description: e.message, variant: 'destructive' }); }
+      toast({ title: p.npcLeft });
+    } catch (e: any) { toast({ title: p.operateFail, description: e.message, variant: 'destructive' }); }
   };
 
   return (
     <div className="p-4 max-w-2xl mx-auto space-y-4">
       <h1 className="text-xl font-bold flex items-center gap-2">
-        <Building2 className="w-5 h-5 text-amber-400" /> 城镇
+        <Building2 className="w-5 h-5 text-amber-400" /> {p.title}
       </h1>
 
       {/* Town status */}
       <div className="bg-card border border-border rounded-xl p-4">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-bold">城镇等级: {townLevel}</span>
-          <span className="text-xs text-muted-foreground">{townLevel < 5 ? '🏕️ 小村庄' : townLevel < 15 ? '🏘️ 村庄' : townLevel < 30 ? '🏙️ 小镇' : '🏰 城镇'}</span>
+          <span className="text-sm font-bold">{p.townLevel(townLevel)}</span>
+          <span className="text-xs text-muted-foreground">{townLevel < 5 ? `🏕️ ${t.wasteland.townLevels[5]}` : townLevel < 15 ? `🏘️ ${t.wasteland.townLevels[15]}` : townLevel < 30 ? `🏙️ ${t.wasteland.townLevels[30]}` : `🏰 ${t.wasteland.townLevels[50]}`}</span>
         </div>
         <p className="text-xs text-muted-foreground mt-2">
-          {townLevel < 5
-            ? '继续建造家园建筑，达到等级5后会吸引NPC来访'
-            : '城镇已经吸引了一些旅人，他们偶尔会路过这里'}
+{townLevel < 5 ? p.attractHint : p.attractHint2}
         </p>
       </div>
 
@@ -88,14 +89,14 @@ export default function Town() {
           </div>
           <button onClick={dismiss}
             className="w-full py-1.5 text-xs rounded bg-slate-600/30 hover:bg-slate-500/40 text-slate-300 transition-colors">
-            送别
+            {p.sendAway}
           </button>
         </div>
       ) : (
         <div className="text-center py-8 text-muted-foreground">
           <p className="text-3xl mb-2">🏕️</p>
           <p className="text-sm">
-            {townLevel >= 5 ? '暂时没有旅人路过，稍后再来看看吧' : '继续建造家园来发展你的城镇'}
+{townLevel >= 5 ? p.noVisitors : p.attractHint}
           </p>
         </div>
       )}
@@ -103,7 +104,7 @@ export default function Town() {
       {/* Companion Roster */}
       {companions.length > 0 && (
         <div className="bg-card border border-border rounded-xl p-4 space-y-2">
-          <h2 className="text-sm font-bold flex items-center gap-2"><Users className="w-4 h-4 text-green-400" /> 营地成员 ({companions.length})</h2>
+          <h2 className="text-sm font-bold flex items-center gap-2"><Users className="w-4 h-4 text-green-400" /> {p.campMembers} ({companions.length})</h2>
           <div className="flex flex-wrap gap-2 text-xs">
             {companiomBonuses}
           </div>

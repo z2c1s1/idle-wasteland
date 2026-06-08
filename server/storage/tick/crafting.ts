@@ -9,6 +9,7 @@ import {
 } from "@shared/game-data";
 import { eq } from "drizzle-orm";
 import { handleProductionRecipe } from "../helpers";
+import { getPetBuffs } from "./_shared";
 
 export async function tickCrafting(
   state: GameState,
@@ -17,9 +18,14 @@ export async function tickCrafting(
 ): Promise<GameState> {
   const action = state.activeAction;
 
+  const petBuffs = getPetBuffs(state);
+  const petSmithMul = 1 + petBuffs.smithSpeed;
+  const petLeatherMul = 1 + petBuffs.leatherSpeed;
+  const petJewelMul = 1 + petBuffs.jewelSpeed;
+
   if (action.startsWith("smith_")) {
     const recipeIndex = parseInt(action.split("_")[1]);
-    const result = await handleProductionRecipe(state, SMITHING_RECIPES, recipeIndex, "smithingXp", now);
+    const result = await handleProductionRecipe(state, SMITHING_RECIPES, recipeIndex, "smithingXp", now, petSmithMul);
     if (!result) return state;
     const [updated] = await db.update(gameStates).set(result.updates).where(eq(gameStates.id, state.id)).returning();
     return updated;
@@ -27,7 +33,7 @@ export async function tickCrafting(
 
   if (action.startsWith("leather_")) {
     const recipeIndex = parseInt(action.split("_")[1]);
-    const result = await handleProductionRecipe(state, LEATHERWORKING_RECIPES, recipeIndex, "leatherworkingXp", now);
+    const result = await handleProductionRecipe(state, LEATHERWORKING_RECIPES, recipeIndex, "leatherworkingXp", now, petLeatherMul);
     if (!result) return state;
     const [updated] = await db.update(gameStates).set(result.updates).where(eq(gameStates.id, state.id)).returning();
     return updated;
@@ -35,7 +41,7 @@ export async function tickCrafting(
 
   if (action.startsWith("jewel_")) {
     const recipeIndex = parseInt(action.split("_")[1]);
-    const result = await handleProductionRecipe(state, JEWELCRAFTING_RECIPES, recipeIndex, "jewelcraftingXp", now);
+    const result = await handleProductionRecipe(state, JEWELCRAFTING_RECIPES, recipeIndex, "jewelcraftingXp", now, petJewelMul);
     if (!result) return state;
     const [updated] = await db.update(gameStates).set(result.updates).where(eq(gameStates.id, state.id)).returning();
     return updated;

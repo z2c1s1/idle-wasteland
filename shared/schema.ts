@@ -66,6 +66,7 @@ export const gameStates = pgTable("game_states", {
   temperature: integer("temperature").notNull().default(0),
   fuelEndsAt: timestamp("fuel_ends_at"),
   stone: integer("stone").notNull().default(0),
+  wood: integer("wood").notNull().default(0),
   achievements: text("achievements").notNull().default("{}"),
   pets: text("pets").notNull().default("[]"),
   foods: text("foods").notNull().default("{}"),

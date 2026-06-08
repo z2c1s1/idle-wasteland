@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ItemSprite } from "@/components/sprites";
 import { Progress } from "@/components/ui/progress";
 import { PawPrint, CheckCircle2 } from "lucide-react";
+import { useUIText } from "@/lib/i18n";
 import { useEffect, useRef, useState } from "react";
 import { getPlayerId } from "@/lib/api";
 import { api } from "@shared/routes";
@@ -45,13 +46,15 @@ function ActionTimer({ actionUpdatedAt, time }: { actionUpdatedAt: string; time:
   );
 }
 
-const HIDE_NAMES = ["兔", "鸟", "狐", "狼", "熊", "野猪", "鹿", "虎", "龙", "凤凰"];
+const HIDE_NAMES = ["辐射鼠","变异兔","铁鳞蜥","疯犬","钢鬃猪","双头鹿","灰熊","辐射蝎","死亡爪","巨兽"];
 
 export default function Leatherworking() {
   const { data: state } = useGameState();
   const startAction = useStartAction();
 
   if (!state) return null;
+  const t = useUIText();
+  const pc = t.pages.crafting;
   const gs = state as GameState;
   const level = calculateLevel(gs.leatherworkingXp);
   const craftItems = parseCraftItems(gs.craftItems);
@@ -73,14 +76,41 @@ export default function Leatherworking() {
     <div className="p-4 max-w-4xl mx-auto space-y-5">
       <div>
         <h1 className="text-xl font-bold flex items-center gap-2">
-          <PawPrint className="w-5 h-5 text-amber-400" /> 皮革制作
+          <PawPrint className="w-5 h-5 text-amber-400" /> {pc.leatherworking}
         </h1>
         <p className="text-sm text-muted-foreground">{level} 级 · {formatNumber(gs.leatherworkingXp)} 经验</p>
         <Progress value={levelProgress(gs.leatherworkingXp)} className="mt-2 h-1.5" />
       </div>
 
-      {/* Hide inventory */}
+      {/* Hide inventory + crafted leather items */}
       <div className="bg-card border border-border rounded-xl p-4">
+        {/* Crafted items — shown first inside the materials card */}
+        {Object.keys(LEATHER_ITEMS).some(id => (craftItems[id] ?? 0) > 0) && (
+          <div className="mb-4">
+            <h2 className="text-xs font-semibold text-amber-300 uppercase tracking-wider mb-2">🦴 合成产物</h2>
+            <div className="flex flex-wrap gap-2">
+              {Object.entries(LEATHER_ITEMS).map(([itemId, def]) => {
+                const qty = craftItems[itemId] ?? 0;
+                if (qty <= 0) return null;
+                return (
+                  <div key={itemId} className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-amber-500/30 bg-amber-500/5">
+                    <ItemSprite slot={def.slot} baseId={itemId} rarity="uncommon" ilvl={def.ilvl} size={18} />
+                    <div className="min-w-0">
+                      <p className="text-xs font-medium text-amber-300 truncate">{def.name} <span className="text-muted-foreground">x{qty}</span></p>
+                      <p className="text-[10px] text-muted-foreground">
+                        ilvl {def.ilvl}
+                        {def.attackBonus > 0 && <span className="text-red-300 ml-1">⚔{def.attackBonus}</span>}
+                        {def.defenceBonus > 0 && <span className="text-blue-300 ml-1">🛡{def.defenceBonus}</span>}
+                        {def.hpBonus && def.hpBonus > 0 && <span className="text-green-300 ml-1">❤{def.hpBonus}</span>}
+                        {def.critRating && def.critRating > 0 && <span className="text-yellow-300 ml-1">✦{def.critRating}%</span>}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
         <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">🪶 可用兽皮</h2>
         <div className="grid grid-cols-5 gap-2">
           {HIDE_NAMES.map((name, i) => {

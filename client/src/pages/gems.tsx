@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Gem, Package, Zap } from "lucide-react";
 import { GemSprite, ItemSprite } from "@/components/sprites";
 import { useToast } from "@/hooks/use-toast";
+import { useUIText } from "@/lib/i18n";
 
 // ─── Gem stat preview ─────────────────────────────────────────────────────────
 function GemStatLine({ gemKey }: { gemKey: string }) {
@@ -33,6 +34,7 @@ function SocketGemPanel({
   item: GameItem; gems: Record<string, number>;
   onSocket: (gemKey: string) => void; isPending: boolean;
 }) {
+  const pg = useUIText().pages.gems;
   const availableGems = Object.entries(gems).filter(([, qty]) => qty > 0);
   const filledSockets = item.socketedGems ?? [];
   const maxSockets    = item.maxSockets ?? 0;
@@ -44,7 +46,7 @@ function SocketGemPanel({
         <ItemSprite slot={item.slot} baseId={(item as any).baseId ?? (item as any).baseType} rarity={item.rarity} ilvl={item.ilvl} size={24} />
         <div>
           <p className={`text-sm font-semibold ${RARITY_COLOR[item.rarity]}`}>{item.name}</p>
-          <p className="text-xs text-muted-foreground">{SLOT_LABEL[item.slot]} · 物品等级 {item.ilvl}</p>
+          <p className="text-xs text-muted-foreground">{SLOT_LABEL[item.slot]} · ILv {item.ilvl}</p>
         </div>
       </div>
 
@@ -65,12 +67,12 @@ function SocketGemPanel({
             ○
           </div>
         ))}
-        {maxSockets === 0 && <span className="text-xs text-muted-foreground italic">无宝石孔</span>}
+        {maxSockets === 0 && <span className="text-xs text-muted-foreground italic">No sockets</span>}
       </div>
 
       {emptySlots > 0 && availableGems.length > 0 && (
         <div className="space-y-2">
-          <p className="text-xs text-muted-foreground font-semibold">选择要镶嵌的宝石：</p>
+          <p className="text-xs text-muted-foreground font-semibold">{pg.selectGem}</p>
           <div className="grid grid-cols-2 gap-1.5 max-h-48 overflow-y-auto">
             {availableGems.map(([gemKey, qty]) => {
               const type = gemKey.split('_')[0] as GemType;
@@ -83,7 +85,7 @@ function SocketGemPanel({
                     <p className="text-xs font-medium truncate">{getGemName(gemKey)}</p>
                     <GemStatLine gemKey={gemKey} />
                   </div>
-                  <span className="text-xs font-bold text-white/80">库存 ×{qty}</span>
+                  <span className="text-xs font-bold text-white/80">×{qty}</span>
                 </button>
               );
             })}
@@ -91,10 +93,10 @@ function SocketGemPanel({
         </div>
       )}
       {emptySlots > 0 && availableGems.length === 0 && (
-        <p className="text-xs text-muted-foreground italic">你没有宝石。去采矿或战斗吧！</p>
+        <p className="text-xs text-muted-foreground italic">{pg.noGems}</p>
       )}
       {emptySlots === 0 && maxSockets > 0 && (
-        <p className="text-xs text-green-400">所有宝石孔已填满！</p>
+        <p className="text-xs text-green-400">{pg.allFilled}</p>
       )}
     </div>
   );
@@ -123,7 +125,7 @@ function ItemRow({
             <span className={`text-[10px] px-1 rounded border uppercase font-bold ${RARITY_BORDER[item.rarity]} ${RARITY_COLOR[item.rarity]}`}>
               {RARITY_LABEL[item.rarity]}
             </span>
-            {isEquipped && <span className="text-[10px] text-green-400 font-semibold">[已装备]</span>}
+            {isEquipped && <span className="text-[10px] text-green-400 font-semibold">[{useUIText().pages.gems.socket || 'Equipped'}]</span>}
           </div>
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
             <span>{SLOT_LABEL[item.slot]}</span>
@@ -162,6 +164,7 @@ function ItemRow({
 
 // ─── Main Gems page ───────────────────────────────────────────────────────────
 export default function GemsPage() {
+  const t = useUIText();
   const { data: state }  = useGameState();
   const socketGem        = useSocketGem();
   const synthGem         = useSynthGem();
@@ -170,6 +173,7 @@ export default function GemsPage() {
   if (!state) return null;
   const gs = state as GameState;
 
+  const pg = t.pages.gems;
   const gems      = parseGems(gs.gems);
   const lootBag   = parseLootBag(gs.lootBag);
   const equipment = parseEquipment(gs.equipment);
@@ -183,8 +187,8 @@ export default function GemsPage() {
 
   function handleSocket(instanceId: string, gemKey: string) {
     socketGem.mutate({ instanceId, gemKey }, {
-      onSuccess: () => toast({ title: "💎 宝石已镶嵌！", description: `${getGemName(gemKey)} 已添加到物品。` }),
-      onError: (err) => toast({ title: "失败", description: err.message, variant: "destructive" }),
+      onSuccess: () => toast({ title: `💎 ${getGemName(gemKey)} socketed!` }),
+      onError: (err) => toast({ title: "Failed", description: err.message, variant: "destructive" }),
     });
   }
 
@@ -192,10 +196,10 @@ export default function GemsPage() {
     <div className="p-4 max-w-4xl mx-auto space-y-6">
       <div>
         <h1 className="text-xl font-bold flex items-center gap-2">
-          <Gem className="w-5 h-5 text-cyan-400" /> 宝石
+          <Gem className="w-5 h-5 text-cyan-400" /> {pg.title}
         </h1>
         <p className="text-sm text-muted-foreground">
-          将宝石镶嵌到装备中以提升属性。采矿或击败敌人可获得宝石。
+          {pg.emptyHint}
         </p>
       </div>
 
@@ -204,15 +208,15 @@ export default function GemsPage() {
         <div className="flex items-center gap-2">
           <Package className="w-4 h-4 text-cyan-400" />
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-            宝石库存 <span className="normal-case text-xs">（共 {totalGems} 颗）</span>
+            {pg.inventory} <span className="normal-case text-xs">（{totalGems}）</span>
           </h2>
         </div>
 
         {totalGems === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             <p className="text-3xl mb-2">💎</p>
-            <p className="text-sm">暂无宝石</p>
-            <p className="text-xs mt-1">采矿或击败怪物可获得宝石！</p>
+            <p className="text-sm">{pg.empty}</p>
+            <p className="text-xs mt-1">{pg.emptyHint}</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -262,28 +266,28 @@ export default function GemsPage() {
       {/* Gem drop guide */}
       <div className="bg-card border border-border rounded-xl p-4">
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
-          <Zap className="w-3.5 h-3.5 text-yellow-400" /> 宝石掉落指南
+          <Zap className="w-3.5 h-3.5 text-yellow-400" /> {pg.dropGuide}
         </h2>
         <div className="grid grid-cols-2 gap-4 text-xs">
           <div>
-            <p className="font-semibold text-foreground mb-1.5">⛏️ 采矿</p>
+            <p className="font-semibold text-foreground mb-1.5">⛏️ 采矿掉落</p>
             <div className="space-y-0.5 text-muted-foreground">
-              <p>铜矿/锡矿 → 🔴🔵💚💛 残缺 (4%)</p>
-              <p>铁矿/煤矿 → 残缺/瑕疵 (5%)</p>
-              <p>秘银/精金 → 瑕疵/普通 (6%)</p>
-              <p>符文/龙矿 → 普通/无瑕 (7%)</p>
-              <p>黑曜矿 → 无瑕/💎 (8%)</p>
-              <p>以太矿 → 完美 + 💎 (9%)</p>
+              <p>废铁/铜丝 → 残缺 (4%)</p>
+              <p>铝罐/铅块 → 残缺+瑕疵 (5%)</p>
+              <p>硫磺/硝酸盐 → 瑕疵+普通 (6%)</p>
+              <p>铀矿/钛金 → 普通+无瑕 (7%)</p>
+              <p>钨钢 → 无瑕 + 💎 (8%)</p>
+              <p>铱金 → 完美 + 💎 (9%)</p>
             </div>
           </div>
           <div>
-            <p className="font-semibold text-foreground mb-1.5">⚔️ 战斗</p>
+            <p className="font-semibold text-foreground mb-1.5">⚔️ 战斗掉落</p>
             <div className="space-y-0.5 text-muted-foreground">
-              <p>小鸡/奶牛 → 残缺 (3-4%)</p>
-              <p>哥布林/骷髅 → 瑕疵 (5-6%)</p>
-              <p>食人魔/巨人 → 普通 (8-9%)</p>
-              <p>绿龙 → 无瑕 + 💎普通 (11%)</p>
-              <p>火龙 → 无瑕/完美 + 💎 (13%)</p>
+              <p>变异生物(前期) → 残缺 (3-4%)</p>
+              <p>丧尸/食尸鬼 → 瑕疵+普通 (5-6%)</p>
+              <p>变异蜘蛛/辐射蝎 → 普通+无瑕 (7-9%)</p>
+              <p>掠夺者/死亡爪 → 无瑕+完美+💎 (10-14%)</p>
+              <p>远古幽魂/军阀 → 完美+💎 (16-20%)</p>
             </div>
           </div>
         </div>
@@ -292,7 +296,7 @@ export default function GemsPage() {
       {/* Socket equipped items */}
       {equippedItems.length > 0 && (
         <div className="bg-card border border-border rounded-xl p-4 space-y-3">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">镶嵌 — 已装备物品</h2>
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{pg.equippedItems}</h2>
           <div className="space-y-2">
             {equippedItems.map(item => (
               <ItemRow key={item.instanceId} item={item} gems={gems}
@@ -306,7 +310,7 @@ export default function GemsPage() {
       {lootWithSockets.length > 0 && (
         <div className="bg-card border border-border rounded-xl p-4 space-y-3">
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-            镶嵌 — 战利品袋（{lootWithSockets.length} 件可镶嵌物品）
+            {pg.socket} ({lootWithSockets.length} items)
           </h2>
           <div className="space-y-2">
             {lootWithSockets.map(item => (
@@ -319,16 +323,15 @@ export default function GemsPage() {
 
       {equippedItems.length === 0 && lootWithSockets.length === 0 && totalGems > 0 && (
         <div className="bg-card border border-border rounded-xl p-6 text-center text-muted-foreground">
-          <p className="text-sm">暂无可镶嵌物品。</p>
-          <p className="text-xs mt-1">击败敌人或制作/掉落精良+物品可获得宝石孔。</p>
+          <p className="text-sm">{pg.noItems}</p>
         </div>
       )}
 
       {/* Gem Synthesis */}
       {totalGems >= 3 && (
         <div className="bg-card border border-amber-500/30 rounded-xl p-4">
-          <h2 className="text-sm font-semibold text-amber-400 uppercase mb-2">宝石合成</h2>
-          <p className="text-xs text-muted-foreground mb-2">5粒同品质→1粒高一级(100%) · 3粒25% · 4粒50% · 消耗金币</p>
+          <h2 className="text-sm font-semibold text-amber-400 uppercase mb-2">{pg.synth}</h2>
+          <p className="text-xs text-muted-foreground mb-2">{pg.synthRule}</p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-1">
             {GEM_TYPES.map(type => 
               GEM_QUALITIES.filter(q => (gems[`${type}_${q}`] ?? 0) >= 5).map(q => {
@@ -341,7 +344,7 @@ export default function GemsPage() {
                       try {
                         const items = Array(5).fill({ type, quality: q });
                         await synthGem.mutateAsync(items);
-                        toast({ title: "合成成功" });
+                        toast({ title: pg.synthSuccess });
                       } catch (e: unknown) {
                         toast({
                           title: "合成失败",

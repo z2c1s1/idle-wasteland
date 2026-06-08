@@ -162,6 +162,63 @@ export function getActiveBuffs(state: any): { hpMul: number; atkMul: number; def
   return { hpMul: Math.min(hpMul, 2), atkMul: Math.min(atkMul, 2), defMul: Math.min(defMul, 2), xpMul: Math.min(xpMul, 2), speedMul: Math.min(speedMul, 1.5), dropMul: Math.min(dropMul, 1.5), critMul: Math.min(critMul, 1.5), leechMul: Math.min(leechMul, 1.3) };
 }
 
+// ─── Pet buffs ────────────────────────────────────────────────────────────────
+
+export interface PetBuffs {
+  woodSpeed: number; mineSpeed: number; smeltSpeed: number; fishSpeed: number;
+  huntSpeed: number; thiefRate: number; agileSpeed: number; exploreSpeed: number;
+  smithSpeed: number; leatherSpeed: number; jewelSpeed: number;
+  cookSpeed: number; alchSpeed: number; prayerXp: number;
+  meleeDmg: number; rangedDmg: number; magicDmg: number; fireDmg: number;
+  poisonDmg: number; chaosDmg: number;
+  defence: number; maxHp: number; combatXp: number;
+  critChance: number; goldDrop: number; dropRate: number;
+  lifeLeech: number; thorns: number; dodge: number; crushRate: number;
+}
+
+export function getPetBuffs(state: any): PetBuffs {
+  const pets: string[] = JSON.parse(state.pets ?? '[]');
+  const buffs: PetBuffs = {
+    woodSpeed:0,mineSpeed:0,smeltSpeed:0,fishSpeed:0,huntSpeed:0,
+    thiefRate:0,agileSpeed:0,exploreSpeed:0,smithSpeed:0,leatherSpeed:0,
+    jewelSpeed:0,cookSpeed:0,alchSpeed:0,prayerXp:0,
+    meleeDmg:0,rangedDmg:0,magicDmg:0,fireDmg:0,poisonDmg:0,chaosDmg:0,
+    defence:0,maxHp:0,combatXp:0,critChance:0,goldDrop:0,dropRate:0,
+    lifeLeech:0,thorns:0,dodge:0,crushRate:0,
+  };
+  const map: Record<string, keyof PetBuffs> = {
+    woodSpeed:'woodSpeed',mineSpeed:'mineSpeed',smeltSpeed:'smeltSpeed',
+    fishSpeed:'fishSpeed',huntSpeed:'huntSpeed',thiefRate:'thiefRate',
+    agileSpeed:'agileSpeed',exploreSpeed:'exploreSpeed',smithSpeed:'smithSpeed',
+    leatherSpeed:'leatherSpeed',jewelSpeed:'jewelSpeed',cookSpeed:'cookSpeed',
+    alchSpeed:'alchSpeed',prayerXp:'prayerXp',meleeDmg:'meleeDmg',
+    rangedDmg:'rangedDmg',magicDmg:'magicDmg',fireDmg:'fireDmg',
+    poisonDmg:'poisonDmg',chaosDmg:'chaosDmg',defence:'defence',
+    maxHp:'maxHp',combatXp:'combatXp',critChance:'critChance',
+    goldDrop:'goldDrop',dropRate:'dropRate',lifeLeech:'lifeLeech',
+    thorns:'thorns',dodge:'dodge',crushRate:'crushRate',
+  };
+  for (const petId of pets) {
+    const pet = PETS.find(p => p.id === petId);
+    if (pet && map[pet.buff]) {
+      const key = map[pet.buff]!;
+      // Buff amounts: +5/10 for speeds, +5/10% for dmg, +5/10 for defence, +20/50 HP, +5/10/12/25% combatXP
+      if (pet.buff === 'maxHp') buffs[key] += (pet.buffDesc.includes('50') ? 50 : 20);
+      else if (pet.buff === 'defence') buffs[key] += (pet.buffDesc.includes('10') ? 10 : 5);
+      else if (pet.buff === 'combatXp') {
+        if (pet.buffDesc.includes('25')) buffs[key] += 0.25;
+        else if (pet.buffDesc.includes('12')) buffs[key] += 0.12;
+        else if (pet.buffDesc.includes('8')) buffs[key] += 0.08;
+        else buffs[key] += 0.05;
+      } else {
+        // Speed buffs: 5% or 10%
+        buffs[key] += (pet.buffDesc.includes('10') || pet.buffDesc.includes('15') || pet.buffDesc.includes('12') || pet.buffDesc.includes('25') ? 0.10 : 0.05);
+      }
+    }
+  }
+  return buffs;
+}
+
 // ─── Save import/export ──────────────────────────────────────────────────────
 
 export async function importSave(state: GameState, data: any): Promise<GameState> {

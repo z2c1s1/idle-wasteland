@@ -10,11 +10,20 @@ import type { GameState } from "@shared/schema";
 const SKILL_LABELS: Record<string, string> = {
   woodcutting: '伐木', mining: '采矿', fishing: '钓鱼', hunting: '狩猎',
 };
-const RESOURCE_EMOJI: Record<string, string> = {
-  bones:'🦴', dragonBones:'🐲', wood_0:'🪵', wood_1:'🌿', wood_2:'🌳', wood_4:'🌲', wood_5:'🎋', wood_6:'✨', wood_8:'🎑',
-  bar_0:'🔩', bar_1:'🔩', bar_2:'🔩', bar_4:'🔩', bar_5:'🔩', bar_6:'🔩', bar_8:'🔩',
-  hide_0:'🪶', hide_1:'🪶', hide_2:'🪶', hide_4:'🪶', hide_6:'🪶',
-};
+const WOOD_NAMES = ["废木板","枯树枝","焦木","铁线木","石化木","辐射瘤木","骨白杉","黑钢木","泰坦木","核融晶木"];
+const BAR_NAMES = ["废铁锭","铜丝锭","铝罐锭","铅锭","硫磺锭","硝酸盐锭","铀锭","钛金锭","钨钢锭","铱金锭"];
+const HIDE_NAMES = ["辐射鼠皮","变异兔皮","铁鳞蜥皮","疯犬皮","钢鬃猪皮","双头鹿皮","灰熊厚皮","辐射蝎壳","死亡爪皮","巨兽硬皮"];
+
+function getResourceLabel(resource: string): string {
+  if (resource === 'bones') return '骨头';
+  if (resource === 'dragonBones') return '龙骨';
+  const m = resource.match(/^(\w+)_(\d+)$/);
+  if (!m) return resource;
+  if (m[1] === 'wood') return WOOD_NAMES[parseInt(m[2])] ?? resource;
+  if (m[1] === 'bar') return BAR_NAMES[parseInt(m[2])] ?? resource;
+  if (m[1] === 'hide') return HIDE_NAMES[parseInt(m[2])] ?? resource;
+  return resource;
+}
 
 export default function Tools() {
   const { data: state } = useGameState();
@@ -94,7 +103,7 @@ export default function Tools() {
                     const enough = have >= inp.qty;
                     return (
                       <span key={i} className={`text-[10px] px-1.5 py-0.5 rounded border ${enough ? 'border-border text-muted-foreground' : 'border-red-400/40 text-red-400'}`}>
-                        {RESOURCE_EMOJI[inp.resource] ?? '📦'} {inp.qty}/{formatNumber(have)}
+                        {getResourceLabel(inp.resource)} ×{inp.qty}（持有 {formatNumber(have)}）
                       </span>
                     );
                   })}

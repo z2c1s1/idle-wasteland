@@ -6,7 +6,7 @@ import { tickActiveAction } from "./storage/tick-action";
 // ─── Module imports ───────────────────────────────────────────────────────────
 import * as eqMod     from "./storage/equipment";
 import * as consMod   from "./storage/consumables";
-import * as homeMod   from "./storage/homestead";
+import * as homeMod   from "./storage/shelter";
 import * as prayMod   from "./storage/prayer";
 import * as worldMod  from "./storage/world";
 import * as caMod     from "./storage/combat-actions";
@@ -52,6 +52,7 @@ export interface IStorage {
   unequipItem(slot: string): Promise<GameState>;
   destroyLoot(instanceId: string): Promise<GameState>;
   socketGem(instanceId: string, gemKey: string): Promise<GameState>;
+  claimPet(achievementId: string): Promise<GameState>;
 }
 
 // ─── DatabaseStorage ────────────────────────────────────────────────────────
@@ -138,7 +139,7 @@ export class DatabaseStorage implements IStorage {
   async brewPotion(r: string) { return consMod.brewPotion(await this.getGameState(), r); }
   async farmPlant(s: number, seed: string) { return consMod.farmPlant(await this.getGameState(), s, seed); }
   async farmHarvest(s: number) { return consMod.farmHarvest(await this.getGameState(), s); }
-  async buildHomestead(b: string) { return homeMod.buildHomestead(await this.getGameState(), b); }
+  async buildHomestead(b: string) { return homeMod.buildShelter(await this.getGameState(), b); }
   async addFuel(t: number) { return homeMod.addFuel(await this.getGameState(), t); }
   applyTemperatureDecay(state: GameState, now: Date) { return homeMod.applyTemperatureDecay(state, now); }
   async activatePrayer(p: string) { return prayMod.activatePrayer(await this.getGameState(), p); }

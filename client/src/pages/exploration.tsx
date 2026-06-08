@@ -137,6 +137,7 @@ export default function Exploration() {
 
       {tab === 'explore' && (
         <SkillPage
+          skillKey="exploration"
           skillName="Exploration"
           skillXp={state.explorationXp ?? 0}
           icon={Map}

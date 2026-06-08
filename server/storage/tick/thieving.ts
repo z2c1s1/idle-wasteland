@@ -8,6 +8,7 @@ import {
   getResourceCount, buildResourceUpdates,
   getAgilityBonuses,
   SKILLS_DATA, RARITY_ORDER, DISENCHANT_GOLD, mergeGems,
+  getPetBuffs,
 } from "./_shared";
 
 const calcLevel = calculateLevel;
@@ -56,7 +57,8 @@ export async function tickThieving(state: GameState, elapsedSeconds: number): Pr
   const { critRating } = getEquipmentBonuses(equipment);
   const stealth = calcStealth(thievingLevel, critRating);
   const agility = getAgilityBonuses(state);
-  const successRate = calcThievingSuccessRate(stealth, npc.perception) * agility.thievingMul;
+  const petBuffs = getPetBuffs(state);
+  const successRate = calcThievingSuccessRate(stealth, npc.perception) * agility.thievingMul * (1 + petBuffs.thiefRate);
   const doubleRate = calcThievingDoubleRate(stealth, npc.perception);
 
   const ticks = Math.floor(elapsedSeconds / npc.interval);
