@@ -9,7 +9,7 @@ import {
   getAgilityBonuses, getTemperatureMultiplier,
   RARITY_ORDER, DISENCHANT_GOLD, mergeGems,
   COMPANION_NPCS,
-  trackAchievement, getPetBuffs,
+  trackAchievement, getPetBuffs, getTalentBonuses,
 } from "./_shared";
 import {
   computeSkillEffects, computeEffectiveCombatSpeed,
@@ -37,6 +37,8 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
     lifeLeech, deadlyStrike, attackSpeed, reflectDamage,
   } = getEquipmentBonuses(equipment);
 
+  const talentBonuses = getTalentBonuses(state);
+
   const eff = computeSkillEffects(equipment);
 
   const tempMul = getTemperatureMultiplier(state);
@@ -46,7 +48,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
   const ticks = Math.floor(elapsedSeconds / effectiveCombatSpeed);
   if (ticks <= 0) return state;
 
-  const playerMaxHp = getPlayerMaxHp(state);
+  const playerMaxHp = getPlayerMaxHp(state) + talentBonuses.maxHp;
   let playerHp = state.playerHp < 0 ? playerMaxHp : state.playerHp;
   // World tier scaling
   const tier = (state as any).worldTier ?? 1;
@@ -64,7 +66,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
 
   const weaponItem = equipment.weapon ?? null;
   const hasWeaponRange = weaponItem && (weaponItem.maxDamage ?? 0) > 0;
-  const levelBaseDmg = Math.max(1, playerAtk - eqAttackBonus);
+  const levelBaseDmg = Math.max(1, playerAtk - eqAttackBonus + talentBonuses.attack);
 
   const playerStyle: CombatStyle = (equipment.weapon as any)?.combatStyle ?? 'melee';
   const enemyStyle: CombatStyle = (enemy as any).combatStyle ?? 'melee';

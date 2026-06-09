@@ -72,7 +72,7 @@ export async function handleTriangleCombat(
   const hasWeaponRange = weaponItem && (weaponItem.maxDamage ?? 0) > 0;
   const levelBaseDmg = Math.max(
     1,
-    Math.floor(calculateLevel(style === "ranged" ? state.rangedXp : state.magicXp) * 1.2) + eqAttackBonus,
+    Math.floor(calculateLevel(style === "ranged" ? state.rangedXp : state.magicXp) * 1.2) + 0,
   );
 
   let goldGained = 0;
