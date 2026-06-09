@@ -77,7 +77,7 @@ export default function Jewelcrafting() {
   }
 
   return (
-    <div className="p-4 max-w-4xl mx-auto space-y-5">
+    <div className="p-4 max-w-4xl mx-auto space-y-5 bg-card rounded-xl border border-border">
       <div>
         <h1 className="text-xl font-bold flex items-center gap-2">
           <Gem className="w-5 h-5 text-purple-400" /> {pc.jewelcrafting}
@@ -121,7 +121,7 @@ export default function Jewelcrafting() {
             const key = `bar_${i}`;
             const qty = getQty(key);
             return (
-              <div key={key} className={`text-center p-2 rounded-lg border ${qty > 0 ? 'border-purple-500/30 bg-purple-500/8' : 'border-border bg-muted/10 opacity-40'}`}>
+              <div key={key} className={`text-center p-2 rounded-lg border ${qty > 0 ? 'border-purple-500/30 bg-purple-500/8' : 'border-border bg-card'}`}>
                 <p className="text-xs text-muted-foreground">{BAR_NAMES[key]}</p>
                 <p className={`text-sm font-bold ${qty > 0 ? 'text-purple-300' : ''}`}>{qty}</p>
               </div>
@@ -130,7 +130,7 @@ export default function Jewelcrafting() {
           {['bones', 'dragonBones'].map(key => {
             const qty = getQty(key);
             return (
-              <div key={key} className={`text-center p-2 rounded-lg border ${qty > 0 ? 'border-amber-500/30 bg-amber-500/8' : 'border-border bg-muted/10 opacity-40'}`}>
+              <div key={key} className={`text-center p-2 rounded-lg border ${qty > 0 ? 'border-amber-500/30 bg-amber-500/8' : 'border-border bg-card'}`}>
                 <p className="text-xs text-muted-foreground">{BAR_NAMES[key]}</p>
                 <p className={`text-sm font-bold ${qty > 0 ? 'text-amber-300' : ''}`}>{qty}</p>
               </div>
@@ -169,7 +169,7 @@ export default function Jewelcrafting() {
           return (
             <div key={recipe.id}
               className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${
-                !unlocked ? "border-border bg-muted/10 opacity-50" :
+                !unlocked ? "border-border bg-card" :
                 isRecipeActive ? "border-purple-500/50 bg-purple-500/10" :
                 "border-border bg-card hover:border-purple-500/30"
               }`}

@@ -83,7 +83,7 @@ export default function Exploration() {
   };
 
   return (
-    <div className="p-4 max-w-4xl mx-auto space-y-4">
+    <div className="p-4 max-w-4xl mx-auto space-y-4 bg-card rounded-xl border border-border">
       <h1 className="text-xl font-bold flex items-center gap-2"><Map className="w-5 h-5 text-indigo-400" /> 探索</h1>
 
       {/* World Tier selector */}

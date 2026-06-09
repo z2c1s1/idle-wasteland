@@ -33,7 +33,7 @@ export default function Gamble() {
   };
 
   return (
-    <div className="p-4 max-w-2xl mx-auto space-y-5">
+    <div className="p-4 max-w-2xl mx-auto space-y-5 bg-card rounded-xl border border-border">
       <h1 className="text-xl font-bold flex items-center gap-2"><Dice1 className="w-5 h-5 text-yellow-400" /> 装备赌博</h1>
       <p className="text-sm text-muted-foreground">战斗等级 {cl} · 金币 {formatNumber(gs.gold)}</p>
 

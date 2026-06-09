@@ -3,6 +3,7 @@ import { useGameState, useEquipItem, useUnequipItem, useDestroyLoot, useSetLootF
 import { useQueryClient } from "@tanstack/react-query";
 import { api } from "@shared/routes";
 import { ItemCard } from "@/components/inventory/item-card";
+import { PaperDollCanvas } from "@/components/inventory/PaperDollCanvas";
 import { ItemSprite, ResourceIcon, type ResourceType } from "@/components/sprites";
 import {
   ALL_CRAFTABLE_ITEMS, ALL_SLOTS, SLOT_LABEL,
@@ -193,10 +194,28 @@ export default function Inventory() {
     });
   }
 
-  const lootByRarity = [...lootBag].sort((a, b) => {
-    const order = { mythic: 0, legendary: 1, epic: 2, rare: 3, uncommon: 4, common: 5 };
-    return order[a.rarity] - order[b.rarity];
-  });
+  const ALL_SLOTS_FILTER = ['all', ...ALL_SLOTS];
+  const RARITY_OPTIONS = ['all', 'common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
+  const ATTR_OPTIONS = [
+    { key: 'all', label: '全部属性' },
+    { key: 'attackBonus', label: '攻击' },
+    { key: 'defenceBonus', label: '防御' },
+    { key: 'hpBonus', label: '生命' },
+    { key: 'critRating', label: '暴击' },
+    { key: 'enhancedDamage', label: '增伤' },
+    { key: 'lifeLeech', label: '吸血' },
+    { key: 'attackSpeed', label: '攻速' },
+  ];
+
+  const lootByRarity = [...lootBag]
+    .filter(item => filterSlot === 'all' || item.slot === filterSlot)
+    .filter(item => filterRarity === 'all' || item.rarity === filterRarity)
+    .filter(item => filterAttr === 'all' || (item as any)[filterAttr] > 0)
+    .sort((a, b) => {
+      const order = { mythic: 0, legendary: 1, epic: 2, rare: 3, uncommon: 4, common: 5 };
+      const cmp = order[a.rarity] - order[b.rarity];
+      return sortDir === 'desc' ? cmp : -cmp;
+    });
 
   const currentFilter = (gs.lootFilter ?? 'common') as Rarity;
 
@@ -208,6 +227,10 @@ export default function Inventory() {
 
   const [sellMode, setSellMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [filterSlot, setFilterSlot] = useState<string>('all');
+  const [filterRarity, setFilterRarity] = useState<string>('all');
+  const [filterAttr, setFilterAttr] = useState<string>('all');
+  const [sortDir, setSortDir] = useState<'asc'|'desc'>('desc');
   function toggleSelect(id: string) {
     setSelectedIds(prev => {
       const next = new Set(prev);
@@ -233,7 +256,7 @@ export default function Inventory() {
   }
 
   return (
-    <div className="p-4 max-w-6xl mx-auto space-y-6">
+    <div className="p-4 max-w-6xl mx-auto space-y-6 bg-card rounded-xl border border-border">
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-xl font-bold flex items-center gap-2">
@@ -345,37 +368,12 @@ export default function Inventory() {
 
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Character Equipment */}
-        <div className="bg-card border border-border rounded-xl p-4 space-y-3">
-          <div className="flex items-center gap-2 mb-1">
-            <Shield className="w-4 h-4 text-slate-400" />
-            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">已装备</h2>
-          </div>
-
-          {/* Stat summary */}
-          {(equipStats.attackBonus > 0 || equipStats.defenceBonus > 0 || equipStats.hpBonus > 0) && (
-            <div className="flex flex-wrap gap-x-4 gap-y-1 bg-muted/20 rounded-lg px-3 py-2 text-xs">
-              {equipStats.attackBonus > 0  && <span className="text-red-300">⚔ +{equipStats.attackBonus} 攻击</span>}
-              {equipStats.defenceBonus > 0 && <span className="text-blue-300">🛡 +{equipStats.defenceBonus} 防御</span>}
-              {equipStats.hpBonus > 0      && <span className="text-green-300">❤ +{equipStats.hpBonus} 生命</span>}
-            </div>
-          )}
-
-          <div className="grid grid-cols-2 gap-2">
-            {ALL_SLOTS.map(slot => (
-              <EquipSlot
-                key={slot}
-                slot={slot}
-                item={(equipment[slot] as GameItem | undefined) ?? null}
-                onUnequip={() => handleUnequip(slot)}
-              />
-            ))}
-          </div>
-
+        {/* Character Equipment — Canvas */}
+        <div>
+          <PaperDollCanvas equipment={equipment} onUnequip={handleUnequip} />
           {/* Set progress panel */}
           {ITEM_SETS.filter(s => {
             const count = activeSets[s.id] ?? 0;
-            // Show any set where player has at least 1 piece equipped
             return count > 0;
           }).map(set => {
             const count = activeSets[set.id] ?? 0;
@@ -445,6 +443,34 @@ export default function Inventory() {
             >
               {sellMode ? `出售 (${selectedIds.size})` : '出售'}
             </button>
+          </div>
+
+          {/* Slot filter */}
+          <div className="flex flex-wrap gap-1">
+            {ALL_SLOTS_FILTER.map(s => (
+              <button key={s} onClick={() => setFilterSlot(s)}
+                className={`text-[10px] px-1.5 py-0.5 rounded border transition-colors ${
+                  filterSlot === s ? 'border-amber-400 bg-amber-500/10 text-amber-300' : 'border-border text-muted-foreground hover:border-muted-foreground'
+                }`}>{s === 'all' ? '全部槽位' : SLOT_LABEL[s as EquipmentSlot]}</button>
+            ))}
+          </div>
+          {/* Rarity filter */}
+          <div className="flex flex-wrap gap-1">
+            {RARITY_OPTIONS.map(r => (
+              <button key={r} onClick={() => setFilterRarity(r)}
+                className={`text-[10px] px-1.5 py-0.5 rounded border transition-colors ${
+                  filterRarity === r ? 'border-amber-400 bg-amber-500/10 text-amber-300' : 'border-border text-muted-foreground hover:border-muted-foreground'
+                }`}>{r === 'all' ? '全部品质' : RARITY_LABEL[r as Rarity]}</button>
+            ))}
+          </div>
+          {/* Attribute filter */}
+          <div className="flex flex-wrap gap-1">
+            {ATTR_OPTIONS.map(a => (
+              <button key={a.key} onClick={() => setFilterAttr(a.key)}
+                className={`text-[10px] px-1.5 py-0.5 rounded border transition-colors ${
+                  filterAttr === a.key ? 'border-amber-400 bg-amber-500/10 text-amber-300' : 'border-border text-muted-foreground hover:border-muted-foreground'
+                }`}>{a.label}</button>
+            ))}
           </div>
 
           {lootBag.length === 0 ? (

@@ -44,7 +44,7 @@ export default function Prayer() {
   };
 
   return (
-    <div className="p-4 max-w-2xl mx-auto space-y-4">
+    <div className="p-4 max-w-2xl mx-auto space-y-4 bg-card rounded-xl border border-border">
       <h1 className="text-xl font-bold flex items-center gap-2">
         <CandlestickChart className="w-5 h-5 text-amber-400" /> {pc.prayer}
       </h1>

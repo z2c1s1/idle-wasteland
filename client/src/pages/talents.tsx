@@ -150,7 +150,7 @@ export default function Talents() {
   };
 
   return (
-    <div className="p-4 max-w-6xl mx-auto space-y-4">
+    <div className="p-4 max-w-6xl mx-auto space-y-4 bg-card rounded-xl border border-border">
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-xl font-bold flex items-center gap-2">

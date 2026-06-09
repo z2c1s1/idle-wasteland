@@ -53,7 +53,7 @@ export default function WastelandTech() {
   const corruptibleItems = allItems.filter(i => !(i as any).corrupted);
 
   return (
-    <div className="p-4 max-w-4xl mx-auto space-y-6">
+    <div className="p-4 max-w-4xl mx-auto space-y-6 bg-card rounded-xl border border-border">
       <h1 className="text-xl font-bold flex items-center gap-2"><Zap className="w-5 h-5 text-amber-400" /> 废土科技</h1>
 
       {/* ── 传奇萃取 ── */}

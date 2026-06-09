@@ -37,7 +37,7 @@ export default function Tools() {
   const activeRecipeIdx = isCrafting ? parseInt(gs.activeAction.split('_')[1]) : -1;
 
   return (
-    <div className="p-4 max-w-4xl mx-auto space-y-5">
+    <div className="p-4 max-w-4xl mx-auto space-y-5 bg-card rounded-xl border border-border">
       <div>
         <h1 className="text-xl font-bold flex items-center gap-2">
           <Wrench className="w-5 h-5 text-amber-400" /> 生产工具

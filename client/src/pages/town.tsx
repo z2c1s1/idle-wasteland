@@ -52,7 +52,7 @@ export default function Town() {
   };
 
   return (
-    <div className="p-4 max-w-2xl mx-auto space-y-4">
+    <div className="p-4 max-w-2xl mx-auto space-y-4 bg-card rounded-xl border border-border">
       <h1 className="text-xl font-bold flex items-center gap-2">
         <Building2 className="w-5 h-5 text-amber-400" /> {p.title}
       </h1>
@@ -127,7 +127,7 @@ export default function Town() {
           const unlocked = (!n.reqTownLevel || townLevel >= n.reqTownLevel) && dungeonClear;
           return (
           <div key={n.id} className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${
-            unlocked ? 'border-border bg-card' : 'border-border/30 bg-card/30 opacity-40'
+            unlocked ? 'border-border bg-card' : 'border-border/30 bg-card/30 '
           }`}>
             <span className="text-2xl">{unlocked ? n.emoji : '❓'}</span>
             <div>

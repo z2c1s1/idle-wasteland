@@ -241,7 +241,7 @@ export default function Combat() {
   const equipStats = getEquipmentStats(gs);
 
   return (
-    <div className="p-4 max-w-4xl mx-auto space-y-4">
+    <div className="p-4 max-w-4xl mx-auto space-y-4 bg-card rounded-xl border border-border">
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-xl font-bold flex items-center gap-2"><Skull className="w-5 h-5 text-red-400" />{t.combat.title}</h1>
@@ -313,7 +313,7 @@ export default function Combat() {
             const stats = parseDungeonStats(gs.dungeonStats)[String(i)];
             const can = hasWeapon && combatLevel >= d.reqCombatLevel && gs.gold >= d.cost.gold && (!d.cost.bones || gs.bones >= d.cost.bones) && (!d.cost.dragonBones || gs.dragonBones >= d.cost.dragonBones);
             return (
-              <div key={i} className={`rounded-lg border p-3 ${isActive ? 'border-purple-400 bg-purple-500/5' : can ? 'border-border' : 'border-border bg-muted/5 opacity-60'}`}>
+              <div key={i} className={`rounded-lg border p-3 ${isActive ? 'border-purple-400 bg-purple-500/5' : can ? 'border-border' : 'border-border bg-muted/10'}`}>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-bold">{d.name}</p>
@@ -335,14 +335,14 @@ export default function Combat() {
       )}
 
       {activeTab === 'tower' && (
-        <div className="text-center py-8 space-y-3">
+        <div className="text-center py-8 space-y-3 bg-card border border-border rounded-xl p-6">
           <Building2 size={48} className="text-red-400 mx-auto" /><p className="text-sm font-bold">{t.combat.towerTitle}</p><p className="text-xs text-muted-foreground">{t.combat.towerFloor(gs.towerFloor ?? 0)}</p>
           <Button onClick={() => startTower.mutate(undefined, { onError: (e: any) => toast({ title: t.combat.cannotEnter, description: e.message, variant: "destructive" }) })} disabled={!hasWeapon} className="bg-red-600 hover:bg-red-500 disabled:opacity-40">{t.combat.towerButton}</Button>
         </div>
       )}
 
       {activeTab === 'trial' && (
-        <div className="text-center py-8 space-y-3">
+        <div className="text-center py-8 space-y-3 bg-card border border-border rounded-xl p-6">
           <RadiationIcon size={48} className="text-amber-400 mx-auto" /><p className="text-sm font-bold">{t.combat.trialTitle}</p><p className="text-xs text-muted-foreground">{t.combat.trialKey((gs as any).trialKey ?? 0)}</p>
           <Button onClick={() => startTrial.mutate(undefined, { onError: (e: any) => toast({ title: t.combat.cannotEnter, description: e.message, variant: "destructive" }) })}
             disabled={(gs as any).trialKey < 1 || !hasWeapon} className="bg-amber-600 hover:bg-amber-500 disabled:opacity-30">{t.combat.trialButton}</Button>

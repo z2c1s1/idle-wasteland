@@ -103,7 +103,7 @@ export default function EquipmentSynth() {
   };
 
   return (
-    <div className="p-4 max-w-6xl mx-auto space-y-4">
+    <div className="p-4 max-w-6xl mx-auto space-y-4 bg-card rounded-xl border border-border">
       <h1 className="text-xl font-bold flex items-center gap-2">
         <Hammer className="w-5 h-5 text-amber-400" /> 装备合成
       </h1>

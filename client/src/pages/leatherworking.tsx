@@ -73,7 +73,7 @@ export default function Leatherworking() {
   }
 
   return (
-    <div className="p-4 max-w-4xl mx-auto space-y-5">
+    <div className="p-4 max-w-4xl mx-auto space-y-5 bg-card rounded-xl border border-border">
       <div>
         <h1 className="text-xl font-bold flex items-center gap-2">
           <PawPrint className="w-5 h-5 text-amber-400" /> {pc.leatherworking}
@@ -116,7 +116,7 @@ export default function Leatherworking() {
           {HIDE_NAMES.map((name, i) => {
             const qty = getQty(`hide_${i}`);
             return (
-              <div key={i} className={`text-center p-2 rounded-lg border ${qty > 0 ? 'border-amber-500/30 bg-amber-500/8' : 'border-border bg-muted/10 opacity-40'}`}>
+              <div key={i} className={`text-center p-2 rounded-lg border ${qty > 0 ? 'border-amber-500/30 bg-amber-500/8' : 'border-border bg-card'}`}>
                 <p className="text-xs text-muted-foreground">{name}皮</p>
                 <p className={`text-sm font-bold ${qty > 0 ? 'text-amber-300' : ''}`}>{qty}</p>
               </div>
@@ -155,7 +155,7 @@ export default function Leatherworking() {
           return (
             <div key={recipe.id}
               className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${
-                !unlocked ? "border-border bg-muted/10 opacity-50" :
+                !unlocked ? "border-border bg-card" :
                 isRecipeActive ? "border-amber-500/50 bg-amber-500/10" :
                 "border-border bg-card hover:border-amber-500/30"
               }`}

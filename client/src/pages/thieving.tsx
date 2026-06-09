@@ -55,7 +55,7 @@ export default function Thieving() {
   const npcs = THIEVING_NPCS.filter(n => !n.hidden || isUnlocked(n));
 
   return (
-    <div className="p-4 max-w-4xl mx-auto space-y-5">
+    <div className="p-4 max-w-4xl mx-auto space-y-5 bg-card rounded-xl border border-border">
       <div>
         <h1 className="text-xl font-bold flex items-center gap-2">
           <HandMetal className="w-5 h-5 text-purple-400" /> {t.pages.thieving.title}
@@ -120,7 +120,7 @@ export default function Thieving() {
           return (
             <div key={npc.id}
               className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${
-                locked   ? "border-border bg-muted/10 opacity-50" :
+                locked   ? "border-border bg-card" :
                 isActive ? "border-purple-400/50 bg-purple-500/10" :
                            "border-border bg-card hover:border-purple-400/40"
               }`}

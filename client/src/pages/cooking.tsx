@@ -38,7 +38,7 @@ export default function Cooking() {
   };
 
   return (
-    <div className="p-4 max-w-3xl mx-auto space-y-4">
+    <div className="p-4 max-w-3xl mx-auto space-y-4 bg-card rounded-xl border border-border">
       <h1 className="text-xl font-bold flex items-center gap-2"><Soup className="w-5 h-5 text-orange-400" /> 即时恢复</h1>
       <p className="text-xs text-muted-foreground">每份消耗1个材料，直接回复HP。战斗中可食用。</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

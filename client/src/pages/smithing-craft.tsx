@@ -86,7 +86,7 @@ export default function SmithingCraft() {
   const BAR_NAMES = ["废铁","铜","铝","铅","硫磺","硝酸盐","铀","钛金","钨钢","铱金"];
 
   return (
-    <div className="p-4 max-w-4xl mx-auto space-y-5">
+    <div className="p-4 max-w-4xl mx-auto space-y-5 bg-card rounded-xl border border-border">
       <div>
         <h1 className="text-xl font-bold flex items-center gap-2">
           <Shield className="w-5 h-5 text-slate-400" /> {pc.smithing}
@@ -122,17 +122,17 @@ export default function SmithingCraft() {
           {[...Array(10)].map((_, i) => {
             const qty = getInputQty(`bar_${i}`);
             return (
-              <div key={`bar_${i}`} className={`text-center p-2 rounded-lg border ${qty > 0 ? 'border-slate-500/30 bg-slate-500/8' : 'border-border bg-muted/10 opacity-40'}`}>
+              <div key={`bar_${i}`} className={`text-center p-2 rounded-lg border ${qty > 0 ? 'border-slate-500/30 bg-slate-500/8' : 'border-border bg-muted/20'}`}>
                 <p className="text-[10px] text-muted-foreground">{BAR_NAMES[i]}锭</p>
                 <p className={`text-xs font-bold ${qty > 0 ? 'text-slate-300' : ''}`}>{qty}</p>
               </div>
             );
           })}
-          <div className={`text-center p-2 rounded-lg border ${getInputQty('bones') > 0 ? 'border-amber-500/30 bg-amber-500/8' : 'border-border bg-muted/10 opacity-40'}`}>
+          <div className={`text-center p-2 rounded-lg border ${getInputQty('bones') > 0 ? 'border-amber-500/30 bg-amber-500/8' : 'border-border bg-muted/20'}`}>
             <p className="text-[10px] text-muted-foreground">骨头</p>
             <p className={`text-xs font-bold ${getInputQty('bones') > 0 ? 'text-amber-300' : ''}`}>{getInputQty('bones')}</p>
           </div>
-          <div className={`text-center p-2 rounded-lg border ${getInputQty('dragonBones') > 0 ? 'border-amber-500/30 bg-amber-500/8' : 'border-border bg-muted/10 opacity-40'}`}>
+          <div className={`text-center p-2 rounded-lg border ${getInputQty('dragonBones') > 0 ? 'border-amber-500/30 bg-amber-500/8' : 'border-border bg-muted/20'}`}>
             <p className="text-[10px] text-muted-foreground">龙骨</p>
             <p className={`text-xs font-bold ${getInputQty('dragonBones') > 0 ? 'text-amber-300' : ''}`}>{getInputQty('dragonBones')}</p>
           </div>
@@ -183,7 +183,7 @@ export default function SmithingCraft() {
           return (
             <div key={recipe.id}
               className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${
-                !unlocked ? "border-border bg-muted/10 opacity-50" :
+                !unlocked ? "border-border bg-card" :
                 isActive ? "border-primary/50 bg-primary/10" :
                 "border-border bg-card hover:border-primary/30"
               }`}

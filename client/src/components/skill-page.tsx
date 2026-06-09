@@ -118,14 +118,14 @@ export function SkillPage({ skillKey, skillName, skillXp, icon: Icon, iconColor,
           const isOtherActive = isGlobalActive && !isActive;
           const owned = getResourceCount(state, res.resourceKey);
 
+          const rowClass = isActive
+            ? "border-[hsl(var(--crt-green)/0.4)] bg-[hsl(120_30%_8%)]"
+            : "border-[hsl(var(--border-rust))] bg-[hsl(var(--card))] hover:border-[hsl(var(--crt-green)/0.3)]";
+
           return (
-            <React.Fragment key={res.actionKey}>
+            <div key={res.actionKey} className={`border transition-colors ${rowClass}`}>
             <div
-              className={`flex items-center gap-3 p-3 border transition-colors ${
-                !isUnlocked ? "border-[hsl(var(--border-rust))] bg-muted/10 opacity-50" :
-                isActive    ? "border-[hsl(var(--crt-green)/0.4)] bg-[hsl(120_30%_8%)]" :
-                              "border-[hsl(var(--border-rust))] bg-[hsl(var(--card))] hover:border-[hsl(var(--crt-green)/0.3)]"
-              }`}>
+              className={`flex items-center gap-3 p-3 ${res.drops && res.drops.length > 0 ? 'pb-1' : ''}`}>
               {res.resourceType
                 ? <ResourceIcon type={res.resourceType} size={42} tier={parseInt(res.resourceKey.split('_')[1] ?? '0') || 0} className="flex-shrink-0" />
                 : <span className="text-4xl flex-shrink-0">{res.emoji}</span>}
@@ -144,7 +144,7 @@ export function SkillPage({ skillKey, skillName, skillXp, icon: Icon, iconColor,
                       🔧 {res.requiredName ?? res.requiredKey} x{((state as any)[res.requiredKey] ?? 0)}
                     </span>
                   )}
-                  {res.extraHint && <span className="text-[hsl(var(--crt-green))/0.6]">{res.extraHint}</span>}
+                  {res.extraHint && <span className="text-muted-foreground text-xs">{res.extraHint}</span>}
                 </div>
               </div>
               <div className="flex-shrink-0">
@@ -166,13 +166,13 @@ export function SkillPage({ skillKey, skillName, skillXp, icon: Icon, iconColor,
             </div>
             {/* Detailed drops — inline like combat drops */}
             {res.drops && res.drops.length > 0 && (
-              <div className="mt-1 ml-9 flex flex-wrap gap-x-2 gap-y-0 text-[10px] text-muted-foreground/60">
+              <div className="ml-9 flex flex-wrap gap-x-2 gap-y-0 text-[10px] text-muted-foreground px-3 pb-2">
                 {res.drops!.map((d, di) => (
                   <span key={di}>{d.name}{d.qty !== 1 && d.qty !== '' ? ` ×${d.qty}` : ''} {d.chance}{di < res.drops!.length - 1 ? ' · ' : ''}</span>
                 ))}
               </div>
             )}
-            </React.Fragment>
+            </div>
           );
         })}
       </div>

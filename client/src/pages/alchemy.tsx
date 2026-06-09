@@ -43,7 +43,7 @@ export default function Alchemy() {
   };
 
   return (
-    <div className="p-4 max-w-3xl mx-auto space-y-4">
+    <div className="p-4 max-w-3xl mx-auto space-y-4 bg-card rounded-xl border border-border">
       <h1 className="text-xl font-bold flex items-center gap-2"><FlaskConical className="w-5 h-5 text-purple-400" /> 增益药剂</h1>
       <p className="text-xs text-muted-foreground">草药+浆果+特殊材料炼制成持续buff药剂。</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
