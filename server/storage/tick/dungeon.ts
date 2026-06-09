@@ -9,6 +9,7 @@ import {
   parseEquipment, parseLootBag, parseGems, parseDungeonStats,
   RARITY_ORDER, DISENCHANT_GOLD, mergeGems,
   trackAchievement,
+  computeSkillEffects, applySkillProcDamage, type SkillProcContext,
 } from "./_shared";
 
 const calcLevel = calculateLevel;
@@ -23,8 +24,6 @@ export async function tickDungeon(state: GameState, elapsedSeconds: number): Pro
 
   const equipment = parseEquipment(state.equipment);
   const allSkills: ItemSkill[] = Object.values(equipment).flatMap(item => item?.skills ?? []);
-  const getSkillVal = (type: ItemSkill['type']) =>
-    allSkills.filter(s => s.type === type).reduce((sum, s) => sum + ((s as any).magnitude ?? (s as any).value ?? 0), 0);
 
   const {
     attackBonus: eqAttackBonus,
@@ -32,14 +31,8 @@ export async function tickDungeon(state: GameState, elapsedSeconds: number): Pro
     lifeRegen, resistAll, critRating, lifeLeech, deadlyStrike, attackSpeed, reflectDamage,
   } = getEquipmentBonuses(equipment);
 
-  const spellbladePct   = getSkillVal('spellblade');
-  const poisonDmg       = getSkillVal('poison');
-  const thornsDmg       = getSkillVal('thorns');
-  const lifeStealPct    = getSkillVal('lifesteal');
-  const vampiricHp      = getSkillVal('vampiric');
-  const berserkPct      = getSkillVal('berserk');
-  const doubleStrikePct = getSkillVal('doublestrike');
-  const dodgePct        = getSkillVal('dodge');
+  const eff = computeSkillEffects(equipment);
+  const { spellbladePct, poisonDmg, thornsDmg, lifeStealPct, vampiricHp, berserkPct, doubleStrikePct, dodgePct } = eff;
   const playerStyle: CombatStyle = (equipment.weapon as any)?.combatStyle ?? 'melee';
 
   const BASE_COMBAT_SPEED = 3;
@@ -97,6 +90,13 @@ export async function tickDungeon(state: GameState, elapsedSeconds: number): Pro
     if (crushingBlow > 0 && Math.random() * 100 < crushingBlow) {
       totalDmgToEnemy += Math.max(1, Math.floor(playerMaxHp * 0.01));
     }
+
+    // Apply skill proc damage (execute, cleave, meteor, frenzy, blood sacrifice, avalanche, arcane barrage)
+    const skillCtx: SkillProcContext = { enemyHp: enemyHp - totalDmgToEnemy, enemyMaxHp: enemyMaxHp, playerHp, playerMaxHp, perHitBase: effAtk, effAtk };
+    const skillResult = applySkillProcDamage(skillCtx, eff, allSkills, Math.random);
+    totalDmgToEnemy += skillResult.extraDmg;
+    playerHp = skillResult.playerHpAfter;
+    attackXpGained += skillResult.extraXp;
 
     enemyHp -= totalDmgToEnemy;
     attackXpGained += 4 * strikes;

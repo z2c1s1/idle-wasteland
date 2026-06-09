@@ -98,5 +98,6 @@ export { TRIAL_BUFFS, TRIAL_CURSES } from "@shared/trial-data";
 export { SKILLS_DATA, RARITY_ORDER, DISENCHANT_GOLD } from "../constants";
 export { handleProductionRecipe, rollGemDropsFromPool, mergeGems } from "../helpers";
 export { handleTriangleCombat } from "../combat";
+export { computeSkillEffects, applySkillProcDamage, type SkillProcContext } from "./_combat-shared";
 export { trackAchievement, getPetBuffs } from "../skills";
 export type { CombatStyle } from "../combat";

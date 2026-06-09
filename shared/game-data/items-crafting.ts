@@ -474,6 +474,7 @@ export function buildUniqueGameItem(def: UniqueItemDef): GameItem {
   };
 }
 
+/** @deprecated This function is dead code — TypeScript resolves @shared/game-data to the .ts file, not index.ts. The active version lives in shared/game-data.ts ~line 1465. */
 export function generateDroppedItem(enemyIndex: number, playerMagicFind = 0): GameItem {
   const band = ENEMY_ILVL_BANDS[Math.min(enemyIndex, ENEMY_ILVL_BANDS.length - 1)];
   const ilvl = band[0] + randInt(0, band[1] - band[0]);
