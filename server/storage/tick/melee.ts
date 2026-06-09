@@ -1,7 +1,7 @@
 import {
   db, gameStates, type GameState, eq,
   type GameItem, type ItemSkill,
-  ENEMIES, getEquipmentBonuses, generateDroppedItem, getDropChance,
+  ENEMIES, getEquipmentBonuses, generateDroppedItem, getDropChance, getPrayerBuff,
   COMBAT_TRIANGLE, TRIANGLE_DAMAGE_BONUS, TRIANGLE_DAMAGE_PENALTY,
   COMBAT_GEM_POOLS, type Rarity, type CombatStyle,
   calculateLevel, getPlayerMaxHp, getPlayerAttack, getPlayerDefence,
@@ -60,7 +60,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
   const isAoESkill = aoeList.includes(eqSkill);
 
   const playerAtk = getPlayerAttack(state);
-  const playerDef = getPlayerDefence(state);
+  const playerDef = getPlayerDefence(state) + Math.floor(getPlayerDefence(state) * getPrayerBuff(state, 'defence'));
 
   const weaponItem = equipment.weapon ?? null;
   const hasWeaponRange = weaponItem && (weaponItem.maxDamage ?? 0) > 0;
@@ -110,7 +110,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
   const critHit = (critRating + petCritBonus) > 0 && Math.random() * 100 < (critRating + petCritBonus);
     const critDmg = (deadlyStrike ?? 200) / 100; // default 200% = 2x
     const strikes = (eff.doubleStrikePct > 0 && Math.random() * 100 < eff.doubleStrikePct) ? 2 : 1;
-    let totalDmgToEnemy = effAtk * strikes * (critHit ? critDmg : 1) + eff.poisonDmg;
+    let totalDmgToEnemy = Math.floor(effAtk * strikes * (critHit ? critDmg : 1) * triangleMult) + eff.poisonDmg;
 
     if (crushingBlow > 0 && Math.random() * 100 < crushingBlow) {
       totalDmgToEnemy += Math.max(1, Math.floor(playerMaxHp * 0.01));
@@ -129,7 +129,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
     totalDmgToEnemy += applyMortalStrike(perHitBase, allSkills, rng);
 
     enemyHp -= totalDmgToEnemy;
-    attackXpGained += 4 * strikes;
+    attackXpGained += Math.floor(4 * strikes * (1 + getPrayerBuff(state, 'experience')));
 
     // ── Life recovery (shared) ─────────────────────────────────────────────
     playerHp = applyLifeRecovery(playerHp, playerMaxHp, totalDmgToEnemy,
