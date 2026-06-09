@@ -20,12 +20,10 @@ const ZONES = [
 ];
 
 const EXPLORE_LEVELS = [1,4,7,10,15,25,40,60,80,99];
-const ET = [30,45,60,80,105,135,170];
-const EX = [50,80,120,170,230,310,400];
 const RESOURCES = EXPLORE_LEVELS.map((lv, i) => ({
   name: ZONES[i],
   emoji: "🗺️",
-  time: ET[i], xp: EX[i],
+  time: 30 + i * 15, xp: 50 + i * 30,
   reqLevel: lv,
   resourceKey: `exploration_${i}`,
   actionKey: `exploration_${i}`, resourceType: "exploration" as const,

@@ -2,7 +2,7 @@ import { useGameState } from "@/hooks/use-game";
 import { SkillPage } from "@/components/skill-page";
 import { Footprints } from "lucide-react";
 
-const NAMES = ["基础跑酷","平衡木","攀爬墙","障碍赛","绳索攀爬","独木桥","高空跳","翻滚训练","墙壁跑酷","倒立行走"];
+const NAMES = ["基础跑酷","铁丝网穿越","坍塌楼攀爬","废墟障碍赛","下水道匍匐","断桥跳跃","高空索降","燃烧障碍跑","辐射区冲刺","垂直墙攀爬"];
 const LV = [1,4,7,10,15,25,40,60,80,99];
 const T = [5,6,7,8,10,12,14,16,18,20];
 const X = [8,13,19,27,38,51,67,88,112,144];
