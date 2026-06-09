@@ -75,7 +75,7 @@ export async function tickTower(state: GameState, elapsedSeconds: number): Promi
   const combinedLoot = [...existingLoot, ...newDrops].slice(-50);
 
   const updates: Partial<GameState> = {
-    playerHp: playerDied ? 0 : playerHp,
+    playerHp: playerDied ? Math.floor(playerMaxHp * 0.5) : playerHp,
     enemyHp: (playerDied || killed) ? -1 : enemyHp,
     gold: state.gold + goldGained,
     [playerStyle === 'ranged' ? 'rangedXp' : playerStyle === 'magic' ? 'magicXp' : 'attackXp']: (state[playerStyle === 'ranged' ? 'rangedXp' : playerStyle === 'magic' ? 'magicXp' : 'attackXp'] ?? 0) + attackXpGained,

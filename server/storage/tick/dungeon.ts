@@ -121,7 +121,7 @@ export async function tickDungeon(state: GameState, elapsedSeconds: number): Pro
           }
         }
       }
-      if (vampiricHp > 0) playerHp = Math.min(playerMaxHp, playerHp + vampiricHp);
+      if (vampiricHp > 0) playerHp = Math.min(playerMaxHp, playerHp + Math.floor(vampiricHp * playerMaxHp / 100));
       bossKilled = isBoss;
       break;
     }
@@ -188,7 +188,7 @@ export async function tickDungeon(state: GameState, elapsedSeconds: number): Pro
   let tierBossKilledUpdate: string | undefined;
   if (bossKilled) {
     // Record tier boss kill (last dungeon of each tier)
-    const tierBossDungeonIdx: Record<number, number> = { 1: 3, 2: 7, 3: 11, 4: 15 };
+    const tierBossDungeonIdx: Record<number, number> = { 1: 1, 2: 3, 3: 5, 4: 5 };
     const currentTier = (state as any).worldTier ?? 1;
     if (dungeonIndex === tierBossDungeonIdx[currentTier]) {
       const killed: number[] = JSON.parse((state as any).tierBossKilled ?? '[]');

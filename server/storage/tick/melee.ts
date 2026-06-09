@@ -119,7 +119,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
     if (isAoESkill) totalDmgToEnemy = Math.floor(totalDmgToEnemy * Math.min(enemyQty, 7));
 
     // ── Shared skill proc effects ──────────────────────────────────────────
-    const skillCtx = { enemyHp, enemyMaxHp: enemy.maxHp, playerHp, playerMaxHp, perHitBase, effAtk };
+    const skillCtx = { enemyHp, enemyMaxHp: totalMaxHp, playerHp, playerMaxHp, perHitBase, effAtk };
     const skillResult = applySkillProcDamage(skillCtx, eff, allSkills, rng);
     totalDmgToEnemy += skillResult.extraDmg;
     playerHp = skillResult.playerHpAfter;
@@ -168,7 +168,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
         const gk = gemPool.pool[Math.floor(Math.random() * gemPool.pool.length)];
         gemsGained[gk] = (gemsGained[gk] ?? 0) + 1;
       }
-      if (eff.vampiricHp > 0) playerHp = Math.min(playerMaxHp, playerHp + eff.vampiricHp);
+      if (eff.vampiricHp > 0) playerHp = Math.min(playerMaxHp, playerHp + Math.floor(eff.vampiricHp * playerMaxHp / 100));
       enemyHp = totalMaxHp;
     }
 
