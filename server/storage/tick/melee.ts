@@ -110,7 +110,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
 
     const petCritBonus = petBuffs.critChance * 100; // convert to percentage
   const critHit = (critRating + petCritBonus) > 0 && Math.random() * 100 < (critRating + petCritBonus);
-    const critDmg = (deadlyStrike ?? 200) / 100; // default 200% = 2x
+    const critDmg = (200 + (deadlyStrike ?? 0)) / 100; // default 200% = 2x
     const strikes = (eff.doubleStrikePct > 0 && Math.random() * 100 < eff.doubleStrikePct) ? 2 : 1;
     let totalDmgToEnemy = Math.floor(effAtk * strikes * (critHit ? critDmg : 1) * triangleMult) + eff.poisonDmg;
 

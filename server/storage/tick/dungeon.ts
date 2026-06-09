@@ -2,7 +2,7 @@ import {
   db, gameStates, type GameState, eq,
   type GameItem, type ItemSkill,
   ENEMIES, DUNGEONS, generateDungeonDrop,
-  getEquipmentBonuses, generateDroppedItem, getDropChance,
+  getEquipmentBonuses, generateDroppedItem, getDropChance, getAgilityBonuses, getPetBuffs, getTalentBonuses,
   COMBAT_TRIANGLE, TRIANGLE_DAMAGE_BONUS, TRIANGLE_DAMAGE_PENALTY,
   COMBAT_GEM_POOLS, type Rarity, type CombatStyle,
   calculateLevel, getPlayerMaxHp, getPlayerAttack, getPlayerDefence,
@@ -55,8 +55,10 @@ export async function tickDungeon(state: GameState, elapsedSeconds: number): Pro
   const enemyName = isBoss ? boss.name : (waveDef?.name ?? '怪物');
   const enemyEmoji= isBoss ? boss.emoji : (waveDef?.emoji ?? '👾');
 
-  const playerMaxHp = getPlayerMaxHp(state);
-  let playerHp = state.playerHp < 0 ? playerMaxHp : state.playerHp;
+  const talentBonuses = getTalentBonuses(state);
+  const petBuffs = getPetBuffs(state);
+  let playerMaxHp = getPlayerMaxHp(state) + talentBonuses.maxHp + petBuffs.maxHp;
+  let playerHp = state.playerHp < 0 ? playerMaxHp : state.playerHp + petBuffs.maxHp;
   let enemyHp  = state.enemyHp  < 0 ? enemyMaxHp : state.enemyHp;
   const weaponItem = equipment.weapon ?? null;
   const hasWeaponRange = weaponItem && (weaponItem.maxDamage ?? 0) > 0;
@@ -82,7 +84,7 @@ export async function tickDungeon(state: GameState, elapsedSeconds: number): Pro
     if (berserkPct > 0 && playerHp < playerMaxHp * 0.3) effAtk = Math.floor(effAtk * (1 + berserkPct / 100));
 
     const critHit = critRating > 0 && Math.random() * 100 < critRating;
-    const critDmg = (deadlyStrike ?? 200) / 100;
+    const critDmg = (200 + (deadlyStrike ?? 0)) / 100;
     const strikes = (doubleStrikePct > 0 && Math.random() * 100 < doubleStrikePct) ? 2 : 1;
     let totalDmgToEnemy = effAtk * strikes * (critHit ? critDmg : 1) + poisonDmg;
     if (bossShieldActive) totalDmgToEnemy = Math.floor(totalDmgToEnemy * 0.5);

@@ -11,6 +11,9 @@ import {
 } from "@shared/game-data";
 import { eq } from "drizzle-orm";
 import { calculateLevel, getPlayerMaxHp, getPlayerDefence, getAgilityBonuses } from "@shared/game-math";
+import { getTemperatureMultiplier } from "@shared/game-math";
+import { getPetBuffs } from "./skills";
+import { getTalentBonuses } from "./tick/talent-bonuses";
 import { parseEquipment, parseLootBag, parseGems } from "@shared/game-state-parse";
 import { DISENCHANT_GOLD, RARITY_ORDER } from "./constants";
 import { mergeGems } from "./helpers";
@@ -47,8 +50,11 @@ export async function handleTriangleCombat(
   } = getEquipmentBonuses(equipment);
 
   const BASE_COMBAT_SPEED = 3;
-  const tempMul = 1; // triangle combat doesn't use temperature
+  const tempMul = getTemperatureMultiplier(state);
   const effectiveCombatSpeed = Math.max(1.5, BASE_COMBAT_SPEED * (1 - attackSpeed / 200)) / tempMul;
+
+  const petBuffs = getPetBuffs(state);
+  const talentBonuses = getTalentBonuses(state);
   const ticks = Math.floor(elapsedSeconds / effectiveCombatSpeed);
   if (ticks <= 0) return state;
 
@@ -62,8 +68,8 @@ export async function handleTriangleCombat(
   const tierHpMul = tier === 2 ? 2 : tier === 3 ? 4 : tier === 4 ? 8 : 1;
   const tierAtkMul = tier === 2 ? 1.5 : tier === 3 ? 2.5 : tier === 4 ? 4 : 1;
 
-  const playerMaxHp = getPlayerMaxHp(state);
-  let playerHp = state.playerHp < 0 ? playerMaxHp : state.playerHp;
+  const playerMaxHp = getPlayerMaxHp(state) + talentBonuses.maxHp + petBuffs.maxHp;
+  let playerHp = state.playerHp < 0 ? playerMaxHp : state.playerHp + petBuffs.maxHp;
   const scaledMaxHp = Math.floor(enemy.maxHp * tierHpMul);
   let enemyHp = state.enemyHp < 0 ? scaledMaxHp : state.enemyHp;
   const enemyAttack = Math.floor(enemy.attack * tierAtkMul);
@@ -103,7 +109,7 @@ export async function handleTriangleCombat(
     }
 
     const critHit = critRating > 0 && Math.random() * 100 < critRating;
-    const critDmg = (deadlyStrike ?? 200) / 100;
+    const critDmg = (200 + (deadlyStrike ?? 0)) / 100;
     const strikes = eff.doubleStrikePct > 0 && Math.random() * 100 < eff.doubleStrikePct ? 2 : 1;
     let totalDmgToEnemy = Math.floor((effAtk * strikes * (critHit ? critDmg : 1) + eff.poisonDmg) * triangleMult);
     if (crushingBlow > 0 && Math.random() * 100 < crushingBlow) {
