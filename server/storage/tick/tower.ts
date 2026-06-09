@@ -1,6 +1,7 @@
 import {
   db, gameStates, type GameState, eq,
   DUNGEONS, getEquipmentBonuses, COMBAT_GEM_POOLS, type CombatStyle,
+  generateDroppedItem,
   calculateLevel, getPlayerMaxHp, getPlayerAttack, getPlayerDefence,
   parseEquipment, parseLootBag, parseGems,
   getResourceCount, buildResourceUpdates,
@@ -55,10 +56,9 @@ export async function tickTower(state: GameState, elapsedSeconds: number): Promi
       if (isBoss) {
         if (Math.random() < 0.2) { /* tower key — already tracked via towerFloor */ }
         if (Math.random() < 0.1) {
-          const slot = ALL_SLOTS[Math.floor(Math.random() * ALL_SLOTS.length)];
-          const base = SLOT_BASES[slot][Math.floor(Math.random() * SLOT_BASES[slot].length)];
-          const affixes = [{ type: 'damage_percent' as AffixType, value: Math.floor(20 + floor * 3) }];
-          const drop = { instanceId: `mythic_${Date.now()}`, name: `神话 ${base.name}`, slot, emoji: base.emoji, rarity: 'mythic' as Rarity, ilvl: Math.floor(50 + floor * 3), affixes, prefixes:[], suffixes:affixes, minDamage:base.minDamage, maxDamage:base.maxDamage, attackBonus:Math.floor(floor*2), defenceBonus:0, hpBonus:0, critRating:0, enhancedDamage:0, lifeOnKill:0, crushingBlow:0, magicFind:0, lifeRegen:0, goldBonus:0, resistAll:0, lifeLeech:0, deadlyStrike:0, attackSpeed:0, reflectDamage:0, source:'dropped' as const, baseType:base.id, maxSockets:3, socketedGems:[], skills:[] };
+          const drop = generateDroppedItem(Math.floor(50 + floor * 3), 10);
+          drop.rarity = 'mythic';
+          drop.maxSockets = 3;
           newDrops.push(drop as GameItem);
         }
       }

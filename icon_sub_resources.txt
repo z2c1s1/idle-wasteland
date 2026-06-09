@@ -1,0 +1,152 @@
+══════════════════════════════════
+伐木子资源（10 个 — 每级 1 个）
+══════════════════════════════════
+32×32 像素风，透明 PNG，木头/板材主题
+
+1.  wood_0   橡木 Oak
+2.  wood_1   柳木 Willow
+3.  wood_2   柚木 Teak
+4.  wood_3   枫木 Maple
+5.  wood_4   桃花心木 Mahogany
+6.  wood_5   紫杉木 Yew
+7.  wood_6   辐射木 Radwood
+8.  wood_7   古树木 Ancient Wood
+9.  wood_8   红杉木 Redwood
+10. wood_9   废铁木 Scrapwood
+
+══════════════════════════════════
+采矿子资源（10 个 — 每级 1 个）
+══════════════════════════════════
+32×32 像素风，透明 PNG，矿石/石块主题
+
+1.  ore_0   铜矿 Copper Ore
+2.  ore_1   锡矿 Tin Ore
+3.  ore_2   铁矿 Iron Ore
+4.  ore_3   煤矿 Coal Ore
+5.  ore_4   铀矿 Uranium Ore
+6.  ore_5   钨矿 Tungsten Ore
+7.  ore_6   钛矿 Titanium Ore
+8.  ore_7   铬矿 Chromium Ore
+9.  ore_8   铂矿 Platinum Ore
+10. ore_9   铱矿 Iridium Ore
+
+══════════════════════════════════
+冶炼子资源（10 个 — 每级 1 个）
+══════════════════════════════════
+32×32 像素风，透明 PNG，金属锭主题
+
+1.  bar_0   铜锭 Copper Bar
+2.  bar_1   锡锭 Tin Bar
+3.  bar_2   铁锭 Iron Bar
+4.  bar_3   煤锭 Coal Bar
+5.  bar_4   铀锭 Uranium Bar
+6.  bar_5   钨锭 Tungsten Bar
+7.  bar_6   钛锭 Titanium Bar
+8.  bar_7   铬锭 Chromium Bar
+9.  bar_8   铂锭 Platinum Bar
+10. bar_9   铱锭 Iridium Bar
+
+══════════════════════════════════
+钓鱼子资源（10 个）
+══════════════════════════════════
+32×32 像素风，透明 PNG，变异鱼主题
+
+1.  fish_0   变异鱼1 Mutant Fish 1
+2.  fish_1   变异鱼2 Mutant Fish 2
+3.  fish_2   变异鱼3 Mutant Fish 3
+4.  fish_3   变异鱼4 Mutant Fish 4
+5.  fish_4   变异鱼5 Mutant Fish 5
+6.  fish_5   变异鱼6 Mutant Fish 6
+7.  fish_6   变异鱼7 Mutant Fish 7
+8.  fish_7   变异鱼8 Mutant Fish 8
+9.  fish_8   变异鱼9 Mutant Fish 9
+10. fish_9   变异鱼10 Mutant Fish 10
+
+══════════════════════════════════
+狩猎子资源（10 个）
+══════════════════════════════════
+32×32 像素风，透明 PNG，兽皮主题
+
+1.  hide_0   兽皮1 Hide 1
+2.  hide_1   兽皮2 Hide 2
+3.  hide_2   兽皮3 Hide 3
+4.  hide_3   兽皮4 Hide 4
+5.  hide_4   兽皮5 Hide 5
+6.  hide_5   兽皮6 Hide 6
+7.  hide_6   兽皮7 Hide 7
+8.  hide_7   兽皮8 Hide 8
+9.  hide_8   兽皮9 Hide 9
+10. hide_9   兽皮10 Hide 10
+
+══════════════════════════════════
+搜刮子资源 / 制作子资源（10 个）
+══════════════════════════════════
+32×32 像素风，透明 PNG，废料/杂物主题
+
+1.  item_0   废料1 Scrap 1
+2.  item_1   废料2 Scrap 2
+3.  item_2   废料3 Scrap 3
+4.  item_3   废料4 Scrap 4
+5.  item_4   废料5 Scrap 5
+6.  item_5   废料6 Scrap 6
+7.  item_6   废料7 Scrap 7
+8.  item_7   废料8 Scrap 8
+9.  item_8   废料9 Scrap 9
+10. item_9   废料10 Scrap 10
+
+══════════════════════════════════
+敏捷子资源（10 个）
+══════════════════════════════════
+32×32 像素风，透明 PNG，跑酷/体能主题
+
+1.  基础跑酷    Basic Parkour
+2.  平衡木      Balance Beam
+3.  攀爬墙      Climbing Wall
+4.  障碍赛      Obstacle Course
+5.  绳索攀爬    Rope Climb
+6.  独木桥      Log Bridge
+7.  高空跳      High Jump
+8.  翻滚训练    Roll Training
+9.  墙壁跑酷    Wall Run
+10. 倒立行走    Handstand Walk
+
+══════════════════════════════════
+探索子资源（30 个区域）
+══════════════════════════════════
+32×32 像素风，透明 PNG，废土地标主题
+
+1.  枯树林       Deadwood Forest
+2.  废弃加油站   Abandoned Gas Station
+3.  废墟小镇     Ruined Town
+4.  辐射沼泽     Radiation Swamp
+5.  破碎公路     Broken Highway
+6.  废弃农场     Abandoned Farm
+7.  地下掩体     Underground Bunker
+8.  酸雨平原     Acid Rain Plain
+9.  沙暴废土     Sandstorm Wasteland
+10. 雪地废墟     Snow Ruins
+11. 火山灰地带   Ash Wastes
+12. 淹没城区     Flooded City
+13. 高架桥废墟   Viaduct Ruins
+14. 裂谷深渊     Rift Abyss
+15. 变异丛林     Mutant Jungle
+16. 巨兽骸骨场   Giant Bone Field
+17. 废弃工厂     Abandoned Factory
+18. 军事禁区     Military Zone
+19. 变异巢穴     Mutant Nest
+20. 废铁森林     Scrap Forest
+21. 搁浅货轮     Shipwreck
+22. 海盗码头     Pirate Dock
+23. 天文台废墟   Observatory Ruins
+24. 迷宫地铁     Metro Maze
+25. 实验室废墟   Lab Ruins
+26. 陨石坑       Meteor Crater
+27. 深渊裂谷     Abyssal Rift
+28. 辐射风暴区   Rad Storm Zone
+29. 避难所遗迹   Vault Ruins
+30. 终末之门     Endgate
+
+══════════════════════════════════
+总计子资源：100 个
+══════════════════════════════════
+木材10 + 矿石10 + 金属锭10 + 变异鱼10 + 兽皮10 + 废料10 + 敏捷10 + 探索区域30 = 100 个

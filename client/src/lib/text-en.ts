@@ -95,6 +95,7 @@ export const uiTextEn = {
     navAlchemy: "Alchemy",
     navPrayer: "Prayers",
     navWastelandTech: "Wasteland Tech",
+    navBounties: "Bounties",
   },
 
   dashboard: {

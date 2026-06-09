@@ -4,10 +4,11 @@ import {
   WOODCUTTING_BERRY_DROPS, HUNTING_HERB_DROPS,
   MINING_GEM_POOLS,
   calculateLevel, getPlayerMaxHp,
-  parseEquipment, getResourceCount, buildResourceUpdates,
+  parseEquipment, parseLootBag, getResourceCount, buildResourceUpdates,
   getAgilityBonuses, getTemperatureMultiplier,
   SKILLS_DATA, RARITY_ORDER, DISENCHANT_GOLD, mergeGems, rollGemDropsFromPool, parseGems,
   trackAchievement, getPetBuffs,
+  generateDroppedItem,
 } from "./_shared";
 
 const calcLevel = calculateLevel;
@@ -126,6 +127,33 @@ if (skill === 'hunting') {
     const herbs = JSON.parse(state.herbs ?? '{}');
     herbs[herbDrop.herbId] = (herbs[herbDrop.herbId] ?? 0) + completions;
     updates.herbs = JSON.stringify(herbs);
+  }
+}
+
+// Fishing: treasure chest (3-8% based on tier, random equipment) + rare ring (0.5% tier 5+)
+if (skill === 'fishing') {
+  const fishLevel = calculateLevel(state.fishingXp);
+  const treasureChance = index >= 6 ? 0.08 : index >= 4 ? 0.05 : index >= 3 ? 0.03 : 0;
+  if (treasureChance > 0) {
+    for (let i = 0; i < completions; i++) {
+      if (Math.random() < treasureChance) {
+        const item = generateDroppedItem(fishLevel, 0);
+        const lootBag = parseLootBag(state.lootBag);
+        lootBag.push(item);
+        updates.lootBag = JSON.stringify(lootBag);
+      }
+    }
+  }
+  if (index >= 5) {
+    for (let i = 0; i < completions; i++) {
+      if (Math.random() < 0.005) {
+        const ring = generateDroppedItem(fishLevel, 0);
+        ring.slot = 'ring';
+        const lootBag = parseLootBag(state.lootBag);
+        lootBag.push(ring);
+        updates.lootBag = JSON.stringify(lootBag);
+      }
+    }
   }
 }
 

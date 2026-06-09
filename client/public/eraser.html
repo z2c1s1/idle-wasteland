@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Eraser Tool</title>
+<style>
+  body{background:#222;color:#fff;font-family:monospace;padding:8px}
+  #outer{position:relative;display:inline-block}
+  #bg{position:absolute;inset:0;
+    background-image:linear-gradient(45deg,#444 25%,transparent 25%),linear-gradient(-45deg,#444 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#444 75%),linear-gradient(-45deg,transparent 75%,#444 75%);
+    background-size:16px 16px;background-position:0 0,0 8px,8px -8px,-8px 0}
+  canvas{display:block;position:relative;z-index:1}
+  #bar{display:flex;gap:10px;align-items:center;margin-bottom:6px;flex-wrap:wrap}
+  button{padding:6px 14px;cursor:pointer;font-size:13px}
+  input[type=range]{width:100px}
+  .active{background:#0f0;color:#000}
+  #cursor{position:absolute;border:2px dashed #0f0;border-radius:50%;pointer-events:none;z-index:5;display:none}
+</style>
+</head>
+<body>
+<div id="bar">
+  <b>Image:</b> <input id="imgUrl" value="/equip_bg_raw.png" size="45">
+  <button onclick="load(document.getElementById('imgUrl').value)">Load</button>
+  <span>|</span>
+  <button id="btnE" class="active" onclick="mode='e';btnE.className='active';btnR.className=''">🧹 Erase</button>
+  <button id="btnR" onclick="mode='r';btnR.className='active';btnE.className=''">↩ Restore</button>
+  <span>|</span>
+  Size: <input type="range" id="bs" min="4" max="120" value="20" oninput="sz=+this.value;document.getElementById('sv').textContent=this.value">
+  <span id="sv">20</span>px
+  <span>|</span>
+  <button onclick="undo()">↩ Undo</button>
+  <button onclick="save()">💾 Save</button>
+</div>
+<div id="outer">
+  <div id="bg"></div>
+  <canvas id="c"></canvas>
+  <div id="cursor"></div>
+</div>
+<script>
+let mode='e',sz=20,W=0,H=0,data=null,orig=null,scale=1,drawing=false;
+const c=document.getElementById('c'),ctx=c.getContext('2d');
+const cursor=document.getElementById('cursor');
+const stack=[];
+
+function load(url){
+  const img=new Image();
+  img.onload=()=>{
+    W=img.naturalWidth;H=img.naturalHeight;
+    c.width=W;c.height=H;
+    const maxW=window.innerWidth-40,maxH=window.innerHeight-140;
+    scale=Math.min(1,maxW/W,maxH/H);
+    const dw=Math.round(W*scale),dh=Math.round(H*scale);
+    c.style.width=dw+'px';c.style.height=dh+'px';
+    document.getElementById('bg').style.width=dw+'px';
+    document.getElementById('bg').style.height=dh+'px';
+    ctx.drawImage(img,0,0);
+    data=ctx.getImageData(0,0,W,H);
+    orig=new Uint8ClampedArray(data.data);
+    stack.length=0;
+  };
+  img.src=url;
+}
+
+function pos(e){
+  const r=c.getBoundingClientRect();
+  return {x:Math.floor((e.clientX-r.left)/scale),y:Math.floor((e.clientY-r.top)/scale)};
+}
+
+function brush(x,y){
+  const r=Math.floor(sz/2),d=data.data;
+  for(let dy=-r;dy<=r;dy++){
+    for(let dx=-r;dx<=r;dx++){
+      if(dx*dx+dy*dy>r*r)continue;
+      const px=x+dx,py=y+dy;
+      if(px<0||py<0||px>=W||py>=H)continue;
+      const i=(py*W+px)*4;
+      if(mode==='e'){d[i+3]=0}
+      else{d[i]=orig[i];d[i+1]=orig[i+1];d[i+2]=orig[i+2];d[i+3]=orig[i+3]}
+    }
+  }
+  ctx.putImageData(data,0,0);
+}
+
+c.addEventListener('mousedown',e=>{
+  if(!data)return;
+  stack.push(new Uint8ClampedArray(data.data));
+  if(stack.length>50)stack.shift();
+  drawing=true;
+  const p=pos(e);brush(p.x,p.y);
+});
+c.addEventListener('mousemove',e=>{
+  if(!data)return;
+  const p=pos(e);
+  // Show brush cursor
+  cursor.style.display='block';
+  cursor.style.left=(p.x*scale-sz*scale/2)+'px';
+  cursor.style.top=(p.y*scale-sz*scale/2)+'px';
+  cursor.style.width=(sz*scale)+'px';
+  cursor.style.height=(sz*scale)+'px';
+  cursor.style.borderColor=mode==='e'?'#0f0':'#08f';
+  if(drawing)brush(p.x,p.y);
+});
+c.addEventListener('mouseup',()=>drawing=false);
+c.addEventListener('mouseleave',()=>{drawing=false;cursor.style.display='none'});
+
+// Touch
+c.addEventListener('touchstart',e=>{e.preventDefault();stack.push(new Uint8ClampedArray(data.data));drawing=true;brush(pos(e.touches[0]))});
+c.addEventListener('touchmove',e=>{e.preventDefault();if(drawing)brush(pos(e.touches[0]));const p=pos(e.touches[0]);cursor.style.display='block';cursor.style.left=(p.x*scale-sz*scale/2)+'px';cursor.style.top=(p.y*scale-sz*scale/2)+'px';cursor.style.width=(sz*scale)+'px';cursor.style.height=(sz*scale)+'px'});
+c.addEventListener('touchend',()=>{drawing=false;cursor.style.display='none'});
+
+function undo(){
+  if(!stack.length||!data)return;
+  data.data.set(stack.pop());
+  ctx.putImageData(data,0,0);
+}
+function save(){
+  if(!data)return;
+  const n=document.createElement('canvas');n.width=W;n.height=H;
+  n.getContext('2d').putImageData(data,0,0);
+  const a=document.createElement('a');a.download='erased.png';a.href=n.toDataURL();a.click();
+}
+
+load(document.getElementById('imgUrl').value);
+</script>
+</body>
+</html>

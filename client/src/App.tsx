@@ -32,6 +32,7 @@ import Town from "@/pages/town";
 import Exploration from "@/pages/exploration";
 import WastelandTech from "@/pages/wasteland-tech";
 import Materials from "@/pages/materials";
+import Bounties from "@/pages/bounties";
 import Pets from "@/pages/pets";
 
 function Router() {
@@ -46,6 +47,7 @@ function Router() {
       <Route path="/combat" component={Combat} />
       <Route path="/inventory" component={Inventory} />
       <Route path="/materials" component={Materials} />
+      <Route path="/bounties" component={Bounties} />
       <Route path="/smithing" component={Smithing} />
       <Route path="/leatherworking" component={Leatherworking} />
       <Route path="/jewelcrafting" component={Jewelcrafting} />

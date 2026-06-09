@@ -1,0 +1,741 @@
+{
+  "meta": {
+    "image": "wasteland_idle_rpg_spritesheet_transparent.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 1254,
+      "h": 1254
+    },
+    "scale": "1",
+    "cellSize": {
+      "w": 209,
+      "h": 209
+    },
+    "columns": 6,
+    "rows": 6,
+    "count": 36,
+    "generator": "OpenAI ChatGPT"
+  },
+  "frames": {
+    "01_zombie": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 16,
+        "y": 15,
+        "w": 176,
+        "h": 185
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "02_mutant_hound": {
+      "frame": {
+        "x": 209,
+        "y": 0,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 16,
+        "y": 28,
+        "w": 193,
+        "h": 166
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "03_rad_rat": {
+      "frame": {
+        "x": 418,
+        "y": 0,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 15,
+        "y": 33,
+        "w": 185,
+        "h": 163
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "04_skeleton_warrior": {
+      "frame": {
+        "x": 627,
+        "y": 0,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 8,
+        "y": 17,
+        "w": 182,
+        "h": 185
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "05_toxic_brute": {
+      "frame": {
+        "x": 836,
+        "y": 0,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 9,
+        "y": 14,
+        "w": 192,
+        "h": 184
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "06_raven": {
+      "frame": {
+        "x": 1045,
+        "y": 0,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 25,
+        "y": 22,
+        "w": 183,
+        "h": 178
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "07_steam_robot": {
+      "frame": {
+        "x": 0,
+        "y": 209,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 7,
+        "y": 10,
+        "w": 193,
+        "h": 184
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "08_toxic_beetle": {
+      "frame": {
+        "x": 209,
+        "y": 209,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 14,
+        "y": 23,
+        "w": 185,
+        "h": 167
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "09_sandworm": {
+      "frame": {
+        "x": 418,
+        "y": 209,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 13,
+        "y": 13,
+        "w": 188,
+        "h": 183
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "10_mutant_brute": {
+      "frame": {
+        "x": 627,
+        "y": 209,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 9,
+        "y": 16,
+        "w": 189,
+        "h": 175
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "11_sniper": {
+      "frame": {
+        "x": 836,
+        "y": 209,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 9,
+        "y": 19,
+        "w": 194,
+        "h": 172
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "12_tribal_shaman": {
+      "frame": {
+        "x": 1045,
+        "y": 209,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 13,
+        "y": 6,
+        "w": 192,
+        "h": 189
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "13_mushroom_mutant": {
+      "frame": {
+        "x": 0,
+        "y": 418,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 12,
+        "y": 10,
+        "w": 186,
+        "h": 187
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "14_dark_knight": {
+      "frame": {
+        "x": 209,
+        "y": 418,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 6,
+        "y": 8,
+        "w": 189,
+        "h": 189
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "15_demon": {
+      "frame": {
+        "x": 418,
+        "y": 418,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 12,
+        "y": 11,
+        "w": 190,
+        "h": 186
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "16_short_sword": {
+      "frame": {
+        "x": 627,
+        "y": 418,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 15,
+        "y": 16,
+        "w": 165,
+        "h": 181
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "17_cleaver": {
+      "frame": {
+        "x": 836,
+        "y": 418,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 14,
+        "y": 17,
+        "w": 178,
+        "h": 176
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "18_spear": {
+      "frame": {
+        "x": 1045,
+        "y": 418,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 19,
+        "y": 13,
+        "w": 166,
+        "h": 180
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "19_mace": {
+      "frame": {
+        "x": 0,
+        "y": 627,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 18,
+        "y": 8,
+        "w": 167,
+        "h": 192
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "20_dagger": {
+      "frame": {
+        "x": 209,
+        "y": 627,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 20,
+        "y": 16,
+        "w": 160,
+        "h": 184
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "21_revolver": {
+      "frame": {
+        "x": 418,
+        "y": 627,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 20,
+        "y": 23,
+        "w": 173,
+        "h": 171
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "22_shotgun": {
+      "frame": {
+        "x": 627,
+        "y": 627,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 8,
+        "y": 38,
+        "w": 187,
+        "h": 154
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "23_sniper_rifle": {
+      "frame": {
+        "x": 836,
+        "y": 627,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 12,
+        "y": 11,
+        "w": 187,
+        "h": 189
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "24_crossbow": {
+      "frame": {
+        "x": 1045,
+        "y": 627,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 14,
+        "y": 28,
+        "w": 187,
+        "h": 159
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "25_skull_staff": {
+      "frame": {
+        "x": 0,
+        "y": 836,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 21,
+        "y": 6,
+        "w": 151,
+        "h": 186
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "26_green_staff": {
+      "frame": {
+        "x": 209,
+        "y": 836,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 27,
+        "y": 4,
+        "w": 139,
+        "h": 187
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "27_helmet": {
+      "frame": {
+        "x": 418,
+        "y": 836,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 14,
+        "y": 1,
+        "w": 164,
+        "h": 189
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "28_gas_mask_hood": {
+      "frame": {
+        "x": 627,
+        "y": 836,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 12,
+        "y": 1,
+        "w": 176,
+        "h": 189
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "29_spiked_bracer": {
+      "frame": {
+        "x": 836,
+        "y": 836,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 13,
+        "y": 22,
+        "w": 182,
+        "h": 163
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "30_chest_armor": {
+      "frame": {
+        "x": 1045,
+        "y": 836,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 11,
+        "y": 7,
+        "w": 190,
+        "h": 182
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "31_gauntlet": {
+      "frame": {
+        "x": 0,
+        "y": 1045,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 29,
+        "y": 9,
+        "w": 156,
+        "h": 175
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "32_boots": {
+      "frame": {
+        "x": 209,
+        "y": 1045,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 7,
+        "y": 10,
+        "w": 185,
+        "h": 175
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "33_green_ring": {
+      "frame": {
+        "x": 418,
+        "y": 1045,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 27,
+        "y": 12,
+        "w": 149,
+        "h": 164
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "34_skull_band": {
+      "frame": {
+        "x": 627,
+        "y": 1045,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 15,
+        "y": 33,
+        "w": 175,
+        "h": 138
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "35_skull_belt": {
+      "frame": {
+        "x": 836,
+        "y": 1045,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 18,
+        "y": 36,
+        "w": 179,
+        "h": 135
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    },
+    "36_horned_skull_amulet": {
+      "frame": {
+        "x": 1045,
+        "y": 1045,
+        "w": 209,
+        "h": 209
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 25,
+        "y": 3,
+        "w": 153,
+        "h": 182
+      },
+      "sourceSize": {
+        "w": 209,
+        "h": 209
+      }
+    }
+  }
+}

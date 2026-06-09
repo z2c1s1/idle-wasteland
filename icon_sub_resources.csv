@@ -1,0 +1,108 @@
+类别,编号,资源Key,中文名,英文名,建议尺寸,主题描述
+伐木,1,wood_0,橡木,Oak Wood,32x32,木材/板材
+伐木,2,wood_1,柳木,Willow Wood,32x32,木材/板材
+伐木,3,wood_2,柚木,Teak Wood,32x32,木材/板材
+伐木,4,wood_3,枫木,Maple Wood,32x32,木材/板材
+伐木,5,wood_4,桃花心木,Mahogany Wood,32x32,木材/板材
+伐木,6,wood_5,紫杉木,Yew Wood,32x32,木材/板材
+伐木,7,wood_6,辐射木,Radwood,32x32,绿色发光变异木材
+伐木,8,wood_7,古树木,Ancient Wood,32x32,粗壮古树纹理
+伐木,9,wood_8,红杉木,Redwood,32x32,红色树皮纹理
+伐木,10,wood_9,废铁木,Scrapwood,32x32,嵌有金属碎片的木材
+
+采矿,1,ore_0,铜矿,Copper Ore,32x32,铜绿色矿石
+采矿,2,ore_1,锡矿,Tin Ore,32x32,银灰色矿石
+采矿,3,ore_2,铁矿,Iron Ore,32x32,红棕色矿石
+采矿,4,ore_3,煤矿,Coal Ore,32x32,黑色矿石
+采矿,5,ore_4,铀矿,Uranium Ore,32x32,绿色荧光矿石
+采矿,6,ore_5,钨矿,Tungsten Ore,32x32,深灰色重矿石
+采矿,7,ore_6,钛矿,Titanium Ore,32x32,银白色轻质矿石
+采矿,8,ore_7,铬矿,Chromium Ore,32x32,亮银色反光矿石
+采矿,9,ore_8,铂矿,Platinum Ore,32x32,白金色贵金属矿石
+采矿,10,ore_9,铱矿,Iridium Ore,32x32,彩色光泽稀有矿石
+
+冶炼,1,bar_0,铜锭,Copper Bar,32x32,铜色金属锭
+冶炼,2,bar_1,锡锭,Tin Bar,32x32,银色金属锭
+冶炼,3,bar_2,铁锭,Iron Bar,32x32,铁灰色金属锭
+冶炼,4,bar_3,煤锭,Coal Bar,32x32,黑色压缩碳锭
+冶炼,5,bar_4,铀锭,Uranium Bar,32x32,绿色发光金属锭
+冶炼,6,bar_5,钨锭,Tungsten Bar,32x32,深灰色重锭
+冶炼,7,bar_6,钛锭,Titanium Bar,32x32,银白色轻锭
+冶炼,8,bar_7,铬锭,Chromium Bar,32x32,亮银色反光锭
+冶炼,9,bar_8,铂锭,Platinum Bar,32x32,白金色贵金属锭
+冶炼,10,bar_9,铱锭,Iridium Bar,32x32,彩色光泽稀有锭
+
+钓鱼,1,fish_0,变异鱼1,Mutant Fish 1,32x32,小型双头鱼
+钓鱼,2,fish_1,变异鱼2,Mutant Fish 2,32x32,发光鳞片鱼
+钓鱼,3,fish_2,变异鱼3,Mutant Fish 3,32x32,多眼鱼
+钓鱼,4,fish_3,变异鱼4,Mutant Fish 4,32x32,骨刺鱼
+钓鱼,5,fish_4,变异鱼5,Mutant Fish 5,32x32,巨大鱼
+钓鱼,6,fish_5,变异鱼6,Mutant Fish 6,32x32,荧光条纹鱼
+钓鱼,7,fish_6,变异鱼7,Mutant Fish 7,32x32,甲壳鱼
+钓鱼,8,fish_7,变异鱼8,Mutant Fish 8,32x32,长牙鱼
+钓鱼,9,fish_8,变异鱼9,Mutant Fish 9,32x32,触手鱼
+钓鱼,10,fish_9,变异鱼10,Mutant Fish 10,32x32,三头鱼
+
+狩猎,1,hide_0,兽皮1,Hide 1,32x32,小型灰色皮毛
+狩猎,2,hide_1,兽皮2,Hide 2,32x32,棕色皮毛
+狩猎,3,hide_2,兽皮3,Hide 3,32x32,斑点皮毛
+狩猎,4,hide_3,兽皮4,Hide 4,32x32,厚实黑皮毛
+狩猎,5,hide_4,兽皮5,Hide 5,32x32,条纹皮毛
+狩猎,6,hide_5,兽皮6,Hide 6,32x32,鳞甲皮
+狩猎,7,hide_6,兽皮7,Hide 7,32x32,硬甲皮
+狩猎,8,hide_7,兽皮8,Hide 8,32x32,变异发光皮
+狩猎,9,hide_8,兽皮9,Hide 9,32x32,大型厚皮
+狩猎,10,hide_9,兽皮10,Hide 10,32x32,辐射皮
+
+制作,1,item_0,废料1,Scrap 1,32x32,布料碎块
+制作,2,item_1,废料2,Scrap 2,32x32,皮革边角
+制作,3,item_2,废料3,Scrap 3,32x32,金属碎片
+制作,4,item_3,废料4,Scrap 4,32x32,电路板残片
+制作,5,item_4,废料5,Scrap 5,32x32,齿轮零件
+制作,6,item_5,废料6,Scrap 6,32x32,精密零件
+制作,7,item_6,废料7,Scrap 7,32x32,稀有合金
+制作,8,item_7,废料8,Scrap 8,32x32,高科技元件
+制作,9,item_8,废料9,Scrap 9,32x32,战前精工品
+制作,10,item_9,废料10,Scrap 10,32x32,终极废料
+
+敏捷,1,agility_0,基础跑酷,Basic Parkour,32x32,跑步动作
+敏捷,2,agility_1,平衡木,Balance Beam,32x32,平衡木
+敏捷,3,agility_2,攀爬墙,Climbing Wall,32x32,攀爬墙壁
+敏捷,4,agility_3,障碍赛,Obstacle Course,32x32,跨栏障碍
+敏捷,5,agility_4,绳索攀爬,Rope Climb,32x32,绳索
+敏捷,6,agility_5,独木桥,Log Bridge,32x32,独木桥
+敏捷,7,agility_6,高空跳,High Jump,32x32,跳台
+敏捷,8,agility_7,翻滚训练,Roll Training,32x32,翻滚动作
+敏捷,9,agility_8,墙壁跑酷,Wall Run,32x32,墙面跑步
+敏捷,10,agility_9,倒立行走,Handstand Walk,32x32,倒立行走
+
+探索,1,exploration_0,枯树林,Deadwood Forest,32x32,枯树+废土
+探索,2,exploration_1,废弃加油站,Abandoned Gas Station,32x32,废弃加油站
+探索,3,exploration_2,废墟小镇,Ruined Town,32x32,倒塌建筑
+探索,4,exploration_3,辐射沼泽,Radiation Swamp,32x32,绿色沼泽
+探索,5,exploration_4,破碎公路,Broken Highway,32x32,裂开公路
+探索,6,exploration_5,废弃农场,Abandoned Farm,32x32,废弃农舍
+探索,7,exploration_6,地下掩体,Underground Bunker,32x32,地下入口
+探索,8,exploration_7,酸雨平原,Acid Rain Plain,32x32,腐蚀地面
+探索,9,exploration_8,沙暴废土,Sandstorm Wasteland,32x32,沙尘暴
+探索,10,exploration_9,雪地废墟,Snow Ruins,32x32,雪中废墟
+探索,11,exploration_10,火山灰地带,Ash Wastes,32x32,火山灰
+探索,12,exploration_11,淹没城区,Flooded City,32x32,水中建筑
+探索,13,exploration_12,高架桥废墟,Viaduct Ruins,32x32,断桥
+探索,14,exploration_13,裂谷深渊,Rift Abyss,32x32,大地裂缝
+探索,15,exploration_14,变异丛林,Mutant Jungle,32x32,变异植物
+探索,16,exploration_15,巨兽骸骨场,Giant Bone Field,32x32,巨大骨骸
+探索,17,exploration_16,废弃工厂,Abandoned Factory,32x32,废弃厂房
+探索,18,exploration_17,军事禁区,Military Zone,32x32,铁丝网+警告牌
+探索,19,exploration_18,变异巢穴,Mutant Nest,32x32,肉质感巢穴
+探索,20,exploration_19,废铁森林,Scrap Forest,32x32,金属废料堆
+探索,21,exploration_20,搁浅货轮,Shipwreck,32x32,搁浅船只
+探索,22,exploration_21,海盗码头,Pirate Dock,32x32,破旧码头
+探索,23,exploration_22,天文台废墟,Observatory Ruins,32x32,倒塌天文台
+探索,24,exploration_23,迷宫地铁,Metro Maze,32x32,地铁隧道
+探索,25,exploration_24,实验室废墟,Lab Ruins,32x32,废弃实验室
+探索,26,exploration_25,陨石坑,Meteor Crater,32x32,陨石坑
+探索,27,exploration_26,深渊裂谷,Abyssal Rift,32x32,深渊裂缝
+探索,28,exploration_27,辐射风暴区,Rad Storm Zone,32x32,辐射风暴
+探索,29,exploration_28,避难所遗迹,Vault Ruins,32x32,避难所大门
+探索,30,exploration_29,终末之门,Endgate,32x32,巨型门

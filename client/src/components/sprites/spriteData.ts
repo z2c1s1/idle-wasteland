@@ -7,7 +7,7 @@ export type SkillIconName = 'woodcutting' | 'mining' | 'smelting' | 'fishing' | 
   | 'smithing' | 'leatherworking' | 'jewelcrafting' | 'combat' | 'agility' | 'exploration'
   | 'cooking' | 'alchemy' | 'prayer' | 'homestead' | 'town' | 'inventory' | 'gems'
   | 'talents' | 'equipment' | 'wasteland' | 'dashboard';
-export type ResourceType = 'wood' | 'ore' | 'bar' | 'fish' | 'hide' | 'herb' | 'berry' | 'stone' | 'bone' | 'gold' | 'agility' | 'exploration' | 'craft';
+export type ResourceType = 'animal' | 'wood' | 'ore' | 'bar' | 'fish' | 'hide' | 'herb' | 'berry' | 'stone' | 'bone' | 'gold' | 'agility' | 'exploration' | 'craft';
 export interface PixelColors { dark: string; main: string; light: string; highlight: string; eye: string; }
 type PG = number[][];
 

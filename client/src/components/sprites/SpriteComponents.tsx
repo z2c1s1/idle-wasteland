@@ -38,7 +38,7 @@ const TILE_FILES = [
   '101_龙血果','102_骨头','103_龙骨','104_木材','105_石料',
 ];
 const CAT_START: Record<string, number> = { wood:0, ore:10, fish:20, animal:30, hide:40, meat:50, npc:60, ingot:70, berry:80, herb:92, material:100 };
-const PREFIX_MAP: Record<string, string> = { wood:'wood', ore:'ore', fish:'fish', hide:'hide', meat:'meat', bar:'ingot' };
+const PREFIX_MAP: Record<string, string> = { wood:'wood', ore:'ore', fish:'fish', hide:'hide', meat:'meat', animal:'animal', bar:'ingot' };
 
 /** Convert PixelColors object to string array for PixelGrid */
 function toColors(pc: PixelColors): string[] {
@@ -213,7 +213,7 @@ export function ResourceIcon({ type, size = 20, className = "", tier = 0, resour
   // Match by resource key pattern
   const m = key.match(/^([a-z]+)_(\d+)$/);
   if (m) {
-    const cat = PREFIX_MAP[m[1]];
+    const cat = type === 'animal' ? 'animal' : (PREFIX_MAP[m[1]]);
     if (cat && CAT_START[cat] !== undefined) {
       tileIdx = CAT_START[cat] + parseInt(m[2]);
     }

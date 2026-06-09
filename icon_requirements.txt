@@ -1,0 +1,112 @@
+══════════════════════════════════
+需要生成的怪物 Icon（22 个）
+══════════════════════════════════
+每位一个独立 209×209 透明 PNG，像素风，废土末日辐射主题。
+命名格式：数字_idle_名称.png
+
+1.  rad_roach       变异蟑螂 Mutant Roach
+2.  rad_rat         辐射鼠 Rad Rat
+3.  stray_dog       流浪犬 Stray Dog
+4.  mutant_spider   变异蜘蛛 Mutant Spider
+5.  zombie_walk     蹒跚丧尸 Shambling Zombie
+6.  rad_scorpion    辐射蝎 Rad Scorpion
+7.  ghoul_flesh     食尸鬼 Flesh Ghoul
+8.  mutant_hound    变异猎犬 Mutant Hound
+9.  bandit_scav     废土拾荒者 Wasteland Scav
+10. rad_elemental   辐射元素 Rad Elemental
+11. mutant_bear     变异熊 Mutant Bear
+12. zombie_brute    壮硕丧尸 Zombie Brute
+13. wasteland_raider 废土掠夺者 Wasteland Raider
+14. sentry_bot      哨卫机器人 Sentry Bot
+15. rad_drake       辐射亚龙 Rad Drake
+16. deathclaw       死亡爪 Deathclaw
+17. mutant_behemoth 变异巨兽 Mutant Behemoth
+18. ancient_wraith  远古幽魂 Ancient Wraith
+19. warlord         废土军阀 Wasteland Warlord
+20. glowing_one     辐射辉光者 Glowing One    (隐藏)
+21. elder_dragon    远古巨龙 Elder Dragon     (隐藏)
+22. overlord        终末霸主 The Overlord     (隐藏)
+
+══════════════════════════════════
+需要生成的资源 Icon（13 个）
+══════════════════════════════════
+32×32 像素风，透明 PNG
+
+1.  wood       木材 Wood
+2.  ore        矿石 Ore
+3.  bar        金属锭 Bar
+4.  fish       变异鱼 Mutant Fish
+5.  hide       兽皮 Hide
+6.  herb       草药 Herb
+7.  berry      浆果 Berry
+8.  stone      石料 Stone
+9.  bone       骨头 Bone
+10. gold       瓶盖 Caps (Fallout-style bottle cap)
+11. agility    敏捷 Agility
+12. exploration 探索 Exploration
+13. craft      制作材料 Craft Material
+
+══════════════════════════════════
+需要生成的装备 Icon（9 个槽位）
+══════════════════════════════════
+32×32 像素风，透明 PNG
+
+1.  weapon     武器
+2.  offhand    副手/盾牌
+3.  helmet     头盔
+4.  chest      胸甲
+5.  legs       腿甲
+6.  gloves     手套
+7.  boots      靴子
+8.  neck       项链
+9.  ring       戒指
+
+══════════════════════════════════
+需要生成的技能 Icon（23 个）
+══════════════════════════════════
+24×24 像素风，透明 PNG
+
+1.  woodcutting     伐木
+2.  mining          采矿
+3.  smelting        冶炼
+4.  fishing         钓鱼
+5.  hunting         狩猎
+6.  thieving        搜刮
+7.  smithing        锻造
+8.  leatherworking  皮革制作
+9.  jewelcrafting   珠宝制作
+10. combat          战斗
+11. agility         敏捷
+12. exploration     探索
+13. cooking         烹饪
+14. alchemy         炼金
+15. prayer          祷言
+16. homestead       家园
+17. town            城镇
+18. inventory       背包
+19. gems            宝石
+20. talents         天赋
+21. equipment       装备
+22. wasteland       废土
+23. dashboard       总览
+
+══════════════════════════════════
+需要生成的宝石 Icon（6 种）
+══════════════════════════════════
+16×16 像素风，透明 PNG
+
+1.  ruby      红宝石
+2.  sapphire  蓝宝石
+3.  emerald   绿宝石
+4.  diamond   钻石
+5.  amethyst  紫宝石
+6.  topaz     黄宝石
+
+══════════════════════════════════
+装饰 Icon（3 个）
+══════════════════════════════════
+任意尺寸，透明 PNG
+
+1.  radiation   辐射标志 ☢️
+2.  spark       火花 ⚡
+3.  skull       骷髅 💀

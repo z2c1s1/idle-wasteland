@@ -97,6 +97,7 @@ export const uiText = {
     navAlchemy: "炼金",
     navPrayer: "祷言",
     navWastelandTech: "废土科技",
+    navBounties: "悬赏任务",
   },
 
   dashboard: {

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head><title>Slot Picker – Drag Boxes</title>
+<style>
+  body { background:#111; color:#fff; font-family:monospace; padding:20px; }
+  #canvas { position:relative; width:627px; height:627px; background:url(/equip-panel.png); background-size:contain; background-repeat:no-repeat; cursor:crosshair; }
+  .rect { position:absolute; border:2px solid lime; background:rgba(0,255,0,0.15); }
+  .rect .lbl { position:absolute; left:0; top:-18px; font-size:10px; background:#000; color:lime; padding:1px 4px; white-space:nowrap; }
+  .preview { position:absolute; border:2px dashed lime; background:rgba(0,255,0,0.08); pointer-events:none; }
+  #log { margin-top:10px; max-height:300px; overflow-y:auto; }
+  #log div { padding:2px 0; border-bottom:1px solid #333; }
+  button { margin:4px; padding:4px 12px; cursor:pointer; }
+</style>
+</head>
+<body>
+<h3>Drag boxes around each slot → Copy</h3>
+<div id="canvas"></div>
+<div id="log"></div>
+<button onclick="copyCenters()">Copy Centers (x,y)</button>
+<button onclick="copyRects()">Copy Rects (x,y,w,h)</button>
+<button onclick="undo()">Undo</button>
+<button onclick="clearAll()">Clear</button>
+
+<script>
+const canvas = document.getElementById('canvas');
+const log = document.getElementById('log');
+const rects = [];
+let startX, startY, drawing = false;
+const preview = document.createElement('div');
+preview.className = 'preview';
+canvas.appendChild(preview);
+
+canvas.addEventListener('mousedown', e => {
+  drawing = true;
+  startX = e.offsetX;
+  startY = e.offsetY;
+  preview.style.display = 'block';
+});
+
+canvas.addEventListener('mousemove', e => {
+  if (!drawing) return;
+  const x = Math.min(startX, e.offsetX);
+  const y = Math.min(startY, e.offsetY);
+  const w = Math.abs(e.offsetX - startX);
+  const h = Math.abs(e.offsetY - startY);
+  preview.style.left = x + 'px';
+  preview.style.top = y + 'px';
+  preview.style.width = w + 'px';
+  preview.style.height = h + 'px';
+});
+
+canvas.addEventListener('mouseup', e => {
+  if (!drawing) return;
+  drawing = false;
+  preview.style.display = 'none';
+  const x1 = startX, y1 = startY, x2 = e.offsetX, y2 = e.offsetY;
+  if (Math.abs(x2-x1) < 5 && Math.abs(y2-y1) < 5) return;
+
+  // Account for image scaling (natural 406×450 might differ from display)
+  const scaleX = 1254 / canvas.offsetWidth;
+  const scaleY = 1254 / canvas.offsetHeight;
+  const x = Math.round(Math.min(x1,x2) * scaleX);
+  const y = Math.round(Math.min(y1,y2) * scaleY);
+  const w = Math.round(Math.abs(x2-x1) * scaleX);
+  const h = Math.round(Math.abs(y2-y1) * scaleY);
+  const cx = Math.round(x + w/2);
+  const cy = Math.round(y + h/2);
+
+  const idx = rects.length + 1;
+  const el = document.createElement('div');
+  el.className = 'rect';
+  el.innerHTML = '<span class="lbl">'+idx+'</span>';
+  el.style.left = (Math.min(x1,x2) / canvas.offsetWidth * 100) + '%';
+  el.style.top = (Math.min(y1,y2) / canvas.offsetHeight * 100) + '%';
+  el.style.width = (Math.abs(x2-x1) / canvas.offsetWidth * 100) + '%';
+  el.style.height = (Math.abs(y2-y1) / canvas.offsetHeight * 100) + '%';
+  canvas.appendChild(el);
+  rects.push({id:idx, x, y, w, h, cx, cy, el});
+
+  const entry = document.createElement('div');
+  entry.textContent = idx + ': center=('+cx+','+cy+') size='+w+'x'+h;
+  log.appendChild(entry);
+});
+
+canvas.addEventListener('mouseleave', () => {
+  if (drawing) { drawing = false; preview.style.display = 'none'; }
+});
+
+function copyCenters() {
+  navigator.clipboard.writeText(rects.map(r => r.id+': '+r.cx+','+r.cy).join('\n'));
+  alert('Copied!');
+}
+function copyRects() {
+  navigator.clipboard.writeText(rects.map(r => r.id+': x='+r.x+' y='+r.y+' w='+r.w+' h='+r.h).join('\n'));
+  alert('Copied!');
+}
+function undo() { const r = rects.pop(); if(r){r.el.remove();log.lastChild?.remove();} }
+function clearAll() { rects.forEach(r=>r.el.remove());rects.length=0;log.innerHTML=''; }
+</script>
+</body>
+</html>

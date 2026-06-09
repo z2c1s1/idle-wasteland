@@ -2581,3 +2581,74 @@ export const COMPANION_NPCS: CompanionNPC[] = [
   { id:'warlord_l',   name:'废土军阀', emoji:'👑', rarity:'legendary', dropChance:0.003,bonusType:'all',      bonusName:'全属性',     bonusRange:[10,20] },
 ];
 
+// ─── Bounty Board (daily quests) ────────────────────────────────────────
+export type BountyType = 'kill' | 'gather' | 'craft';
+
+export interface Bounty {
+  id: string;
+  type: BountyType;
+  desc: string;
+  target: string;
+  count: number;
+  rewardGold: number;
+  rewardBones?: number;
+  rewardBox?: 'common' | 'uncommon' | 'rare';
+}
+
+export const BOUNTIES: Bounty[] = [
+  { id:'b_kill_roach',   type:'kill',   desc:'消灭 8 只变异蟑螂',     target:'rad_roach',      count:8,  rewardGold:200,  rewardBones:20 },
+  { id:'b_kill_rat',     type:'kill',   desc:'消灭 6 只辐射鼠',       target:'rad_rat',        count:6,  rewardGold:300,  rewardBones:30 },
+  { id:'b_kill_spider',  type:'kill',   desc:'消灭 5 只变异蜘蛛',     target:'mutant_spider',  count:5,  rewardGold:500,  rewardBones:40 },
+  { id:'b_kill_zombie',  type:'kill',   desc:'消灭 4 只蹒跚丧尸',     target:'zombie_walk',    count:4,  rewardGold:700,  rewardBones:50 },
+  { id:'b_kill_scorpion',type:'kill',   desc:'消灭 3 只辐射蝎',       target:'rad_scorpion',   count:3,  rewardGold:900,  rewardBones:60 },
+  { id:'b_kill_raider',  type:'kill',   desc:'消灭 1 个废土掠夺者',   target:'wasteland_raider',count:1, rewardGold:2000, rewardBox:'rare' },
+  { id:'b_gather_wood',  type:'gather', desc:'采集木材 50 次',         target:'wood',           count:50, rewardGold:300 },
+  { id:'b_gather_ore',   type:'gather', desc:'采矿 50 次',              target:'ore',            count:50, rewardGold:300 },
+  { id:'b_gather_fish',  type:'gather', desc:'钓鱼 40 次',              target:'fish',           count:40, rewardGold:350 },
+  { id:'b_gather_hide',  type:'gather', desc:'狩猎 40 次',              target:'hide',           count:40, rewardGold:350 },
+  { id:'b_craft_smelt',  type:'craft',  desc:'熔炼 30 个金属锭',        target:'smelting',       count:30, rewardGold:400 },
+  { id:'b_craft_smith',  type:'craft',  desc:'锻造 15 件装备',          target:'smithing',       count:15, rewardGold:500 },
+  { id:'b_craft_cook',   type:'craft',  desc:'烹饪 20 份食物',          target:'cooking',        count:20, rewardGold:300 },
+  { id:'b_craft_alchemy',type:'craft',  desc:'炼制 15 瓶药水',          target:'alchemy',        count:15, rewardGold:400 },
+  { id:'b_any_skill',    type:'craft',  desc:'完成任意技能动作 100 次', target:'any',            count:100,rewardGold:500, rewardBox:'uncommon' },
+];
+
+// ─── Milestones / Achievements ───────────────────────────────────────────
+export type MilestoneCategory = 'gathering' | 'combat' | 'crafting' | 'special';
+
+export interface Milestone {
+  id: string;
+  category: MilestoneCategory;
+  title: string;
+  desc: string;
+  target: string;       // skill key or stat
+  threshold: number;     // number to reach
+  bonusType: string;     // bonus effect type
+  bonusValue: number;    // bonus amount
+  bonusLabel: string;    // display text
+}
+
+export const MILESTONES: Milestone[] = [
+  // ── Gathering ──
+  { id:'m_wood_100',   category:'gathering',title:'伐木新手',   desc:'完成伐木 100 次',  target:'woodcutting',threshold:100, bonusType:'woodXp',  bonusValue:5,  bonusLabel:'伐木经验 +5%' },
+  { id:'m_wood_1000',  category:'gathering',title:'伐木达人',   desc:'完成伐木 1000 次', target:'woodcutting',threshold:1000,bonusType:'woodXp',  bonusValue:10, bonusLabel:'伐木经验 +10%' },
+  { id:'m_mine_100',   category:'gathering',title:'矿工入门',   desc:'完成采矿 100 次',  target:'mining',     threshold:100, bonusType:'mineXp',  bonusValue:5,  bonusLabel:'采矿经验 +5%' },
+  { id:'m_mine_1000',  category:'gathering',title:'矿工大师',   desc:'完成采矿 1000 次', target:'mining',     threshold:1000,bonusType:'mineXp',  bonusValue:10, bonusLabel:'采矿经验 +10%' },
+  { id:'m_fish_100',   category:'gathering',title:'钓鱼新星',   desc:'钓鱼 100 次',      target:'fishing',    threshold:100, bonusType:'fishXp',  bonusValue:5,  bonusLabel:'钓鱼经验 +5%' },
+  { id:'m_hunt_100',   category:'gathering',title:'狩猎入门',   desc:'狩猎 100 次',      target:'hunting',    threshold:100, bonusType:'huntXp',  bonusValue:5,  bonusLabel:'狩猎经验 +5%' },
+  // ── Combat ──
+  { id:'m_kill_50',    category:'combat',   title:'废土清道夫', desc:'击杀 50 个敌人',   target:'kills',      threshold:50,  bonusType:'attack',  bonusValue:5,  bonusLabel:'攻击 +5' },
+  { id:'m_kill_200',   category:'combat',   title:'废土猎人',   desc:'击杀 200 个敌人',  target:'kills',      threshold:200, bonusType:'attack',  bonusValue:10, bonusLabel:'攻击 +10' },
+  { id:'m_kill_500',   category:'combat',   title:'废土屠夫',   desc:'击杀 500 个敌人',  target:'kills',      threshold:500, bonusType:'hp',      bonusValue:50, bonusLabel:'生命 +50' },
+  { id:'m_dungeon_10', category:'combat',   title:'遗迹探索者', desc:'完成废墟探索 10 次',target:'dungeons',   threshold:10,  bonusType:'defence', bonusValue:8,  bonusLabel:'防御 +8' },
+  // ── Crafting ──
+  { id:'m_smelt_50',   category:'crafting',title:'熔炉初燃',   desc:'熔炼 50 次',       target:'smelting',   threshold:50,  bonusType:'craftSpd',bonusValue:5,  bonusLabel:'制作速度 +5%' },
+  { id:'m_smith_50',   category:'crafting',title:'铁匠学徒',   desc:'锻造 50 件装备',   target:'smithing',   threshold:50,  bonusType:'smithXp', bonusValue:8,  bonusLabel:'锻造经验 +8%' },
+  { id:'m_cook_30',    category:'crafting',title:'营地厨师',   desc:'烹饪 30 次',       target:'cooking',    threshold:30,  bonusType:'cookXp',  bonusValue:5,  bonusLabel:'烹饪经验 +5%' },
+  // ── Special ──
+  { id:'m_skills_500', category:'special', title:'全能幸存者', desc:'累计完成任意技能 500 次',target:'actions',threshold:500,bonusType:'allXp',   bonusValue:5,  bonusLabel:'全技能经验 +5%' },
+  { id:'m_gold_10k',   category:'special', title:'废土富豪',   desc:'累计获得 10000 瓶盖',target:'gold',   threshold:10000,bonusType:'goldDrop',bonusValue:10,bonusLabel:'瓶盖获取 +10%' },
+  { id:'m_level_50',   category:'special', title:'废土老兵',   desc:'任意技能达到 50 级',target:'maxLevel',threshold:50, bonusType:'allXp',   bonusValue:10,bonusLabel:'全技能经验 +10%' },
+  { id:'m_level_99',   category:'special', title:'废土传奇',   desc:'任意技能达到 99 级',target:'maxLevel',threshold:99, bonusType:'allXp',   bonusValue:25,bonusLabel:'全技能经验 +25%' },
+];
+

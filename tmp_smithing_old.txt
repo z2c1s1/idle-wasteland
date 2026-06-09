@@ -1,0 +1,66 @@
+export const SMITHING_RECIPES: SmithingRecipe[] = [
+  // Bronze (bar_0)
+  { id: 'smith_oak_bow',       output: 'oak_bow',           inputs: [{ resource: 'bar_0', qty: 1 }], reqLevel: 1,  xp: 25,  time: 8  },
+  { id: 'r_bronze_sword',      output: 'bronze_sword',      inputs: [{ resource: 'bar_0', qty: 2 }], reqLevel: 5,  xp: 25,  time: 8  },
+  { id: 'r_bronze_shield',     output: 'bronze_shield',     inputs: [{ resource: 'bar_0', qty: 3 }], reqLevel: 5,  xp: 35,  time: 10 },
+  { id: 'r_bronze_helmet',     output: 'bronze_helmet',     inputs: [{ resource: 'bar_0', qty: 2 }], reqLevel: 5,  xp: 25,  time: 8  },
+  { id: 'r_bronze_body',       output: 'bronze_body',       inputs: [{ resource: 'bar_0', qty: 5 }], reqLevel: 10, xp: 60,  time: 15 },
+  { id: 'r_bronze_legs',       output: 'bronze_legs',       inputs: [{ resource: 'bar_0', qty: 4 }], reqLevel: 10, xp: 48,  time: 12 },
+  { id: 'r_bronze_gauntlets',  output: 'bronze_gauntlets',  inputs: [{ resource: 'bar_0', qty: 2 }], reqLevel: 5,  xp: 22,  time: 7  },
+  { id: 'r_bronze_boots',      output: 'bronze_boots',      inputs: [{ resource: 'bar_0', qty: 2 }], reqLevel: 5,  xp: 22,  time: 7  },
+  // Iron (bar_1)
+  { id: 'smith_yew_bow',       output: 'yew_bow',           inputs: [{ resource: 'bar_1', qty: 1 }], reqLevel: 8,  xp: 45,  time: 10 },
+  { id: 'r_iron_sword',        output: 'iron_sword',        inputs: [{ resource: 'bar_1', qty: 2 }], reqLevel: 20, xp: 50,  time: 8  },
+  { id: 'r_iron_shield',       output: 'iron_shield',       inputs: [{ resource: 'bar_1', qty: 3 }], reqLevel: 20, xp: 70,  time: 10 },
+  { id: 'r_iron_helmet',       output: 'iron_helmet',       inputs: [{ resource: 'bar_1', qty: 2 }], reqLevel: 20, xp: 50,  time: 8  },
+  { id: 'r_iron_body',         output: 'iron_body',         inputs: [{ resource: 'bar_1', qty: 5 }], reqLevel: 25, xp: 120, time: 15 },
+  { id: 'r_iron_legs',         output: 'iron_legs',         inputs: [{ resource: 'bar_1', qty: 4 }], reqLevel: 25, xp: 96,  time: 12 },
+  { id: 'r_iron_gauntlets',    output: 'iron_gauntlets',    inputs: [{ resource: 'bar_1', qty: 2 }], reqLevel: 20, xp: 45,  time: 7  },
+  { id: 'r_iron_boots',        output: 'iron_boots',        inputs: [{ resource: 'bar_1', qty: 2 }], reqLevel: 20, xp: 45,  time: 7  },
+  // Steel (bar_2)
+  { id: 'smith_maple_bow',     output: 'maple_bow',         inputs: [{ resource: 'bar_2', qty: 2 }], reqLevel: 16, xp: 70,  time: 12 },
+  { id: 'r_steel_sword',       output: 'steel_sword',       inputs: [{ resource: 'bar_2', qty: 2 }], reqLevel: 30, xp: 75,  time: 8  },
+  { id: 'r_steel_shield',      output: 'steel_shield',      inputs: [{ resource: 'bar_2', qty: 3 }], reqLevel: 30, xp: 105, time: 10 },
+  { id: 'r_steel_helmet',      output: 'steel_helmet',      inputs: [{ resource: 'bar_2', qty: 2 }], reqLevel: 30, xp: 75,  time: 8  },
+  { id: 'r_steel_body',        output: 'steel_body',        inputs: [{ resource: 'bar_2', qty: 5 }], reqLevel: 35, xp: 180, time: 15 },
+  { id: 'r_steel_legs',        output: 'steel_legs',        inputs: [{ resource: 'bar_2', qty: 4 }], reqLevel: 35, xp: 144, time: 12 },
+  { id: 'r_steel_gauntlets',   output: 'steel_gauntlets',   inputs: [{ resource: 'bar_2', qty: 2 }], reqLevel: 30, xp: 70,  time: 7  },
+  { id: 'r_steel_boots',       output: 'steel_boots',       inputs: [{ resource: 'bar_2', qty: 2 }], reqLevel: 30, xp: 70,  time: 7  },
+  // Mithril (bar_4)
+  { id: 'smith_mithril_bow',   output: 'mithril_bow',       inputs: [{ resource: 'bar_4', qty: 2 }], reqLevel: 28, xp: 120, time: 15 },
+  { id: 'r_mithril_sword',     output: 'mithril_sword',     inputs: [{ resource: 'bar_4', qty: 2 }], reqLevel: 50, xp: 120, time: 10 },
+  { id: 'r_mithril_shield',    output: 'mithril_shield',    inputs: [{ resource: 'bar_4', qty: 3 }], reqLevel: 50, xp: 160, time: 12 },
+  // Adamant (bar_5)
+  { id: 'smith_adamant_bow',   output: 'adamant_bow',       inputs: [{ resource: 'bar_5', qty: 3 }], reqLevel: 40, xp: 180, time: 18 },
+  { id: 'r_adamant_sword',     output: 'adamant_sword',     inputs: [{ resource: 'bar_5', qty: 2 }], reqLevel: 60, xp: 160, time: 10 },
+  // Obsidian (bar_3)
+  { id: 'r_obsidian_sword',    output: 'obsidian_sword',    inputs: [{ resource: 'bar_3', qty: 2 }], reqLevel: 40, xp: 100, time: 9  },
+  { id: 'r_obsidian_shield',   output: 'obsidian_shield',   inputs: [{ resource: 'bar_3', qty: 3 }], reqLevel: 40, xp: 140, time: 11 },
+  { id: 'r_obsidian_helmet',   output: 'obsidian_helmet',   inputs: [{ resource: 'bar_3', qty: 2 }], reqLevel: 40, xp: 100, time: 9  },
+  { id: 'r_obsidian_body',     output: 'obsidian_body',     inputs: [{ resource: 'bar_3', qty: 5 }], reqLevel: 45, xp: 240, time: 16 },
+  { id: 'r_obsidian_legs',     output: 'obsidian_legs',     inputs: [{ resource: 'bar_3', qty: 4 }], reqLevel: 45, xp: 190, time: 13 },
+  { id: 'r_obsidian_gauntlets',output: 'obsidian_gauntlets',inputs: [{ resource: 'bar_3', qty: 2 }], reqLevel: 40, xp: 90,  time: 8  },
+  { id: 'r_obsidian_boots',    output: 'obsidian_boots',    inputs: [{ resource: 'bar_3', qty: 2 }], reqLevel: 40, xp: 90,  time: 8  },
+  // Rune (bar_6)
+  { id: 'smith_rune_bow',      output: 'rune_bow_forged',   inputs: [{ resource: 'bar_6', qty: 3 }], reqLevel: 55, xp: 260, time: 22 },
+  { id: 'r_rune_sword',        output: 'rune_sword',        inputs: [{ resource: 'bar_6', qty: 2 }], reqLevel: 70, xp: 220, time: 10 },
+  // Dragon (bar_7)
+  { id: 'r_dragon_sword',      output: 'dragon_sword',      inputs: [{ resource: 'bar_7', qty: 3 }], reqLevel: 75, xp: 300, time: 12 },
+  { id: 'r_dragon_shield',     output: 'dragon_shield',     inputs: [{ resource: 'bar_7', qty: 4 }], reqLevel: 75, xp: 400, time: 14 },
+  { id: 'r_dragon_helmet',     output: 'dragon_helmet',     inputs: [{ resource: 'bar_7', qty: 3 }], reqLevel: 75, xp: 300, time: 12 },
+  { id: 'r_dragon_body',       output: 'dragon_body',       inputs: [{ resource: 'bar_7', qty: 6 }], reqLevel: 80, xp: 500, time: 18 },
+  { id: 'r_dragon_legs',       output: 'dragon_legs',       inputs: [{ resource: 'bar_7', qty: 5 }], reqLevel: 80, xp: 400, time: 15 },
+  { id: 'r_dragon_gauntlets',  output: 'dragon_gauntlets',  inputs: [{ resource: 'bar_7', qty: 3 }], reqLevel: 75, xp: 280, time: 10 },
+  { id: 'r_dragon_boots',      output: 'dragon_boots',      inputs: [{ resource: 'bar_7', qty: 3 }], reqLevel: 75, xp: 280, time: 10 },
+  // Eternal (bar_8)
+  { id: 'r_eternal_sword',     output: 'eternal_sword',     inputs: [{ resource: 'bar_8', qty: 4 }], reqLevel: 85, xp: 450, time: 15 },
+  { id: 'r_eternal_shield',    output: 'eternal_shield',    inputs: [{ resource: 'bar_8', qty: 5 }], reqLevel: 85, xp: 550, time: 18 },
+  { id: 'r_eternal_helmet',    output: 'eternal_helmet',    inputs: [{ resource: 'bar_8', qty: 4 }], reqLevel: 85, xp: 450, time: 15 },
+  { id: 'r_eternal_body',      output: 'eternal_body',      inputs: [{ resource: 'bar_8', qty: 8 }], reqLevel: 90, xp: 700, time: 22 },
+  { id: 'r_eternal_legs',      output: 'eternal_legs',      inputs: [{ resource: 'bar_8', qty: 6 }], reqLevel: 90, xp: 560, time: 18 },
+  // Divine (bar_9)
+  { id: 'r_divine_sword',      output: 'divine_sword',      inputs: [{ resource: 'bar_9', qty: 5 }], reqLevel: 95, xp: 650, time: 20 },
+  { id: 'r_divine_shield',     output: 'divine_shield',     inputs: [{ resource: 'bar_9', qty: 6 }], reqLevel: 95, xp: 750, time: 24 },
+  { id: 'r_divine_helmet',     output: 'divine_helmet',     inputs: [{ resource: 'bar_9', qty: 5 }], reqLevel: 95, xp: 650, time: 20 },
+  { id: 'r_divine_body',       output: 'divine_body',       inputs: [{ resource: 'bar_9', qty: 10}], reqLevel: 99, xp: 1000,time: 30 },
+];

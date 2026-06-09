@@ -12,7 +12,7 @@ const T = [3,4,5,6,8,10,12,14,16,18];
 const X = [10,17,25,36,50,67,88,115,147,189];
 const RESOURCES = LV.map((lv, i) => ({
   name: ANIMALS[i], emoji: "🪶", time: T[i], xp: X[i], reqLevel: lv,
-  resourceKey: `hide_${i}`, actionKey: `hunting_${i}`, resourceType: "hide" as const,
+  resourceKey: `hide_${i}`, actionKey: `hunting_${i}`, resourceType: "animal" as const,
   drops: [
     { name: HIDES[i], qty: 1, chance: "100%" },
     { name: MEATS[i], qty: 1, chance: "100%" },

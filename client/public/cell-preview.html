@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html><head><title>Cell Name Mapper</title>
+<style>
+body{background:#111;color:#fff;font-family:monospace;padding:10px}
+.grid{display:grid;grid-template-columns:repeat(20,75px);gap:2px;margin-bottom:10px}
+.cell{border:1px solid #333;text-align:center;font-size:9px;position:relative}
+.cell img{width:75px;image-rendering:pixelated}
+.cell input{width:70px;font-size:8px;text-align:center;background:#222;color:lime;border:1px solid #555;margin:2px 0;padding:1px}
+.cell.sel{border:2px solid lime;background:rgba(0,255,0,0.1)}
+.cell.named{background:rgba(0,255,0,0.08);border-color:#0f0}
+#bar{position:sticky;top:0;background:#1a1a1a;padding:8px;z-index:10;display:flex;gap:8px;align-items:center}
+button{padding:6px 14px;cursor:pointer;font-size:14px}
+#count{color:lime}
+</style></head>
+<body>
+<div id="bar">
+  <button onclick="copyAll()">📋 Copy All Mappings</button>
+  <span id="count">0/240 named</span>
+  <button onclick="exportCSV()">📊 Export CSV</button>
+</div>
+<div class="grid" id="grid"></div>
+
+<script>
+const COLS=20,ROWS=12;
+const names={};
+const grid=document.getElementById('grid');
+const countEl=document.getElementById('count');
+
+for(let r=0;r<ROWS;r++){
+  for(let c=0;c<COLS;c++){
+    const idx=r*COLS+c;
+    const num=idx+1;
+    const div=document.createElement('div');
+    div.className='cell';
+    div.id='c'+num;
+    div.innerHTML='<img src="/equipment_tiles/'+String(num).padStart(3,'0')+'_cell.png"><br>';
+    const inp=document.createElement('input');
+    inp.placeholder='R'+r+'C'+c;
+    inp.oninput=()=>{
+      const v=inp.value.trim();
+      if(v){names[num]=v;div.classList.add('named')}else{delete names[num];div.classList.remove('named')}
+      countEl.textContent=Object.keys(names).length+'/240 named';
+    };
+    inp.onkeydown=e=>{
+      if(e.key==='Tab'){
+        const next=document.getElementById('c'+(num+1));
+        if(next){e.preventDefault();next.querySelector('input').focus()}
+      }
+      if(e.key==='ArrowDown'){e.preventDefault();const n=document.getElementById('c'+(num+COLS));if(n)n.querySelector('input').focus()}
+      if(e.key==='ArrowUp'){e.preventDefault();const n=document.getElementById('c'+(num-COLS));if(n)n.querySelector('input').focus()}
+    };
+    div.appendChild(inp);
+    grid.appendChild(div);
+  }
+}
+
+function copyAll(){
+  const list=Object.entries(names).map(([n,id])=>n+': '+id).join('\n');
+  navigator.clipboard.writeText(list);
+  alert('Copied '+Object.keys(names).length+' mappings!');
+}
+function exportCSV(){
+  const list=['cell,english_id',...Object.entries(names).map(([n,id])=>n+','+id)].join('\n');
+  navigator.clipboard.writeText(list);
+  alert('CSV copied!');
+}
+</script>
+</body>
+</html>

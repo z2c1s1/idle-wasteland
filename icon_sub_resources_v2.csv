@@ -1,0 +1,108 @@
+类别,编号,资源Key,中文名,英文名,难度,LV,建议尺寸,主题描述
+伐木,1,wood_0,废木板,Scrap Wood,极简单,1,32x32,废墟中随处可见的木板碎片
+伐木,2,wood_1,枯树枝,Dead Branch,简单,4,32x32,核冬天后枯死的树枝
+伐木,3,wood_2,焦木,Charred Wood,简单,7,32x32,被大火烧过的碳化树干
+伐木,4,wood_3,铁线木,Ironbark Wood,中等,10,32x32,树皮硬如铁丝的变异树种
+伐木,5,wood_4,石化木,Petrified Wood,中等,15,32x32,在辐射中石化的古树化石
+伐木,6,wood_5,辐射瘤木,Rad-Tumor Wood,较难,25,32x32,树干上长满放射性瘤状物的变异树
+伐木,7,wood_6,骨白杉,Bonewood Pine,困难,40,32x32,被辐射漂白的白骨色杉木
+伐木,8,wood_7,黑钢木,Blacksteel Wood,困难,60,32x32,吸收重金属呈现黑色金属光泽的突变树
+伐木,9,wood_8,泰坦木,Titanwood,极难,80,32x32,高达数十米的巨树,斧头砍一天才能砍倒
+伐木,10,wood_9,核融晶木,Fusion Crystallite,噩梦,99,32x32,在核爆中心结晶化的树木,比钢还硬
+
+采矿,1,ore_0,废铁块,Scrap Iron,极简单,1,32x32,废墟中锈蚀的废铁块
+采矿,2,ore_1,铜丝矿,Copper Wire Ore,简单,4,32x32,从废弃电线中剥离的铜丝团
+采矿,3,ore_2,铝罐矿,Aluminum Ore,简单,7,32x32,压扁的易拉罐和铝制废料
+采矿,4,ore_3,铅块,Lead Ore,中等,10,32x32,废车电池和旧水管中的铅块
+采矿,5,ore_4,硫磺矿,Sulfur Ore,中等,15,32x32,火山灰沉积形成的硫磺结晶
+采矿,6,ore_5,硝酸盐矿,Nitrate Ore,较难,25,32x32,废弃化肥厂的硝酸盐沉积矿
+采矿,7,ore_6,铀矿石,Uranium Ore,困难,40,32x32,散发绿色荧光的放射性铀矿石
+采矿,8,ore_7,钛金矿,Titanium Ore,困难,60,32x32,军工厂废墟中的轻质高强度钛矿
+采矿,9,ore_8,钨钢矿,Tungsten Ore,极难,80,32x32,熔点在废土中几乎无法冶炼的超硬矿石
+采矿,10,ore_9,铱金矿,Iridium Ore,噩梦,99,32x32,陨石撞击坑中发现的稀有贵金属矿石
+
+冶炼,1,bar_0,废铁锭,Scrap Iron Bar,极简单,1,32x32,熔炼废铁块得到的粗糙铁锭
+冶炼,2,bar_1,铜锭,Copper Bar,简单,4,32x32,铜丝矿熔炼成的铜色金属锭
+冶炼,3,bar_2,铝锭,Aluminum Bar,简单,7,32x32,铝罐熔炼成的轻质银色金属锭
+冶炼,4,bar_3,铅锭,Lead Bar,中等,10,32x32,铅块熔炼成的高密度灰色金属锭
+冶炼,5,bar_4,硫磺锭,Sulfur Bar,中等,15,32x32,硫磺矿提纯成的黄色结晶锭
+冶炼,6,bar_5,硝酸盐锭,Nitrate Bar,较难,25,32x32,硝酸盐矿提纯成的白色晶体锭
+冶炼,7,bar_6,铀锭,Uranium Bar,困难,40,32x32,放射性铀矿提炼的绿色发光金属锭
+冶炼,8,bar_7,钛金锭,Titanium Bar,困难,60,32x32,钛矿提炼的银白色轻质高强度锭
+冶炼,9,bar_8,钨钢锭,Tungsten Bar,极难,80,32x32,需要极高温度才能熔炼的深灰色超硬锭
+冶炼,10,bar_9,铱金锭,Iridium Bar,噩梦,99,32x32,铱矿提炼的七彩光泽稀有贵金属锭
+
+钓鱼,1,fish_0,辐射蝌蚪,Rad Tadpole,极简单,1,32x32,每片水洼都能捞到的变异小蝌蚪
+钓鱼,2,fish_1,癞皮鱼,Scabfish,简单,4,32x32,浑身长满疤痕和肉瘤的丑鱼
+钓鱼,3,fish_2,电鳗仔,Shock Eel,简单,7,32x32,能释放微弱电流的小型变异鳗鱼
+钓鱼,4,fish_3,刺鳍鱼,Spinefin,中等,10,32x32,背鳍长满骨刺的攻击性中型鱼
+钓鱼,5,fish_4,肿眼鲶,Bloat Catfish,中等,15,32x32,眼球肿大到几乎爆裂的变异鲶鱼
+钓鱼,6,fish_5,荧光鳗,Glow Eel,较难,25,32x32,身体散发幽绿荧光的深海变异鳗
+钓鱼,7,fish_6,铁甲鱼,Ironclad Fish,困难,40,32x32,鳞片硬如铁甲的巨大变异鱼
+钓鱼,8,fish_7,双头鲨,Twinhead Shark,困难,60,32x32,长着两个头的变异鲨鱼
+钓鱼,9,fish_8,深渊巨口,Abyssal Maw,极难,80,32x32,从辐射最深水域浮上来的巨口怪鱼
+钓鱼,10,fish_9,核融鲸,Fusion Whale,噩梦,99,32x32,传说是核爆幸存者变异的巨鲸
+
+狩猎,1,hide_0,鼠皮,Rat Hide,极简单,1,32x32,废土最常见的小型啮齿动物皮毛
+狩猎,2,hide_1,兔皮,Rabbit Pelt,简单,4,32x32,变异长耳兔的柔软皮毛
+狩猎,3,hide_2,蜥蜴鳞皮,Lizard Scalehide,简单,7,32x32,覆盖细小鳞片的爬行变异兽皮
+狩猎,4,hide_3,犬皮,Dog Hide,中等,10,32x32,流浪变异犬的坚韧皮毛
+狩猎,5,hide_4,野猪硬皮,Boar Toughhide,中等,15,32x32,变异野猪的厚实坚韧毛皮
+狩猎,6,hide_5,变异鹿皮,Mutant Deerskin,较难,25,32x32,长着骨刺的变异鹿的柔软皮
+狩猎,7,hide_6,熊皮,Bear Fur,困难,40,32x32,双头变异熊的厚重皮毛
+狩猎,8,hide_7,巨蝎甲壳,Giant Scorpion Chitin,困难,60,32x32,汽车大小的巨蝎的硬质甲壳
+狩猎,9,hide_8,死亡爪皮,Deathclaw Hide,极难,80,32x32,废土最恐怖掠食者死亡爪的坚皮
+狩猎,10,hide_9,巨兽厚皮,Behemoth Hide,噩梦,99,32x32,三层楼高的变异巨兽的外皮
+
+制作,1,item_0,破布条,Rag Scraps,极简单,1,32x32,废墟中随手可撕的破衣服布料
+制作,2,item_1,旧绳索,Old Rope,简单,4,32x32,废弃工地捡到的尼龙绳和钢丝绳
+制作,3,item_2,皮革碎片,Leather Scraps,简单,7,32x32,剥下来的碎皮块,需要几块拼接
+制作,4,item_3,铁钉,Iron Nails,中等,10,32x32,从倒塌建筑中撬出来的生锈铁钉
+制作,5,item_4,弹簧,Springs,中等,15,32x32,废弃车辆和家具中拆出的弹簧
+制作,6,item_5,齿轮,Gears,较难,25,32x32,报废机器中拆解出的完整齿轮
+制作,7,item_6,电路板,Circuit Boards,困难,40,32x32,还能使用的战前电子设备电路板
+制作,8,item_7,精密零件,Precision Parts,困难,60,32x32,需要从高级设备中拆解的小零件
+制作,9,item_8,军用元件,Military Components,极难,80,32x32,军用设施中寻获的加密电子元件
+制作,10,item_9,战前科技核心,Pre-War Tech Core,噩梦,99,32x32,保存完好的战前科技核心处理器
+
+敏捷,1,agility_0,基础跑酷,Basic Parkour,极简单,1,32x32,在废墟碎石中练习基础跳跃
+敏捷,2,agility_1,铁丝网穿越,Barbed Wire Crawl,简单,4,32x32,匍匐穿越锈蚀的铁丝网障碍
+敏捷,3,agility_2,坍塌楼攀爬,Ruin Climb,简单,7,32x32,攀爬随时可能倒塌的危楼墙壁
+敏捷,4,agility_3,废墟障碍赛,Rubble Obstacle,中等,10,32x32,在倒塌建筑的乱石堆中高速穿行
+敏捷,5,agility_4,下水道匍匐,Sewer Crawl,中等,15,32x32,在狭窄的废弃下水管道中匍匐前进
+敏捷,6,agility_5,断桥跳跃,Bridge Leap,较难,25,32x32,跳跃横跨断裂的高架桥裂缝
+敏捷,7,agility_6,高空索降,Zip Descent,困难,40,32x32,从废弃摩天楼顶沿绳索高速下降
+敏捷,8,agility_7,燃烧障碍跑,Fire Run,困难,60,32x32,穿越着火的炼油厂障碍跑道
+敏捷,9,agility_8,辐射区冲刺,Rad Zone Sprint,极难,80,32x32,在高辐射区域极限冲刺,分秒必争
+敏捷,10,agility_9,垂直墙攀爬,Wall Ascent,噩梦,99,32x32,徒手攀爬光滑的防辐射高墙
+
+探索,T1-Lv1,exploration_0,废弃加油站,Abandoned Gas Station,安全区,1,32x32,郊区废弃的加油站,偶尔还有残留燃料
+探索,T1-Lv4,exploration_1,废弃超市,Abandoned Supermarket,安全区,4,32x32,货架倒塌的战前超市,运气好能找到罐头
+探索,T1-Lv7,exploration_2,废墟小镇,Ruined Town,安全区,7,32x32,核爆冲击波夷平的小镇废墟
+探索,T1-Lv10,exploration_3,郊外农田,Outskirts Farm,安全区,10,32x32,荒废的农田,变异昆虫在此筑巢
+探索,T1-Lv15,exploration_4,断裂立交桥,Broken Overpass,安全区,15,32x32,被地震撕裂的立交桥,桥下可能有物资
+探索,T2-Lv20,exploration_5,枯树林,Deadwood Forest,危险区,20,32x32,核冬天后全部枯死的大片森林
+探索,T2-Lv24,exploration_6,辐射沼泽,Radiation Swamp,危险区,24,32x32,绿色荧光覆盖的沼泽,变异生物潜伏
+探索,T2-Lv28,exploration_7,废弃矿洞,Abandoned Mine,危险区,28,32x32,战前铀矿,隧道深处弥漫着辐射瓦斯
+探索,T2-Lv32,exploration_8,地下停车场,Underground Garage,危险区,32,32x32,倒塌商场的地下停车场,漆黑一片
+探索,T2-Lv36,exploration_9,废弃医院,Abandoned Hospital,危险区,36,32x32,废弃的圣玛丽医院,医疗物资仍散落各处
+探索,T3-Lv40,exploration_10,军事检查站,Military Checkpoint,高危区,40,32x32,废弃的军事检查站,可能有未引爆的地雷
+探索,T3-Lv45,exploration_11,化工厂废墟,Chemical Plant,高危区,45,32x32,有毒化学物质泄漏的工厂,需要防护装备
+探索,T3-Lv50,exploration_12,核电站外围,Power Plant Perimeter,高危区,50,32x32,失控核电站的外围,辐射剂量已超安全值百倍
+探索,T3-Lv55,exploration_13,淹没地铁站,Flooded Station,高危区,55,32x32,被地下水淹没的地铁枢纽,变异鱼在车厢中游弋
+探索,T3-Lv60,exploration_14,酸雨平原,Acid Rain Plain,高危区,60,32x32,常年飘洒腐蚀性酸雨的不毛之地
+探索,T4-Lv65,exploration_15,沙暴废土,Sandstorm Waste,极危区,65,32x32,能见度不到五米的巨型沙暴肆虐的沙漠废土
+探索,T4-Lv70,exploration_16,雪地废墟,Snow Ruins,极危区,70,32x32,核冬天永冻的雪原,废弃军事设施半埋冰下
+探索,T4-Lv75,exploration_17,火山灰地带,Ash Wastes,极危区,75,32x32,被火山灰覆盖的焦土,地底仍有岩浆活动
+探索,T4-Lv80,exploration_18,裂谷深渊,Rift Abyss,极危区,80,32x32,大地震撕裂的千米深渊,谷底有未知生物
+探索,T4-Lv84,exploration_19,变异丛林,Mutant Jungle,极危区,84,32x32,变异植物疯狂生长遮天蔽日的原始丛林
+探索,T5-Lv87,exploration_20,巨兽骸骨场,Giant Bone Field,死亡区,87,32x32,被巨型变异兽骸骨覆盖的平原,仍在散发辐射
+探索,T5-Lv90,exploration_21,军事禁区,Military Zone,死亡区,90,32x32,铁丝网环绕的军事禁区,自动炮台仍在运作
+探索,T5-Lv92,exploration_22,高架桥废墟,Viaduct Ruins,死亡区,92,32x32,被核爆冲击波扭曲成麻花的高架桥
+探索,T5-Lv94,exploration_23,实验室废墟,Lab Ruins,死亡区,94,32x32,战前生化武器实验室的废墟,泄漏的实验体在游荡
+探索,T5-Lv96,exploration_24,陨石坑,Meteor Crater,死亡区,96,32x32,撞击形成的巨型陨石坑,坑底有稀有矿物
+探索,T6-Lv97,exploration_25,深渊裂谷,Abyssal Rift,深渊区,97,32x32,直达地壳深处的裂谷,深处有不可名状之物
+探索,T6-Lv98,exploration_26,辐射风暴区,Rad Storm Zone,深渊区,98,32x32,永不消散的巨型辐射风暴的中心
+探索,T6-Lv99,exploration_27,避难所遗迹,Vault Ruins,深渊区,99,32x32,传说是战前政府秘密避难所的遗迹
+探索,T6-Lv99,exploration_28,搁浅航母,Beached Carrier,深渊区,99,32x32,被海啸冲到内陆的巨型航母残骸
+探索,T6-Lv99,exploration_29,终末之门,Endgate,深渊区,99,32x32,废土尽头的神秘巨型金属门,无人知晓门后是什么

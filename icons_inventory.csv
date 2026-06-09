@@ -1,0 +1,107 @@
+类别,编号,名称,帧索引,状态,使用次数,映射目标
+PNG怪物,1,zombie,01_zombie,✅已用,1,zombie_walk
+PNG怪物,2,mutant_hound,02_mutant_hound,✅已用,2,"stray_dog, mutant_hound"
+PNG怪物,3,rad_rat,03_rad_rat,✅已用,1,rad_rat
+PNG怪物,4,skeleton_warrior,04_skeleton_warrior,✅已用,1,ghoul_flesh
+PNG怪物,5,toxic_brute,05_toxic_brute,✅已用,1,zombie_brute
+PNG怪物,6,raven,06_raven,❌未使用,0,—
+PNG怪物,7,steam_robot,07_steam_robot,✅已用,1,sentry_bot
+PNG怪物,8,toxic_beetle,08_toxic_beetle,✅已用,2,"rad_roach, mutant_spider"
+PNG怪物,9,sandworm,09_sandworm,✅已用,1,rad_scorpion
+PNG怪物,10,mutant_brute,10_mutant_brute,✅已用,3,"mutant_bear, deathclaw, mutant_behemoth"
+PNG怪物,11,sniper,11_sniper,✅已用,2,"bandit_scav, wasteland_raider"
+PNG怪物,12,tribal_shaman,12_tribal_shaman,❌未使用,0,—
+PNG怪物,13,mushroom_mutant,13_mushroom_mutant,✅已用,2,"rad_elemental, glowing_one"
+PNG怪物,14,dark_knight,14_dark_knight,✅已用,2,"ancient_wraith, warlord"
+PNG怪物,15,demon,15_demon,✅已用,3,"rad_drake, elder_dragon, overlord"
+
+PNG武器,16,short_sword,16_short_sword,✅已用,—,剑类 weapon
+PNG武器,17,cleaver,17_cleaver,✅已用,—,斧类 weapon
+PNG武器,18,spear,18_spear,✅已用,—,矛类 weapon
+PNG武器,19,mace,19_mace,✅已用,—,锤/棍 weapon
+PNG武器,20,dagger,20_dagger,✅已用,—,匕首 weapon
+PNG武器,21,revolver,21_revolver,✅已用,—,手枪 weapon
+PNG武器,22,shotgun,22_shotgun,✅已用,—,霰弹枪 weapon
+PNG武器,23,sniper_rifle,23_sniper_rifle,✅已用,—,步枪 weapon
+PNG武器,24,crossbow,24_crossbow,✅已用,—,弓/弩 weapon
+PNG武器,25,skull_staff,25_skull_staff,❌未使用,0,—
+PNG武器,26,green_staff,26_green_staff,✅已用,—,法杖 weapon
+
+PNG装备,27,helmet,27_helmet,✅已用,—,头盔 slot
+PNG装备,28,gas_mask_hood,28_gas_mask_hood,❌未使用,0,—
+PNG装备,29,spiked_bracer,29_spiked_bracer,✅已用,—,副手/盾 slot
+PNG装备,30,chest_armor,30_chest_armor,✅已用,—,胸甲/腿甲 slot
+PNG装备,31,gauntlet,31_gauntlet,✅已用,—,手套 slot
+PNG装备,32,boots,32_boots,✅已用,—,靴子 slot
+PNG装备,33,green_ring,33_green_ring,✅已用,—,戒指 slot
+PNG装备,34,skull_band,34_skull_band,❌未使用,0,—
+PNG装备,35,skull_belt,35_skull_belt,❌未使用,0,—
+PNG装备,36,horned_skull_amulet,36_horned_skull_amulet,✅已用,—,项链 slot
+
+SVG敌人,1,insect,insect,✅已用,—,昆虫原型
+SVG敌人,2,rodent,rodent,✅已用,—,啮齿原型
+SVG敌人,3,undead,undead,✅已用,—,亡者原型
+SVG敌人,4,mutant,mutant,✅已用,—,变异原型
+SVG敌人,5,humanoid,humanoid,✅已用,—,人形原型
+SVG敌人,6,mech,mech,✅已用,—,机械原型
+SVG敌人,7,dragon,dragon,✅已用,—,龙形原型
+SVG敌人,8,boss,boss,✅已用,—,Boss原型
+
+SVG装备,1,sword,sword,✅已用,—,武器形状
+SVG装备,2,shield,shield,✅已用,—,盾牌形状
+SVG装备,3,helmet,helmet,✅已用,—,头盔形状
+SVG装备,4,chest,chest,✅已用,—,胸甲形状
+SVG装备,5,legs,legs,✅已用,—,腿甲形状
+SVG装备,6,gloves,gloves,✅已用,—,手套形状
+SVG装备,7,boots,boots,✅已用,—,靴子形状
+SVG装备,8,neck,neck,✅已用,—,项链形状
+SVG装备,9,ring,ring,✅已用,—,戒指形状
+
+SVG宝石,1,ruby,ruby,✅已用,—,红宝石
+SVG宝石,2,sapphire,sapphire,✅已用,—,蓝宝石
+SVG宝石,3,emerald,emerald,✅已用,—,绿宝石
+SVG宝石,4,diamond,diamond,✅已用,—,钻石
+SVG宝石,5,amethyst,amethyst,✅已用,—,紫宝石
+SVG宝石,6,topaz,topaz,✅已用,—,黄宝石
+
+SVG技能,1,woodcutting,woodcutting,✅已用,—,伐木
+SVG技能,2,mining,mining,✅已用,—,采矿
+SVG技能,3,smelting,smelting,✅已用,—,冶炼
+SVG技能,4,fishing,fishing,✅已用,—,钓鱼
+SVG技能,5,hunting,hunting,✅已用,—,狩猎
+SVG技能,6,thieving,thieving,✅已用,—,搜刮
+SVG技能,7,smithing,smithing,✅已用,—,锻造
+SVG技能,8,leatherworking,leatherworking,✅已用,—,皮革
+SVG技能,9,jewelcrafting,jewelcrafting,✅已用,—,珠宝
+SVG技能,10,combat,combat,✅已用,—,战斗
+SVG技能,11,agility,agility,✅已用,—,敏捷
+SVG技能,12,exploration,exploration,✅已用,—,探索
+SVG技能,13,cooking,cooking,✅已用,—,烹饪
+SVG技能,14,alchemy,alchemy,✅已用,—,炼金
+SVG技能,15,prayer,prayer,✅已用,—,祷言
+SVG技能,16,homestead,homestead,✅已用,—,家园
+SVG技能,17,town,town,✅已用,—,城镇
+SVG技能,18,inventory,inventory,✅已用,—,背包
+SVG技能,19,gems,gems,✅已用,—,宝石
+SVG技能,20,talents,talents,✅已用,—,天赋
+SVG技能,21,equipment,equipment,✅已用,—,装备
+SVG技能,22,wasteland,wasteland,✅已用,—,废土
+SVG技能,23,dashboard,dashboard,✅已用,—,总览
+
+SVG资源,1,wood,wood,✅已用,—,木材
+SVG资源,2,ore,ore,✅已用,—,矿石
+SVG资源,3,bar,bar,✅已用,—,金属锭
+SVG资源,4,fish,fish,✅已用,—,鱼
+SVG资源,5,hide,hide,✅已用,—,兽皮
+SVG资源,6,herb,herb,✅已用,—,草药
+SVG资源,7,berry,berry,✅已用,—,浆果
+SVG资源,8,stone,stone,✅已用,—,石料
+SVG资源,9,bone,bone,✅已用,—,骨头
+SVG资源,10,gold,gold,✅已用,—,瓶盖
+SVG资源,11,agility,agility,✅已用,—,敏捷资源
+SVG资源,12,exploration,exploration,✅已用,—,探索资源
+SVG资源,13,craft,craft,✅已用,—,制作材料
+
+SVG装饰,1,RadiationIcon,radiation,✅已用,—,辐射标志
+SVG装饰,2,SparkIcon,spark,✅已用,—,火花
+SVG装饰,3,SkullIcon,skull,✅已用,—,骷髅
