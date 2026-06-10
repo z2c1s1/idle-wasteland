@@ -124,18 +124,42 @@ const RARITY_PIXEL: Record<string, number> = {
 };
 
 export function ItemSprite({ slot, baseId, rarity = 'common', ilvl = 5, size = 32, className = "" }: ItemSpriteProps) {
-  // Use spritesheet PNG for equipment slots
-  const frame = getEquipFrame(slot, baseId);
-  if (frame) {
-    return <SpriteFrame frameIndex={frame} size={size} className={className} />;
+  // Check if a PNG tile exists for this item
+  const [imgSrc, setImgSrc] = React.useState<string | null>(null);
+  const [imgFailed, setImgFailed] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!baseId || typeof baseId !== 'string') { setImgFailed(true); return; }
+    const tileName = baseId;
+    // Try /tiles/ first, then /equipment_tiles/
+    const probe = new Image();
+    probe.onload = () => setImgSrc(`/tiles/${tileName}.png`);
+    probe.onerror = () => {
+      const probe2 = new Image();
+      probe2.onload = () => setImgSrc(`/equipment_tiles/${tileName}.png`);
+      probe2.onerror = () => setImgFailed(true);
+      probe2.src = `/equipment_tiles/${tileName}.png`;
+    };
+    probe.src = `/tiles/${tileName}.png`;
+  }, [baseId]);
+
+  if (imgSrc && !imgFailed) {
+    return <img src={imgSrc} alt="" width={size} height={size}
+      style={{ imageRendering: 'pixelated' }} className={className} />;
   }
-  // Fallback to SVG pixel art — color by rarity, not ilvl
-  const shape = SLOT_SHAPE[slot] ?? 'sword';
-  const pixels = EQUIPMENT_PIXELS[shape] ?? EQUIPMENT_PIXELS['sword']!;
-  const ci = RARITY_PIXEL[rarity] ?? 1;
-  const pc = ITEM_COLORS[ci] ?? ITEM_COLORS[1]!;
-  const cs = Math.max(2, Math.floor(size / pixels.length));
-  return <PixelGrid pixels={pixels} colors={toColors(pc)} cellSize={cs} className={className} />;
+  if (imgFailed || !baseId) {
+    // Fallback: spritesheet or SVG
+    const frame = getEquipFrame(slot, baseId as string);
+    if (frame) return <SpriteFrame frameIndex={frame} size={size} className={className} />;
+    const shape = SLOT_SHAPE[slot] ?? 'sword';
+    const pixels = EQUIPMENT_PIXELS[shape] ?? EQUIPMENT_PIXELS['sword']!;
+    const ci = RARITY_PIXEL[rarity] ?? 1;
+    const pc = ITEM_COLORS[ci] ?? ITEM_COLORS[1]!;
+    const cs = Math.max(2, Math.floor(size / pixels.length));
+    return <PixelGrid pixels={pixels} colors={toColors(pc)} cellSize={cs} className={className} />;
+  }
+  // Loading state — show a placeholder
+  return <div style={{ width: size, height: size, background: '#222' }} className={className} />;
 }
 
 // ─── GemSprite ────────────────────────────────────────────────────────────────
