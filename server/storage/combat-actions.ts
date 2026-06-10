@@ -97,7 +97,8 @@ export async function getSlayerTask(state: GameState): Promise<GameState> {
 
 export async function completeSlayerTask(state: GameState): Promise<GameState> {
   if (!state.slayerTask) throw new Error(msg("noSlayerTask"));
-  const task = JSON.parse(state.slayerTask);
+  let task: any;
+  try { task = JSON.parse(state.slayerTask); } catch { throw new Error("Slayer task data corrupted"); }
   if (task.killed < task.qty) throw new Error(msg("slayerKillRemaining", task.qty - task.killed));
   const streak = (state.slayerStreak ?? 0) + 1;
   const bonusGold = task.reward + streak * 50;

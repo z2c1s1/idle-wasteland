@@ -40,6 +40,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
   const homeLv: Record<string,number> = (()=>{try{return JSON.parse((state as any).homestead??"{}")}catch{return{}}})();
 
   const talentBonuses = getTalentBonuses(state);
+  const petBuffs = getPetBuffs(state);
 
   const eff = computeSkillEffects(equipment);
 
@@ -50,7 +51,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
   const ticks = Math.floor(elapsedSeconds / effectiveCombatSpeed);
   if (ticks <= 0) return state;
 
-  const playerMaxHp = getPlayerMaxHp(state) + talentBonuses.maxHp;
+  const playerMaxHp = getPlayerMaxHp(state) + talentBonuses.maxHp + petBuffs.maxHp;
   let playerHp = state.playerHp < 0 ? playerMaxHp : state.playerHp;
   // World tier scaling
   const tier = (state as any).worldTier ?? 1;
@@ -87,8 +88,6 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
   const agilityLuck = getAgilityBonuses(state).luckMul;
 
   // ── Pet buffs ────────────────────────────────────────────────────────────
-  const petBuffs = getPetBuffs(state);
-  playerHp += petBuffs.maxHp; // pet HP bonus
   const petDmgBonus = playerStyle === 'melee' ? petBuffs.meleeDmg : playerStyle === 'ranged' ? petBuffs.rangedDmg : petBuffs.magicDmg;
   const petXpMult = 1 + petBuffs.combatXp;
   const gemPool = COMBAT_GEM_POOLS[Math.min(enemyIndex, COMBAT_GEM_POOLS.length - 1)];
