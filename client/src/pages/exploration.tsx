@@ -19,7 +19,7 @@ const ZONES = [
   "陨石坑","虚空边界","混沌荒原","避难所遗迹","终末之门",
 ];
 
-const EXPLORE_LEVELS = [1,4,7,10,15,25,40,60,80,99];
+const EXPLORE_LEVELS = Array.from({ length: 30 }, (_, i) => Math.min(99, Math.floor(i * 4) + 1));
 const RESOURCES = EXPLORE_LEVELS.map((lv, i) => ({
   name: ZONES[i],
   emoji: "🗺️",

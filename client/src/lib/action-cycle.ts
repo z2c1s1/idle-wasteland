@@ -9,8 +9,8 @@ const SKILL_TIMES: Record<string, number[]> = {
   smelting:    [4, 5, 6, 7, 9, 11, 13, 15, 17, 19],
   fishing:     [3, 4, 5, 6, 7, 9, 11, 13, 15, 17],
   hunting:     [3, 4, 5, 6, 8, 10, 12, 14, 16, 18],
-  agility:     [3, 4, 5, 6, 8, 10, 12, 14, 16, 18],
-  exploration: [5, 6, 8, 10, 12, 15, 20],
+  agility:     [5, 6, 7, 8, 10, 12, 14, 16, 18, 20],
+  exploration: Array.from({ length: 30 }, (_, i) => 30 + i * 15),
 };
 
 export function getActionBaseTime(action: string): number | null {
