@@ -7,7 +7,7 @@ import {
   parseEquipment, parseLootBag, getResourceCount, buildResourceUpdates,
   getAgilityBonuses, getTemperatureMultiplier,
   SKILLS_DATA, RARITY_ORDER, DISENCHANT_GOLD, mergeGems, rollGemDropsFromPool, parseGems,
-  trackAchievement, getPetBuffs,
+  trackAchievement, getPetBuffs, getPrayerBuff,
   generateDroppedItem,
 } from "./_shared";
 
@@ -33,7 +33,8 @@ const petSpeedMap: Record<string, number> = {
   agility: petBuffs.agileSpeed, exploration: petBuffs.exploreSpeed,
 };
 const petSpeedMul = 1 + (petSpeedMap[skill] ?? 0);
-const effectiveTime = data.time * toolBonus.timeMult / agilitySpeedMul / tempMul / petSpeedMul;
+const prayerSpeed = 1 + getPrayerBuff(state, "swiftness");
+  const effectiveTime = data.time * toolBonus.timeMult / agilitySpeedMul / tempMul / petSpeedMul / prayerSpeed;
 
 const completions = Math.floor(elapsedSeconds / effectiveTime);
 if (completions <= 0) return state;

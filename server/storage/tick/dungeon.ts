@@ -2,7 +2,7 @@ import {
   db, gameStates, type GameState, eq,
   type GameItem, type ItemSkill,
   ENEMIES, DUNGEONS, generateDungeonDrop,
-  getEquipmentBonuses, generateDroppedItem, getDropChance, getAgilityBonuses, getPetBuffs, getTalentBonuses,
+  getEquipmentBonuses, generateDroppedItem, getDropChance, getAgilityBonuses, getPetBuffs, getTalentBonuses, getTemperatureMultiplier, computeEffectiveCombatSpeed,
   COMBAT_TRIANGLE, TRIANGLE_DAMAGE_BONUS, TRIANGLE_DAMAGE_PENALTY,
   COMBAT_GEM_POOLS, type Rarity, type CombatStyle,
   calculateLevel, getPlayerMaxHp, getPlayerAttack, getPlayerDefence,

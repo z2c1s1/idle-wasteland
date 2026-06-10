@@ -1,7 +1,7 @@
 import {
   db, gameStates, type GameState, eq,
   DUNGEONS, getEquipmentBonuses, COMBAT_GEM_POOLS, type CombatStyle,
-  generateDroppedItem,
+  generateDroppedItem, getTemperatureMultiplier, computeEffectiveCombatSpeed,
   calculateLevel, getPlayerMaxHp, getPlayerAttack, getPlayerDefence,
   parseEquipment, parseLootBag, parseGems,
   getResourceCount, buildResourceUpdates,
@@ -18,7 +18,7 @@ export async function tickTower(state: GameState, elapsedSeconds: number): Promi
   const { attackBonus, enhancedDamage, lifeRegen, resistAll, lifeLeech, deadlyStrike, attackSpeed } = getEquipmentBonuses(equipment);
   const playerStyle: CombatStyle = (equipment.weapon as any)?.combatStyle ?? 'melee';
   
-  const effectiveCombatSpeed = Math.max(1.5, 3 * (1 - (attackSpeed ?? 0) / 200));
+  const effectiveCombatSpeed = computeEffectiveCombatSpeed(attackSpeed ?? 0, getTemperatureMultiplier(state));
   const ticks = Math.floor(elapsedSeconds / effectiveCombatSpeed);
   if (ticks <= 0) return state;
 

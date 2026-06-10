@@ -8,6 +8,7 @@ import {
   parseEquipment, parseLootBag, parseGems,
   getResourceCount, buildResourceUpdates,
   SKILLS_DATA, RARITY_ORDER, DISENCHANT_GOLD, mergeGems,
+  getTemperatureMultiplier, computeEffectiveCombatSpeed,
 } from "./_shared";
 
 const calcLevel = calculateLevel;
@@ -20,7 +21,7 @@ export async function tickTrial(state: GameState, elapsedSeconds: number): Promi
   if (phase >= 7) { const [u] = await db.update(gameStates).set({ activeAction: "idle" } as any).where(eq(gameStates.id, state.id)).returning(); return u; }
 
   const equipment = parseEquipment(state.equipment);
-  const { attackBonus, enhancedDamage, lifeRegen, resistAll, lifeLeech, deadlyStrike } = getEquipmentBonuses(equipment);
+  const { attackBonus, enhancedDamage, lifeRegen, resistAll, lifeLeech, deadlyStrike, attackSpeed } = getEquipmentBonuses(equipment);
   const playerStyle: CombatStyle = (equipment.weapon as any)?.combatStyle ?? 'melee';
   const buffs: string[] = JSON.parse(state.trialBuffs ?? '[]');
   const curses: string[] = JSON.parse(state.trialCurses ?? '[]');
@@ -30,7 +31,7 @@ export async function tickTrial(state: GameState, elapsedSeconds: number): Promi
   buffs.forEach(id => { const b = TRIAL_BUFFS.find(x => x.id === id); if (b) { atkMul += (b.attackMul - 1); hpMul += (b.hpMul - 1); defMul += (b.defMul - 1); regenAdd += b.regenBonus; } });
   curses.forEach(id => { const c = TRIAL_CURSES.find(x => x.id === id); if (c) { hpMul += (c.hpMul - 1); dmgTakenMul += (c.dmgTakenMul - 1); } });
 
-  const effSpeed = Math.max(1.5, 3);
+  const effSpeed = computeEffectiveCombatSpeed(attackSpeed ?? 0, getTemperatureMultiplier(state));
   const ticks = Math.floor(elapsedSeconds / effSpeed);
   if (ticks <= 0) return state;
 

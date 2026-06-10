@@ -100,6 +100,6 @@ export { handleProductionRecipe, rollGemDropsFromPool, mergeGems } from "../help
 export { handleTriangleCombat } from "../combat";
 export { getPrayerBuff } from "../prayer";
 export { getTalentBonuses } from "./talent-bonuses";
-export { computeSkillEffects, applySkillProcDamage, type SkillProcContext } from "./_combat-shared";
+export { computeSkillEffects, computeEffectiveCombatSpeed, applySkillProcDamage, type SkillProcContext } from "./_combat-shared";
 export { trackAchievement, getPetBuffs } from "../skills";
 export type { CombatStyle } from "../combat";
