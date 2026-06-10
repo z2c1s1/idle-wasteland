@@ -40,5 +40,7 @@ export async function tickActiveAction(
   }
   // Check milestones after every action completion
   checkMilestones(result as any);
+  // Clamp gold to safe 32-bit integer range
+  if (result.gold > 2_000_000_000) result.gold = 2_000_000_000;
   return result;
 }

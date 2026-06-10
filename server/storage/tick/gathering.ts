@@ -136,28 +136,31 @@ if (skill === 'hunting') {
 // Fishing: treasure chest (3-8% based on tier, random equipment) + rare ring (0.5% tier 5+)
 if (skill === 'fishing') {
   const fishLevel = calculateLevel(state.fishingXp);
+  const lootBagSize = state.lootBagSize ?? 50;
   const treasureChance = index >= 6 ? 0.08 : index >= 4 ? 0.05 : index >= 3 ? 0.03 : 0;
+  let lootBag = parseLootBag(state.lootBag);
+  let wrote = false;
   if (treasureChance > 0) {
     for (let i = 0; i < completions; i++) {
+      if (lootBag.length >= lootBagSize) break;
       if (Math.random() < treasureChance) {
-        const item = generateDroppedItem(fishLevel, 0);
-        const lootBag = parseLootBag(state.lootBag);
-        lootBag.push(item);
-        updates.lootBag = JSON.stringify(lootBag);
+        lootBag.push(generateDroppedItem(fishLevel, 0));
+        wrote = true;
       }
     }
   }
   if (index >= 5) {
     for (let i = 0; i < completions; i++) {
+      if (lootBag.length >= lootBagSize) break;
       if (Math.random() < 0.005) {
         const ring = generateDroppedItem(fishLevel, 0);
         ring.slot = 'ring';
-        const lootBag = parseLootBag(state.lootBag);
         lootBag.push(ring);
-        updates.lootBag = JSON.stringify(lootBag);
+        wrote = true;
       }
     }
   }
+  if (wrote) updates.lootBag = JSON.stringify(lootBag);
 }
 
 // Mining: stone + gems (13~33% chance per completion, quantity = tier+1)

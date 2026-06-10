@@ -16,6 +16,11 @@ const calcLevel = calculateLevel;
 // ─── Action management ────────────────────────────────────────────────────────
 
 export async function updateAction(state: GameState, action: string): Promise<GameState> {
+  // Prevent losing progress when switching actions
+  if (state.activeAction !== "idle" && action !== "idle") {
+    throw new Error("已有进行中的动作，请先停止");
+  }
+
   const checkRes = (key: string, qty: number) => getResourceCount(state, key) >= qty;
   if (action.startsWith("smith_")) {
     const r = SMITHING_RECIPES[parseInt(action.split("_")[1])];
@@ -56,7 +61,7 @@ export async function updateAction(state: GameState, action: string): Promise<Ga
   }
 
   // Combat actions: reset enemy/player HP to full
-  const isCombat = action.startsWith('combat_') || action.startsWith('dungeon_') || action === 'tower' || action.startsWith('trial_');
+  const isCombat = action.startsWith('combat_') || action.startsWith('dungeon_') || action === 'tower' || action.startsWith('trial_') || action.startsWith('ranged_') || action.startsWith('magic_');
   const hpReset = isCombat ? { enemyHp: -1, playerHp: -1 } : {};
 
   const [updated] = await db.update(gameStates)
