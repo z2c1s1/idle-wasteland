@@ -118,8 +118,10 @@ function copyJSON(){
       const x=v[ci],y=h[ri],w=v[ci+1]-v[ci],hh=h[ri+1]-h[ri];
       if(w>20&&hh>20)cells.push({x,y,w,h:hh});
     }
-  navigator.clipboard.writeText(JSON.stringify(cells,null,2));
-  document.getElementById('info').textContent=cells.length+' cells copied! Now open naming tool →';
+  const url=document.getElementById('imgUrl').value;
+  const fileName=url.split('/').pop()||url;
+  navigator.clipboard.writeText(JSON.stringify({source:fileName,cells},null,2));
+  document.getElementById('info').textContent=cells.length+' cells copied ('+fileName+')!';
 }
 
 loadImg('/equipment.png');
