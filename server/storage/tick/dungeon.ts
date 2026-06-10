@@ -34,6 +34,7 @@ export async function tickDungeon(state: GameState, elapsedSeconds: number): Pro
   const eff = computeSkillEffects(equipment);
   const { spellbladePct, poisonDmg, thornsDmg, lifeStealPct, vampiricHp, berserkPct, doubleStrikePct, dodgePct } = eff;
   const playerStyle: CombatStyle = (equipment.weapon as any)?.combatStyle ?? 'melee';
+  const homeLv: Record<string, number> = (() => { try { return JSON.parse((state as any).homestead ?? '{}'); } catch { return {}; } })();
 
   const BASE_COMBAT_SPEED = 3;
   const effectiveCombatSpeed = Math.max(1.5, BASE_COMBAT_SPEED * (1 - attackSpeed / 200));
@@ -129,7 +130,7 @@ export async function tickDungeon(state: GameState, elapsedSeconds: number): Pro
     }
 
     // Process boss skills
-    let bossEnhancedAtk = boss.attack;
+    let bossEnhancedAtk = boss.attack * (1 - (homeLv.wonder_beacon ?? 0) * 0.08);
     bossShieldActive = false;
     // Boss skills (only during boss wave)
     if (isBoss) {

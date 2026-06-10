@@ -27,6 +27,13 @@ export async function buildShelter(state: GameState, buildingId: string): Promis
   return u;
 }
 
+// ─── Homestead utility helpers ────────────────────────────────────────────────
+
+export function getDisenchantGoldMultiplier(state: GameState): number {
+  const homestead: Record<string, number> = (() => { try { return JSON.parse((state as any).homestead ?? '{}'); } catch { return {}; } })();
+  return 1 + (homestead.wonder_furnace ?? 0) * 0.25;
+}
+
 // ─── Farm passive gold ────────────────────────────────────────────────────────
 
 export function getFarmGoldIncome(state: GameState, elapsedSec: number): number {

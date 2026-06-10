@@ -56,7 +56,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
   const tier = (state as any).worldTier ?? 1;
   const tierHpMul = tier === 2 ? 2 : tier === 3 ? 4 : tier === 4 ? 8 : 1;
   const tierAtkMul = tier === 2 ? 1.5 : tier === 3 ? 2.5 : tier === 4 ? 4 : 1;
-  const totalMaxHp = Math.floor(enemy.maxHp * tierHpMul);
+  const totalMaxHp = Math.floor(enemy.maxHp * tierHpMul * (1 - (homeLv.wonder_corpse ?? 0) * 0.05));
   let enemyHp  = state.enemyHp  < 0 ? totalMaxHp  : state.enemyHp;
   const enemyAttack = Math.floor(enemy.attack * tierAtkMul);
   const eqSkill = (state as any).equippedSkill || '';
@@ -155,7 +155,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
       state.achievements = trackAchievement(state, 'kill', enemy.id, enemyQty);
       state.achievements = trackAchievement(state, 'kill', '_total', enemyQty);
       if (Math.random() < (dropChance + petBuffs.dropRate) * agilityLuck * (1 + (enemyQty - 1) * 0.5)) {
-        const drop = generateDroppedItem(enemyIndex, magicFind, (enemy as any).uniqueDropIds);
+        const drop = generateDroppedItem(enemyIndex, magicFind, (enemy as any).uniqueDropIds, homeLv.altar ?? 0);
         const filterThreshold = RARITY_ORDER[state.lootFilter ?? 'common'] ?? 0;
         if ((RARITY_ORDER[drop.rarity] ?? 0) >= filterThreshold) newDrops.push(drop);
         else goldGained += DISENCHANT_GOLD[drop.rarity] ?? 5;

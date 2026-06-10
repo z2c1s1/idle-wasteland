@@ -1462,7 +1462,7 @@ export function buildUniqueGameItem(def: UniqueItemDef): GameItem {
   };
 }
 
-export function generateDroppedItem(enemyIndex: number, playerMagicFind = 0, enemyUniqueDropIds?: string[]): GameItem {
+export function generateDroppedItem(enemyIndex: number, playerMagicFind = 0, enemyUniqueDropIds?: string[], altarBonus = 0): GameItem {
   const band = ENEMY_ILVL_BANDS[Math.min(enemyIndex, ENEMY_ILVL_BANDS.length - 1)];
   const ilvl = band[0] + randInt(0, band[1] - band[0]);
 
@@ -1475,7 +1475,7 @@ export function generateDroppedItem(enemyIndex: number, playerMagicFind = 0, ene
 
   // ── Generic unique drop check (enemy tier + ilvl gate) ──────────────────────
   const eligibleUniques = UNIQUE_ITEMS.filter(u => u.minEnemyIndex <= enemyIndex && u.ilvl <= ilvl + 10);
-  const uniqueDropChance = 0.02 + enemyIndex * 0.005; // 2%–5.5%
+  const uniqueDropChance = 0.02 + enemyIndex * 0.005 + altarBonus * 0.03; // 2%–5.5%
   if (eligibleUniques.length && Math.random() < uniqueDropChance) {
     return buildUniqueGameItem(rand(eligibleUniques));
   }

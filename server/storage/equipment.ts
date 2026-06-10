@@ -410,6 +410,9 @@ export async function extractPower(state: GameState, instanceId: string): Promis
   const powerId = item.legendaryPower || `skill_${item.skills?.[0]?.type || 'unknown'}`;
   const powerName = item.legendaryPower || item.skills?.[0]?.name || '未知威能';
   const powers: string[] = JSON.parse((state as any).extractedPowers ?? '[]');
+  const homeLv: Record<string,number> = (()=>{try{return JSON.parse((state as any).homestead??"{}")}catch{return{}}})();
+  const maxSlots = 3 + (homeLv.recycling ?? 0);
+  if (powers.length >= maxSlots) throw new Error("萃取槽已满，升级回收站解锁更多");
   if (powers.includes(powerId)) throw new Error("该威能已学会");
 
   powers.push(powerId);
