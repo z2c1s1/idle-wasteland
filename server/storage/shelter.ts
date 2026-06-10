@@ -78,6 +78,8 @@ export function applyTemperatureDecay(state: GameState, now: Date): Partial<Game
 
   const temp = state.temperature ?? 0;
   if (temp <= 0) return {};
+  // Only decay below 30° (cold zone), and above 50° is safe zone
+  if (temp >= 30) return {};
 
   const fuelEndsAt = state.fuelEndsAt ? new Date(state.fuelEndsAt) : null;
   const baseDecay = fuelEndsAt && now > fuelEndsAt ? 2 : 1;
