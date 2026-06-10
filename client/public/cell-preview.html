@@ -1,69 +1,105 @@
 <!DOCTYPE html>
-<html><head><title>Cell Name Mapper</title>
+<html><head><title>Cell Namer</title>
 <style>
-body{background:#111;color:#fff;font-family:monospace;padding:10px}
-.grid{display:grid;grid-template-columns:repeat(5,1fr);max-width:1000px;gap:2px;margin-bottom:10px}
-.cell{border:1px solid #333;text-align:center;font-size:9px;position:relative}
-.cell img{width:100%;image-rendering:pixelated}
-.cell input{width:70px;font-size:8px;text-align:center;background:#222;color:lime;border:1px solid #555;margin:2px 0;padding:1px}
-.cell.sel{border:2px solid lime;background:rgba(0,255,0,0.1)}
-.cell.named{background:rgba(0,255,0,0.08);border-color:#0f0}
-#bar{position:sticky;top:0;background:#1a1a1a;padding:8px;z-index:10;display:flex;gap:8px;align-items:center}
+body{background:#111;color:#fff;font-family:monospace;padding:8px}
+#bar{position:sticky;top:0;background:#1a1a1a;padding:8px;z-index:10;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 button{padding:6px 14px;cursor:pointer;font-size:14px}
-#count{color:lime}
+#count{color:#0f0}
+#grid{display:grid;gap:2px;margin-top:8px}
+.cell{border:1px solid #333;text-align:center;font-size:9px;position:relative;padding:4px}
+.cell img{width:100%;image-rendering:pixelated}
+.cell input{width:90%;font-size:8px;text-align:center;background:#222;color:#0f0;border:1px solid #555;margin-top:2px;padding:1px}
+.cell.named{background:rgba(0,255,0,0.08);border-color:#0f0}
+.cell:focus-within{border-color:#0f0}
 </style></head>
 <body>
 <div id="bar">
-  <button onclick="copyAll()">📋 Copy All Mappings</button>
-  <span id="count">0/240 named</span>
-  <button onclick="exportCSV()">📊 Export CSV</button>
+  <b>命名工具</b>
+  <span>|</span>
+  Grid: <input id="rows" type="number" value="3" min="1" max="30" style="width:50px" onchange="resize()">R ×
+  <input id="cols" type="number" value="5" min="1" max="30" style="width:50px" onchange="resize()">C
+  <button onclick="resize()">Apply</button>
+  <span>|</span>
+  <button onclick="copyAll()" style="background:#0a0;color:#000">📋 Copy All Mappings</button>
+  <button onclick="copyCSV()">📊 Copy CSV</button>
+  <span id="count">0/0 named</span>
+  <span>|</span>
+  <a href="/grid-slicer.html" style="color:#888">← 切图工具</a>
 </div>
-<div class="grid" id="grid"></div>
+<div id="grid"></div>
 
 <script>
-const COLS=5,ROWS=3;
 const names={};
-const grid=document.getElementById('grid');
-const countEl=document.getElementById('count');
+const gridEl=document.getElementById('grid');
 
-for(let r=0;r<ROWS;r++){
-  for(let c=0;c<COLS;c++){
-    const idx=r*COLS+c;
-    const num=idx+1;
+function resize(){
+  const rows=parseInt(document.getElementById('rows').value)||3;
+  const cols=parseInt(document.getElementById('cols').value)||5;
+  const total=rows*cols;
+  gridEl.style.gridTemplateColumns='repeat('+cols+', 1fr)';
+  gridEl.innerHTML='';
+  
+  for(let i=0;i<total;i++){
+    const num=i+1;
     const div=document.createElement('div');
     div.className='cell';
-    div.id='c'+num;
-    div.innerHTML='<img src="/equipment_tiles/'+String(num).padStart(3,'0')+'_cell.png"><br>';
+    const img=document.createElement('img');
+    img.src='/equipment_tiles/'+String(num).padStart(3,'0')+'_cell.png';
+    img.onerror=()=>img.style.display='none';
+    div.appendChild(img);
+    div.appendChild(document.createElement('br'));
+    
     const inp=document.createElement('input');
-    inp.placeholder='R'+r+'C'+c;
+    inp.placeholder='#'+num;
+    inp.value=names[num]||'';
     inp.oninput=()=>{
       const v=inp.value.trim();
       if(v){names[num]=v;div.classList.add('named')}else{delete names[num];div.classList.remove('named')}
-      countEl.textContent=Object.keys(names).length+'/240 named';
+      updateCount();
     };
+    // Tab/arrow navigation
     inp.onkeydown=e=>{
-      if(e.key==='Tab'){
-        const next=document.getElementById('c'+(num+1));
-        if(next){e.preventDefault();next.querySelector('input').focus()}
-      }
-      if(e.key==='ArrowDown'){e.preventDefault();const n=document.getElementById('c'+(num+COLS));if(n)n.querySelector('input').focus()}
-      if(e.key==='ArrowUp'){e.preventDefault();const n=document.getElementById('c'+(num-COLS));if(n)n.querySelector('input').focus()}
+      if(e.key==='Tab'){e.preventDefault();const next=gridEl.children[i+1];if(next)next.querySelector('input').focus()}
+      if(e.key==='ArrowDown'){e.preventDefault();const next=gridEl.children[i+cols];if(next)next.querySelector('input').focus()}
+      if(e.key==='ArrowUp'){e.preventDefault();const next=gridEl.children[i-cols];if(next)next.querySelector('input').focus()}
     };
     div.appendChild(inp);
-    grid.appendChild(div);
+    gridEl.appendChild(div);
   }
+  updateCount();
+}
+
+function updateCount(){
+  const n=Object.keys(names).length;
+  const total=gridEl.children.length;
+  document.getElementById('count').textContent=n+'/'+total+' named';
 }
 
 function copyAll(){
-  const list=Object.entries(names).map(([n,id])=>n+': '+id).join('\n');
-  navigator.clipboard.writeText(list);
-  alert('Copied '+Object.keys(names).length+' mappings!');
+  const entries=[];
+  const total=gridEl.children.length;
+  for(let i=0;i<total;i++){
+    const num=i+1;
+    if(names[num])entries.push(num+': '+names[num]);
+  }
+  if(!entries.length){alert('Name some first');return}
+  navigator.clipboard.writeText(entries.join('\n'));
+  alert(entries.length+' copied!');
 }
-function exportCSV(){
-  const list=['cell,english_id',...Object.entries(names).map(([n,id])=>n+','+id)].join('\n');
-  navigator.clipboard.writeText(list);
-  alert('CSV copied!');
+
+function copyCSV(){
+  const entries=['cell,english_id'];
+  const total=gridEl.children.length;
+  for(let i=0;i<total;i++){
+    const num=i+1;
+    if(names[num])entries.push(num+','+names[num]);
+  }
+  navigator.clipboard.writeText(entries.join('\n'));
+  alert(entries.length-1+' copied!');
 }
+
+// Default: 3 rows × 5 cols
+resize();
 </script>
 </body>
 </html>

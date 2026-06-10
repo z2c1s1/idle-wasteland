@@ -1,167 +1,124 @@
 <!DOCTYPE html>
 <html>
-<head><title>Slice & Name</title>
+<head><title>Grid Slicer</title>
 <style>
   body{background:#111;color:#fff;font-family:monospace;padding:8px}
-  #bar{display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap}
+  #bar{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
   button{padding:6px 12px;cursor:pointer;font-size:13px}
   input{background:#222;color:#0f0;border:1px solid #555;padding:2px 6px}
-  #wrap{position:relative;display:inline-block}
-  #canvas{display:block;background-size:contain;background-repeat:no-repeat}
-  .line{position:absolute;background:lime;z-index:5}
-  .line.h{left:0;right:0;height:2px;cursor:row-resize}
-  .line.v{top:0;bottom:0;width:2px;cursor:col-resize}
-  .line .lbl{position:absolute;font-size:9px;background:#000;color:lime;padding:0 3px;white-space:nowrap}
-  .line.h .lbl{right:2px;top:-14px}
-  .line.v .lbl{bottom:2px;left:4px}
-  .cell-name{position:absolute;z-index:10;pointer-events:auto}
-  .cell-name input{width:90%;text-align:center;font-size:10px;background:rgba(0,0,0,0.7);color:#0f0;border:1px solid #0f0;padding:1px 2px;border-radius:2px}
-  #log{font-size:10px;max-height:100px;overflow-y:auto;margin-top:4px;color:#888}
+  #outer{position:relative;display:inline-block}
+  #bg{position:absolute;inset:0;background-size:contain;background-repeat:no-repeat}
+  #lines{position:absolute;inset:0;z-index:2}
+  .hline{position:absolute;left:0;right:0;height:2px;background:lime;cursor:row-resize}
+  .vline{position:absolute;top:0;bottom:0;width:2px;background:lime;cursor:col-resize}
+  .hline span,.vline span{position:absolute;font-size:9px;background:#000;color:lime;padding:0 3px;white-space:nowrap}
+  .hline span{right:2px;top:-14px}
+  .vline span{bottom:2px;left:4px}
+  #info{color:#0f0;font-size:12px;margin-top:4px}
 </style>
 </head>
 <body>
 <div id="bar">
-  <b>Img:</b> <input type="file" id="fileInput" accept="image/png" onchange="handleFile(this)">
-  <input id="imgUrl" value="/equipment.png" size="30" onchange="loadImage(this.value)">
-  <button onclick="loadImage(document.getElementById('imgUrl').value)">URL</button>
+  <b>Img:</b> <input type="file" id="fileInput" accept="image/png" onchange="upload(this)">
+  <input id="imgUrl" value="/equipment.png" size="35" onchange="loadImg(this.value)">
+  <button onclick="loadImg(document.getElementById('imgUrl').value)">Load</button>
   <span>|</span>
   <button onclick="addH()">+H</button> <button onclick="addV()">+V</button>
-  <button onclick="clearLines()">Clear</button>
-  <button onclick="exportAll()" style="background:#0a0;color:#000">📋 Copy Map</button>
-  <button onclick="copyJSON()">Copy JSON</button>
-  <span id="count" style="color:#0f0">0 cells</span>
+  <button onclick="clearAll()">Clear</button>
+  <button onclick="copyJSON()" style="background:#0a0;color:#000">📋 Copy JSON → 切片</button>
+  <span>|</span>
+  <b>下一步:</b> <a href="/cell-preview.html" style="color:#0f0" target="_blank">打开命名工具</a>
+  <span id="info"></span>
 </div>
-<div id="wrap">
-  <div id="canvas"></div>
+<div id="outer">
+  <div id="bg"></div>
+  <div id="lines"></div>
 </div>
-<div id="log"></div>
 
 <script>
 let W=1408,H=768;
-let IMG='/equipment.png';
-const canvas=document.getElementById('canvas');
+const bg=document.getElementById('bg'), lines=document.getElementById('lines');
+let h=[0,0], v=[0,0];
+let dragEl=null, dragType='', dragIdx=-1;
 
-function handleFile(input){
-  const file=input.files[0];
-  if(!file)return;
-  const url=URL.createObjectURL(file);
+function upload(f){
+  const file=f.files[0]; if(!file)return;
+  loadImg(URL.createObjectURL(file));
   document.getElementById('imgUrl').value=file.name;
-  loadImage(url);
 }
 
-function loadImage(url){
-  IMG=url;
-  const probe=new Image();
-  probe.onload=()=>{
-    W=probe.naturalWidth;H=probe.naturalHeight;
-    canvas.style.width=W+'px';canvas.style.height=H+'px';
-    canvas.style.backgroundImage='url('+IMG+')';
-    hLines=[0,H];vLines=[0,W];names={};
+function loadImg(url){
+  const img=new Image();
+  img.onload=()=>{
+    W=img.naturalWidth; H=img.naturalHeight;
+    bg.style.width=W+'px'; bg.style.height=H+'px';
+    bg.style.backgroundImage='url('+url+')';
+    h=[0,H]; v=[0,W];
     renderLines();
   };
-  probe.src=IMG;
+  img.src=url;
 }
 
-// Auto-load
-loadImage(IMG);
-
-let hLines=[0,H],vLines=[0,W],allLines=[],names={};
-let dragTarget=null,dragType='',dragIdx=-1;
-
-function addH(){hLines.push(Math.round(H/2));hLines.sort((a,b)=>a-b);renderLines()}
-function addV(){vLines.push(Math.round(W/2));vLines.sort((a,b)=>a-b);renderLines()}
+function addH(){h.push(Math.round(H/2));h.sort((a,b)=>a-b);renderLines()}
+function addV(){v.push(Math.round(W/2));v.sort((a,b)=>a-b);renderLines()}
+function clearAll(){h=[0,H];v=[0,W];renderLines()}
 
 function renderLines(){
-  allLines.forEach(l=>l.el.remove());allLines.length=0;
-  const wrap=canvas.parentElement;
-  // Remove old cell name inputs
-  wrap.querySelectorAll('.cell-name').forEach(e=>e.remove());
-
-  hLines.forEach((y,i)=>{
-    const d=document.createElement('div');d.className='line h';d.style.top=y+'px';
-    d.innerHTML='<span class=lbl>H'+i+' '+y+'px</span>';
-    d.onmousedown=e=>startDrag(e,d,'h',i);wrap.appendChild(d);
-    allLines.push({type:'h',idx:i,y,el:d});
-  });
-  vLines.forEach((x,i)=>{
-    const d=document.createElement('div');d.className='line v';d.style.left=x+'px';
-    d.innerHTML='<span class=lbl>V'+i+' '+x+'px</span>';
-    d.onmousedown=e=>startDrag(e,d,'v',i);wrap.appendChild(d);
-    allLines.push({type:'v',idx:i,x,el:d});
-  });
-
-  // Add name inputs for each cell
-  let cellIdx=0;
-  for(let ri=0;ri<hLines.length-1;ri++){
-    for(let ci=0;ci<vLines.length-1;ci++){
-      const x=vLines[ci],y=hLines[ri];
-      const w=vLines[ci+1]-vLines[ci],h=hLines[ri+1]-hLines[ri];
-      if(w<20||h<20)continue;
-      cellIdx++;
-      const inpDiv=document.createElement('div');
-      inpDiv.className='cell-name';
-      inpDiv.style.left=x+'px';inpDiv.style.top=y+'px';
-      inpDiv.style.width=w+'px';inpDiv.style.height=h+'px';
-      inpDiv.style.display='flex';inpDiv.style.alignItems='center';inpDiv.style.justifyContent='center';
-      const inp=document.createElement('input');
-      inp.placeholder='#'+cellIdx;
-      inp.value=names[cellIdx]||'';
-      inp.oninput=()=>{if(inp.value.trim())names[cellIdx]=inp.value.trim();else delete names[cellIdx];count()};
-      inpDiv.appendChild(inp);wrap.appendChild(inpDiv);
+  lines.innerHTML='';
+  let cells=0;
+  for(let ri=0;ri<h.length-1;ri++)
+    for(let ci=0;ci<v.length-1;ci++){
+      if(v[ci+1]-v[ci]>20&&h[ri+1]-h[ri]>20)cells++;
     }
-  }
-  count();
+  document.getElementById('info').textContent=cells+' cells · '+h.length+'H × '+v.length+'V';
+  
+  h.forEach((y,i)=>{
+    const d=document.createElement('div'); d.className='hline'; d.style.top=y+'px';
+    d.innerHTML='<span>H'+i+' '+y+'</span>';
+    d.onmousedown=e=>startDrag(e,'h',i);
+    lines.appendChild(d);
+  });
+  v.forEach((x,i)=>{
+    const d=document.createElement('div'); d.className='vline'; d.style.left=x+'px';
+    d.innerHTML='<span>V'+i+' '+x+'</span>';
+    d.onmousedown=e=>startDrag(e,'v',i);
+    lines.appendChild(d);
+  });
 }
 
-function count(){document.getElementById('count').textContent=Object.keys(names).length+' named'}
+function startDrag(e, type, idx){
+  e.preventDefault();
+  dragEl=e.target; dragType=type; dragIdx=idx;
+}
 
-function startDrag(e,el,type,idx){e.preventDefault();dragTarget=el;dragType=type;dragIdx=idx}
 document.addEventListener('mousemove',e=>{
-  if(!dragTarget)return;
-  const wrap=canvas.parentElement,r=wrap.getBoundingClientRect();
+  if(!dragEl)return;
+  const r=bg.getBoundingClientRect();
   if(dragType==='h'){
-    let y=Math.round(e.clientY-r.top);y=Math.max(1,Math.min(H-1,y));
-    hLines[dragIdx]=y;hLines.sort((a,b)=>a-b);
+    let y=Math.round(e.clientY-r.top);
+    y=Math.max(1,Math.min(H-1,y));
+    h[dragIdx]=y; h.sort((a,b)=>a-b);
   }else{
-    let x=Math.round(e.clientX-r.left);x=Math.max(1,Math.min(W-1,x));
-    vLines[dragIdx]=x;vLines.sort((a,b)=>a-b);
+    let x=Math.round(e.clientX-r.left);
+    x=Math.max(1,Math.min(W-1,x));
+    v[dragIdx]=x; v.sort((a,b)=>a-b);
   }
   renderLines();
 });
-document.addEventListener('mouseup',()=>dragTarget=null);
-
-function clearLines(){hLines.length=0;vLines.length=0;hLines.push(0,H);vLines.push(0,W);names={};renderLines()}
-
-function exportAll(){
-  const cells=[];
-  let ci=0;
-  for(let ri=0;ri<hLines.length-1;ri++){
-    for(let col=0;col<vLines.length-1;col++){
-      const x=vLines[col],y=hLines[ri];
-      const w=vLines[col+1]-vLines[col],h=hLines[ri+1]-hLines[ri];
-      if(w<20||h<20)continue;
-      ci++;
-      if(names[ci])cells.push(ci+': '+names[ci]);
-    }
-  }
-  if(cells.length===0){alert('Name some cells first');return}
-  navigator.clipboard.writeText(cells.join('\n'));
-  document.getElementById('log').innerHTML='📋 '+cells.length+' names copied!<br>'+cells.join('<br>');
-}
+document.addEventListener('mouseup',()=>{dragEl=null});
 
 function copyJSON(){
   const cells=[];
-  for(let ri=0;ri<hLines.length-1;ri++){
-    for(let col=0;col<vLines.length-1;col++){
-      const x=vLines[col],y=hLines[ri];
-      const w=vLines[col+1]-vLines[col],h=hLines[ri+1]-hLines[ri];
-      if(w<20||h<20)continue;
-      cells.push({x,y,w,h});
+  for(let ri=0;ri<h.length-1;ri++)
+    for(let ci=0;ci<v.length-1;ci++){
+      const x=v[ci],y=h[ri],w=v[ci+1]-v[ci],hh=h[ri+1]-h[ri];
+      if(w>20&&hh>20)cells.push({x,y,w,h:hh});
     }
-  }
   navigator.clipboard.writeText(JSON.stringify(cells,null,2));
-  document.getElementById('log').innerHTML='🗂 '+cells.length+' cell coords copied!';
+  document.getElementById('info').textContent=cells.length+' cells copied! Now open naming tool →';
 }
+
+loadImg('/equipment.png');
 </script>
 </body>
 </html>
