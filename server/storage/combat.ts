@@ -13,6 +13,7 @@ import { eq } from "drizzle-orm";
 import { calculateLevel, getPlayerMaxHp, getPlayerDefence, getAgilityBonuses } from "@shared/game-math";
 import { getTemperatureMultiplier } from "@shared/game-math";
 import { getPetBuffs } from "./skills";
+import { getPrayerBuff } from "./prayer";
 import { getTalentBonuses } from "./tick/talent-bonuses";
 import { parseEquipment, parseLootBag, parseGems } from "@shared/game-state-parse";
 import { DISENCHANT_GOLD, RARITY_ORDER } from "./constants";
@@ -127,7 +128,7 @@ export async function handleTriangleCombat(
     totalDmgToEnemy += applyMortalStrike(perHitBase, allSkills, rng);
 
     enemyHp -= totalDmgToEnemy;
-    attackXpGained += 4 * strikes;
+    attackXpGained += Math.floor(4 * strikes * (1 + getPrayerBuff(state, "experience")));
 
     // ── Life recovery (shared) ─────────────────────────────────────────────
     playerHp = applyLifeRecovery(playerHp, playerMaxHp, totalDmgToEnemy,
