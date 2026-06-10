@@ -32,7 +32,7 @@ export async function tickActiveAction(
     const enemy = ENEMIES[enemyIndex];
     if (enemy) result = (await handleTriangleCombat(state, enemy, enemyIndex, "magic", elapsedSeconds)) ?? state;
   }
-  if (action.startsWith("thieve_")) result = await tickThieving(state, elapsedSeconds);
+  else if (action.startsWith("thieve_")) result = await tickThieving(state, elapsedSeconds);
   else if (action.startsWith("smith_") || action.startsWith("leather_") || action.startsWith("jewel_") || action.startsWith("tool_")) {
     result = await tickCrafting(state, elapsedSeconds, now);
   } else {
