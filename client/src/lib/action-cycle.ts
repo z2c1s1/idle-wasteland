@@ -2,6 +2,40 @@ import type { GameState } from "@shared/schema";
 import { getToolBonus } from "@shared/game-data";
 import { getAgilityBonuses, getTemperatureMultiplier } from "@/lib/game-utils";
 
+/** Get pet speed multiplier for a skill (matches server/storage/tick/gathering.ts petSpeedMap) */
+export function getPetSpeedMultiplier(state: GameState, skill: string): number {
+  try {
+    const pets: string[] = JSON.parse((state as any).pets ?? '[]');
+    let bonus = 0;
+    // Map pet IDs to their speed bonus (matching server/storage/skills.ts logic)
+    const petSpeeds: Record<string, number> = {
+      pet_beaver: 0.05, pet_ent: 0.05, pet_mole: 0.05, pet_magpie: 0.05,
+      pet_dragon: 0.10, pet_octopus: 0.05, pet_fox: 0.05, pet_raccoon: 0.05,
+      pet_phoenix: 0.10, pet_angel: 0.10, pet_wolf: 0.05,
+    };
+    const skillPets: Record<string, string[]> = {
+      woodcutting: ['pet_beaver','pet_ent'],
+      mining: ['pet_mole','pet_magpie'],
+      smelting: ['pet_dragon'],
+      fishing: ['pet_octopus'],
+      hunting: ['pet_fox','pet_raccoon'],
+      thieving: ['pet_raccoon'],
+      smithing: ['pet_dragon'],
+      leatherworking: ['pet_wolf'],
+      jewelcrafting: ['pet_magpie'],
+      cooking: ['pet_fox'],
+      alchemy: ['pet_ent'],
+      agility: ['pet_phoenix','pet_angel'],
+      exploration: ['pet_angel','pet_phoenix'],
+    };
+    const eligible = skillPets[skill] ?? [];
+    for (const petId of pets) {
+      if (eligible.includes(petId)) bonus += (petSpeeds[petId] ?? 0.05);
+    }
+    return 1 + bonus;
+  } catch { return 1; }
+}
+
 /** Base cycle times per skill tier — mirrors server/storage/constants.ts */
 const SKILL_TIMES: Record<string, number[]> = {
   woodcutting: [3, 4, 5, 6, 8, 10, 12, 14, 16, 18],
@@ -30,7 +64,8 @@ export function getEffectiveCycleTime(action: string, state: GameState): number 
   const tempMul = getTemperatureMultiplier(state);
   const skill = action.split("_")[0];
   const agilityMul = skill === "fishing" ? agility.fishingMul : 1;
-  return base * toolBonus.timeMult / agilityMul / Math.max(0.1, tempMul);
+  const petSpeedMul = getPetSpeedMultiplier(state, skill);
+  return base * toolBonus.timeMult / agilityMul / Math.max(0.1, tempMul) / petSpeedMul;
 }
 
 export function getActionProgress(action: string, state: GameState, nowMs = Date.now()): {

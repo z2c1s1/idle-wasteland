@@ -8,6 +8,7 @@ import { ResourceIcon, type ResourceType } from "@/components/sprites";
 import { getToolBonus } from "@shared/game-data";
 import { getPlayerId } from "@/lib/api";
 import { api } from "@shared/routes";
+import { getPetSpeedMultiplier } from "@/lib/action-cycle";
 import { useQueryClient } from "@tanstack/react-query";
 import { WorkstationLayout, RustFrame } from "@/components/wasteland";
 import { SCAVENGE_SKILLS } from "@/lib/scavenge-skills";
@@ -61,7 +62,8 @@ export function SkillPage({ skillKey, skillName, skillXp, icon: Icon, iconColor,
   const getEffectiveTime = (baseTime: number) => {
     const skill = activeResource?.actionKey?.split('_')[0] ?? '';
     const agilityMul = skill === 'fishing' ? agility.fishingMul : 1;
-    return baseTime * toolBonus.timeMult / agilityMul / Math.max(0.1, tempMul);
+    const petSpeedMul = getPetSpeedMultiplier(state, skill);
+    return baseTime * toolBonus.timeMult / agilityMul / Math.max(0.1, tempMul) / petSpeedMul;
   };
 
   const isScavenge = skillKey != null && SCAVENGE_SKILLS.some(s => s.id === skillKey);
