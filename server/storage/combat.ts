@@ -55,6 +55,7 @@ export async function handleTriangleCombat(
   const effectiveCombatSpeed = Math.max(1.5, BASE_COMBAT_SPEED * (1 - attackSpeed / 200)) / tempMul;
 
   const petBuffs = getPetBuffs(state);
+  const homeLv: Record<string,number> = (()=>{try{return JSON.parse((state as any).homestead??"{}")}catch{return{}}})();
   const talentBonuses = getTalentBonuses(state);
   const ticks = Math.floor(elapsedSeconds / effectiveCombatSpeed);
   if (ticks <= 0) return state;
@@ -145,7 +146,7 @@ export async function handleTriangleCombat(
         if (drop) {
           const filterThreshold = RARITY_ORDER[state.lootFilter ?? "common"] ?? 0;
           if ((RARITY_ORDER[drop.rarity] ?? 0) >= filterThreshold) newDrops.push(drop);
-          else goldGained += DISENCHANT_GOLD[drop.rarity] ?? 5;
+          else goldGained += Math.floor((DISENCHANT_GOLD[drop.rarity] ?? 5) * (1 + (homeLv.wonder_furnace ?? 0) * 0.25));
         }
       }
       if (eff.vampiricHp > 0) playerHp = Math.min(playerMaxHp, playerHp + eff.vampiricHp);

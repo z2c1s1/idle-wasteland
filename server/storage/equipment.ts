@@ -89,7 +89,8 @@ export async function unequipItem(state: GameState, slot: string): Promise<GameS
 export async function destroyLoot(state: GameState, instanceId: string): Promise<GameState> {
   const lootBag = parseLootBag(state.lootBag);
   const item = lootBag.find(i => i.instanceId === instanceId);
-  const goldRefund = item ? (DISENCHANT_GOLD[item.rarity] ?? 5) : 0;
+  const homeLv: Record<string,number> = (()=>{try{return JSON.parse((state as any).homestead??"{}")}catch{return{}}})();
+  const goldRefund = item ? Math.floor((DISENCHANT_GOLD[item.rarity] ?? 5) * (1 + (homeLv.wonder_furnace ?? 0) * 0.25)) : 0;
   const filtered = lootBag.filter(i => i.instanceId !== instanceId);
   const [updated] = await db.update(gameStates)
     .set({ lootBag: JSON.stringify(filtered), gold: state.gold + goldRefund })
