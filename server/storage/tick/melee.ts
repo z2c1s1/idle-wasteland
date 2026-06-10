@@ -158,7 +158,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
         const drop = generateDroppedItem(enemyIndex, magicFind, (enemy as any).uniqueDropIds, homeLv.altar ?? 0);
         const filterThreshold = RARITY_ORDER[state.lootFilter ?? 'common'] ?? 0;
         if ((RARITY_ORDER[drop.rarity] ?? 0) >= filterThreshold) newDrops.push(drop);
-        else goldGained += DISENCHANT_GOLD[drop.rarity] ?? 5;
+        else goldGained += Math.floor((DISENCHANT_GOLD[drop.rarity] ?? 5) * (1 + (homeLv.wonder_furnace ?? 0) * 0.25));
       }
       if (Math.random() < 0.015) {
         const npcs = COMPANION_NPCS;

@@ -24,6 +24,7 @@ export function getTownLevel(state: GameState): number {
 
 export function trySpawnNpc(state: GameState): Partial<GameState> | null {
   if (state.npcEncounter) return null;
+  const homestead: Record<string, number> = (() => { try { return JSON.parse((state as any).homestead ?? '{}'); } catch { return {}; } })();
   const townLevel = getTownLevel(state);
   if (townLevel < 3) return null;
   const dungeonStats = (() => { try { return JSON.parse(state.dungeonStats ?? '{}'); } catch { return {}; } })();
@@ -36,7 +37,8 @@ export function trySpawnNpc(state: GameState): Partial<GameState> | null {
     return true;
   });
   if (eligible.length === 0) return null;
-  if (Math.random() > 0.08) return null;
+  const radioMul = 1 + (homestead.wonder_radio ?? 0) * 0.3;
+  if (Math.random() > 0.08 * radioMul) return null;
   const npc = eligible[Math.floor(Math.random() * eligible.length)];
   return { npcEncounter: JSON.stringify({ id: npc.id, arrivedAt: Date.now() }) } as any;
 }

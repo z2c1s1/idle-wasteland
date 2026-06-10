@@ -120,7 +120,7 @@ export async function tickDungeon(state: GameState, elapsedSeconds: number): Pro
           if ((RARITY_ORDER[drop.rarity] ?? 0) >= filterThreshold) {
             newDrops.push(drop);
           } else {
-            goldGained += DISENCHANT_GOLD[drop.rarity] ?? 5;
+            goldGained += Math.floor((DISENCHANT_GOLD[drop.rarity] ?? 5) * (1 + (homeLv.wonder_furnace ?? 0) * 0.25));
           }
         }
       }
