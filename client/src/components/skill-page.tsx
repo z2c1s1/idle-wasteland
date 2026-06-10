@@ -106,6 +106,20 @@ export function SkillPage({ skillKey, skillName, skillXp, icon: Icon, iconColor,
         );
       })()}
 
+      {/* Temperature warning */}
+      {tempMul < 1 && (
+        <div className="flex items-center gap-2 bg-blue-500/10 border border-blue-400/30 rounded-lg p-3 text-xs">
+          <span className="text-lg">❄️</span>
+          <div className="flex-1">
+            <p className="font-semibold text-blue-300">寒冷影响</p>
+            <p className="text-blue-200/70">
+              温度过低，行动速度降低 {Math.round((1 - tempMul) * 100)}%。
+              前往 <a href="/shelter" className="underline text-amber-400 hover:text-amber-300">营地生火</a> 恢复。
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Active progress */}
       {activeResource && (
         <ActiveBar name={activeResource.name} cycleTime={getEffectiveTime(activeResource.time)} startMs={new Date(state.actionUpdatedAt as unknown as string).getTime()} onStop={() => startAction("idle")} isPending={isPending} />
@@ -138,7 +152,7 @@ export function SkillPage({ skillKey, skillName, skillXp, icon: Icon, iconColor,
                   {isActive && <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/20 text-primary font-semibold">{t.skillPage.activeBadge}</span>}
                 </div>
                 <div className="text-xs text-muted-foreground flex gap-3 mt-0.5 flex-wrap">
-                  <span>{t.skillPage.timeSeconds(res.time)}</span>
+                  <span>{t.skillPage.timeSeconds(res.time)}{tempMul < 1 ? <span className="text-blue-300 ml-1">❄️ {t.skillPage.timeSeconds(Math.round(res.time / tempMul))}</span> : ''}</span>
                   <span>{t.skillPage.xpGain(res.xp)}</span>
                   <span>{t.skillPage.resourceOwned(formatNumber(owned))}</span>
                   {res.requiredKey && (
