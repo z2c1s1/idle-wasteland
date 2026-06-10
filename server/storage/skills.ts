@@ -2,7 +2,7 @@ import { db } from "../db";
 import { gameStates, type GameState } from "@shared/schema";
 import {
   SMITHING_RECIPES, LEATHERWORKING_RECIPES, JEWELCRAFTING_RECIPES,
-  TOOL_RECIPES, ACHIEVEMENTS, PETS, COMBAT_SKILLS,
+  TOOL_RECIPES, ACHIEVEMENTS, PETS, COMBAT_SKILLS, MILESTONES,
   TIER_UNLOCK_LEVELS, type WorldTier,
 } from "@shared/game-data";
 import { eq } from "drizzle-orm";
@@ -140,6 +140,43 @@ export function trackAchievement(state: any, type: string, target: string, count
   const key = `${type}_${target}`;
   ach[key] = (ach[key] ?? 0) + count;
   return JSON.stringify(ach);
+}
+
+/** Check milestones and grant talent points (called after any action). */
+export function checkMilestones(state: any): number {
+  const completed: string[] = JSON.parse(state.milestonesCompleted ?? '[]');
+  let gained = 0;
+  for (const m of MILESTONES) {
+    if (completed.includes(m.id)) continue;
+    let val = 0;
+    switch (m.target) {
+      case 'woodcutting': val = state.woodcuttingXp ?? 0; break;
+      case 'mining': val = state.miningXp ?? 0; break;
+      case 'fishing': val = state.fishingXp ?? 0; break;
+      case 'hunting': val = state.huntingXp ?? 0; break;
+      case 'smelting': val = state.smeltingXp ?? 0; break;
+      case 'smithing': val = state.smithingXp ?? 0; break;
+      case 'cooking': val = state.cookingXp ?? 0; break;
+      case 'kills': val = state.totalKills ?? 0; break;
+      case 'dungeons': val = state.dungeonCount ?? 0; break;
+      case 'actions': val = state.totalActions ?? 0; break;
+      case 'gold': val = state.gold ?? 0; break;
+      case 'maxLevel': {
+        const xps = ['woodcuttingXp','miningXp','fishingXp','huntingXp','smeltingXp','smithingXp'];
+        for (const k of xps) { const lvl = Math.floor((state[k] ?? 0) / 100) + 1; if (lvl > val) val = lvl; }
+        break;
+      }
+    }
+    if (val >= m.threshold) {
+      completed.push(m.id);
+      gained++;
+    }
+  }
+  if (gained > 0) {
+    state.milestonesCompleted = JSON.stringify(completed);
+    state.talentPoints = (state.talentPoints ?? 0) + Math.min(10, gained);
+  }
+  return gained;
 }
 
 // ─── Active buffs ─────────────────────────────────────────────────────────────

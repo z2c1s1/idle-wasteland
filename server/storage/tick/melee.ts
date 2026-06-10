@@ -81,6 +81,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
   let playerDied = false;
   let slayerKills = 0;
   const newDrops: GameItem[] = [];
+  const tierMaterialChance = tier >= 2 ? 0.05 * (tier - 1) : 0;
   let gemsGained: Record<string, number> = {};
   const dropChance = getDropChance(enemyIndex);
   const agilityLuck = getAgilityBonuses(state).luckMul;
