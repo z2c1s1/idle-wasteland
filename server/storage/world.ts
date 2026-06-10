@@ -133,7 +133,7 @@ export async function dismissNpc(state: GameState): Promise<GameState> {
 
 // ─── Outposts ────────────────────────────────────────────────────────────────
 
-export async function establishOutpost(state: GameState, zoneIndex: number): Promise<GameState> {
+export async function establishOutpost(state: GameState, zoneIndex: number, resourceType: string = "wood"): Promise<GameState> {
   const outposts: any[] = JSON.parse((state as any).outposts ?? '[]');
   const worldTier = (state as any).worldTier ?? 1;
   const maxSlots = Math.min(worldTier + 1, 4); // 2/3/4/4 slots per tier
@@ -153,7 +153,7 @@ export async function establishOutpost(state: GameState, zoneIndex: number): Pro
   const zoneNames = ["枯树林","废弃加油站","废墟小镇","辐射沼泽","破碎公路","废弃农场","地下掩体","酸雨平原","沙暴废土","雪地废墟","火山灰地带","淹没城区","高架桥废墟","裂谷深渊","变异丛林","巨兽骸骨场","精灵废墟","矮人矿场","吸血鬼巢穴","狼人森林","搁浅货轮","海盗码头","天文台废墟","迷宫地铁","梦境实验室","陨石坑","虚空边界","混沌荒原","避难所遗迹","终末之门"];
   const resourceTypes = ['wood','ore','herb','berry','fish','hide','gold','bone'];
   const resource = resourceTypes[zoneIndex % resourceTypes.length];
-  outposts.push({ zoneIndex, zoneName: zoneNames[zoneIndex]??`区域${zoneIndex+1}`, resource, establishedAt: Date.now(), level:1 });
+  outposts.push({ zoneIndex, zoneName: zoneNames[zoneIndex]??`区域${zoneIndex+1}`, resource, establishedAt: Date.now(), resourceType, level:1 });
   const resourcePatch = buildResourceUpdates(state, { wood_0: currentWood - costWood });
   const [u] = await db.update(gameStates).set({
     outposts: JSON.stringify(outposts),
