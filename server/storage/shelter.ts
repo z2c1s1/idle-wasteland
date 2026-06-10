@@ -61,7 +61,9 @@ export function applyTemperatureDecay(state: GameState, now: Date): Partial<Game
   if (temp <= 0) return {};
 
   const fuelEndsAt = state.fuelEndsAt ? new Date(state.fuelEndsAt) : null;
-  const decayRate = fuelEndsAt && now > fuelEndsAt ? 2 : 1;
+  const baseDecay = fuelEndsAt && now > fuelEndsAt ? 2 : 1;
+  const furnaceReduction = 1 - furnaceLevel * 0.15;
+  const decayRate = Math.max(0.1, baseDecay * furnaceReduction);
   const newTemp = Math.max(0, temp - decayRate);
 
   if (newTemp === temp) return {};

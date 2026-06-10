@@ -26,7 +26,8 @@ export function levelProgress(xp: number): number {
 export function getPlayerMaxHp(state: GameState): number {
   const equipment = parseEquipment(state.equipment);
   const { hpBonus } = getEquipmentBonuses(equipment);
-  return 10 + (calculateLevel(state.hitpointsXp) - 1) * 5 + hpBonus;
+  const homestead: Record<string, number> = (() => { try { return JSON.parse((state as any).homestead ?? '{}'); } catch { return {}; } })();
+  return 10 + (calculateLevel(state.hitpointsXp) - 1) * 5 + hpBonus + (homestead.shelter ?? 0) * 10;
 }
 
 export function getPlayerAttack(state: GameState): number {
@@ -39,7 +40,8 @@ export function getPlayerAttack(state: GameState): number {
 export function getPlayerDefence(state: GameState): number {
   const equipment = parseEquipment(state.equipment);
   const { defenceBonus } = getEquipmentBonuses(equipment);
-  return Math.floor(calculateLevel(state.defenceXp) * 0.8) + defenceBonus;
+  const homestead: Record<string, number> = (() => { try { return JSON.parse((state as any).homestead ?? '{}'); } catch { return {}; } })();
+  return Math.floor(calculateLevel(state.defenceXp) * 0.8) + defenceBonus + (homestead.wall ?? 0) * 3;
 }
 
 export function getCombatLevel(state: GameState): number {

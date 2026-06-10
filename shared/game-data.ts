@@ -2209,7 +2209,7 @@ export const SHELTER_BUILDINGS: HomesteadBuilding[] = [
   { id:'clinic', name:'医疗站', emoji:'🏥', maxLevel:5, costWood:300, costStone:100, costGold:0, effect:'生命回复', effectPerLevel:'+1/回合' },
   { id:'altar', name:'神秘祭坛', emoji:'🔮', maxLevel:3, costWood:0, costStone:100, costGold:500, effect:'神话掉率', effectPerLevel:'+3%' },
   { id:'tower', name:'瞭望塔', emoji:'🗼', maxLevel:5, costWood:0, costStone:400, costGold:0, effect:'战斗经验', effectPerLevel:'+4%' },
-  { id:'furnace', name:'火炉', emoji:'🔥', maxLevel:5, costWood:200, costStone:100, costGold:0, effect:'温度衰减', effectPerLevel:'-15% 衰减速度' },
+  { id:'furnace', name:'火炉', emoji:'🔥', maxLevel:5, costWood:20, costStone:20, costGold:0, effect:'温度衰减', effectPerLevel:'-15% 衰减速度' },
   { id:'recycling', name:'废品回收站', emoji:'♻️', maxLevel:3, costWood:0, costStone:200, costGold:2000, effect:'传奇萃取槽', effectPerLevel:'+1 槽位', reqTier:2 },
   { id:'radlab', name:'辐射实验室', emoji:'☢️', maxLevel:3, costWood:0, costStone:400, costGold:5000, effect:'辐射成功率', effectPerLevel:'+5% 正面概率', reqTier:3 },
   { id:'wonder_corpse', name:'尸山', emoji:'💀', maxLevel:1, costWood:0, costStone:500, costGold:10000, effect:'非Boss敌人HP', effectPerLevel:'-5%', reqTier:2 },

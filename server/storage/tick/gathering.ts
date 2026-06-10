@@ -34,7 +34,9 @@ const petSpeedMap: Record<string, number> = {
 };
 const petSpeedMul = 1 + (petSpeedMap[skill] ?? 0);
 const prayerSpeed = 1 + getPrayerBuff(state, "swiftness");
-  const effectiveTime = data.time * toolBonus.timeMult / agilitySpeedMul / tempMul / petSpeedMul / prayerSpeed;
+  const homeLevels: Record<string, number> = (() => { try { return JSON.parse((state as any).homestead ?? "{}"); } catch { return {}; } })();
+  const buildingMul = 1 - ((skill === "woodcutting" ? (homeLevels.lumbermill ?? 0) : skill === "mining" ? (homeLevels.mine ?? 0) : 0) * 0.03);
+  const effectiveTime = data.time * toolBonus.timeMult / agilitySpeedMul / tempMul / petSpeedMul / prayerSpeed * buildingMul;
 
 const completions = Math.floor(elapsedSeconds / effectiveTime);
 if (completions <= 0) return state;
