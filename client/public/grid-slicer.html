@@ -1,174 +1,158 @@
 <!DOCTYPE html>
 <html>
-<head><title>Grid Slicer</title>
+<head><title>Slice & Name</title>
 <style>
-  body { background:#111; color:#fff; font-family:monospace; padding:20px; }
-  #wrap { position:relative; display:inline-block; }
-  #canvas { display:block; background-size:contain; background-repeat:no-repeat; }
-  .line { position:absolute; background:lime; z-index:5; }
-  .line.h { left:0; right:0; height:2px; cursor:row-resize; }
-  .line.v { top:0; bottom:0; width:2px; cursor:col-resize; }
-  .line .lbl { position:absolute; font-size:9px; background:#000; color:lime; padding:0 3px; white-space:nowrap; }
-  .line.h .lbl { right:2px; top:-14px; }
-  .line.v .lbl { bottom:2px; left:4px; }
-  #log { margin-top:10px; max-height:200px; overflow-y:auto; font-size:11px; }
-  button { margin:4px 4px 0 0; padding:4px 10px; cursor:pointer; }
-  .help { font-size:10px; color:#888; margin-bottom:8px; }
+  body{background:#111;color:#fff;font-family:monospace;padding:8px}
+  #bar{display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap}
+  button{padding:6px 12px;cursor:pointer;font-size:13px}
+  input{background:#222;color:#0f0;border:1px solid #555;padding:2px 6px}
+  #wrap{position:relative;display:inline-block}
+  #canvas{display:block;background-size:contain;background-repeat:no-repeat}
+  .line{position:absolute;background:lime;z-index:5}
+  .line.h{left:0;right:0;height:2px;cursor:row-resize}
+  .line.v{top:0;bottom:0;width:2px;cursor:col-resize}
+  .line .lbl{position:absolute;font-size:9px;background:#000;color:lime;padding:0 3px;white-space:nowrap}
+  .line.h .lbl{right:2px;top:-14px}
+  .line.v .lbl{bottom:2px;left:4px}
+  .cell-name{position:absolute;z-index:10;pointer-events:auto}
+  .cell-name input{width:90%;text-align:center;font-size:10px;background:rgba(0,0,0,0.7);color:#0f0;border:1px solid #0f0;padding:1px 2px;border-radius:2px}
+  #log{font-size:10px;max-height:100px;overflow-y:auto;margin-top:4px;color:#888}
 </style>
 </head>
 <body>
-<h3>Grid Slicer — drag lines to mark cuts</h3>
-<p class="help">Click on ruler area (edges) to add a line, drag to reposition. Each line marks a cut boundary.</p>
+<div id="bar">
+  <b>Img:</b> <input id="imgUrl" value="/equipment.png" size="40" onchange="loadImage(this.value)">
+  <button onclick="loadImage(document.getElementById('imgUrl').value)">Load</button>
+  <span>|</span>
+  <button onclick="addH()">+H</button> <button onclick="addV()">+V</button>
+  <button onclick="clearLines()">Clear</button>
+  <button onclick="exportAll()" style="background:#0a0;color:#000">📋 Copy Map</button>
+  <button onclick="copyJSON()">Copy JSON</button>
+  <span id="count" style="color:#0f0">0 cells</span>
+</div>
 <div id="wrap">
   <div id="canvas"></div>
-</div>
-<div style="margin-top:8px;">
-  <button onclick="addH()">+ Horizontal Line</button>
-  <button onclick="addV()">+ Vertical Line</button>
-  <button onclick="clearLines()">Clear All</button>
-  <button onclick="exportGrid()">Export Grid Cells</button>
-  <button onclick="copyJSON()">Copy JSON</button>
 </div>
 <div id="log"></div>
 
 <script>
-let W = 1536, H = 1024;
-const IMG = '/equipment.png';
-const canvas = document.getElementById('canvas');
+let W=1408,H=768;
+let IMG='/equipment.png';
+const canvas=document.getElementById('canvas');
 
-// Auto-detect actual image dimensions
-const probe = new Image();
-probe.onload = () => {
-  W = probe.naturalWidth; H = probe.naturalHeight;
-  canvas.style.width = W + 'px';
-  canvas.style.height = H + 'px';
-  canvas.style.backgroundImage = 'url(' + IMG + ')';
-  hLines = [0, H]; vLines = [0, W];
-  renderLines();
-};
-probe.src = IMG;
-
-let hLines = [0, H]; // top, bottom
-let vLines = [0, W]; // left, right
-let allLines = [];
-
-function addH() {
-  const y = Math.round(H/2);
-  hLines.push(y);
-  hLines.sort((a,b)=>a-b);
-  renderLines();
-}
-function addV() {
-  const x = Math.round(W/2);
-  vLines.push(x);
-  vLines.sort((a,b)=>a-b);
-  renderLines();
+function loadImage(url){
+  IMG=url;
+  const probe=new Image();
+  probe.onload=()=>{
+    W=probe.naturalWidth;H=probe.naturalHeight;
+    canvas.style.width=W+'px';canvas.style.height=H+'px';
+    canvas.style.backgroundImage='url('+IMG+')';
+    hLines=[0,H];vLines=[0,W];names={};
+    renderLines();
+  };
+  probe.src=IMG;
 }
 
-function renderLines() {
-  allLines.forEach(l=>l.el.remove());
-  allLines.length = 0;
-  
-  const wrap = canvas.parentElement;
-  
+// Auto-load
+loadImage(IMG);
+
+let hLines=[0,H],vLines=[0,W],allLines=[],names={};
+let dragTarget=null,dragType='',dragIdx=-1;
+
+function addH(){hLines.push(Math.round(H/2));hLines.sort((a,b)=>a-b);renderLines()}
+function addV(){vLines.push(Math.round(W/2));vLines.sort((a,b)=>a-b);renderLines()}
+
+function renderLines(){
+  allLines.forEach(l=>l.el.remove());allLines.length=0;
+  const wrap=canvas.parentElement;
+  // Remove old cell name inputs
+  wrap.querySelectorAll('.cell-name').forEach(e=>e.remove());
+
   hLines.forEach((y,i)=>{
-    const div = document.createElement('div');
-    div.className = 'line h';
-    div.style.top = y + 'px';
-    div.innerHTML = '<span class="lbl">H'+(i)+' '+y+'px</span>';
-    div.onmousedown = e => startDrag(e, div, 'h', i);
-    wrap.appendChild(div);
-    allLines.push({type:'h', idx:i, y, el:div});
+    const d=document.createElement('div');d.className='line h';d.style.top=y+'px';
+    d.innerHTML='<span class=lbl>H'+i+' '+y+'px</span>';
+    d.onmousedown=e=>startDrag(e,d,'h',i);wrap.appendChild(d);
+    allLines.push({type:'h',idx:i,y,el:d});
   });
-  
   vLines.forEach((x,i)=>{
-    const div = document.createElement('div');
-    div.className = 'line v';
-    div.style.left = x + 'px';
-    div.innerHTML = '<span class="lbl">V'+(i)+' '+x+'px</span>';
-    div.onmousedown = e => startDrag(e, div, 'v', i);
-    wrap.appendChild(div);
-    allLines.push({type:'v', idx:i, x, el:div});
+    const d=document.createElement('div');d.className='line v';d.style.left=x+'px';
+    d.innerHTML='<span class=lbl>V'+i+' '+x+'px</span>';
+    d.onmousedown=e=>startDrag(e,d,'v',i);wrap.appendChild(d);
+    allLines.push({type:'v',idx:i,x,el:d});
   });
+
+  // Add name inputs for each cell
+  let cellIdx=0;
+  for(let ri=0;ri<hLines.length-1;ri++){
+    for(let ci=0;ci<vLines.length-1;ci++){
+      const x=vLines[ci],y=hLines[ri];
+      const w=vLines[ci+1]-vLines[ci],h=hLines[ri+1]-hLines[ri];
+      if(w<20||h<20)continue;
+      cellIdx++;
+      const inpDiv=document.createElement('div');
+      inpDiv.className='cell-name';
+      inpDiv.style.left=x+'px';inpDiv.style.top=y+'px';
+      inpDiv.style.width=w+'px';inpDiv.style.height=h+'px';
+      inpDiv.style.display='flex';inpDiv.style.alignItems='center';inpDiv.style.justifyContent='center';
+      const inp=document.createElement('input');
+      inp.placeholder='#'+cellIdx;
+      inp.value=names[cellIdx]||'';
+      inp.oninput=()=>{if(inp.value.trim())names[cellIdx]=inp.value.trim();else delete names[cellIdx];count()};
+      inpDiv.appendChild(inp);wrap.appendChild(inpDiv);
+    }
+  }
+  count();
 }
 
-let dragTarget = null, dragType = '', dragIdx = -1;
+function count(){document.getElementById('count').textContent=Object.keys(names).length+' named'}
 
-function startDrag(e, el, type, idx) {
-  e.preventDefault();
-  dragTarget = el;
-  dragType = type;
-  dragIdx = idx;
-}
-
-document.addEventListener('mousemove', e => {
-  if (!dragTarget) return;
-  const wrap = canvas.parentElement;
-  const r = wrap.getBoundingClientRect();
-  if (dragType === 'h') {
-    let y = Math.round(e.clientY - r.top);
-    y = Math.max(1, Math.min(H-1, y));
-    hLines[dragIdx] = y;
-    hLines.sort((a,b)=>a-b);
-  } else {
-    let x = Math.round(e.clientX - r.left);
-    x = Math.max(1, Math.min(W-1, x));
-    vLines[dragIdx] = x;
-    vLines.sort((a,b)=>a-b);
+function startDrag(e,el,type,idx){e.preventDefault();dragTarget=el;dragType=type;dragIdx=idx}
+document.addEventListener('mousemove',e=>{
+  if(!dragTarget)return;
+  const wrap=canvas.parentElement,r=wrap.getBoundingClientRect();
+  if(dragType==='h'){
+    let y=Math.round(e.clientY-r.top);y=Math.max(1,Math.min(H-1,y));
+    hLines[dragIdx]=y;hLines.sort((a,b)=>a-b);
+  }else{
+    let x=Math.round(e.clientX-r.left);x=Math.max(1,Math.min(W-1,x));
+    vLines[dragIdx]=x;vLines.sort((a,b)=>a-b);
   }
   renderLines();
 });
+document.addEventListener('mouseup',()=>dragTarget=null);
 
-document.addEventListener('mouseup', () => { dragTarget = null; });
+function clearLines(){hLines.length=0;vLines.length=0;hLines.push(0,H);vLines.push(0,W);names={};renderLines()}
 
-function clearLines() {
-  hLines.length = 0; vLines.length = 0;
-  hLines.push(0, H); vLines.push(0, W);
-  renderLines();
-  document.getElementById('log').innerHTML = '';
-}
-
-function exportGrid() {
-  const log = document.getElementById('log');
-  log.innerHTML = '';
-  const cells = [];
-  for (let ri=0; ri<hLines.length-1; ri++) {
-    for (let ci=0; ci<vLines.length-1; ci++) {
-      const x = vLines[ci], y = hLines[ri];
-      const w = vLines[ci+1] - vLines[ci];
-      const h = hLines[ri+1] - hLines[ri];
-      if (w < 8 || h < 8) continue;
-      cells.push({row:ri, col:ci, x, y, w, h, cx:Math.round(x+w/2), cy:Math.round(y+h/2)});
+function exportAll(){
+  const cells=[];
+  let ci=0;
+  for(let ri=0;ri<hLines.length-1;ri++){
+    for(let col=0;col<vLines.length-1;col++){
+      const x=vLines[col],y=hLines[ri];
+      const w=vLines[col+1]-vLines[col],h=hLines[ri+1]-hLines[ri];
+      if(w<20||h<20)continue;
+      ci++;
+      if(names[ci])cells.push(ci+': '+names[ci]);
     }
   }
-  cells.forEach(c => {
-    const d = document.createElement('div');
-    d.textContent = `[${c.row},${c.col}] ${c.w}×${c.h} @ (${c.x},${c.y}) center=(${c.cx},${c.cy})`;
-    log.appendChild(d);
-  });
-  console.log('Grid cells:', cells);
+  if(cells.length===0){alert('Name some cells first');return}
+  navigator.clipboard.writeText(cells.join('\n'));
+  document.getElementById('log').innerHTML='📋 '+cells.length+' names copied!<br>'+cells.join('<br>');
 }
 
-function copyJSON() {
-  const cells = [];
-  for (let ri=0; ri<hLines.length-1; ri++) {
-    for (let ci=0; ci<vLines.length-1; ci++) {
-      const x = vLines[ci], y = hLines[ri];
-      const w = vLines[ci+1] - vLines[ci];
-      const h = hLines[ri+1] - hLines[ri];
-      if (w < 8 || h < 8) continue;
-      cells.push({x, y, w, h});
+function copyJSON(){
+  const cells=[];
+  for(let ri=0;ri<hLines.length-1;ri++){
+    for(let col=0;col<vLines.length-1;col++){
+      const x=vLines[col],y=hLines[ri];
+      const w=vLines[col+1]-vLines[col],h=hLines[ri+1]-hLines[ri];
+      if(w<20||h<20)continue;
+      cells.push({x,y,w,h});
     }
   }
-  navigator.clipboard.writeText(JSON.stringify(cells, null, 2));
-  alert('Copied! ' + cells.length + ' cells');
+  navigator.clipboard.writeText(JSON.stringify(cells,null,2));
+  document.getElementById('log').innerHTML='🗂 '+cells.length+' cell coords copied!';
 }
-
-window.addH = addH;
-window.addV = addV;
-window.clearLines = clearLines;
-window.exportGrid = exportGrid;
-window.copyJSON = copyJSON;
 </script>
 </body>
 </html>

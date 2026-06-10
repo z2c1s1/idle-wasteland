@@ -5,7 +5,7 @@ const grid: {x:number,y:number,w:number,h:number}[] = JSON.parse(
   fs.readFileSync("D:/Idle Game/原画素材/grid.json", "utf-8")
 );
 
-const SRC = "D:/Idle Game/原画素材/equipment.png";
+const SRC = "D:/Idle Game/原画素材/gloves.png";
 const meta = await sharp(SRC).metadata();
 console.log(`Source: ${meta.width}x${meta.height}`);
 

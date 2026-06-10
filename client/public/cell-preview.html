@@ -2,9 +2,9 @@
 <html><head><title>Cell Name Mapper</title>
 <style>
 body{background:#111;color:#fff;font-family:monospace;padding:10px}
-.grid{display:grid;grid-template-columns:repeat(20,75px);gap:2px;margin-bottom:10px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);max-width:1000px;gap:2px;margin-bottom:10px}
 .cell{border:1px solid #333;text-align:center;font-size:9px;position:relative}
-.cell img{width:75px;image-rendering:pixelated}
+.cell img{width:100%;image-rendering:pixelated}
 .cell input{width:70px;font-size:8px;text-align:center;background:#222;color:lime;border:1px solid #555;margin:2px 0;padding:1px}
 .cell.sel{border:2px solid lime;background:rgba(0,255,0,0.1)}
 .cell.named{background:rgba(0,255,0,0.08);border-color:#0f0}
@@ -21,7 +21,7 @@ button{padding:6px 14px;cursor:pointer;font-size:14px}
 <div class="grid" id="grid"></div>
 
 <script>
-const COLS=20,ROWS=12;
+const COLS=5,ROWS=3;
 const names={};
 const grid=document.getElementById('grid');
 const countEl=document.getElementById('count');
