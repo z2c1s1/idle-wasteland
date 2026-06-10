@@ -175,6 +175,11 @@ export function checkMilestones(state: any): number {
   if (gained > 0) {
     state.milestonesCompleted = JSON.stringify(completed);
     state.talentPoints = (state.talentPoints ?? 0) + Math.min(10, gained);
+    // Persist to DB (non-blocking fire-and-forget)
+    db.update(gameStates).set({
+      milestonesCompleted: state.milestonesCompleted,
+      talentPoints: state.talentPoints,
+    } as any).where(eq(gameStates.id, state.id)).catch(() => {});
   }
   return gained;
 }

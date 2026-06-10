@@ -63,6 +63,8 @@ export const gameStates = pgTable("game_states", {
   activePowers: text("active_powers").notNull().default('["","",""]'),
   lootBagSize: integer("loot_bag_size").notNull().default(50),
   homestead: text("homestead").notNull().default("{}"),
+  milestonesCompleted: text("milestones_completed").notNull().default("[]"),
+  talentPoints: integer("talent_points").notNull().default(0),
   temperature: integer("temperature").notNull().default(0),
   fuelEndsAt: timestamp("fuel_ends_at"),
   stone: integer("stone").notNull().default(0),
