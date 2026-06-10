@@ -27,6 +27,18 @@ export async function buildShelter(state: GameState, buildingId: string): Promis
   return u;
 }
 
+// ─── Farm passive gold ────────────────────────────────────────────────────────
+
+export function getFarmGoldIncome(state: GameState, elapsedSec: number): number {
+  const homestead: Record<string, number> = JSON.parse(state.homestead ?? '{}');
+  const farmLevel = homestead['farm'] ?? 0;
+  const greenhouse = homestead['wonder_greenhouse'] ?? 0;
+  if (farmLevel <= 0) return 0;
+  const baseGoldPerMin = farmLevel * 3;
+  const greenhouseMul = 1 + greenhouse * 0.4;
+  return Math.floor(baseGoldPerMin * (elapsedSec / 60) * greenhouseMul);
+}
+
 // ─── Fuel / Temperature ───────────────────────────────────────────────────────
 
 export async function addFuel(state: GameState, woodTier: number): Promise<GameState> {

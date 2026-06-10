@@ -35,7 +35,9 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
     enhancedDamage, lifeOnKill, crushingBlow, magicFind,
     lifeRegen, goldBonus, resistAll, critRating,
     lifeLeech, deadlyStrike, attackSpeed, reflectDamage,
+  
   } = getEquipmentBonuses(equipment);
+  const homeLv: Record<string,number> = (()=>{try{return JSON.parse((state as any).homestead??"{}")}catch{return{}}})();
 
   const talentBonuses = getTalentBonuses(state);
 
@@ -95,7 +97,8 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
   const rng = () => Math.random();
 
   for (let i = 0; i < ticks; i++) {
-    if (lifeRegen > 0) playerHp = Math.min(playerMaxHp, playerHp + lifeRegen);
+    const effLifeRegen = lifeRegen + (homeLv.clinic ?? 0);
+    if (effLifeRegen > 0) playerHp = Math.min(playerMaxHp, playerHp + effLifeRegen);
 
     const weaponRoll = hasWeaponRange && weaponItem
       ? (weaponItem.minDamage ?? 0) + Math.floor(Math.random() * ((weaponItem.maxDamage ?? 0) - (weaponItem.minDamage ?? 0) + 1))
@@ -131,7 +134,8 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
     totalDmgToEnemy += applyMortalStrike(perHitBase, allSkills, rng);
 
     enemyHp -= totalDmgToEnemy;
-    attackXpGained += Math.floor(4 * strikes * (1 + getPrayerBuff(state, 'experience')));
+    const towerXpMul = 1 + (homeLv.tower ?? 0) * 0.04;
+    attackXpGained += Math.floor(4 * strikes * (1 + getPrayerBuff(state, 'experience')) * towerXpMul);
 
     // ── Life recovery (shared) ─────────────────────────────────────────────
     playerHp = applyLifeRecovery(playerHp, playerMaxHp, totalDmgToEnemy,

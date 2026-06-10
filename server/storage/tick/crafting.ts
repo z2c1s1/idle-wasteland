@@ -19,9 +19,11 @@ export async function tickCrafting(
   const action = state.activeAction;
 
   const petBuffs = getPetBuffs(state);
-  const petSmithMul = 1 + petBuffs.smithSpeed;
-  const petLeatherMul = 1 + petBuffs.leatherSpeed;
-  const petJewelMul = 1 + petBuffs.jewelSpeed;
+  const homeLevels: Record<string, number> = (() => { try { return JSON.parse((state as any).homestead ?? '{}'); } catch { return {}; } })();
+  const workshopMul = 1 + (homeLevels.workshop ?? 0) * 0.03;
+  const petSmithMul = (1 + petBuffs.smithSpeed) * workshopMul;
+  const petLeatherMul = (1 + petBuffs.leatherSpeed) * workshopMul;
+  const petJewelMul = (1 + petBuffs.jewelSpeed) * workshopMul;
 
   if (action.startsWith("smith_")) {
     const recipeIndex = parseInt(action.split("_")[1]);

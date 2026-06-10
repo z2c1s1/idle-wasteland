@@ -176,6 +176,13 @@ if (skill === 'mining') {
   }
 }
 
+// 家园农田被动金币
+const homeLevels2: Record<string, number> = (() => { try { return JSON.parse((state as any).homestead ?? '{}'); } catch { return {}; } })();
+if ((homeLevels2.farm ?? 0) > 0) {
+  const farmGoldPerTick = Math.floor((homeLevels2.farm ?? 0) * 3 * (data.time / 60));
+  updates.gold = (state.gold ?? 0) + farmGoldPerTick;
+}
+
 // 更新精通计数
 const mastery: Record<string, number> = JSON.parse((state as any).mastery ?? '{}');
 mastery[skill] = (mastery[skill] ?? 0) + completions;
