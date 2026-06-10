@@ -21,8 +21,9 @@
 </head>
 <body>
 <div id="bar">
-  <b>Img:</b> <input id="imgUrl" value="/equipment.png" size="40" onchange="loadImage(this.value)">
-  <button onclick="loadImage(document.getElementById('imgUrl').value)">Load</button>
+  <b>Img:</b> <input type="file" id="fileInput" accept="image/png" onchange="handleFile(this)">
+  <input id="imgUrl" value="/equipment.png" size="30" onchange="loadImage(this.value)">
+  <button onclick="loadImage(document.getElementById('imgUrl').value)">URL</button>
   <span>|</span>
   <button onclick="addH()">+H</button> <button onclick="addV()">+V</button>
   <button onclick="clearLines()">Clear</button>
@@ -39,6 +40,14 @@
 let W=1408,H=768;
 let IMG='/equipment.png';
 const canvas=document.getElementById('canvas');
+
+function handleFile(input){
+  const file=input.files[0];
+  if(!file)return;
+  const url=URL.createObjectURL(file);
+  document.getElementById('imgUrl').value=file.name;
+  loadImage(url);
+}
 
 function loadImage(url){
   IMG=url;
