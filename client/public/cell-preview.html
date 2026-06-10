@@ -98,7 +98,12 @@ function copyCSV(){
   alert(entries.length-1+' copied!');
 }
 
-// Default: 3 rows × 5 cols
+// Auto-detect from URL params (passed from grid-slicer)
+const params=new URLSearchParams(window.location.search);
+const urlRows=parseInt(params.get('rows'))||3;
+const urlCols=parseInt(params.get('cols'))||5;
+document.getElementById('rows').value=urlRows;
+document.getElementById('cols').value=urlCols;
 resize();
 </script>
 </body>

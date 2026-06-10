@@ -6,7 +6,7 @@
   #bar{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
   button{padding:6px 12px;cursor:pointer;font-size:13px}
   input{background:#222;color:#0f0;border:1px solid #555;padding:2px 6px}
-  #outer{position:relative;display:inline-block}
+  #outer{position:relative;display:inline-block;line-height:0;font-size:0}
   #bg{position:absolute;inset:0;background-size:contain;background-repeat:no-repeat}
   #lines{position:absolute;inset:0;z-index:2}
   .hline{position:absolute;left:0;right:0;height:2px;background:lime;cursor:row-resize}
@@ -27,7 +27,7 @@
   <button onclick="clearAll()">Clear</button>
   <button onclick="copyJSON()" style="background:#0a0;color:#000">📋 Copy JSON → 切片</button>
   <span>|</span>
-  <b>下一步:</b> <a href="/cell-preview.html" style="color:#0f0" target="_blank">打开命名工具</a>
+  <b>下一步:</b> <a id="namerLink" href="/cell-preview.html" style="color:#0f0" target="_blank">打开命名工具</a>
   <span id="info"></span>
 </div>
 <div id="outer">
@@ -51,8 +51,11 @@ function loadImg(url){
   const img=new Image();
   img.onload=()=>{
     W=img.naturalWidth; H=img.naturalHeight;
+    const outer=document.getElementById('outer');
+    outer.style.width=W+'px'; outer.style.height=H+'px';
     bg.style.width=W+'px'; bg.style.height=H+'px';
     bg.style.backgroundImage='url('+url+')';
+    lines.style.width=W+'px'; lines.style.height=H+'px';
     h=[0,H]; v=[0,W];
     renderLines();
   };
@@ -70,7 +73,8 @@ function renderLines(){
     for(let ci=0;ci<v.length-1;ci++){
       if(v[ci+1]-v[ci]>20&&h[ri+1]-h[ri]>20)cells++;
     }
-  document.getElementById('info').textContent=cells+' cells · '+h.length+'H × '+v.length+'V';
+  document.getElementById('info').textContent=cells+' cells · '+(h.length-1)+'H × '+(v.length-1)+'V';
+  document.getElementById('namerLink').href='/cell-preview.html?rows='+(h.length-1)+'&cols='+(v.length-1);
   
   h.forEach((y,i)=>{
     const d=document.createElement('div'); d.className='hline'; d.style.top=y+'px';
