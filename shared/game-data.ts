@@ -1962,6 +1962,15 @@ export const SMITHING_RECIPES: SmithingRecipe[] = [
   // Rune (bar_6)
   { id: 'smith_rune_bow',      output: 'rune_bow_forged',   inputs: [{ resource: 'bar_6', qty: 3 }], reqLevel: 55, xp: 260, time: 22 },
   { id: 'r_rune_sword',        output: 'rune_sword',        inputs: [{ resource: 'bar_6', qty: 2 }], reqLevel: 70, xp: 220, time: 10 },
+  // bar_7: 钛金锭 (titanium) — reqLevel 62
+  { id: 'r_dragon_sword',      output: 'dragon_sword',      inputs: [{ resource: 'bar_7', qty: 2 }], reqLevel: 78, xp: 280, time: 12 },
+  { id: 'r_dragon_shield',     output: 'dragon_shield',     inputs: [{ resource: 'bar_7', qty: 3 }], reqLevel: 78, xp: 320, time: 14 },
+  // bar_8: 钨钢锭 (tungsten) — reqLevel 74
+  { id: 'r_eternal_sword',     output: 'eternal_sword',     inputs: [{ resource: 'bar_8', qty: 2 }], reqLevel: 86, xp: 350, time: 14 },
+  { id: 'r_eternal_shield',    output: 'eternal_shield',    inputs: [{ resource: 'bar_8', qty: 3 }], reqLevel: 86, xp: 400, time: 16 },
+  // bar_9: 铱金锭 (iridium) — reqLevel 86
+  { id: 'r_divine_sword',      output: 'divine_sword',      inputs: [{ resource: 'bar_9', qty: 2 }], reqLevel: 95, xp: 450, time: 16 },
+  { id: 'r_divine_shield',     output: 'divine_shield',     inputs: [{ resource: 'bar_9', qty: 3 }], reqLevel: 95, xp: 500, time: 18 },
 ];
 
 // ─── Universal item converter (smithed + leather + jewelry) ────────────────────

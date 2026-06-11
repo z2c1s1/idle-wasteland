@@ -168,9 +168,11 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
         const npc = npcs[Math.floor(Math.random() * npcs.length)];
         if (Math.random() < npc.dropChance) {
           const companions = safeJsonArray((state as any).companions);
-          const bonus = npc.bonusRange[0] + Math.floor(Math.random() * (npc.bonusRange[1] - npc.bonusRange[0] + 1));
-          companions.push({ id:npc.id, name:npc.name, emoji:npc.emoji, rarity:npc.rarity, bonusType:npc.bonusType, bonusName:npc.bonusName, bonusValue:bonus });
-          (updates as any).companions = JSON.stringify(companions);
+          if (companions.length < 200) {
+            const bonus = npc.bonusRange[0] + Math.floor(Math.random() * (npc.bonusRange[1] - npc.bonusRange[0] + 1));
+            companions.push({ id:npc.id, name:npc.name, emoji:npc.emoji, rarity:npc.rarity, bonusType:npc.bonusType, bonusName:npc.bonusName, bonusValue:bonus });
+            (updates as any).companions = JSON.stringify(companions);
+          }
         }
       }
       if (Math.random() < gemPool.chance * agilityLuck) {

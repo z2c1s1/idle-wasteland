@@ -216,6 +216,11 @@ export function getActiveBuffs(state: any) {
     if (b.effect === 'all') { allMul += v; hpMul += v; atkMul += v; defMul += v; xpMul += v; }
     if (b.effect === 'magicDmg') magicDmgMul += v;
   }
+  // Cleanup: if expired buffs were filtered, persist the cleaned list
+  if (active.length < buffs.length) {
+    db.update(gameStates).set({ activeBuffs: JSON.stringify(active) } as any)
+      .where(eq(gameStates.id, state.id)).execute().catch(() => {});
+  }
   return { hpMul: Math.min(hpMul, 2), atkMul: Math.min(atkMul, 2), defMul: Math.min(defMul, 2), xpMul: Math.min(xpMul, 2), speedMul: Math.min(speedMul, 1.5), dropMul: Math.min(dropMul, 1.5), critMul: Math.min(critMul, 1.5), leechMul: Math.min(leechMul, 1.3), combatXpMul, woodSpeedMul, mineSpeedMul, huntSpeedMul, fishSpeedMul, allMul, magicDmgMul };
 }
 
