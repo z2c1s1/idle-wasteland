@@ -62,7 +62,7 @@ export default function Town() {
       <div className="bg-card border border-border rounded-xl p-4">
         <div className="flex items-center justify-between">
           <span className="text-sm font-bold">{p.townLevel(townLevel)}</span>
-          <span className="text-xs text-muted-foreground">{townLevel < 5 ? `🏕️ ${t.wasteland.townLevels[5]}` : townLevel < 15 ? `🏘️ ${t.wasteland.townLevels[15]}` : townLevel < 30 ? `🏙️ ${t.wasteland.townLevels[30]}` : `🏰 ${t.wasteland.townLevels[50]}`}</span>
+          <span className="text-xs text-muted-foreground">{townLevel < 5 ? `🏕️ ${t.wasteland.townLevels[0]}` : townLevel < 15 ? `🏘️ ${t.wasteland.townLevels[5]}` : townLevel < 30 ? `🏙️ ${t.wasteland.townLevels[15]}` : `🏰 ${t.wasteland.townLevels[30]}`}</span>
         </div>
         <p className="text-xs text-muted-foreground mt-2">
 {townLevel < 5 ? p.attractHint : p.attractHint2}

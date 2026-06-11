@@ -6,7 +6,7 @@ import {
   type Rarity,
 } from "@shared/game-data";
 import { eq } from "drizzle-orm";
-import { getCombatLevel } from "@shared/game-math";
+import { getCombatLevel, getPlayerMaxHp } from "@shared/game-math";
 import { msg } from "@shared/messages";
 import { parseEquipment, parseLootBag } from "@shared/game-state-parse";
 import { calculateLevel } from "@shared/game-math";
@@ -75,12 +75,19 @@ export async function npcAction(state: GameState, npcId: string, actionIndex: nu
         rewards.gold = state.gold - 300;
         const eq = parseEquipment(state.equipment);
         if (eq.weapon) { eq.weapon = { ...eq.weapon, ilvl: (eq.weapon.ilvl ?? 1) + 1 }; rewards.equipment = JSON.stringify(eq); }
+      } else if (actionIndex === 1) {
+        if (state.gold < 100) throw new Error(msg("notEnoughGold"));
+        rewards.gold = state.gold - 100;
+        rewards.playerHp = getPlayerMaxHp(state); // Full heal
       }
       break;
     case 'traveler':
       if (actionIndex === 0) {
         rewards.gold = state.gold + 200;
         rewards.bones = getResourceCount(state, "bones") + 10;
+        // Random material: wood or stone
+        if (Math.random() < 0.5) rewards.wood = (state.wood ?? 0) + 30;
+        else rewards.stone = (state.stone ?? 0) + 20;
       } else {
         rewards.woodcuttingXp = state.woodcuttingXp + 200;
         rewards.miningXp = state.miningXp + 200;
@@ -90,12 +97,13 @@ export async function npcAction(state: GameState, npcId: string, actionIndex: nu
       if (actionIndex === 0) {
         rewards.talents = JSON.stringify({ melee: [], ranged: [], magic: [] });
       } else {
-        rewards.attackXp = state.attackXp + 500;
-        rewards.defenceXp = state.defenceXp + 500;
+        const skillFields = ['woodcuttingXp','miningXp','fishingXp','huntingXp','thievingXp','cookingXp','craftingXp','explorationXp','agilityXp'];
+        const pick = skillFields[Math.floor(Math.random() * skillFields.length)];
+        (rewards as any)[pick] = ((state as any)[pick] ?? 0) + 500;
       }
       break;
     case 'gambler': {
-      const tierIdx = actionIndex === 0 ? 0 : actionIndex === 1 ? 2 : 4;
+      const tierIdx = actionIndex; // 0=normal, 1=rare, 2=legendary
       const tier = GAMBLE_TIERS[tierIdx];
       if (!tier) break;
       const combatLevel = getCombatLevel(state);

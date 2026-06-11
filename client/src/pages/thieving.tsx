@@ -3,7 +3,8 @@ import { useGameState } from "@/hooks/use-game";
 import { useStartAction } from "@/hooks/use-game";
 import { useUIText } from "@/lib/i18n";
 import { THIEVING_NPCS, calcStealth, calcThievingSuccessRate, calcThievingDoubleRate, type ThievingNPC } from "@shared/game-data";
-import { calculateLevel, formatNumber, parseEquipment, getEquipmentStats } from "@/lib/game-utils";
+import { calculateLevel, formatNumber, parseEquipment, getEquipmentStats, getCombatLevel } from "@/lib/game-utils";
+import { safeJsonRecord } from "@shared/safe-parse";
 import type { GameState } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -44,11 +45,11 @@ export default function Thieving() {
   function isUnlocked(npc: ThievingNPC): boolean {
     if (!npc.hidden) return true;
     const cond = npc.unlockCondition ?? "";
-    if (cond === 'thieving_60') return thievingLevel >= 60;
-    if (cond === 'shadow_maze') return true; // simplified — dungeon clear check
-    if (cond === 'any_amulet') return Object.values(equipment).some(item => item?.slot === 'neck');
-    if (cond === 'dragon_tomb') return true; // simplified
-    if (cond === 'chaos_forge') return true; // simplified
+    if (cond === 'combat_50')   return getCombatLevel(gs) >= 50;
+    if (cond === 'town_15')     return Object.values(safeJsonRecord(gs.homestead)).reduce((s:number,v:any)=>s+(v??0),0) >= 15;
+    if (cond === 'dungeon_2')   { const ds = safeJsonRecord(gs.dungeonStats); return ((ds['2'] as any)?.clears ?? 0) > 0; }
+    if (cond === 'tier_2')      return (gs as any).worldTier >= 2;
+    if (cond === 'thieving_90') return thievingLevel >= 90;
     return false;
   }
 
