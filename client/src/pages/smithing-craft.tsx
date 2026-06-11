@@ -1,5 +1,6 @@
 import { useGameState, useStartAction } from "@/hooks/use-game";
-import { SMITHING_RECIPES, EQUIPMENT_ITEMS } from "@shared/game-data";
+import { SMITHING_RECIPES, EQUIPMENT_ITEMS } from "@shared/game-data"
+import { getResourceCount } from "@shared/resources";
 import { calculateLevel, formatNumber, levelProgress, parseCraftItems } from "@/lib/game-utils";
 import type { GameState } from "@shared/schema";
 import { Button } from "@/components/ui/button";
@@ -73,7 +74,7 @@ export default function SmithingCraft() {
   }
 
   function getInputQty(resource: string): number {
-    return ((gameState as Record<string, unknown>)[resource] as number) ?? 0;
+    return getResourceCount(gameState, resource);
   }
 
   function canCraft(recipeIndex: number): boolean {

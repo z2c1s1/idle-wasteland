@@ -1,5 +1,6 @@
 import { useGameState, useStartAction } from "@/hooks/use-game";
-import { LEATHERWORKING_RECIPES, LEATHER_ITEMS } from "@shared/game-data";
+import { LEATHERWORKING_RECIPES, LEATHER_ITEMS } from "@shared/game-data"
+import { getResourceCount } from "@shared/resources";
 import { calculateLevel, formatNumber, levelProgress, parseCraftItems } from "@/lib/game-utils";
 import type { GameState } from "@shared/schema";
 import { Button } from "@/components/ui/button";
@@ -64,7 +65,7 @@ export default function Leatherworking() {
   const activeIndex = isActive ? parseInt(activeAction.split("_")[1]) : -1;
 
   function getQty(resource: string): number {
-    return ((gs as Record<string, unknown>)[resource] as number) ?? 0;
+    return getResourceCount(gs, resource);
   }
   function canCraft(idx: number): boolean {
     const r = LEATHERWORKING_RECIPES[idx];

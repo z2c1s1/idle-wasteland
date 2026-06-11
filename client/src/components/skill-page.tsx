@@ -157,8 +157,8 @@ export function SkillPage({ skillKey, skillName, skillXp, icon: Icon, iconColor,
                   <span>{t.skillPage.xpGain(res.xp)}</span>
                   <span>{t.skillPage.resourceOwned(formatNumber(owned))}</span>
                   {res.requiredKey && (
-                    <span className={((state as any)[res.requiredKey] ?? 0) > 0 ? 'text-muted-foreground' : 'text-red-400 font-medium'}>
-                      🔧 {res.requiredName ?? res.requiredKey} x{((state as any)[res.requiredKey] ?? 0)}
+                    <span className={getResourceCount(state, res.requiredKey) > 0 ? 'text-muted-foreground' : 'text-red-400 font-medium'}>
+                      🔧 {res.requiredName ?? res.requiredKey} x{getResourceCount(state, res.requiredKey)}
                     </span>
                   )}
                   {res.extraHint && <span className="text-muted-foreground text-xs">{res.extraHint}</span>}
@@ -172,9 +172,9 @@ export function SkillPage({ skillKey, skillName, skillXp, icon: Icon, iconColor,
                     className="px-3 py-1 text-xs font-semibold bg-red-600 hover:bg-red-500 text-white rounded">{t.skillPage.stop}</button>
                 ) : (
                   <button onClick={() => {
-                    if (res.requiredKey && ((state as any)[res.requiredKey] ?? 0) <= 0) return;
+                    if (res.requiredKey && getResourceCount(state, res.requiredKey) <= 0) return;
                     startAction(res.actionKey);
-                  }} disabled={isPending || isOtherActive || !!(res.requiredKey && ((state as any)[res.requiredKey] ?? 0) <= 0)}
+                  }} disabled={isPending || isOtherActive || !!(res.requiredKey && getResourceCount(state, res.requiredKey) <= 0)}
                     className="px-3 py-1 text-xs font-semibold bg-primary hover:bg-primary/80 text-primary-foreground rounded disabled:opacity-40">
                     {t.skillPage.start}
                   </button>

@@ -67,7 +67,30 @@ export function getEffectiveCycleTime(action: string, state: GameState): number 
   const skill = action.split("_")[0];
   const agilityMul = skill === "fishing" ? agility.fishingMul : 1;
   const petSpeedMul = getPetSpeedMultiplier(state, skill);
-  return base * toolBonus.timeMult / agilityMul / Math.max(0.1, tempMul) / petSpeedMul;
+
+  // Prayer speed buff (matches server getPrayerBuff("swiftness"))
+  let prayerSpeed = 1;
+  try {
+    const buffs = JSON.parse((state as any).activeBuffs ?? '[]');
+    for (const b of buffs) {
+      if (b.effect === 'speed') prayerSpeed = 1 + (b.value ?? 0);
+    }
+  } catch { /* ignore */ }
+
+  // Building speed multiplier (matches server buildingMul)
+  let buildingMul = 1;
+  try {
+    const homestead: Record<string, number> = JSON.parse((state as any).homestead ?? '{}');
+    if (skill === 'woodcutting' && homestead.lumbermill) buildingMul = 1 - homestead.lumbermill * 0.03;
+    if (skill === 'mining' && homestead.mine) buildingMul = 1 - homestead.mine * 0.03;
+    if (skill === 'smithing' || skill === 'leatherworking' || skill === 'jewelcrafting' || skill === 'tools') {
+      if (homestead.workshop) buildingMul = 1 - homestead.workshop * 0.03;
+    }
+    if (skill === 'fishing' && homestead.dock) buildingMul = 1 - (homestead.dock ?? 0) * 0.03;
+    if (skill === 'hunting' && homestead.trap) buildingMul = 1 - (homestead.trap ?? 0) * 0.03;
+  } catch { /* ignore */ }
+
+  return base * toolBonus.timeMult / agilityMul / Math.max(0.1, tempMul) / petSpeedMul / prayerSpeed * buildingMul;
 }
 
 export function getActionProgress(action: string, state: GameState, nowMs = Date.now()): {
