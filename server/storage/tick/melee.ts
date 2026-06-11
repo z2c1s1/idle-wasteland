@@ -98,7 +98,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
   const rng = () => Math.random();
 
   for (let i = 0; i < ticks; i++) {
-    const effLifeRegen = lifeRegen + (homeLv.clinic ?? 0);
+    const effLifeRegen = lifeRegen + (homeLv.clinic ?? 0) + talentBonuses.regen;
     if (effLifeRegen > 0) playerHp = Math.min(playerMaxHp, playerHp + effLifeRegen);
 
     const weaponRoll = hasWeaponRange && weaponItem
@@ -114,9 +114,10 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
 
     const petCritBonus = petBuffs.critChance * 100; // convert to percentage
   const critHit = (critRating + petCritBonus) > 0 && Math.random() * 100 < (critRating + petCritBonus);
-    const critDmg = (200 + (deadlyStrike ?? 0)) / 100; // default 200% = 2x
-    const strikes = (eff.doubleStrikePct > 0 && Math.random() * 100 < eff.doubleStrikePct) ? 2 : 1;
-    let totalDmgToEnemy = Math.floor(effAtk * strikes * (critHit ? critDmg : 1) * triangleMult) + eff.poisonDmg;
+    const critDmg = (200 + (deadlyStrike ?? 0) + talentBonuses.deadlyStrike + talentBonuses.explodeDmg) / 100; // default 200% = 2x
+    const doubleStrikeTotal = eff.doubleStrikePct + talentBonuses.doubleStrike;
+    const strikes = (doubleStrikeTotal > 0 && Math.random() * 100 < doubleStrikeTotal) ? 2 : 1;
+    let totalDmgToEnemy = Math.floor(effAtk * strikes * (critHit ? critDmg : 1) * triangleMult) + eff.poisonDmg + talentBonuses.poisonDamage;
 
     if (crushingBlow > 0 && Math.random() * 100 < crushingBlow) {
       totalDmgToEnemy += Math.max(1, Math.floor(playerMaxHp * 0.01));
@@ -140,7 +141,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
 
     // ── Life recovery (shared) ─────────────────────────────────────────────
     playerHp = applyLifeRecovery(playerHp, playerMaxHp, totalDmgToEnemy,
-      lifeLeech, eff.lifeStealPct, lifeOnKill, rng);
+      lifeLeech + talentBonuses.lifeLeech, eff.lifeStealPct, lifeOnKill, rng);
 
     if (enemyHp <= 0) {
       const killReward = enemy.drops.gold[0] + Math.floor(Math.random() * (enemy.drops.gold[1] - enemy.drops.gold[0] + 1));
@@ -188,7 +189,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
       hitpointsXpGained += 1;
     }
     // Thorns / Reflect (shared)
-    enemyHp = applyThornsReflect(enemyHp, inc.dmgToPlayer, eff.thornsDmg, reflectDamage);
+    enemyHp = applyThornsReflect(enemyHp, inc.dmgToPlayer, eff.thornsDmg + talentBonuses.thorns, reflectDamage);
     // Iron Maiden reflect
     enemyHp -= inc.reflectDmg;
 
