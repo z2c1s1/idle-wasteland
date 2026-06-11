@@ -2,6 +2,7 @@ import { useGameState } from "@/hooks/use-game";
 import { SkillPage } from "@/components/skill-page";
 import { postGame } from "@/lib/api";
 import { api } from "@shared/routes";
+import { safeJsonRecord, safeJsonArray } from "@shared/safe-parse";
 import { useQueryClient } from "@tanstack/react-query";
 import { WORLD_TIER_LABEL, TIER_UNLOCK_LEVELS, TIER_HP_MUL, TIER_ATK_MUL, TIER_ILVL_BONUS, TIER_DROP_MUL, type WorldTier } from "@shared/game-data";
 import { Map, Flag, Skull, Zap } from "lucide-react";
@@ -35,7 +36,7 @@ export default function Exploration() {
   const [tab, setTab] = useState<'explore'|'outposts'>('explore');
   if (!state) return null;
   const gs = state as any;
-  const outposts: any[] = JSON.parse(gs.outposts ?? '[]');
+  const outposts: any[] = safeJsonArray(gs.outposts);
 
   const establish = async (zoneIndex: number) => {
     try {
@@ -96,7 +97,7 @@ export default function Exploration() {
             const isActive = tier === currentTier;
             const req = TIER_UNLOCK_LEVELS[tier];
             const locked = req != null && totalLevels < req;
-            const killed: number[] = JSON.parse(gs.tierBossKilled ?? '[]');
+            const killed: number[] = safeJsonArray(gs.tierBossKilled);
             const bossLocked = tier === 2 && !killed.includes(1) || tier === 3 && !killed.includes(2) || tier === 4 && !killed.includes(3);
             const canUse = tier <= currentTier || (!locked && !bossLocked);
             return (

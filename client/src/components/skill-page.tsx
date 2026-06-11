@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { R } from "@/lib/routes";
 import { useUIText } from "@/lib/i18n";
 import { calculateLevel, levelProgress, xpForLevel, formatNumber, getResourceCount, getAgilityBonuses, getTemperatureMultiplier } from "@/lib/game-utils";
 import { useStartAction } from "@/hooks/use-game";
@@ -114,7 +115,7 @@ export function SkillPage({ skillKey, skillName, skillXp, icon: Icon, iconColor,
             <p className="font-semibold text-blue-300">寒冷影响</p>
             <p className="text-blue-200/70">
               温度过低，行动速度降低 {Math.round((1 - tempMul) * 100)}%。
-              前往 <a href="/shelter" className="underline text-amber-400 hover:text-amber-300">营地生火</a> 恢复。
+              前往 <a href={R.shelter} className="underline text-amber-400 hover:text-amber-300">营地生火</a> 恢复。
             </p>
           </div>
         </div>

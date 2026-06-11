@@ -1,5 +1,6 @@
 import { db } from "../db";
 import { gameStates, type GameState } from "@shared/schema";
+import { safeJsonRecord, safeJsonArray } from "@shared/safe-parse";
 import {
   SMITHING_RECIPES, LEATHERWORKING_RECIPES, JEWELCRAFTING_RECIPES,
   TOOL_RECIPES, ACHIEVEMENTS, PETS, COMBAT_SKILLS, MILESTONES,
@@ -101,7 +102,7 @@ export async function setWorldTier(state: GameState, tier: number): Promise<Game
   }
 
   // Check previous tier boss kill
-  const killed: number[] = JSON.parse((state as any).tierBossKilled ?? '[]');
+  const killed: number[] = safeJsonArray((state as any).tierBossKilled);
   if (tier === 2 && !killed.includes(1)) throw new Error("请先击败辐射废土的最终Boss");
   if (tier === 3 && !killed.includes(2)) throw new Error("请先击败燃烧废土的最终Boss");
   if (tier === 4 && !killed.includes(3)) throw new Error("请先击败深渊废土的最终Boss");
@@ -117,10 +118,10 @@ export async function setWorldTier(state: GameState, tier: number): Promise<Game
 export async function claimPet(state: GameState, achievementId: string): Promise<GameState> {
   const ach = ACHIEVEMENTS.find(a => a.id === achievementId);
   if (!ach) throw new Error(msg("achievementNotFound"));
-  const progress: Record<string, number> = JSON.parse(state.achievements ?? '{}');
+  const progress: Record<string, number> = safeJsonRecord(state.achievements);
   const key = `${ach.type}_${ach.target}`;
   if ((progress[key] ?? 0) < ach.count) throw new Error(msg("achievementNotMet"));
-  const pets = JSON.parse(state.pets ?? '[]');
+  const pets = safeJsonArray(state.pets);
   if (pets.includes(ach.reward)) throw new Error(msg("petAlreadyClaimed"));
   pets.push(ach.reward);
   const [u] = await db.update(gameStates).set({ pets: JSON.stringify(pets), achievements: JSON.stringify({ ...progress, [key]: -ach.count }) } as any).where(eq(gameStates.id, state.id)).returning();
@@ -141,7 +142,7 @@ export function getSkillDamageMultiplier(state: any, skill: any): number {
 // ─── Achievement tracking ─────────────────────────────────────────────────────
 
 export function trackAchievement(state: any, type: string, target: string, count: number = 1) {
-  const ach: Record<string, number> = JSON.parse(state.achievements ?? '{}');
+  const ach: Record<string, number> = safeJsonRecord(state.achievements);
   const key = `${type}_${target}`;
   ach[key] = (ach[key] ?? 0) + count;
   return JSON.stringify(ach);
@@ -149,7 +150,7 @@ export function trackAchievement(state: any, type: string, target: string, count
 
 /** Check milestones and grant talent points (called after any action). */
 export function checkMilestones(state: any): number {
-  const completed: string[] = JSON.parse(state.milestonesCompleted ?? '[]');
+  const completed: string[] = safeJsonArray(state.milestonesCompleted);
   let gained = 0;
   for (const m of MILESTONES) {
     if (completed.includes(m.id)) continue;
@@ -180,11 +181,11 @@ export function checkMilestones(state: any): number {
   if (gained > 0) {
     state.milestonesCompleted = JSON.stringify(completed);
     state.talentPoints = (state.talentPoints ?? 0) + Math.min(10, gained);
-    // Persist to DB (non-blocking fire-and-forget)
+    // Persist milestones to DB so they survive server restart
     db.update(gameStates).set({
-      milestonesCompleted: state.milestonesCompleted,
+      milestonesCompleted: JSON.stringify(completed),
       talentPoints: state.talentPoints,
-    } as any).where(eq(gameStates.id, state.id)).catch(() => {});
+    } as any).where(eq(gameStates.id, state.id)).execute().catch(() => {});
   }
   return gained;
 }
@@ -192,7 +193,7 @@ export function checkMilestones(state: any): number {
 // ─── Active buffs ─────────────────────────────────────────────────────────────
 
 export function getActiveBuffs(state: any): { hpMul: number; atkMul: number; defMul: number; xpMul: number; speedMul: number; dropMul: number; critMul: number; leechMul: number } {
-  const buffs: any[] = JSON.parse(state.activeBuffs ?? '[]');
+  const buffs: any[] = safeJsonArray(state.activeBuffs);
   const now = Date.now();
   const active = buffs.filter((b: any) => b.expiresAt > now);
   let hpMul = 1, atkMul = 1, defMul = 1, xpMul = 1, speedMul = 1, dropMul = 1, critMul = 1, leechMul = 1;
@@ -224,7 +225,7 @@ export interface PetBuffs {
 }
 
 export function getPetBuffs(state: any): PetBuffs {
-  const pets: string[] = JSON.parse(state.pets ?? '[]');
+  const pets: string[] = safeJsonArray(state.pets);
   const buffs: PetBuffs = {
     woodSpeed:0,mineSpeed:0,smeltSpeed:0,fishSpeed:0,huntSpeed:0,
     thiefRate:0,agileSpeed:0,exploreSpeed:0,smithSpeed:0,leatherSpeed:0,
@@ -273,7 +274,16 @@ export async function importSave(state: GameState, data: any): Promise<GameState
   const allowed = new Set(Object.keys(gameStates));
   const clean: Record<string, any> = {};
   for (const key of Object.keys(data)) {
-    if (allowed.has(key) && key !== "id") {
+    // Exclude id and playerId from import (security: prevent identity hijack)
+    if (allowed.has(key) && key !== "id" && key !== "playerId") {
+      // Basic type validation: reject non-numeric values for integer columns
+      const val = data[key];
+      if (typeof val === 'string') {
+        // JSON fields must be valid JSON
+        if (['equipment','craftItems','lootBag','gems','homestead','talents','foods','potions','herbs','berries','farms','achievements','pets','companions','outposts','extractedPowers','activePowers','activeBuffs','tierBossKilled','milestonesCompleted','mastery','resourceStore'].includes(key)) {
+          try { JSON.parse(val); } catch { continue; } // Skip invalid JSON
+        }
+      }
       clean[key] = data[key];
     }
   }

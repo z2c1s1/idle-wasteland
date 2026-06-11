@@ -1,5 +1,6 @@
 import { db } from "../db";
 import { gameStates, type GameState } from "@shared/schema";
+import { safeJsonRecord, safeJsonArray } from "@shared/safe-parse";
 import {
   getEquipmentBonuses, generateDroppedItem,
   SMITHING_RECIPES, LEATHERWORKING_RECIPES, JEWELCRAFTING_RECIPES,
@@ -34,10 +35,11 @@ export async function equipItem(state: GameState, instanceId?: string, itemId?: 
     lootBag.splice(idx, 1);
   } else if (itemId) {
     if ((craftItems[itemId] ?? 0) < 1) throw new Error("Item not in inventory");
-    craftItems[itemId]--;
-    if (craftItems[itemId] <= 0) delete craftItems[itemId];
+    // Validate item exists BEFORE consuming it (prevents item loss on invalid IDs)
     newItem = (await import("@shared/game-data")).craftedToGameItem(itemId);
     if (!newItem) throw new Error("Unknown item");
+    craftItems[itemId]--;
+    if (craftItems[itemId] <= 0) delete craftItems[itemId];
   } else {
     throw new Error("Must provide instanceId or itemId");
   }
@@ -89,7 +91,7 @@ export async function unequipItem(state: GameState, slot: string): Promise<GameS
 export async function destroyLoot(state: GameState, instanceId: string): Promise<GameState> {
   const lootBag = parseLootBag(state.lootBag);
   const item = lootBag.find(i => i.instanceId === instanceId);
-  const homeLv: Record<string,number> = (()=>{try{return JSON.parse((state as any).homestead??"{}")}catch{return{}}})();
+  const homeLv: Record<string,number> = (()=>{try{return safeJsonRecord((state as any).homestead)}catch{return{}}})();
   const goldRefund = item ? Math.floor((DISENCHANT_GOLD[item.rarity] ?? 5) * (1 + (homeLv.wonder_furnace ?? 0) * 0.25)) : 0;
   const filtered = lootBag.filter(i => i.instanceId !== instanceId);
   const [updated] = await db.update(gameStates)
@@ -243,7 +245,7 @@ export async function synthEquip(state: GameState, instanceIds: string[]): Promi
 }
 
 export async function synthGem(state: GameState, items: {type:string;quality:string}[]): Promise<GameState> {
-  const gems = JSON.parse(state.gems??'{}');
+  const gems = safeJsonRecord(state.gems);
   const count = items.length;
   if (count < 3 || count > 5) throw new Error(msg("need3to5Gems"));
   const costMul = count===3?1:count===4?2:5;
@@ -410,8 +412,8 @@ export async function extractPower(state: GameState, instanceId: string): Promis
 
   const powerId = item.legendaryPower || `skill_${item.skills?.[0]?.type || 'unknown'}`;
   const powerName = item.legendaryPower || item.skills?.[0]?.name || '未知威能';
-  const powers: string[] = JSON.parse((state as any).extractedPowers ?? '[]');
-  const homeLv: Record<string,number> = (()=>{try{return JSON.parse((state as any).homestead??"{}")}catch{return{}}})();
+  const powers: string[] = safeJsonArray((state as any).extractedPowers);
+  const homeLv: Record<string,number> = (()=>{try{return safeJsonRecord((state as any).homestead)}catch{return{}}})();
   const maxSlots = 3 + (homeLv.recycling ?? 0);
   if (powers.length >= maxSlots) throw new Error("萃取槽已满，升级回收站解锁更多");
   if (powers.includes(powerId)) throw new Error("该威能已学会");
@@ -436,9 +438,9 @@ export async function extractPower(state: GameState, instanceId: string): Promis
 }
 
 export async function equipPower(state: GameState, slotS: number, powerId: string): Promise<GameState> {
-  const powers: string[] = JSON.parse((state as any).extractedPowers ?? '[]');
+  const powers: string[] = safeJsonArray((state as any).extractedPowers);
   if (powerId !== "" && !powers.includes(powerId)) throw new Error("尚未学会该威能");
-  const active: string[] = JSON.parse((state as any).activePowers ?? '["","",""]');
+  const active: string[] = safeJsonArray<string>((state as any).activePowers);
   if (powerId !== "" && active.includes(powerId)) throw new Error("该威能已在其他槽位激活");
   active[slotS] = powerId;
   const [updated] = await db.update(gameStates).set({

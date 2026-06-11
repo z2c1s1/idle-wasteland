@@ -1636,7 +1636,7 @@ export const TIER_HP_MUL: Record<WorldTier, number> = { 1: 1, 2: 2, 3: 4, 4: 8 }
 export const TIER_ATK_MUL: Record<WorldTier, number> = { 1: 1, 2: 1.5, 3: 2.5, 4: 4 };
 export const TIER_ILVL_BONUS: Record<WorldTier, number> = { 1: 0, 2: 10, 3: 20, 4: 30 };
 export const TIER_DROP_MUL: Record<WorldTier, number> = { 1: 1, 2: 1.3, 3: 1.6, 4: 2 };
-export const TIER_UNLOCK_LEVELS: Partial<Record<WorldTier, number>> = { 2: 500, 3: 1500, 4: 3000 };
+export const TIER_UNLOCK_LEVELS: Partial<Record<WorldTier, number>> = { 2: 500, 3: 1200, 4: 1700 };
 
 // ─── Combat triangle ─────────────────────────────────────────────────────────
 export type CombatStyle = 'melee' | 'ranged' | 'magic';

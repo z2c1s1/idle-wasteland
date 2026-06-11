@@ -3,6 +3,7 @@ import { useGameState } from "@/hooks/use-game";
 import { calculateLevel, formatNumber, getCombatLevel } from "@/lib/game-utils";
 import { Skull, Shield, Zap, Download, Upload, Radiation } from "lucide-react";
 import { useLocation } from "wouter";
+import { R } from "@/lib/routes";
 import { WORLD_TIER_LABEL } from "@shared/game-data";
 import type { GameState } from "@shared/schema";
 import { useQueryClient } from "@tanstack/react-query";
@@ -85,7 +86,7 @@ export default function Dashboard() {
 
           <button
             type="button"
-            onClick={() => setLocation("/exploration")}
+            onClick={() => setLocation(R.exploration)}
             className="w-full border border-[hsl(var(--amber-warn)/0.4)] bg-[hsl(var(--card))] px-4 py-3 text-left transition-colors hover:border-[hsl(var(--amber-warn)/0.6)]"
           >
             <div className="flex items-center justify-between">

@@ -1,4 +1,5 @@
 import { Switch, Route } from "wouter";
+import { R } from "@/lib/routes";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { LanguageProvider } from "./lib/i18n";
@@ -34,37 +35,41 @@ import WastelandTech from "@/pages/wasteland-tech";
 import Materials from "@/pages/materials";
 import Bounties from "@/pages/bounties";
 import Pets from "@/pages/pets";
+import Crafting from "@/pages/crafting";
+import Gamble from "@/pages/gamble";
 
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Dashboard} />
-      <Route path="/woodcutting" component={Woodcutting} />
-      <Route path="/mining" component={Mining} />
-      <Route path="/smelting" component={Smelting} />
-      <Route path="/fishing" component={Fishing} />
-      <Route path="/hunting" component={Hunting} />
-      <Route path="/combat" component={Combat} />
-      <Route path="/inventory" component={Inventory} />
-      <Route path="/materials" component={Materials} />
-      <Route path="/bounties" component={Bounties} />
-      <Route path="/smithing" component={Smithing} />
-      <Route path="/leatherworking" component={Leatherworking} />
-      <Route path="/jewelcrafting" component={Jewelcrafting} />
-      <Route path="/gems" component={Gems} />
-      <Route path="/thieving" component={Thieving} />
-      <Route path="/tools" component={Tools} />
-      <Route path="/talents" component={Talents} />
-      <Route path="/equipment-synth" component={EquipmentSynth} />
-      <Route path="/shelter" component={Shelter} />
-      <Route path="/wasteland-tech" component={WastelandTech} />
-      <Route path="/cooking" component={Cooking} />
-      <Route path="/alchemy" component={Alchemy} />
-      <Route path="/agility" component={Agility} />
-      <Route path="/prayer" component={Prayer} />
-      <Route path="/town" component={Town} />
-      <Route path="/exploration" component={Exploration} />
-      <Route path="/pets" component={Pets} />
+      <Route path={R.dashboard} component={Dashboard} />
+      <Route path={R.woodcutting} component={Woodcutting} />
+      <Route path={R.mining} component={Mining} />
+      <Route path={R.smelting} component={Smelting} />
+      <Route path={R.fishing} component={Fishing} />
+      <Route path={R.hunting} component={Hunting} />
+      <Route path={R.combat} component={Combat} />
+      <Route path={R.inventory} component={Inventory} />
+      <Route path={R.materials} component={Materials} />
+      <Route path={R.bounties} component={Bounties} />
+      <Route path={R.smithing} component={Smithing} />
+      <Route path={R.leatherworking} component={Leatherworking} />
+      <Route path={R.jewelcrafting} component={Jewelcrafting} />
+      <Route path={R.gems} component={Gems} />
+      <Route path={R.thieving} component={Thieving} />
+      <Route path={R.tools} component={Tools} />
+      <Route path={R.talents} component={Talents} />
+      <Route path={R.equipmentSynth} component={EquipmentSynth} />
+      <Route path={R.shelter} component={Shelter} />
+      <Route path={R.wastelandTech} component={WastelandTech} />
+      <Route path={R.cooking} component={Cooking} />
+      <Route path={R.alchemy} component={Alchemy} />
+      <Route path={R.agility} component={Agility} />
+      <Route path={R.prayer} component={Prayer} />
+      <Route path={R.town} component={Town} />
+      <Route path={R.exploration} component={Exploration} />
+      <Route path={R.crafting} component={Crafting} />
+      <Route path={R.gamble} component={Gamble} />
+      <Route path={R.pets} component={Pets} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -1,5 +1,6 @@
 import { useGameState } from "@/hooks/use-game";
 import { TOWN_NPCS } from "@shared/game-data";
+import { safeJsonRecord, safeJsonArray } from "@shared/safe-parse";
 import { postGame } from "@/lib/api";
 import { api } from "@shared/routes";
 import { useQueryClient } from "@tanstack/react-query";
@@ -19,7 +20,7 @@ export default function Town() {
   const gs = state as GameState;
   const p = t.pages.town;
 
-  const homestead: Record<string, number> = JSON.parse(gs.homestead ?? '{}');
+  const homestead: Record<string, number> = safeJsonRecord(gs.homestead);
   const townLevel = Object.values(homestead).reduce((s, v) => s + (v ?? 0), 0);
 
   const npcEncounter: { id: string; arrivedAt: number } | null = (() => {
@@ -27,7 +28,7 @@ export default function Town() {
   })();
   const npc = npcEncounter ? TOWN_NPCS.find(n => n.id === npcEncounter.id) : null;
   // Companion roster
-  const companions: any[] = (() => { try { return JSON.parse((gs as any).companions ?? '[]'); } catch { return []; } })();
+  const companions: any[] = (() => { try { return safeJsonArray((gs as any).companions); } catch { return []; } })();
   const companiomBonuses = companions.map((c: any) => (
     <span key={c.id} className={(RARITY_COLOR as any)[c.rarity] ?? 'text-muted-foreground'}>
       {c.emoji} {c.name} +{c.bonusValue}% {c.bonusName}
@@ -122,7 +123,7 @@ export default function Town() {
       <div className="space-y-2">
         <h2 className="text-sm font-bold">已知旅人</h2>
         {TOWN_NPCS.map(n => {
-          const dungeonStats = (() => { try { return JSON.parse(gs.dungeonStats ?? '{}'); } catch { return {}; } })();
+          const dungeonStats = (() => { try { return safeJsonRecord(gs.dungeonStats); } catch { return {}; } })();
           const dungeonClear = (n.reqDungeon ?? 0) > 0 ? ((dungeonStats[String(n.reqDungeon)] as any)?.clears ?? 0) > 0 : true;
           const unlocked = (!n.reqTownLevel || townLevel >= n.reqTownLevel) && dungeonClear;
           return (

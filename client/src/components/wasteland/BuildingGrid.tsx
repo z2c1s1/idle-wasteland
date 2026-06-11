@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
+import { R } from "@/lib/routes";
 import { SHELTER_BUILDINGS } from "@shared/game-data";
+import { safeJsonRecord, safeJsonArray } from "@shared/safe-parse";
 import type { GameState } from "@shared/schema";
 import { RustFrame } from "./RustFrame";
 import { useUIText } from "@/lib/i18n";
@@ -14,7 +16,7 @@ interface BuildingGridProps {
 export function BuildingGrid({ state }: BuildingGridProps) {
   const t = useUIText();
   const [, navigate] = useLocation();
-  const homestead: Record<string, number> = JSON.parse(state.homestead ?? "{}");
+  const homestead: Record<string, number> = safeJsonRecord(state.homestead);
   const worldTier = (state.worldTier as number | undefined) ?? 1;
 
   return (
@@ -25,7 +27,7 @@ export function BuildingGrid({ state }: BuildingGridProps) {
         </h2>
         <button
           type="button"
-          onClick={() => navigate("/shelter")}
+          onClick={() => navigate(R.shelter)}
           className="text-[10px] font-mono text-[hsl(var(--crt-green))] hover:underline"
         >
           {t.dashboard.manageShelter}
@@ -39,7 +41,7 @@ export function BuildingGrid({ state }: BuildingGridProps) {
             <button
               key={b.id}
               type="button"
-              onClick={() => navigate("/homestead")}
+              onClick={() => navigate(R.shelter)}
               className={`flex flex-col items-center justify-center gap-1 border p-2 text-center transition-colors hover:bg-[hsl(var(--accent))] ${
                 level >= 8
                   ? "border-[hsl(var(--crt-green))/0.6] bg-[hsl(120_30%_8%)] shadow-[0_0_8px_hsl(120_100%_65%/0.1)]"

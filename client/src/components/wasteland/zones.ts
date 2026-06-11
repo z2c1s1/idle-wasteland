@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { R } from "@/lib/routes";
 import {
   Tent, Skull, Search, Wrench, Backpack, Map,
 } from "lucide-react";
@@ -26,77 +27,79 @@ export const ZONES: ZoneDef[] = [
     id: "stash",
     icon: Backpack,
     labelKey: "stash",
-    defaultPath: "/inventory",
+    defaultPath: R.inventory,
     routes: [
-      { path: "/inventory", labelKey: "navInventory" },
-      { path: "/gems", labelKey: "navGems" },
-      { path: "/materials", labelKey: "navMaterials" },
+      { path: R.inventory, labelKey: "navInventory" },
+      { path: R.gems, labelKey: "navGems" },
+      { path: R.materials, labelKey: "navMaterials" },
     ],
   },
   {
     id: "camp",
     icon: Tent,
     labelKey: "camp",
-    defaultPath: "/shelter",
+    defaultPath: R.shelter,
     routes: [
-      { path: "/shelter", labelKey: "navShelter" },
-      { path: "/cooking", labelKey: "navCooking" },
-      { path: "/alchemy", labelKey: "navAlchemy" },
-      { path: "/prayer", labelKey: "navPrayer" },
-      { path: "/agility", labelKey: "navAgility" },
-      { path: "/talents", labelKey: "navTalents" },
-      { path: "/pets", labelKey: "navPets" },
-      { path: "/wasteland-tech", labelKey: "navWastelandTech" },
-      { path: "/bounties", labelKey: "navBounties" },
+      { path: R.shelter, labelKey: "navShelter" },
+      { path: R.cooking, labelKey: "navCooking" },
+      { path: R.alchemy, labelKey: "navAlchemy" },
+      { path: R.prayer, labelKey: "navPrayer" },
+      { path: R.agility, labelKey: "navAgility" },
+      { path: R.talents, labelKey: "navTalents" },
+      { path: R.pets, labelKey: "navPets" },
+      { path: R.wastelandTech, labelKey: "navWastelandTech" },
+      { path: R.bounties, labelKey: "navBounties" },
+      { path: R.gamble, labelKey: "navGamble" },
     ],
   },
   {
     id: "workshop",
     icon: Wrench,
     labelKey: "workshop",
-    defaultPath: "/smelting",
+    defaultPath: R.smelting,
     routes: [
-      { path: "/smelting", labelKey: "navSmelting" },
-      { path: "/smithing", labelKey: "navSmithing" },
-      { path: "/leatherworking", labelKey: "navLeatherworking" },
-      { path: "/jewelcrafting", labelKey: "navJewelcrafting" },
-      { path: "/tools", labelKey: "navTools" },
-      { path: "/equipment-synth", labelKey: "navEquipmentSynth" },
+      { path: R.smelting, labelKey: "navSmelting" },
+      { path: R.smithing, labelKey: "navSmithing" },
+      { path: R.leatherworking, labelKey: "navLeatherworking" },
+      { path: R.jewelcrafting, labelKey: "navJewelcrafting" },
+      { path: R.tools, labelKey: "navTools" },
+      { path: R.equipmentSynth, labelKey: "navEquipmentSynth" },
+      { path: R.crafting, labelKey: "navCrafting" },
     ],
   },
   {
     id: "scavenge",
     icon: Search,
     labelKey: "scavenge",
-    defaultPath: "/woodcutting",
+    defaultPath: R.woodcutting,
     routes: [
-      { path: "/woodcutting", labelKey: "navWoodcutting" },
-      { path: "/mining", labelKey: "navMining" },
-      { path: "/fishing", labelKey: "navFishing" },
-      { path: "/hunting", labelKey: "navHunting" },
-      { path: "/thieving", labelKey: "navThieving" },
+      { path: R.woodcutting, labelKey: "navWoodcutting" },
+      { path: R.mining, labelKey: "navMining" },
+      { path: R.fishing, labelKey: "navFishing" },
+      { path: R.hunting, labelKey: "navHunting" },
+      { path: R.thieving, labelKey: "navThieving" },
     ],
   },
   {
     id: "wasteland",
     icon: Skull,
     labelKey: "wasteland",
-    defaultPath: "/combat",
+    defaultPath: R.combat,
     routes: [
-      { path: "/combat", labelKey: "navCombat", hash: "#enemies" },
-      { path: "/combat", labelKey: "navDungeons", hash: "#dungeons" },
-      { path: "/combat", labelKey: "navTower", hash: "#tower" },
-      { path: "/combat", labelKey: "navTrial", hash: "#trial" },
+      { path: R.combat, labelKey: "navCombat", hash: "#enemies" },
+      { path: R.combat, labelKey: "navDungeons", hash: "#dungeons" },
+      { path: R.combat, labelKey: "navTower", hash: "#tower" },
+      { path: R.combat, labelKey: "navTrial", hash: "#trial" },
     ],
   },
   {
     id: "frontier",
     icon: Map,
     labelKey: "frontier",
-    defaultPath: "/exploration",
+    defaultPath: R.exploration,
     routes: [
-      { path: "/exploration", labelKey: "navExploration" },
-      { path: "/town", labelKey: "navTown" },
+      { path: R.exploration, labelKey: "navExploration" },
+      { path: R.town, labelKey: "navTown" },
     ],
   },
 ];
@@ -107,8 +110,8 @@ export function getZoneForPath(pathname: string): ZoneId {
   for (const zone of ZONES) {
     if (zone.routes.some(r => r.path === pathname)) return zone.id;
   }
-  if (pathname === "/") return "camp";
-  const prefix = ALL_PATHS.find(p => p !== "/" && pathname.startsWith(p));
+  if (pathname === R.dashboard) return "camp";
+  const prefix = ALL_PATHS.find(p => p !== R.dashboard && pathname.startsWith(p));
   if (prefix) {
     for (const zone of ZONES) {
       if (zone.routes.some(r => r.path === prefix)) return zone.id;

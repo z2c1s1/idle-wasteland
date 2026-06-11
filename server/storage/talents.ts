@@ -1,5 +1,6 @@
 import { db } from "../db";
 import { gameStates, type GameState } from "@shared/schema";
+import { safeJsonParse, safeJsonArray } from "@shared/safe-parse";
 import { TALENT_TREES } from "@shared/game-data";
 import { eq } from "drizzle-orm";
 import { calculateLevel } from "@shared/game-math";
@@ -16,7 +17,7 @@ export async function resetTalents(state: GameState): Promise<GameState> {
 }
 
 export async function unlockTalent(state: GameState, style: string, nodeId: string): Promise<GameState> {
-  const talents: Record<string, string[]> = JSON.parse(state.talents ?? '{}');
+  const talents = safeJsonParse<Record<string, string[]>>(state.talents, {});
   if (!talents[style]) talents[style] = [];
   // Auto-add center node when level requirement is met
   const centerMap: Record<string, { cid: string; xp: number }> = {

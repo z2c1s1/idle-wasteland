@@ -10,6 +10,7 @@ import {
   RARITY_ORDER, DISENCHANT_GOLD, mergeGems,
   trackAchievement,
   computeSkillEffects, applySkillProcDamage, type SkillProcContext,
+  safeJsonRecord, safeJsonArray,
 } from "./_shared";
 
 const calcLevel = calculateLevel;
@@ -34,7 +35,7 @@ export async function tickDungeon(state: GameState, elapsedSeconds: number): Pro
   const eff = computeSkillEffects(equipment);
   const { spellbladePct, poisonDmg, thornsDmg, lifeStealPct, vampiricHp, berserkPct, doubleStrikePct, dodgePct } = eff;
   const playerStyle: CombatStyle = (equipment.weapon as any)?.combatStyle ?? 'melee';
-  const homeLv: Record<string, number> = (() => { try { return JSON.parse((state as any).homestead ?? '{}'); } catch { return {}; } })();
+  const homeLv: Record<string, number> = (() => { try { return safeJsonRecord((state as any).homestead); } catch { return {}; } })();
 
   const BASE_COMBAT_SPEED = 3;
   const effectiveCombatSpeed = Math.max(1.5, BASE_COMBAT_SPEED * (1 - attackSpeed / 200));
@@ -183,7 +184,7 @@ export async function tickDungeon(state: GameState, elapsedSeconds: number): Pro
 
   const usedTime = (playerDied || bossKilled) ? elapsedSeconds : ticks * effectiveCombatSpeed;
   const existingLoot = parseLootBag(state.lootBag);
-  const combinedLoot = [...existingLoot, ...newDrops].slice(-50);
+  const combinedLoot = [...existingLoot, ...newDrops].slice(-(state.lootBagSize ?? 50));
   const nextAction = bossKilled ? "idle" : `dungeon_${dungeonIndex}_${waveIndex + 1}`;
 
   // Track dungeon clear stats + tier boss kill
@@ -194,7 +195,7 @@ export async function tickDungeon(state: GameState, elapsedSeconds: number): Pro
     const tierBossDungeonIdx: Record<number, number> = { 1: 1, 2: 3, 3: 5, 4: 5 };
     const currentTier = (state as any).worldTier ?? 1;
     if (dungeonIndex === tierBossDungeonIdx[currentTier]) {
-      const killed: number[] = JSON.parse((state as any).tierBossKilled ?? '[]');
+      const killed: number[] = safeJsonArray((state as any).tierBossKilled);
       if (!killed.includes(currentTier)) {
         killed.push(currentTier);
         tierBossKilledUpdate = JSON.stringify(killed);

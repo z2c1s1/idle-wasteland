@@ -3,14 +3,15 @@ import {
   Axe, Pickaxe, Waves, PawPrint, HandMetal,
 } from "lucide-react";
 import type { GameState } from "@shared/schema";
+import { R } from "@/lib/routes";
 
 /** Outdoor gathering & scavenging — grouped in the Scavenge zone */
 export const SCAVENGE_SKILLS = [
-  { id: "woodcutting", path: "/woodcutting", xpKey: "woodcuttingXp" as const, icon: Axe,       color: "text-green-400"  },
-  { id: "mining",      path: "/mining",      xpKey: "miningXp"      as const, icon: Pickaxe,   color: "text-yellow-400" },
-  { id: "fishing",     path: "/fishing",     xpKey: "fishingXp"     as const, icon: Waves,     color: "text-blue-400"   },
-  { id: "hunting",     path: "/hunting",     xpKey: "huntingXp"     as const, icon: PawPrint,  color: "text-red-400"    },
-  { id: "thieving",    path: "/thieving",    xpKey: "thievingXp"    as const, icon: HandMetal, color: "text-purple-400" },
+  { id: "woodcutting", path: R.woodcutting, xpKey: "woodcuttingXp" as const, icon: Axe,       color: "text-green-400"  },
+  { id: "mining",      path: R.mining,      xpKey: "miningXp"      as const, icon: Pickaxe,   color: "text-yellow-400" },
+  { id: "fishing",     path: R.fishing,     xpKey: "fishingXp"     as const, icon: Waves,     color: "text-blue-400"   },
+  { id: "hunting",     path: R.hunting,     xpKey: "huntingXp"     as const, icon: PawPrint,  color: "text-red-400"    },
+  { id: "thieving",    path: R.thieving,    xpKey: "thievingXp"    as const, icon: HandMetal, color: "text-purple-400" },
 ] as const;
 
 export type ScavengeSkillId = typeof SCAVENGE_SKILLS[number]["id"];

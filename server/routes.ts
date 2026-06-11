@@ -30,8 +30,10 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   authed(g.socketGem.path, g.socketGem.input, (s, i) => s.socketGem(i.instanceId, i.gemKey));
   authed(g.enterDungeon.path, g.enterDungeon.input, (s, i) => s.enterDungeon(i.dungeonIndex));
   authed(g.setLootFilter.path, g.setLootFilter.input, (s, i) => s.setLootFilter(i.rarity));
-  authed(g.equipTool.path, g.equipTool.input, (s, i) => s.equipTool(i.toolId));
-  authed(g.addSocket.path, g.addSocket.input, (s, i) => s.addSocket(i.instanceId));
+  // TODO: equipTool — no frontend caller yet; re-enable when UI is ready
+  // authed(g.equipTool.path, g.equipTool.input, (s, i) => s.equipTool(i.toolId));
+  // TODO: addSocket — no frontend caller yet; re-enable when UI is ready
+  // authed(g.addSocket.path, g.addSocket.input, (s, i) => s.addSocket(i.instanceId));
   authed(g.cook.path, g.cook.input, (s, i) => s.cookFood(i.recipeId));
   authed(g.brew.path, g.brew.input, (s, i) => s.brewPotion(i.recipeId));
   authed(g.equipSkill.path, g.equipSkill.input, (s, i) => s.equipSkill(i.skillId));
@@ -65,8 +67,10 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   voidPost(g.startTower.path, s => s.startTower());
   voidPost(g.resetTalents.path, s => s.resetTalents());
   voidPost(g.deactivatePrayer.path, s => s.deactivatePrayer());
-  voidPost(g.getSlayerTask.path, s => s.getSlayerTask());
-  voidPost(g.completeSlayerTask.path, s => s.completeSlayerTask());
+  // TODO: getSlayerTask — no frontend caller yet; re-enable when UI is ready
+  // voidPost(g.getSlayerTask.path, s => s.getSlayerTask());
+  // TODO: completeSlayerTask — no frontend caller yet; re-enable when UI is ready
+  // voidPost(g.completeSlayerTask.path, s => s.completeSlayerTask());
   voidPost(g.dismissNpc.path, s => s.dismissNpc());
 
   app.post("/api/game/corrupt", async (req, res) => {

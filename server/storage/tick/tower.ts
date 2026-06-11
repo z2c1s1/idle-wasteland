@@ -28,7 +28,7 @@ export async function tickTower(state: GameState, elapsedSeconds: number): Promi
 
   // Scale enemy by floor
   const scale = 1 + floor * 0.15;
-  const bossPool = DUNGEONS;
+  const bossPool = DUNGEONS.slice(0, 4);
   const boss = bossPool[floor % bossPool.length].boss;
   const enemyHpMax = isBoss ? Math.floor(boss.maxHp * scale * 0.6) : Math.floor(30 + floor * 18 * scale);
   const enemyAtk   = isBoss ? Math.floor(boss.attack * scale * 0.7) : Math.floor(3 + floor * 2.5 * scale);
@@ -56,7 +56,7 @@ export async function tickTower(state: GameState, elapsedSeconds: number): Promi
       if (isBoss) {
         if (Math.random() < 0.2) { /* tower key — already tracked via towerFloor */ }
         if (Math.random() < 0.1) {
-          const drop = generateDroppedItem(Math.floor(50 + floor * 3), 10);
+          const drop = generateDroppedItem(Math.min(21, Math.floor(10 + floor * 0.5)), 10);
           drop.rarity = 'mythic';
           drop.maxSockets = 3;
           newDrops.push(drop as GameItem);
@@ -72,7 +72,7 @@ export async function tickTower(state: GameState, elapsedSeconds: number): Promi
 
   const usedTime = (playerDied || killed) ? elapsedSeconds : ticks * effectiveCombatSpeed;
   const existingLoot = parseLootBag(state.lootBag);
-  const combinedLoot = [...existingLoot, ...newDrops].slice(-50);
+  const combinedLoot = [...existingLoot, ...newDrops].slice(-(state.lootBagSize ?? 50));
 
   const updates: Partial<GameState> = {
     playerHp: playerDied ? Math.floor(playerMaxHp * 0.5) : playerHp,

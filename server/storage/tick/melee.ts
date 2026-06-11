@@ -10,6 +10,7 @@ import {
   RARITY_ORDER, DISENCHANT_GOLD, mergeGems,
   COMPANION_NPCS,
   trackAchievement, getPetBuffs, getTalentBonuses,
+  safeJsonRecord, safeJsonArray,
 } from "./_shared";
 import {
   computeSkillEffects, computeEffectiveCombatSpeed,
@@ -37,7 +38,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
     lifeLeech, deadlyStrike, attackSpeed, reflectDamage,
   
   } = getEquipmentBonuses(equipment);
-  const homeLv: Record<string,number> = (()=>{try{return JSON.parse((state as any).homestead??"{}")}catch{return{}}})();
+  const homeLv: Record<string,number> = (()=>{try{return safeJsonRecord((state as any).homestead)}catch{return{}}})();
 
   const talentBonuses = getTalentBonuses(state);
   const petBuffs = getPetBuffs(state);
@@ -164,7 +165,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
         const npcs = COMPANION_NPCS;
         const npc = npcs[Math.floor(Math.random() * npcs.length)];
         if (Math.random() < npc.dropChance) {
-          const companions = JSON.parse((state as any).companions ?? '[]');
+          const companions = safeJsonArray((state as any).companions);
           const bonus = npc.bonusRange[0] + Math.floor(Math.random() * (npc.bonusRange[1] - npc.bonusRange[0] + 1));
           companions.push({ id:npc.id, name:npc.name, emoji:npc.emoji, rarity:npc.rarity, bonusType:npc.bonusType, bonusName:npc.bonusName, bonusValue:bonus });
           (updates as any).companions = JSON.stringify(companions);
@@ -200,7 +201,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
 
   const usedTime = playerDied ? elapsedSeconds : ticks * effectiveCombatSpeed;
   const existingLoot = parseLootBag(state.lootBag);
-  const combinedLoot = [...existingLoot, ...newDrops].slice(-50);
+  const combinedLoot = [...existingLoot, ...newDrops].slice(-(state.lootBagSize ?? 50));
   const existingGems = parseGems(state.gems);
 
   Object.assign(updates, {

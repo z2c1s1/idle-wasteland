@@ -1,5 +1,6 @@
 import { db } from "../db";
 import { gameStates, type GameState } from "@shared/schema";
+import { safeJsonRecord, safeJsonArray } from "@shared/safe-parse";
 import { SHELTER_BUILDINGS } from "@shared/game-data";
 import { eq } from "drizzle-orm";
 import { getResourceCount, buildResourceUpdates } from "@shared/resources";
@@ -10,7 +11,12 @@ import { msg } from "@shared/messages";
 export async function buildShelter(state: GameState, buildingId: string): Promise<GameState> {
   const bld = SHELTER_BUILDINGS.find(b => b.id === buildingId);
   if (!bld) throw new Error(msg("buildingNotFound"));
-  const homestead: Record<string, number> = JSON.parse(state.homestead ?? '{}');
+  // Enforce world tier requirement
+  if (bld.reqTier) {
+    const worldTier = (state as any).worldTier ?? 1;
+    if (worldTier < bld.reqTier) throw new Error(`需要世界层级 ${bld.reqTier}`);
+  }
+  const homestead: Record<string, number> = safeJsonRecord(state.homestead);
   if ((homestead[buildingId] ?? 0) >= bld.maxLevel) throw new Error(msg("buildingMaxLevel"));
   const costWood = bld.costWood; const costStone = bld.costStone; const costGold = bld.costGold;
   if ((state.wood ?? 0) < costWood) throw new Error(msg("notEnoughWood"));
@@ -30,14 +36,14 @@ export async function buildShelter(state: GameState, buildingId: string): Promis
 // ─── Homestead utility helpers ────────────────────────────────────────────────
 
 export function getDisenchantGoldMultiplier(state: GameState): number {
-  const homestead: Record<string, number> = (() => { try { return JSON.parse((state as any).homestead ?? '{}'); } catch { return {}; } })();
+  const homestead: Record<string, number> = (() => { try { return safeJsonRecord((state as any).homestead); } catch { return {}; } })();
   return 1 + (homestead.wonder_furnace ?? 0) * 0.25;
 }
 
 // ─── Farm passive gold ────────────────────────────────────────────────────────
 
 export function getFarmGoldIncome(state: GameState, elapsedSec: number): number {
-  const homestead: Record<string, number> = JSON.parse(state.homestead ?? '{}');
+  const homestead: Record<string, number> = safeJsonRecord(state.homestead);
   const farmLevel = homestead['farm'] ?? 0;
   const greenhouse = homestead['wonder_greenhouse'] ?? 0;
   if (farmLevel <= 0) return 0;
@@ -49,7 +55,7 @@ export function getFarmGoldIncome(state: GameState, elapsedSec: number): number 
 // ─── Fuel / Temperature ───────────────────────────────────────────────────────
 
 export async function addFuel(state: GameState, woodTier: number): Promise<GameState> {
-  const homestead: Record<string, number> = JSON.parse(state.homestead ?? '{}');
+  const homestead: Record<string, number> = safeJsonRecord(state.homestead);
   const furnaceLevel = homestead['furnace'] ?? 0;
   if (furnaceLevel <= 0) throw new Error(msg("needFurnace"));
 
@@ -72,21 +78,31 @@ export async function addFuel(state: GameState, woodTier: number): Promise<GameS
 }
 
 export function applyTemperatureDecay(state: GameState, now: Date): Partial<GameState> {
-  const homestead: Record<string, number> = JSON.parse(state.homestead ?? '{}');
+  const homestead: Record<string, number> = safeJsonRecord(state.homestead);
   const furnaceLevel = homestead['furnace'] ?? 0;
-  if (furnaceLevel <= 0) return {};
-
   const temp = state.temperature ?? 0;
   if (temp <= 0) return {};
-  // Only decay below 30° (cold zone), and above 50° is safe zone
-  if (temp >= 30) return {};
 
+  // Ambient cooling: wasteland is cold, temperature decays naturally
+  // - No furnace: fast decay (2°C/tick) — the wasteland freezes everything
+  // - Furnace with fuel: no decay (fuel keeps it warm)
+  // - Furnace without fuel: slow decay (insulated by shelter)
   const fuelEndsAt = state.fuelEndsAt ? new Date(state.fuelEndsAt) : null;
-  const baseDecay = fuelEndsAt && now > fuelEndsAt ? 2 : 1;
-  const furnaceReduction = 1 - furnaceLevel * 0.15;
-  const decayRate = Math.max(0.1, baseDecay * furnaceReduction);
-  const newTemp = Math.max(0, temp - decayRate);
+  const hasFuel = fuelEndsAt && now <= fuelEndsAt;
 
+  let decayRate: number;
+  if (hasFuel) {
+    return {}; // Fuel is burning — temperature is maintained
+  } else if (furnaceLevel > 0) {
+    // Furnace exists but no fuel — slow decay, reduced by furnace level
+    const furnaceReduction = 1 - furnaceLevel * 0.15;
+    decayRate = Math.max(0.1, 1 * furnaceReduction);
+  } else {
+    // No furnace at all — fast ambient cooling
+    decayRate = 2;
+  }
+
+  const newTemp = Math.max(0, temp - decayRate);
   if (newTemp === temp) return {};
   return { temperature: newTemp } as Partial<GameState>;
 }

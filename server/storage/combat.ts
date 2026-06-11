@@ -26,6 +26,9 @@ import {
 
 export type CombatStyle = "melee" | "ranged" | "magic";
 
+// TODO: This function is currently dead code — the client always sends `combat_`
+// regardless of weapon style (melee/ranged/magic). Re-enable when ranged/magic
+// combat actions are exposed via the UI.
 export async function handleTriangleCombat(
   state: GameState,
   enemy: { maxHp: number; attack: number; defence: number; combatStyle?: CombatStyle; drops: { gold: [number, number] }; xp: number },

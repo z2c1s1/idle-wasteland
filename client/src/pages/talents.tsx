@@ -1,5 +1,6 @@
 import { useGameState, useUnlockTalent, useResetTalents } from "@/hooks/use-game";
 import { TALENT_TREES, type TalentNode, type CombatStyle } from "@shared/game-data";
+import { safeJsonParse, safeJsonArray } from "@shared/safe-parse";
 import { calculateLevel, getTotalTalentPoints } from "@/lib/game-utils";
 import { useToast } from "@/hooks/use-toast";
 import type { GameState } from "@shared/schema";
@@ -119,7 +120,7 @@ export default function Talents() {
 
   const parseTalents = (): Record<string, string[]> => {
     try {
-      return JSON.parse((gs as any).talents ?? '{}');
+      return safeJsonParse<Record<string, string[]>>((gs as any).talents, {});
     } catch { return {}; }
   };
 

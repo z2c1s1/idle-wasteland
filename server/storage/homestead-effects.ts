@@ -1,5 +1,6 @@
 // ─── Homestead building effects ──────────────────────────────────────────
 import type { GameState } from "@shared/schema";
+import { safeJsonRecord, safeJsonArray } from "@shared/safe-parse";
 
 export interface HomesteadLevels {
   shelter: number; farm: number; lumbermill: number; mine: number;
@@ -21,7 +22,7 @@ const DEFAULT: HomesteadLevels = {
 
 export function getHomesteadLevels(state: GameState): HomesteadLevels {
   try {
-    const raw: Record<string, number> = JSON.parse((state as any).homestead ?? '{}');
+    const raw: Record<string, number> = safeJsonRecord((state as any).homestead);
     return { ...DEFAULT, ...raw };
   } catch {
     return { ...DEFAULT };

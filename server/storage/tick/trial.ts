@@ -9,6 +9,7 @@ import {
   getResourceCount, buildResourceUpdates,
   SKILLS_DATA, RARITY_ORDER, DISENCHANT_GOLD, mergeGems,
   getTemperatureMultiplier, computeEffectiveCombatSpeed,
+  safeJsonArray,
 } from "./_shared";
 
 const calcLevel = calculateLevel;
@@ -23,8 +24,8 @@ export async function tickTrial(state: GameState, elapsedSeconds: number): Promi
   const equipment = parseEquipment(state.equipment);
   const { attackBonus, enhancedDamage, lifeRegen, resistAll, lifeLeech, deadlyStrike, attackSpeed } = getEquipmentBonuses(equipment);
   const playerStyle: CombatStyle = (equipment.weapon as any)?.combatStyle ?? 'melee';
-  const buffs: string[] = JSON.parse(state.trialBuffs ?? '[]');
-  const curses: string[] = JSON.parse(state.trialCurses ?? '[]');
+  const buffs: string[] = safeJsonArray(state.trialBuffs);
+  const curses: string[] = safeJsonArray(state.trialCurses);
 
   // Apply buff/curse multipliers
   let atkMul = 1, hpMul = 1, defMul = 1, regenAdd = 0, dmgTakenMul = 1;
@@ -73,7 +74,7 @@ export async function tickTrial(state: GameState, elapsedSeconds: number): Promi
   }
 
   const usedTime = (died || killed) ? elapsedSeconds : ticks * effSpeed;
-  const combined = [...parseLootBag(state.lootBag), ...drops].slice(-50);
+  const combined = [...parseLootBag(state.lootBag), ...drops].slice(-(state.lootBagSize ?? 50));
   const updates: any = {
     playerHp: died ? 0 : playerHp, enemyHp: (died || killed) ? -1 : enemyHp,
     gold: state.gold + goldGained,

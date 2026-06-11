@@ -96,6 +96,7 @@ export const uiTextEn = {
     navPrayer: "Prayers",
     navWastelandTech: "Wasteland Tech",
     navBounties: "Bounties",
+    navGamble: "Gamble",
   },
 
   dashboard: {
@@ -190,30 +191,7 @@ export const uiTextEn = {
     resourceOwned: (n: string) => `📦 ${n} owned`,
   },
 
-  shared: {
-    gold: "💰",
-    bones: "🦴",
-    dragonBones: "🐉",
-    hp: "❤️",
-    attack: "⚔️",
-    defence: "🛡️",
-    xp: "⭐",
-    time: "⏱",
-  },
-
   wasteland: {
-    zoneDescriptions: {
-      deadwood: "Twisted dead trees creak under radioactive rain. Mutant howls echo in the distance.",
-      gasStation: "Rusted fuel pumps stand silent over dried oil stains. Someone left supplies behind.",
-      ruinTown: "Crumbled walls and faded billboards — all that remains of a once-bustling town.",
-      radSwamp: "Toxic green glow seeps from the marsh. Every step could be your last.",
-      brokenRoad: "The shattered highway stretches to the horizon, torn apart by the blast wave.",
-      abandonedFarm: "Giant mutant insects have claimed the fields. The barn might still hold usable tools.",
-      bunker: "The iron hatch hangs half-open. Emergency lights flicker weakly inside.",
-      acidPlain: "Acid rain has pitted the landscape. The air burns with chemical stench.",
-      sandWaste: "Sandstorms blot out the sky. Military ruins lie half-buried beneath the dunes.",
-      snowRuin: "Nuclear winter has entombed these ruins in ice. Pre-war tech may lie within.",
-    },
     survivalTips: [
       "A water purifier is your most important gear — rad-water kills in three days.",
       "Wasteland traders don't take currency. Bring extra ammo and medicine.",
@@ -299,23 +277,6 @@ export const uiTextEn = {
       cookingComplete: "Cooking complete", cookingFail: "Cooking failed",
       alchemyComplete: "Alchemy complete", alchemyFail: "Alchemy failed",
       bones: "Bones:", dragonBones: "Dragon Bones:",
-    },
-    inventory: {
-      title: "Inventory", equipment: "Equipment", totalStats: "Total Stats",
-      basicCombat: "Basic Combat", crit: "Critical", damageAmp: "Damage Amp",
-      survival: "Survival & Recovery", special: "Special",
-      equipped: "Equipped", empty: "No items", emptyHint: "Defeat enemies to collect loot!",
-      export_: "Export", import_: "Import", gathering: "Gathering", combat: "Combat",
-      expand: "Expand", sell: "Sell", noCombatRes: "No combat resources",
-      smithedItems: "Crafted Equipment", equip: "Equip",
-      filter: {
-        keepAll: "Keep All", magicPlus: "Energy+", rarePlus: "Rare+",
-        sacredPlus: "Military+", legendaryPlus: "Epic+", mythicOnly: "Legendary Only",
-      } as Record<string, string>,
-      disenchant: {
-        common: "Common →5c", magic: "Energy →10c", rare: "Rare →25c",
-        sacred: "Military →60c", legendary: "Epic →150c", mythic: "Legendary →400c",
-      } as Record<string, string>,
     },
   },
 } as const;

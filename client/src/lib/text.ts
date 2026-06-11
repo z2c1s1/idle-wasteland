@@ -98,6 +98,7 @@ export const uiText = {
     navPrayer: "祷言",
     navWastelandTech: "废土科技",
     navBounties: "悬赏任务",
+    navGamble: "赌博",
   },
 
   dashboard: {
@@ -192,31 +193,8 @@ export const uiText = {
     resourceOwned: (n: string) => `📦 持有 ${n}`,
   },
 
-  shared: {
-    gold: "💰",
-    bones: "🦴",
-    dragonBones: "🐉",
-    hp: "❤️",
-    attack: "⚔️",
-    defence: "🛡️",
-    xp: "⭐",
-    time: "⏱",
-  },
-
   // ═══ Wasteland flavor / atmosphere ═══════════════════════════════════════
   wasteland: {
-    zoneDescriptions: {
-      deadwood: "枯死的树木扭曲成诡异的形状，辐射雨从龟裂的树皮间滴落。远处传来变异生物的嚎叫。",
-      gasStation: "废弃加油站的油泵早已锈蚀，地面上残留着干涸的黑色油渍。有人在这里留下了一些物资。",
-      ruinTown: "曾经繁华的小镇如今只剩断壁残垣。倒塌的墙壁上还能看到核爆前的广告牌。",
-      radSwamp: "辐射污染让沼泽散发着诡异的绿色荧光。每一步都要小心——泥浆下可能藏着什么。",
-      brokenRoad: "破碎的公路延伸到地平线，路面被核爆冲击波撕裂成巨大的板块。路边散落着废弃车辆。",
-      abandonedFarm: "农场已经荒废多年，变异的巨型昆虫在曾经的农田里筑巢。谷仓里也许还有完好的工具。",
-      bunker: "地下掩体的铁门半开着，里面漆黑一片。墙壁上的应急灯还在微弱地闪烁。",
-      acidPlain: "酸雨将平原腐蚀得千疮百孔，空气中弥漫着刺鼻的化学气味。只有最顽强的生物能在这里生存。",
-      sandWaste: "沙暴遮蔽了天空，能见度不到十米。废弃的军事设施半埋在沙丘之下。",
-      snowRuin: "核冬天让这片废墟永远被冰雪覆盖。废弃的研究站里可能保存着战前科技。",
-    },
     survivalTips: [
       "净水器是你最重要的装备——辐射水能在三天内杀死你。",
       "废土商人不接受货币，他们只换物资。带上多余的弹药和药品。",
@@ -375,44 +353,6 @@ export const uiText = {
       // Prayer
       bones: "骨头:",
       dragonBones: "龙骨:",
-    },
-    inventory: {
-      title: "背包",
-      equipment: "装备",
-      totalStats: "总属性",
-      basicCombat: "基础战斗",
-      crit: "暴击",
-      damageAmp: "伤害增幅",
-      survival: "生存与回复",
-      special: "特殊属性",
-      equipped: "已装备",
-      empty: "暂无物品",
-      emptyHint: "击败敌人以获取战利品！",
-      export_: "导出",
-      import_: "导入",
-      gathering: "采集类",
-      combat: "战斗类",
-      expand: "扩容",
-      sell: "出售",
-      noCombatRes: "暂无战斗资源",
-      smithedItems: "已制作装备",
-      equip: "装备",
-      filter: {
-        keepAll: "保留全部",
-        magicPlus: "能量+",
-        rarePlus: "稀有+",
-        sacredPlus: "军用+",
-        legendaryPlus: "史诗+",
-        mythicOnly: "仅传说",
-      } as Record<string, string>,
-      disenchant: {
-        common: "普通 →5瓶盖",
-        magic: "能量 →10瓶盖",
-        rare: "稀有 →25瓶盖",
-        sacred: "军用 →60瓶盖",
-        legendary: "史诗 →150瓶盖",
-        mythic: "传说 →400瓶盖",
-      } as Record<string, string>,
     },
   },
 } as const;

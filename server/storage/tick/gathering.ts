@@ -9,6 +9,7 @@ import {
   SKILLS_DATA, RARITY_ORDER, DISENCHANT_GOLD, mergeGems, rollGemDropsFromPool, parseGems,
   trackAchievement, getPetBuffs, getPrayerBuff,
   generateDroppedItem,
+  safeJsonRecord, safeJsonArray,
 } from "./_shared";
 
 const calcLevel = calculateLevel;
@@ -34,7 +35,7 @@ const petSpeedMap: Record<string, number> = {
 };
 const petSpeedMul = 1 + (petSpeedMap[skill] ?? 0);
 const prayerSpeed = 1 + getPrayerBuff(state, "swiftness");
-  const homeLevels: Record<string, number> = (() => { try { return JSON.parse((state as any).homestead ?? "{}"); } catch { return {}; } })();
+  const homeLevels: Record<string, number> = (() => { try { return safeJsonRecord((state as any).homestead); } catch { return {}; } })();
   const buildingMul = 1 - ((skill === "woodcutting" ? (homeLevels.lumbermill ?? 0) : skill === "mining" ? (homeLevels.mine ?? 0) : 0) * 0.03);
   const effectiveTime = data.time * toolBonus.timeMult / agilitySpeedMul / tempMul / petSpeedMul / prayerSpeed * buildingMul;
 
@@ -77,7 +78,7 @@ if (!data.prefix) {
   const xpKey = `${skill}Xp` as keyof GameState;
   // Track achievement + mastery
   state.achievements = trackAchievement(state, 'skill', xpKey, completions);
-  const mastery: Record<string, number> = JSON.parse((state as any).mastery ?? '{}');
+  const mastery: Record<string, number> = safeJsonRecord((state as any).mastery);
   mastery[skill] = (mastery[skill] ?? 0) + completions;
   const updates: Partial<GameState> = {
     [xpKey]: (state[xpKey] as number) + completions * data.xp,
@@ -113,7 +114,7 @@ if (skill === 'woodcutting') {
   updates.wood = (state.wood ?? 0) + woodGain;
   const berryDrop = WOODCUTTING_BERRY_DROPS.find(b => b.woodTier === index);
   if (berryDrop && Math.random() < berryDrop.chance) {
-    const berries = JSON.parse(state.berries ?? '{}');
+    const berries = safeJsonRecord(state.berries);
     berries[berryDrop.berryId] = (berries[berryDrop.berryId] ?? 0) + completions;
     updates.berries = JSON.stringify(berries);
   }
@@ -127,7 +128,7 @@ if (skill === 'hunting') {
   Object.assign(updates, meatPatch);
   const herbDrop = HUNTING_HERB_DROPS.find(h => h.hideTier === index);
   if (herbDrop && Math.random() < herbDrop.chance) {
-    const herbs = JSON.parse(state.herbs ?? '{}');
+    const herbs = safeJsonRecord(state.herbs);
     herbs[herbDrop.herbId] = (herbs[herbDrop.herbId] ?? 0) + completions;
     updates.herbs = JSON.stringify(herbs);
   }
@@ -180,14 +181,14 @@ if (skill === 'mining') {
 }
 
 // 家园农田被动金币
-const homeLevels2: Record<string, number> = (() => { try { return JSON.parse((state as any).homestead ?? '{}'); } catch { return {}; } })();
+const homeLevels2: Record<string, number> = (() => { try { return safeJsonRecord((state as any).homestead); } catch { return {}; } })();
 if ((homeLevels2.farm ?? 0) > 0) {
   const farmGoldPerTick = Math.floor((homeLevels2.farm ?? 0) * 3 * (data.time / 60));
   updates.gold = (state.gold ?? 0) + farmGoldPerTick;
 }
 
 // 更新精通计数
-const mastery: Record<string, number> = JSON.parse((state as any).mastery ?? '{}');
+const mastery: Record<string, number> = safeJsonRecord((state as any).mastery);
 mastery[skill] = (mastery[skill] ?? 0) + completions;
 updates.mastery = JSON.stringify(mastery) as any;
 

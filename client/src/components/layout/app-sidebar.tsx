@@ -1,8 +1,9 @@
 import { useLocation } from "wouter";
+import { R } from "@/lib/routes";
 import { useState, useEffect } from "react";
 import {
   Axe, Pickaxe, LayoutDashboard, Swords, Flame, Waves, PawPrint, Soup,
-  Hammer, Shield, Package, Skull, Gem, HandMetal, Home, Scissors,
+  Hammer, Shield, Box, Package, Skull, Gem, HandMetal, Home, Scissors,
   Footprints, CandlestickChart, Building2, Map, Zap, Radiation, Trophy,
 } from "lucide-react";
 import { RadiationIcon } from "@/components/sprites";
@@ -16,19 +17,19 @@ import {
 } from "@/components/ui/sidebar";
 
 function gatherSkills(t: ReturnType<typeof useUIText>) { return [
-  { title: t.sidebar.navWoodcutting, url: "/woodcutting", icon: Axe,      xpKey: "woodcuttingXp" as const, color: "text-green-400"  },
-  { title: t.sidebar.navMining,      url: "/mining",      icon: Pickaxe,  xpKey: "miningXp"      as const, color: "text-yellow-400" },
-  { title: t.sidebar.navSmelting,    url: "/smelting",    icon: Flame,    xpKey: "smeltingXp"    as const, color: "text-orange-400" },
-  { title: t.sidebar.navFishing,     url: "/fishing",     icon: Waves,    xpKey: "fishingXp"     as const, color: "text-blue-400"   },
-  { title: t.sidebar.navHunting,     url: "/hunting",     icon: PawPrint, xpKey: "huntingXp"     as const, color: "text-red-400"    },
-  { title: t.sidebar.navThieving,    url: "/thieving",    icon: HandMetal,xpKey: "thievingXp"    as const, color: "text-purple-400" },
+  { title: t.sidebar.navWoodcutting, url: R.woodcutting, icon: Axe,      xpKey: "woodcuttingXp" as const, color: "text-green-400"  },
+  { title: t.sidebar.navMining,      url: R.mining,      icon: Pickaxe,  xpKey: "miningXp"      as const, color: "text-yellow-400" },
+  { title: t.sidebar.navSmelting,    url: R.smelting,    icon: Flame,    xpKey: "smeltingXp"    as const, color: "text-orange-400" },
+  { title: t.sidebar.navFishing,     url: R.fishing,     icon: Waves,    xpKey: "fishingXp"     as const, color: "text-blue-400"   },
+  { title: t.sidebar.navHunting,     url: R.hunting,     icon: PawPrint, xpKey: "huntingXp"     as const, color: "text-red-400"    },
+  { title: t.sidebar.navThieving,    url: R.thieving,    icon: HandMetal,xpKey: "thievingXp"    as const, color: "text-purple-400" },
 ]}
 
 function prodSkills(t: ReturnType<typeof useUIText>) { return [
-  { title: t.sidebar.navSmithing,       url: "/smithing",       icon: Shield,   xpKey: "smithingXp"       as const, color: "text-slate-400"  },
-  { title: t.sidebar.navLeatherworking, url: "/leatherworking", icon: Scissors, xpKey: "leatherworkingXp"as const, color: "text-amber-400"  },
-  { title: t.sidebar.navJewelcrafting,  url: "/jewelcrafting",  icon: Gem,      xpKey: "jewelcraftingXp"  as const, color: "text-purple-400" },
-  { title: t.sidebar.navTools,          url: "/tools",          icon: Hammer,   xpKey: "smithingXp"       as const, color: "text-amber-400"  },
+  { title: t.sidebar.navSmithing,       url: R.smithing,       icon: Shield,   xpKey: "smithingXp"       as const, color: "text-slate-400"  },
+  { title: t.sidebar.navLeatherworking, url: R.leatherworking, icon: Scissors, xpKey: "leatherworkingXp"as const, color: "text-amber-400"  },
+  { title: t.sidebar.navJewelcrafting,  url: R.jewelcrafting,  icon: Gem,      xpKey: "jewelcraftingXp"  as const, color: "text-purple-400" },
+  { title: t.sidebar.navTools,          url: R.tools,          icon: Hammer,   xpKey: "smithingXp"       as const, color: "text-amber-400"  },
 ]}
 
 function NavItem({ title, url, icon: Icon, color, level, isActive }: {
@@ -70,22 +71,24 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>{t.sidebar.sectionGeneral}</SidebarGroupLabel>
           <SidebarMenu>
-            <NavItem title={t.sidebar.navDashboard} url="/" icon={LayoutDashboard} level={null} isActive={location === "/"} />
-            <NavItem title={t.sidebar.navInventory} url="/inventory" icon={Package} level={null} isActive={location === "/inventory"} color="text-yellow-400" />
-            <NavItem title={t.sidebar.navGems} url="/gems" icon={Gem} level={null} isActive={location === "/gems"} color="text-purple-400" />
-            <NavItem title={t.sidebar.navShelter} url="/homestead" icon={Home} level={null} isActive={location === "/homestead"} color="text-green-400" />
-            <NavItem title={t.sidebar.navTown} url="/town" icon={Building2} level={null} isActive={location === "/town"} color="text-amber-400" />
-            <NavItem title={t.sidebar.navTalents} url="/talents" icon={Gem} level={null} isActive={location === "/talents"} color="text-amber-400" />
-            <NavItem title={t.sidebar.navPets || "Pets"} url="/pets" icon={Trophy} level={null} isActive={location === "/pets"} color="text-yellow-400" />
+            <NavItem title={t.sidebar.navDashboard} url={R.dashboard} icon={LayoutDashboard} level={null} isActive={location === R.dashboard} />
+            <NavItem title={t.sidebar.navInventory} url={R.inventory} icon={Package} level={null} isActive={location === R.inventory} color="text-yellow-400" />
+            <NavItem title={t.sidebar.navGems} url={R.gems} icon={Gem} level={null} isActive={location === R.gems} color="text-purple-400" />
+            <NavItem title={t.sidebar.navMaterials} url={R.materials} icon={Box} level={null} isActive={location === R.materials} color="text-cyan-400" />
+            <NavItem title={t.sidebar.navShelter} url={R.shelter} icon={Home} level={null} isActive={location === R.shelter} color="text-green-400" />
+            <NavItem title={t.sidebar.navTown} url={R.town} icon={Building2} level={null} isActive={location === R.town} color="text-amber-400" />
+            <NavItem title={t.sidebar.navTalents} url={R.talents} icon={Gem} level={null} isActive={location === R.talents} color="text-amber-400" />
+            <NavItem title={t.sidebar.navPets || "Pets"} url={R.pets} icon={Trophy} level={null} isActive={location === R.pets} color="text-yellow-400" />
           </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup>
           <SidebarGroupLabel>{t.sidebar.sectionCombat}</SidebarGroupLabel>
           <SidebarMenu>
-            <NavItem title={t.sidebar.navCombat} url="/combat#enemies" icon={Skull} level={null} isActive={location === "/combat" && (hash === '' || hash === '#enemies')} color="text-red-400" />
-            <NavItem title={t.sidebar.navDungeons} url="/combat#dungeons" icon={Skull} level={null} isActive={location === "/combat" && hash === '#dungeons'} color="text-purple-400" />
-            <NavItem title={t.sidebar.navTower} url="/combat#tower" icon={Gem} level={null} isActive={location === "/combat" && hash === '#tower'} color="text-red-400" />
-            <NavItem title={t.sidebar.navTrial} url="/combat#trial" icon={Radiation} level={null} isActive={location === "/combat" && hash === '#trial'} color="text-amber-400" />
+            <NavItem title={t.sidebar.navCombat} url={`${R.combat}#enemies`} icon={Skull} level={null} isActive={location === R.combat && (hash === '' || hash === '#enemies')} color="text-red-400" />
+            <NavItem title={t.sidebar.navDungeons} url={`${R.combat}#dungeons`} icon={Skull} level={null} isActive={location === R.combat && hash === '#dungeons'} color="text-purple-400" />
+            <NavItem title={t.sidebar.navTower} url={`${R.combat}#tower`} icon={Gem} level={null} isActive={location === R.combat && hash === '#tower'} color="text-red-400" />
+            <NavItem title={t.sidebar.navTrial} url={`${R.combat}#trial`} icon={Radiation} level={null} isActive={location === R.combat && hash === '#trial'} color="text-amber-400" />
+            <NavItem title={t.sidebar.navBounties} url={R.bounties} icon={Swords} level={null} isActive={location === R.bounties} color="text-yellow-400" />
           </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup>
@@ -94,8 +97,8 @@ export function AppSidebar() {
             {gatherSkills(t).map(skill => (
               <NavItem key={skill.title} title={skill.title} url={skill.url} icon={skill.icon} color={skill.color} level={gs ? calculateLevel(gs[skill.xpKey]) : null} isActive={location === skill.url} />
             ))}
-            <NavItem title={t.sidebar.navAgility} url="/agility" icon={Footprints} level={gs ? calculateLevel((gs as any).agilityXp ?? 0) : null} isActive={location === "/agility"} color="text-cyan-400" />
-            <NavItem title={t.sidebar.navExploration} url="/exploration" icon={Map} level={gs ? calculateLevel((gs as any).explorationXp ?? 0) : null} isActive={location === "/exploration"} color="text-indigo-400" />
+            <NavItem title={t.sidebar.navAgility} url={R.agility} icon={Footprints} level={gs ? calculateLevel((gs as any).agilityXp ?? 0) : null} isActive={location === R.agility} color="text-cyan-400" />
+            <NavItem title={t.sidebar.navExploration} url={R.exploration} icon={Map} level={gs ? calculateLevel((gs as any).explorationXp ?? 0) : null} isActive={location === R.exploration} color="text-indigo-400" />
           </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup>
@@ -105,16 +108,17 @@ export function AppSidebar() {
               const xp = gs ? ((gs as Record<string, unknown>)[skill.xpKey] as number | undefined) ?? 0 : null;
               return <NavItem key={skill.title} title={skill.title} url={skill.url} icon={skill.icon} color={skill.color} level={xp !== null ? calculateLevel(xp) : null} isActive={location === skill.url} />;
             })}
-            <NavItem title={t.sidebar.navEquipmentSynth} url="/equipment-synth" icon={Hammer} level={gs ? calculateLevel((gs as any).synthesisXp ?? 0) : null} isActive={location === "/equipment-synth"} color="text-amber-400" />
-            <NavItem title={t.sidebar.navCooking} url="/cooking" icon={Soup} level={null} isActive={location === "/cooking"} color="text-orange-400" />
-            <NavItem title={t.sidebar.navAlchemy} url="/alchemy" icon={Flame} level={null} isActive={location === "/alchemy"} color="text-purple-400" />
-            <NavItem title={t.sidebar.navPrayer} url="/prayer" icon={CandlestickChart} level={null} isActive={location === "/prayer"} color="text-amber-400" />
+            <NavItem title={t.sidebar.navEquipmentSynth} url={R.equipmentSynth} icon={Hammer} level={gs ? calculateLevel((gs as any).synthesisXp ?? 0) : null} isActive={location === R.equipmentSynth} color="text-amber-400" />
+            <NavItem title={t.sidebar.navCooking} url={R.cooking} icon={Soup} level={null} isActive={location === R.cooking} color="text-orange-400" />
+            <NavItem title={t.sidebar.navAlchemy} url={R.alchemy} icon={Flame} level={null} isActive={location === R.alchemy} color="text-purple-400" />
+            <NavItem title={t.sidebar.navPrayer} url={R.prayer} icon={CandlestickChart} level={null} isActive={location === R.prayer} color="text-amber-400" />
+            <NavItem title={t.sidebar.navCrafting} url={R.crafting} icon={Hammer} level={null} isActive={location === R.crafting} color="text-purple-400" />
           </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup>
           <SidebarGroupLabel>{t.sidebar.sectionTech}</SidebarGroupLabel>
           <SidebarMenu>
-            <NavItem title={t.sidebar.navWastelandTech} url="/wasteland-tech" icon={Zap} level={null} isActive={location === "/wasteland-tech"} color="text-amber-400" />
+            <NavItem title={t.sidebar.navWastelandTech} url={R.wastelandTech} icon={Zap} level={null} isActive={location === R.wastelandTech} color="text-amber-400" />
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>

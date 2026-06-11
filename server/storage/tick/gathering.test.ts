@@ -30,8 +30,8 @@ describe("SKILLS_DATA", () => {
     assert.equal(SKILLS_DATA['agility']?.length, 10);
   });
 
-  it("exploration has 7 tiers", () => {
-    assert.equal(SKILLS_DATA['exploration']?.length, 7);
+  it("exploration has 30 tiers", () => {
+    assert.equal(SKILLS_DATA['exploration']?.length, 30);
   });
 
   it("each tier has name, time, xp, prefix", () => {

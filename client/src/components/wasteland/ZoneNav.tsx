@@ -1,4 +1,5 @@
 import { useLocation } from "wouter";
+import { R } from "@/lib/routes";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useUIText } from "@/lib/i18n";
@@ -50,14 +51,14 @@ export function ZoneNav({ className, expandedZone: controlledZone, onZoneChange,
         {/* Dashboard — same level as zones */}
         <button
           type="button"
-          onClick={() => go("/")}
+          onClick={() => go(R.dashboard)}
           className={cn(
             "flex items-center gap-3 px-3 py-2.5 text-left text-base transition-colors",
             "border border-transparent hover:border-[hsl(var(--border-rust))] hover:bg-[hsl(var(--accent))]",
-            location === "/" && "border-[hsl(var(--brass)/0.5)] bg-[hsl(var(--accent))] text-[hsl(var(--brass))]",
+            location === R.dashboard && "border-[hsl(var(--brass)/0.5)] bg-[hsl(var(--accent))] text-[hsl(var(--brass))]",
           )}
         >
-          <Radio className={cn("h-8 w-8 flex-shrink-0", location === "/" && "text-[hsl(var(--crt-green))]")} />
+          <Radio className={cn("h-8 w-8 flex-shrink-0", location === R.dashboard && "text-[hsl(var(--crt-green))]")} />
           <span className="truncate font-medium">{t.sidebar.navDashboard}</span>
         </button>
 
@@ -87,7 +88,7 @@ export function ZoneNav({ className, expandedZone: controlledZone, onZoneChange,
       </div>
 
       <div className="mt-auto flex-1 overflow-y-auto border-t border-[hsl(var(--border-rust))] p-2">
-        {location === "/" ? (
+        {location === R.dashboard ? (
           <p className="mb-1.5 px-1 text-base font-mono uppercase tracking-wider text-muted-foreground">
             {t.sidebar.navDashboard}
           </p>

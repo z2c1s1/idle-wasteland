@@ -1,5 +1,6 @@
 import { db } from "../db";
 import { gameStates, type GameState } from "@shared/schema";
+import { safeJsonRecord, safeJsonArray } from "@shared/safe-parse";
 import {
   TOWN_NPCS, GAMBLE_TIERS, ALL_SLOTS, generateDroppedItem,
   type Rarity,
@@ -16,7 +17,7 @@ const calcLevel = calculateLevel;
 // ─── Town level ──────────────────────────────────────────────────────────────
 
 export function getTownLevel(state: GameState): number {
-  const homestead: Record<string, number> = JSON.parse(state.homestead ?? '{}');
+  const homestead: Record<string, number> = safeJsonRecord(state.homestead);
   return Object.values(homestead).reduce((s, v) => s + (v ?? 0), 0);
 }
 
@@ -24,10 +25,10 @@ export function getTownLevel(state: GameState): number {
 
 export function trySpawnNpc(state: GameState): Partial<GameState> | null {
   if (state.npcEncounter) return null;
-  const homestead: Record<string, number> = (() => { try { return JSON.parse((state as any).homestead ?? '{}'); } catch { return {}; } })();
+  const homestead: Record<string, number> = (() => { try { return safeJsonRecord((state as any).homestead); } catch { return {}; } })();
   const townLevel = getTownLevel(state);
   if (townLevel < 3) return null;
-  const dungeonStats = (() => { try { return JSON.parse(state.dungeonStats ?? '{}'); } catch { return {}; } })();
+  const dungeonStats = (() => { try { return safeJsonRecord(state.dungeonStats); } catch { return {}; } })();
   const eligible = TOWN_NPCS.filter(n => {
     if ((n.reqTownLevel ?? 0) > townLevel) return false;
     if ((n.reqDungeon ?? 0) > 0) {
@@ -134,7 +135,7 @@ export async function dismissNpc(state: GameState): Promise<GameState> {
 // ─── Outposts ────────────────────────────────────────────────────────────────
 
 export async function establishOutpost(state: GameState, zoneIndex: number, resourceType: string = "wood"): Promise<GameState> {
-  const outposts: any[] = JSON.parse((state as any).outposts ?? '[]');
+  const outposts: any[] = safeJsonArray((state as any).outposts);
   const worldTier = (state as any).worldTier ?? 1;
   const maxSlots = Math.min(worldTier + 1, 4); // 2/3/4/4 slots per tier
   if (outposts.length >= maxSlots) throw new Error(`前哨站已满（${maxSlots}/${maxSlots}），提升世界层级解锁更多`);
@@ -164,7 +165,7 @@ export async function establishOutpost(state: GameState, zoneIndex: number, reso
 }
 
 export async function demolishOutpost(state: GameState, zoneIndex: number): Promise<GameState> {
-  const outposts: any[] = JSON.parse((state as any).outposts ?? '[]');
+  const outposts: any[] = safeJsonArray((state as any).outposts);
   const idx = outposts.findIndex((o:any) => o.zoneIndex === zoneIndex);
   if (idx < 0) throw new Error("该区域没有前哨站");
   outposts.splice(idx, 1);
@@ -173,7 +174,7 @@ export async function demolishOutpost(state: GameState, zoneIndex: number): Prom
 }
 
 export async function collectOutposts(state: GameState): Promise<GameState> {
-  const outposts: any[] = JSON.parse((state as any).outposts ?? '[]');
+  const outposts: any[] = safeJsonArray((state as any).outposts);
   if (outposts.length === 0) throw new Error(msg("noOutposts"));
   const now = Date.now();
   let totalGold = 0;
@@ -190,11 +191,13 @@ export async function collectOutposts(state: GameState): Promise<GameState> {
   const resourceCounts: Record<string, number> = {};
   if (resourceGains.wood) resourceCounts['wood_0'] = getResourceCount(state, 'wood_0') + resourceGains.wood;
   if (resourceGains.ore)  resourceCounts['ore_0']  = getResourceCount(state, 'ore_0')  + resourceGains.ore;
+  if (resourceGains.hide) resourceCounts['hide_0'] = getResourceCount(state, 'hide_0') + resourceGains.hide;
+  if (resourceGains.fish) resourceCounts['fish_0'] = getResourceCount(state, 'fish_0') + resourceGains.fish;
   if (Object.keys(resourceCounts).length > 0) {
     Object.assign(updates, buildResourceUpdates(state, resourceCounts));
   }
-  if (resourceGains.herb) { const h = JSON.parse(state.herbs??'{}'); h['dandelion']=(h['dandelion']??0)+(resourceGains.herb??0); updates.herbs = JSON.stringify(h); }
-  if (resourceGains.berry){ const b = JSON.parse(state.berries??'{}'); b['blueberry']=(b['blueberry']??0)+(resourceGains.berry??0); updates.berries = JSON.stringify(b); }
+  if (resourceGains.herb) { const h = safeJsonRecord(state.herbs); h['dandelion']=(h['dandelion']??0)+(resourceGains.herb??0); updates.herbs = JSON.stringify(h); }
+  if (resourceGains.berry){ const b = safeJsonRecord(state.berries); b['blueberry']=(b['blueberry']??0)+(resourceGains.berry??0); updates.berries = JSON.stringify(b); }
   if (resourceGains.bone) updates.bones = (state.bones??0) + resourceGains.bone;
   const [u] = await db.update(gameStates).set(updates as any).where(eq(gameStates.id, state.id)).returning();
   return u;

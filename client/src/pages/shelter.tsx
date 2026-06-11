@@ -1,5 +1,6 @@
 import { useGameState } from "@/hooks/use-game";
 import { SHELTER_BUILDINGS } from "@shared/game-data";
+import { safeJsonRecord, safeJsonArray } from "@shared/safe-parse";
 import { useToast } from "@/hooks/use-toast";
 import type { GameState } from "@shared/schema";
 import { getResourceCount, getTemperatureMultiplier } from "@/lib/game-utils";
@@ -19,9 +20,11 @@ export default function Shelter() {
   if (!state) return null;
   const gs = state as GameState;
   const t = useUIText();
-  const homestead: Record<string, number> = JSON.parse(gs.homestead ?? '{}');
+  const homestead: Record<string, number> = safeJsonRecord(gs.homestead);
   const furnaceLevel = homestead['furnace'] ?? 0;
-  const wood = Array.from({length:10}, (_,i)=>getResourceCount(gs,`wood_${i}`)).reduce((a,b)=>a+b,0);
+  // Sum tiered wood from resourceStore; fall back to legacy column for fresh accounts
+  const woodTiered = Array.from({length:10}, (_,i)=>getResourceCount(gs,`wood_${i}`)).reduce((a,b)=>a+b,0);
+  const wood = woodTiered > 0 ? woodTiered : (gs.wood ?? 0);
   const stone = gs.stone ?? 0;
   const temp = gs.temperature ?? 0;
   const p = t.pages.homestead;
@@ -177,8 +180,8 @@ export default function Shelter() {
         const farmLevel = homestead['farm'] ?? 0;
         if (farmLevel <= 0) return null;
         const slots = farmLevel * 2;
-        const farms: Record<string, any> = (() => { try { return JSON.parse((gs as any).farms ?? '{}'); } catch { return {}; } })();
-        const berries: Record<string, number> = (() => { try { return JSON.parse(gs.berries ?? '{}'); } catch { return {}; } })();
+        const farms: Record<string, any> = (() => { try { return safeJsonRecord((gs as any).farms); } catch { return {}; } })();
+        const berries: Record<string, number> = (() => { try { return safeJsonRecord(gs.berries); } catch { return {}; } })();
         const berryList = Object.entries(berries).filter(([,v]) => v > 0);
 
         const plant = async (slot: number) => {

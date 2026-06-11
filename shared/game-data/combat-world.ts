@@ -52,8 +52,8 @@ export const TIER_DROP_MUL: Record<WorldTier, number> = { 1: 1, 2: 1.3, 3: 1.6, 
 /** Unlock requirement: total skill levels needed */
 export const TIER_UNLOCK_LEVELS: Partial<Record<WorldTier, number>> = {
   2: 500,
-  3: 1500,
-  4: 3000,
+  3: 1200,
+  4: 1700,
 };
 
 // ─── Enemies ───────────────────────────────────────────────────────────────────

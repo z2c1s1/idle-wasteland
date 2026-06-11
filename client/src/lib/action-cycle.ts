@@ -1,11 +1,12 @@
 import type { GameState } from "@shared/schema";
 import { getToolBonus } from "@shared/game-data";
+import { safeJsonArray } from "@shared/safe-parse";
 import { getAgilityBonuses, getTemperatureMultiplier } from "@/lib/game-utils";
 
 /** Get pet speed multiplier for a skill (matches server/storage/tick/gathering.ts petSpeedMap) */
 export function getPetSpeedMultiplier(state: GameState, skill: string): number {
   try {
-    const pets: string[] = JSON.parse((state as any).pets ?? '[]');
+    const pets: string[] = safeJsonArray((state as any).pets);
     let bonus = 0;
     // Map pet IDs to their speed bonus (matching server/storage/skills.ts logic)
     const petSpeeds: Record<string, number> = {
@@ -44,6 +45,7 @@ const SKILL_TIMES: Record<string, number[]> = {
   fishing:     [3, 4, 5, 6, 7, 9, 11, 13, 15, 17],
   hunting:     [3, 4, 5, 6, 8, 10, 12, 14, 16, 18],
   agility:     [5, 6, 7, 8, 10, 12, 14, 16, 18, 20],
+  crafting:    [4, 5, 6, 7, 9, 11, 13, 15, 17, 19],
   exploration: Array.from({ length: 30 }, (_, i) => 30 + i * 15),
 };
 

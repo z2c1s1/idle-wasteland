@@ -103,3 +103,6 @@ export { getTalentBonuses } from "./talent-bonuses";
 export { computeSkillEffects, computeEffectiveCombatSpeed, applySkillProcDamage, type SkillProcContext } from "./_combat-shared";
 export { trackAchievement, getPetBuffs } from "../skills";
 export type { CombatStyle } from "../combat";
+
+// ─── Safe JSON parsing ──────────────────────────────────────────────────────
+export { safeJsonRecord, safeJsonArray } from "@shared/safe-parse";

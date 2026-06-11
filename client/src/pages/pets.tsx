@@ -1,5 +1,6 @@
 import { useGameState, useClaimPet } from "@/hooks/use-game";
 import { ACHIEVEMENTS, PETS, ENEMIES, MILESTONES, type Milestone } from "@shared/game-data";
+import { safeJsonRecord, safeJsonArray } from "@shared/safe-parse";
 import { calculateLevel } from "@/lib/game-utils";
 import { useUIText } from "@/lib/i18n";
 import type { GameState } from "@shared/schema";
@@ -25,8 +26,8 @@ export default function PetsPage() {
   if (!state) return null;
   const gs = state as GameState;
 
-  const progress: Record<string, number> = JSON.parse(gs.achievements ?? '{}');
-  const ownedPets: string[] = JSON.parse(gs.pets ?? '[]');
+  const progress: Record<string, number> = safeJsonRecord(gs.achievements);
+  const ownedPets: string[] = safeJsonArray(gs.pets);
 
   // Group achievements by type
   const skillAchs = ACHIEVEMENTS.filter(a => a.type === 'skill');

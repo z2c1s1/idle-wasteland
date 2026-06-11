@@ -1,6 +1,7 @@
 import { useGameState } from "@/hooks/use-game";
 import { postGame } from "@/lib/api";
 import { api } from "@shared/routes";
+import { safeJsonRecord, safeJsonArray } from "@shared/safe-parse";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { ItemSprite } from "@/components/sprites";
@@ -20,7 +21,7 @@ export default function WastelandTech() {
   const equipment = parseEquipment(gs.equipment);
   const allItems = [...lootBag, ...Object.values(equipment).filter(Boolean) as GameItem[]];
 
-  const extracted: string[] = JSON.parse(gs.extractedPowers ?? '[]');
+  const extracted: string[] = safeJsonArray(gs.extractedPowers);
   const active: string[] = JSON.parse(gs.activePowers ?? '["","",""]');
 
   const refresh = (data: any) => queryClient.setQueryData([api.game.getState.path], data);

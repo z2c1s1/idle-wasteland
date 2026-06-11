@@ -1,5 +1,6 @@
 import { db } from "../db";
 import { gameStates, type GameState } from "@shared/schema";
+import { safeJsonRecord, safeJsonArray } from "@shared/safe-parse";
 import {
   ENEMIES, DUNGEONS,
 } from "@shared/game-data";
@@ -61,8 +62,8 @@ export async function startTrial(state: GameState): Promise<GameState> {
 }
 
 export async function chooseTrialBuff(state: GameState, buffId: string): Promise<GameState> {
-  const buffs: string[] = JSON.parse(state.trialBuffs ?? '[]');
-  const curses: string[] = JSON.parse(state.trialCurses ?? '[]');
+  const buffs: string[] = safeJsonArray(state.trialBuffs);
+  const curses: string[] = safeJsonArray(state.trialCurses);
   buffs.push(buffId);
   const curse = TRIAL_CURSES[Math.floor(Math.random() * TRIAL_CURSES.length)];
   curses.push(curse.id);

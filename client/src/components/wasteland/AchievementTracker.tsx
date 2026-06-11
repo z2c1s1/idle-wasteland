@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useLocation } from "wouter";
+import { R } from "@/lib/routes";
 import { ACHIEVEMENTS, PETS } from "@shared/game-data";
 import type { GameState } from "@shared/schema";
 import { calculateLevel } from "@/lib/game-utils";
@@ -40,7 +41,7 @@ export function AchievementTracker({ state }: Props) {
     <RustFrame className="p-3">
       <div className="flex items-center justify-between mb-2">
         <h2 className="font-display text-sm font-semibold tracking-wide text-[hsl(var(--brass))]">🏆 成就</h2>
-        <button type="button" onClick={() => navigate("/pets")}
+        <button type="button" onClick={() => navigate(R.pets)}
           className="text-[10px] font-mono text-[hsl(var(--crt-green))] hover:underline">查看全部</button>
       </div>
       <ul className="space-y-1.5">

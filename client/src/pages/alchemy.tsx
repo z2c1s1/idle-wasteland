@@ -1,5 +1,6 @@
 import { useGameState, useBrewPotion } from "@/hooks/use-game";
 import { POTION_RECIPES } from "@shared/game-data";
+import { safeJsonRecord, safeJsonArray } from "@shared/safe-parse";
 import { useToast } from "@/hooks/use-toast";
 import type { GameState } from "@shared/schema";
 import { Button } from "@/components/ui/button";
@@ -25,9 +26,9 @@ export default function Alchemy() {
   const pc = t.pages.crafting;
   if (!state) return null;
   const gs = state as GameState;
-  const potions = JSON.parse((gs as any).potions ?? '{}');
-  const herbs = JSON.parse((gs as any).herbs ?? '{}');
-  const berries = JSON.parse((gs as any).berries ?? '{}');
+  const potions = safeJsonRecord((gs as any).potions);
+  const herbs = safeJsonRecord((gs as any).herbs);
+  const berries = safeJsonRecord((gs as any).berries);
 
   const brew = async (id: string) => {
     try {

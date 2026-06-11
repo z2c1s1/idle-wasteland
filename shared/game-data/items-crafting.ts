@@ -153,14 +153,40 @@ export const LEATHER_ITEMS: Record<string, SmithedItemDef> = {
   behemoth_pants:  { id:'behemoth_pants',  name:'巨兽硬皮护腿', emoji:'👖', slot:'legs',   attackBonus:8, defenceBonus:86, ilvl:80 },
   behemoth_gloves: { id:'behemoth_gloves', name:'巨兽硬皮护手', emoji:'🥊', slot:'gloves', attackBonus:48,defenceBonus:34, ilvl:80 },
   behemoth_boots:  { id:'behemoth_boots',  name:'巨兽硬皮战靴', emoji:'👢', slot:'boots',  attackBonus:12,defenceBonus:62, ilvl:80 },
+  // ── 通用皮革 (hide_0) — 对应配方 leather_cap/vest/pants/gloves/boots ──
+  leather_cap:    { id:'leather_cap',    name:'简易皮帽', emoji:'🎩', slot:'helmet', attackBonus:0, defenceBonus:4,  ilvl:3  },
+  leather_vest:   { id:'leather_vest',   name:'简易皮衣', emoji:'🧥', slot:'chest',  attackBonus:0, defenceBonus:7,  ilvl:3  },
+  leather_pants:  { id:'leather_pants',  name:'简易皮裤', emoji:'👖', slot:'legs',   attackBonus:0, defenceBonus:5,  ilvl:3  },
+  leather_gloves: { id:'leather_gloves', name:'简易皮手套',emoji:'🥊',slot:'gloves', attackBonus:3, defenceBonus:2,  ilvl:3  },
+  leather_boots:  { id:'leather_boots',  name:'简易皮靴', emoji:'👢', slot:'boots',  attackBonus:0, defenceBonus:3,  ilvl:3  },
+  // ── 铆钉皮革 (hide_2) ──
+  studded_cap:    { id:'studded_cap',    name:'铆钉皮帽', emoji:'⛑️', slot:'helmet', attackBonus:0, defenceBonus:15, ilvl:14 },
+  studded_vest:   { id:'studded_vest',   name:'铆钉皮甲', emoji:'🧥', slot:'chest',  attackBonus:0, defenceBonus:25, ilvl:14 },
+  studded_pants:  { id:'studded_pants',  name:'铆钉皮裤', emoji:'👖', slot:'legs',   attackBonus:0, defenceBonus:19, ilvl:14 },
+  studded_gloves: { id:'studded_gloves', name:'铆钉皮手套',emoji:'🥊',slot:'gloves', attackBonus:10,defenceBonus:7,  ilvl:14 },
+  // ── 狼皮 (hide_3) ──
+  wolf_cap:       { id:'wolf_cap',       name:'狼皮帽',   emoji:'🐺', slot:'helmet', attackBonus:2, defenceBonus:21, ilvl:20 },
+  wolf_vest:      { id:'wolf_vest',      name:'狼皮甲',   emoji:'🧥', slot:'chest',  attackBonus:4, defenceBonus:35, ilvl:20 },
+  wolf_pants:     { id:'wolf_pants',     name:'狼皮裤',   emoji:'👖', slot:'legs',   attackBonus:2, defenceBonus:27, ilvl:20 },
+  wolf_gloves:    { id:'wolf_gloves',    name:'狼皮手套', emoji:'🥊', slot:'gloves', attackBonus:14,defenceBonus:10, ilvl:20 },
+  // ── 龙皮 (hide_8) ──
+  dragonhide_vest:  { id:'dragonhide_vest',  name:'龙皮战甲', emoji:'🐉', slot:'chest',  attackBonus:14,defenceBonus:100,ilvl:66 },
+  dragonhide_boots: { id:'dragonhide_boots', name:'龙皮战靴', emoji:'👢', slot:'boots',  attackBonus:10,defenceBonus:52, ilvl:66 },
+  // ── 凤凰皮 (hide_9) ──
+  phoenix_vest:   { id:'phoenix_vest',   name:'凤凰羽衣', emoji:'🔥', slot:'chest',  attackBonus:20,defenceBonus:115,ilvl:80 },
   // ── 法杖 ──
   scrap_staff:    { id:'scrap_staff',    name:'废料法杖', emoji:'🪄', slot:'weapon', attackBonus:4, defenceBonus:0, ilvl:3,  combatStyle:'magic' },
+  wooden_staff:      { id:'wooden_staff',      name:'木制法杖', emoji:'🪄', slot:'weapon', attackBonus:6, defenceBonus:0, ilvl:5,  combatStyle:'magic' },
   bone_staff:     { id:'bone_staff',     name:'骨制法杖', emoji:'🪄', slot:'weapon', attackBonus:12,defenceBonus:0, ilvl:12, combatStyle:'magic' },
   ironbark_staff: { id:'ironbark_staff', name:'铁线木杖', emoji:'🪄', slot:'weapon', attackBonus:24,defenceBonus:0, ilvl:22, combatStyle:'magic' },
   crystal_staff:  { id:'crystal_staff',  name:'水晶法杖', emoji:'🪄', slot:'weapon', attackBonus:38,defenceBonus:0, ilvl:34, combatStyle:'magic' },
   uranium_staff:  { id:'uranium_staff',  name:'辐射法杖', emoji:'🪄', slot:'weapon', attackBonus:54,defenceBonus:0, ilvl:46, combatStyle:'magic' },
   plasma_staff:   { id:'plasma_staff',   name:'等离子杖', emoji:'🪄', slot:'weapon', attackBonus:72,defenceBonus:0, ilvl:58, combatStyle:'magic' },
   gauss_staff:    { id:'gauss_staff',    name:'高斯法杖', emoji:'🪄', slot:'weapon', attackBonus:88,defenceBonus:0, ilvl:72, combatStyle:'magic' },
+  // ── 额外法杖（皮革配方）──
+  enchanted_staff:   { id:'enchanted_staff',   name:'附魔法杖', emoji:'🪄', slot:'weapon', attackBonus:30,defenceBonus:0, ilvl:25, combatStyle:'magic' },
+  dragonbone_staff:  { id:'dragonbone_staff',  name:'龙骨法杖', emoji:'🪄', slot:'weapon', attackBonus:56,defenceBonus:0, ilvl:50, combatStyle:'magic' },
+  etherial_staff:    { id:'etherial_staff',    name:'虚空法杖', emoji:'🪄', slot:'weapon', attackBonus:76,defenceBonus:0, ilvl:65, combatStyle:'magic' },
 };
 
 // ─── Jewelry items ─────────────────────────────────────────────────────────────
