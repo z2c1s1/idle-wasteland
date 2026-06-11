@@ -64,7 +64,24 @@ export function SkillPage({ skillKey, skillName, skillXp, icon: Icon, iconColor,
     const skill = activeResource?.actionKey?.split('_')[0] ?? '';
     const agilityMul = skill === 'fishing' ? agility.fishingMul : 1;
     const petSpeedMul = getPetSpeedMultiplier(state, skill);
-    return baseTime * toolBonus.timeMult / agilityMul / Math.max(0.1, tempMul) / petSpeedMul;
+    // Prayer speed (matches server getPrayerBuff("swiftness"))
+    let prayerSpeed = 1;
+    const activePrayer = (state as any).activePrayer as string | undefined;
+    if (activePrayer === 'swiftness') {
+      const pXp = (state as any).prayerXp ?? 0;
+      const pLv = Math.floor(Math.sqrt(Math.max(0, pXp)) / 3) + 1;
+      prayerSpeed = 1 + (3 + (pLv - 1) * 1) / 100;
+    }
+    // Building speed multiplier (matches server buildingMul)
+    let buildingMul = 1;
+    try {
+      const h: Record<string,number> = JSON.parse((state as any).homestead ?? '{}');
+      if (skill === 'woodcutting' && h.lumbermill) buildingMul = 1 / (1 + h.lumbermill * 0.03);
+      if (skill === 'mining' && h.mine) buildingMul = 1 / (1 + h.mine * 0.03);
+      if (h.workshop && (skill==='smithing'||skill==='leatherworking'||skill==='jewelcrafting'||skill==='tools'))
+        buildingMul = 1 / (1 + h.workshop * 0.03);
+    } catch {}
+    return baseTime * toolBonus.timeMult / agilityMul / Math.max(0.1, tempMul) / petSpeedMul / prayerSpeed * buildingMul;
   };
 
   const isScavenge = skillKey != null && SCAVENGE_SKILLS.some(s => s.id === skillKey);

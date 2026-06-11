@@ -68,25 +68,26 @@ export function getEffectiveCycleTime(action: string, state: GameState): number 
   const agilityMul = skill === "fishing" ? agility.fishingMul : 1;
   const petSpeedMul = getPetSpeedMultiplier(state, skill);
 
-  // Prayer speed buff (matches server getPrayerBuff("swiftness"))
+  // Prayer speed buff (matches server getPrayerLevel + getPrayerBuff("swiftness"))
   let prayerSpeed = 1;
   const activePrayer = (state as any).activePrayer as string | undefined;
   if (activePrayer === 'swiftness') {
-    const prayerLevel = Math.max(1, Math.floor(((state as any).prayerXp ?? 0) / 100) + 1);
-    prayerSpeed = 1 + (5 + (prayerLevel - 1) * 2) / 100;
+    const prayerXp = (state as any).prayerXp ?? 0;
+    const prayerLevel = Math.floor(Math.sqrt(Math.max(0, prayerXp)) / 3) + 1;
+    // swiftness: baseBuff=3, buffPerLevel=1
+    prayerSpeed = 1 + (3 + (prayerLevel - 1) * 1) / 100;
   }
 
   // Building speed multiplier (matches server buildingMul)
   let buildingMul = 1;
   try {
     const homestead: Record<string, number> = JSON.parse((state as any).homestead ?? '{}');
-    if (skill === 'woodcutting' && homestead.lumbermill) buildingMul = 1 - homestead.lumbermill * 0.03;
-    if (skill === 'mining' && homestead.mine) buildingMul = 1 - homestead.mine * 0.03;
+    // Server uses buildingMul = 1/(1+level*0.03); client multiplies by buildingMul
+    if (skill === 'woodcutting' && homestead.lumbermill) buildingMul = 1 / (1 + homestead.lumbermill * 0.03);
+    if (skill === 'mining' && homestead.mine) buildingMul = 1 / (1 + homestead.mine * 0.03);
     if (skill === 'smithing' || skill === 'leatherworking' || skill === 'jewelcrafting' || skill === 'tools') {
-      if (homestead.workshop) buildingMul = 1 - homestead.workshop * 0.03;
+      if (homestead.workshop) buildingMul = 1 / (1 + homestead.workshop * 0.03);
     }
-    if (skill === 'fishing' && homestead.dock) buildingMul = 1 - (homestead.dock ?? 0) * 0.03;
-    if (skill === 'hunting' && homestead.trap) buildingMul = 1 - (homestead.trap ?? 0) * 0.03;
   } catch { /* ignore */ }
 
   return base * toolBonus.timeMult / agilityMul / Math.max(0.1, tempMul) / petSpeedMul / prayerSpeed * buildingMul;
