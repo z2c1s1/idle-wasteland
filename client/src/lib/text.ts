@@ -74,7 +74,7 @@ export const uiText = {
     navShelter: "避难所",
     navTown: "幸存者营地",
     navTalents: "天赋",
-    navPets: "成就",
+    navPets: "宠物",
     navCombat: "废土战斗",
     navDungeons: "废墟探索",
     navTower: "高塔攀登",

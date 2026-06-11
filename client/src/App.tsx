@@ -76,13 +76,26 @@ function Router() {
 }
 
 function GameWrapper({ children }: { children: React.ReactNode }) {
-  const { isLoading } = useGameState();
+  const { isLoading, isError, refetch } = useGameState();
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
         <div className="text-center">
           <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
           <p className="font-mono text-sm text-[hsl(var(--crt-green))] crt-glow">BOOTING TERMINAL...</p>
+        </div>
+      </div>
+    );
+  }
+  if (isError) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <div className="text-center max-w-md">
+          <p className="font-mono text-lg text-red-400 mb-3">⚠️ 终端连接失败</p>
+          <p className="text-sm text-muted-foreground mb-4">无法连接到废土服务器，请检查网络后重试。</p>
+          <button onClick={() => refetch()} className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded text-sm font-mono">
+            重新连接
+          </button>
         </div>
       </div>
     );
