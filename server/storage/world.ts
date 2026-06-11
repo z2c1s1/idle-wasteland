@@ -146,7 +146,7 @@ export async function establishOutpost(state: GameState, zoneIndex: number, reso
   // Cost: scales with zone index
   const costWood = Math.floor(50 + zoneIndex * 30);
   const costStone = Math.floor(30 + zoneIndex * 20);
-  const currentWood = getResourceCount(state, "wood_0");
+  const currentWood = state.wood ?? 0;
   if (currentWood < costWood) throw new Error(`木材不足（需${costWood}）`);
   const currentStone = state.stone ?? 0;
   if (currentStone < costStone) throw new Error(`石料不足（需${costStone}）`);
@@ -155,10 +155,9 @@ export async function establishOutpost(state: GameState, zoneIndex: number, reso
   const resourceTypes = ['wood','ore','herb','berry','fish','hide','gold','bone'];
   const resource = resourceTypes[zoneIndex % resourceTypes.length];
   outposts.push({ zoneIndex, zoneName: zoneNames[zoneIndex]??`区域${zoneIndex+1}`, resource, establishedAt: Date.now(), resourceType, level:1 });
-  const resourcePatch = buildResourceUpdates(state, { wood_0: currentWood - costWood });
   const [u] = await db.update(gameStates).set({
     outposts: JSON.stringify(outposts),
-    ...resourcePatch,
+    wood: currentWood - costWood,
     stone: currentStone - costStone,
   } as any).where(eq(gameStates.id, state.id)).returning();
   return u;
