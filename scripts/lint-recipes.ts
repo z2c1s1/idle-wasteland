@@ -8,7 +8,6 @@ import * as fs from "fs";
 import * as path from "path";
 
 const GAME_DATA = path.resolve("shared/game-data.ts");
-const ITEMS_CRAFTING = path.resolve("shared/game-data/items-crafting.ts");
 
 let errors = 0;
 function err(msg: string) { console.error("❌ " + msg); errors++; }
@@ -58,8 +57,8 @@ console.log("📋 Checking recipe outputs...");
 
 // Parse ITEMS
 const equipmentItems = extractRecordKeys(GAME_DATA, "EQUIPMENT_ITEMS");
-const leatherItems = extractRecordKeys(ITEMS_CRAFTING, "LEATHER_ITEMS");
-const jewelryItems = extractRecordKeys(ITEMS_CRAFTING, "JEWELRY_ITEMS");
+const leatherItems = extractRecordKeys(GAME_DATA, "LEATHER_ITEMS");
+const jewelryItems = extractRecordKeys(GAME_DATA, "JEWELRY_ITEMS");
 const toolItems = extractArrayIds(GAME_DATA, "ALL_TOOLS");
 
 console.log(`  EQUIPMENT_ITEMS: ${equipmentItems.size} entries`);
@@ -93,9 +92,9 @@ function checkRecipes(filePath: string, recordName: string, validOutputs: Set<st
 }
 
 checkRecipes(GAME_DATA, "SMITHING_RECIPES", equipmentItems, "SMITHING_RECIPES");
-checkRecipes(ITEMS_CRAFTING, "LEATHERWORKING_RECIPES", leatherItems, "LEATHERWORKING_RECIPES");
-checkRecipes(ITEMS_CRAFTING, "JEWELCRAFTING_RECIPES", jewelryItems, "JEWELCRAFTING_RECIPES");
-checkRecipes(ITEMS_CRAFTING, "TOOL_RECIPES", toolItems, "TOOL_RECIPES");
+checkRecipes(GAME_DATA, "LEATHERWORKING_RECIPES", leatherItems, "LEATHERWORKING_RECIPES");
+checkRecipes(GAME_DATA, "JEWELCRAFTING_RECIPES", jewelryItems, "JEWELCRAFTING_RECIPES");
+checkRecipes(GAME_DATA, "TOOL_RECIPES", toolItems, "TOOL_RECIPES");
 
 // ── 2. Achievement → Pet links ──────────────────────────────────────────────
 console.log("\n📋 Checking achievement→pet links...");
