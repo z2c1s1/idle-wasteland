@@ -102,7 +102,7 @@ export function applyTemperatureDecay(state: GameState, now: Date): Partial<Game
     decayRate = 2;
   }
 
-  const newTemp = Math.max(0, temp - decayRate);
+  const newTemp = Math.max(0, Math.floor(temp - decayRate));
   if (newTemp === temp) return {};
   return { temperature: newTemp } as Partial<GameState>;
 }
