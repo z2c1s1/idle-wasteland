@@ -22,9 +22,8 @@ export default function Shelter() {
   const t = useUIText();
   const homestead: Record<string, number> = safeJsonRecord(gs.homestead);
   const furnaceLevel = homestead['furnace'] ?? 0;
-  // Sum tiered wood from resourceStore; fall back to legacy column for fresh accounts
-  const woodTiered = Array.from({length:10}, (_,i)=>getResourceCount(gs,`wood_${i}`)).reduce((a,b)=>a+b,0);
-  const wood = woodTiered > 0 ? woodTiered : (gs.wood ?? 0);
+  // 木材 is a separate byproduct from woodcutting, NOT the sum of tiered woods
+  const wood = gs.wood ?? 0;
   const stone = gs.stone ?? 0;
   const temp = gs.temperature ?? 0;
   const p = t.pages.homestead;
