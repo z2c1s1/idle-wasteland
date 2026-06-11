@@ -248,9 +248,19 @@ export function ResourceIcon({ type, size = 20, className = "", tier = 0, resour
   
   if (tileIdx !== null && tileIdx >= 0 && tileIdx < TILE_FILES.length && typeof window !== 'undefined') {
     const filename = TILE_FILES[tileIdx] + '.png';
+    const cellFallback = `${String(tileIdx + 1).padStart(3, '0')}_cell.png`;
     return (
       <img src={`/tiles/${filename}`} alt="" className={className}
-        style={{ width: size, height: size, imageRendering: 'pixelated', flexShrink: 0 }} />
+        style={{ width: size, height: size, imageRendering: 'pixelated', flexShrink: 0 }}
+        onError={(e) => {
+          // Fallback to ASCII-safe _cell.png if Chinese filename fails (e.g. on Railway Linux)
+          const img = e.currentTarget;
+          if (!img.dataset.fallbackTried) {
+            img.dataset.fallbackTried = '1';
+            img.src = `/tiles/${cellFallback}`;
+          }
+        }}
+      />
     );
   }
 

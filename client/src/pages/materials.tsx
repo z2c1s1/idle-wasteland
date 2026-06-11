@@ -25,7 +25,16 @@ function ResourceCard({ entry }: { entry: ResourceEntry }) {
   return (
     <div className="flex items-center gap-2 bg-muted/10 rounded-lg p-2 border border-border/50">
       {entry.tileFile ? (
-        <img src={`/tiles/${entry.tileFile}.png`} alt="" className="w-8 h-8 flex-shrink-0" style={{ imageRendering: 'pixelated' }} />
+        <img src={`/tiles/${entry.tileFile}.png`} alt="" className="w-8 h-8 flex-shrink-0" style={{ imageRendering: 'pixelated' }}
+          onError={(e) => {
+            const img = e.currentTarget;
+            if (!img.dataset.fallbackTried) {
+              img.dataset.fallbackTried = '1';
+              const cellFallback = entry.tileFile!.replace(/_\w+$/, '_cell');
+              img.src = `/tiles/${cellFallback}.png`;
+            }
+          }}
+        />
       ) : (
         <span className="text-lg flex-shrink-0 w-8 h-8 flex items-center justify-center">{entry.name === '骨头' ? '🦴' : entry.name === '龙骨' ? '🐉' : entry.name === '瓶盖' ? '💰' : '📦'}</span>
       )}
