@@ -1,5 +1,5 @@
 import { useGameState } from "@/hooks/use-game";
-import { SHELTER_BUILDINGS } from "@shared/game-data";
+import { SHELTER_BUILDINGS } from "@shared/game-data"
 import { safeJsonRecord, safeJsonArray } from "@shared/safe-parse";
 import { useToast } from "@/hooks/use-toast";
 import type { GameState } from "@shared/schema";
@@ -23,8 +23,8 @@ export default function Shelter() {
   const homestead: Record<string, number> = safeJsonRecord(gs.homestead);
   const furnaceLevel = homestead['furnace'] ?? 0;
   // 木材 is a separate byproduct from woodcutting, NOT the sum of tiered woods
-  const wood = gs.wood ?? 0;
-  const stone = gs.stone ?? 0;
+  const wood = getResourceCount(gs, "wood");
+  const stone = getResourceCount(gs, "stone");
   const temp = gs.temperature ?? 0;
   const p = t.pages.homestead;
   const tempLabel = temp >= 50 ? p.warmth.warm : temp >= 30 ? p.warmth.cool : temp >= 10 ? p.warmth.cold : temp > 0 ? p.warmth.freezing : p.warmth.frozen;

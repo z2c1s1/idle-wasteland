@@ -1,6 +1,7 @@
 import { useGameState, useStartAction, useEnterDungeon, useStartTower, useStartTrial } from "@/hooks/use-game";
 import { parseDungeonStats } from "@/lib/game-utils";
-import { ENEMIES, DUNGEONS, COMBAT_TRIANGLE, getCombatStyle, COMBAT_GEM_POOLS, getDropChance } from "@shared/game-data";
+import { ENEMIES, DUNGEONS, COMBAT_TRIANGLE, getCombatStyle, COMBAT_GEM_POOLS, getDropChance } from "@shared/game-data"
+import { getResourceCount } from "@shared/resources";
 import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import type { GameState } from "@shared/schema";
@@ -311,7 +312,7 @@ export default function Combat() {
           {DUNGEONS.map((d, i) => {
             const isActive = gs.activeAction.startsWith(`dungeon_${i}_`);
             const stats = parseDungeonStats(gs.dungeonStats)[String(i)];
-            const can = hasWeapon && combatLevel >= d.reqCombatLevel && gs.gold >= d.cost.gold && (!d.cost.bones || gs.bones >= d.cost.bones) && (!d.cost.dragonBones || gs.dragonBones >= d.cost.dragonBones);
+            const can = hasWeapon && combatLevel >= d.reqCombatLevel && gs.gold >= d.cost.gold && (!d.cost.bones || getResourceCount(gs, "bones") >= d.cost.bones) && (!d.cost.dragonBones || getResourceCount(gs, "dragonBones") >= d.cost.dragonBones);
             return (
               <div key={i} className={`rounded-lg border p-3 ${isActive ? 'border-purple-400 bg-purple-500/5' : can ? 'border-border' : 'border-border bg-muted/10'}`}>
                 <div className="flex items-center justify-between">

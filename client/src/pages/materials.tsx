@@ -69,8 +69,8 @@ export default function Materials() {
 
   // 战斗材料
   const combat: ResourceEntry[] = [
-    { name: '骨头', key: 'bones', count: gs.bones ?? 0, tier: 0 },
-    { name: '龙骨', key: 'dragonBones', count: gs.dragonBones ?? 0, tier: 0 },
+    { name: '骨头', key: 'bones', count: getResourceCount(gs, "bones"), tier: 0 },
+    { name: '龙骨', key: 'dragonBones', count: getResourceCount(gs, "dragonBones"), tier: 0 },
     { name: '瓶盖', key: 'gold', count: gs.gold, tier: 0 },
   ];
 

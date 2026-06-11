@@ -1,6 +1,7 @@
 import { db } from "../db";
 import { gameStates, type GameState } from "@shared/schema";
 import { safeJsonRecord, safeJsonArray } from "@shared/safe-parse";
+import { getResourceCount } from "@shared/resources";
 import {
   ENEMIES, DUNGEONS,
 } from "@shared/game-data";
@@ -22,10 +23,10 @@ export async function enterDungeon(state: GameState, dungeonIndex: number): Prom
   if (state.gold < dungeon.cost.gold) {
     throw new Error(`金币不足（需要 ${dungeon.cost.gold}，当前 ${state.gold}）`);
   }
-  if (dungeon.cost.bones && state.bones < dungeon.cost.bones) {
+  if (dungeon.cost.bones && getResourceCount(state, "bones") < dungeon.cost.bones) {
     throw new Error(`骨头不足（需要 ${dungeon.cost.bones}，当前 ${state.bones}）`);
   }
-  if (dungeon.cost.dragonBones && state.dragonBones < dungeon.cost.dragonBones) {
+  if (dungeon.cost.dragonBones && getResourceCount(state, "dragonBones") < dungeon.cost.dragonBones) {
     throw new Error(`龙骨不足（需要 ${dungeon.cost.dragonBones}，当前 ${state.dragonBones}）`);
   }
 

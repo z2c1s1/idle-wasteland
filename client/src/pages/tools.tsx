@@ -1,6 +1,6 @@
 import { useGameState } from "@/hooks/use-game";
 import { useStartAction } from "@/hooks/use-game";
-import { ALL_TOOLS, TOOL_RECIPES, type GameTool } from "@shared/game-data";
+import { ALL_TOOLS, TOOL_RECIPES, type GameTool } from "@shared/game-data"
 import { formatNumber, getResourceCount } from "@/lib/game-utils";
 import { useToast } from "@/hooks/use-toast";
 import { Wrench } from "lucide-react";
@@ -99,7 +99,7 @@ export default function Tools() {
                 </div>
                 <div className="flex flex-wrap gap-1.5 mt-1">
                   {recipe.inputs.map((inp, i) => {
-                    const have = inp.resource === 'bones' ? (gs.bones ?? 0) : inp.resource === 'dragonBones' ? (gs.dragonBones ?? 0) : (getResourceCount(gs, inp.resource));
+                    const have = inp.resource === 'bones' ? getResourceCount(gs, "bones") : inp.resource === 'dragonBones' ? getResourceCount(gs, "dragonBones") : (getResourceCount(gs, inp.resource));
                     const enough = have >= inp.qty;
                     return (
                       <span key={i} className={`text-[10px] px-1.5 py-0.5 rounded border ${enough ? 'border-border text-muted-foreground' : 'border-red-400/40 text-red-400'}`}>

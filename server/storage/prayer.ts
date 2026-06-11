@@ -1,6 +1,7 @@
 import { db } from "../db";
 import { gameStates, type GameState } from "@shared/schema";
-import { PRAYERS, getPrayerLevel } from "@shared/game-data";
+import { PRAYERS, getPrayerLevel } from "@shared/game-data"
+import { getResourceCount } from "@shared/resources";
 import { eq } from "drizzle-orm";
 import { msg } from "@shared/messages";
 

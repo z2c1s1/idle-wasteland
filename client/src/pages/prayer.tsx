@@ -1,5 +1,6 @@
 import { useGameState } from "@/hooks/use-game";
-import { PRAYERS, getPrayerLevel } from "@shared/game-data";
+import { PRAYERS, getPrayerLevel } from "@shared/game-data"
+import { getResourceCount } from "@shared/resources";
 import { postGame } from "@/lib/api";
 import { api } from "@shared/routes";
 import { useQueryClient } from "@tanstack/react-query";
@@ -20,8 +21,8 @@ export default function Prayer() {
   const activePrayer = gs.activePrayer ?? '';
   const prayerXp = gs.prayerXp ?? 0;
   const pLevel = getPrayerLevel(prayerXp);
-  const bones = gs.bones ?? 0;
-  const dragonBones = gs.dragonBones ?? 0;
+  const bones = getResourceCount(gs, "bones");
+  const dragonBones = getResourceCount(gs, "dragonBones");
 
   const activate = async (prayerId: string) => {
     try {

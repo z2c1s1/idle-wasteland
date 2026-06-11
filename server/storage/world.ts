@@ -80,7 +80,7 @@ export async function npcAction(state: GameState, npcId: string, actionIndex: nu
     case 'traveler':
       if (actionIndex === 0) {
         rewards.gold = state.gold + 200;
-        rewards.bones = state.bones + 10;
+        rewards.bones = getResourceCount(state, "bones") + 10;
       } else {
         rewards.woodcuttingXp = state.woodcuttingXp + 200;
         rewards.miningXp = state.miningXp + 200;

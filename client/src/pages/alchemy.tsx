@@ -1,6 +1,7 @@
 import { useGameState, useBrewPotion } from "@/hooks/use-game";
 import { POTION_RECIPES } from "@shared/game-data";
 import { safeJsonRecord, safeJsonArray } from "@shared/safe-parse";
+import { getResourceCount } from "@shared/resources";
 import { useToast } from "@/hooks/use-toast";
 import type { GameState } from "@shared/schema";
 import { Button } from "@/components/ui/button";
@@ -50,7 +51,7 @@ export default function Alchemy() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {POTION_RECIPES.map(r => {
           const have = r.inputs.every(inp => {
-            const total = (herbs[inp.resource] ?? 0) + (berries[inp.resource] ?? 0) + ((gs as any)[inp.resource] ?? 0);
+            const total = (herbs[inp.resource] ?? 0) + (berries[inp.resource] ?? 0) + getResourceCount(gs, inp.resource);
             return total >= inp.qty;
           });
           return (

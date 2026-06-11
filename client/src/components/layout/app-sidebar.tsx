@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { RadiationIcon } from "@/components/sprites";
 import { useGameState } from "@/hooks/use-game";
-import { calculateLevel, getCombatLevel, formatNumber } from "@/lib/game-utils";
+import { calculateLevel, getCombatLevel, formatNumber, getResourceCount } from "@/lib/game-utils";
 import { useUIText, type Language } from "@/lib/i18n";
 import type { GameState } from "@shared/schema";
 import {
@@ -65,7 +65,7 @@ export function AppSidebar() {
           <RadiationIcon size={20} className="text-yellow-400" />
           <span className="font-display font-bold text-base text-foreground">{t.sidebar.title}</span>
         </div>
-        {gs && <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground"><span>💰 {formatNumber(gs.gold)}</span>{gs.bones > 0 && <span>🦴 {formatNumber(gs.bones)}</span>}</div>}
+        {gs && <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground"><span>💰 {formatNumber(gs.gold)}</span>{getResourceCount(gs, "bones") > 0 && <span>🦴 {formatNumber(getResourceCount(gs, "bones"))}</span>}</div>}
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
