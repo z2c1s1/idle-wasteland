@@ -14,6 +14,7 @@ export const gameStates = pgTable("game_states", {
   huntingXp: integer("hunting_xp").notNull().default(0),
   craftingXp: integer("crafting_xp").notNull().default(0),
   cookingXp: integer("cooking_xp").notNull().default(0),
+  alchemyXp: integer("alchemy_xp").notNull().default(0),
 
   attackXp: integer("attack_xp").notNull().default(0),
   strengthXp: integer("strength_xp").notNull().default(0),

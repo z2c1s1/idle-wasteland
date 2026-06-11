@@ -40,7 +40,18 @@ export async function tickActiveAction(
   }
   // Check milestones after every action completion
   checkMilestones(result as any);
-  // Clamp gold to safe 32-bit integer range
-  if (result.gold > 2_000_000_000) result.gold = 2_000_000_000;
+  // Clamp all accumulating fields to safe 32-bit integer range (prevents PG overflow)
+  const MAX_INT = 2_000_000_000;
+  if (result.gold > MAX_INT) result.gold = MAX_INT;
+  const xpFields = ['woodcuttingXp','miningXp','smeltingXp','fishingXp','huntingXp','craftingXp',
+    'attackXp','strengthXp','defenceXp','hitpointsXp','smithingXp','leatherworkingXp',
+    'jewelcraftingXp','thievingXp','agilityXp','rangedXp','magicXp','synthesisXp',
+    'explorationXp','prayerXp','cookingXp'] as const;
+  for (const f of xpFields) {
+    if ((result as any)[f] > MAX_INT) (result as any)[f] = MAX_INT;
+  }
+  if ((result as any).bones > MAX_INT) (result as any).bones = MAX_INT;
+  if ((result as any).dragonBones > MAX_INT) (result as any).dragonBones = MAX_INT;
+  if ((result as any).bloodShards > MAX_INT) (result as any).bloodShards = MAX_INT;
   return result;
 }
