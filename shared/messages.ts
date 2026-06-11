@@ -22,13 +22,9 @@ const messages = {
   need3to5Gems:             "需要3-5粒",
   lootBagMax:               "已达上限200格",
   socketMax:                "已达最大孔数",
-  noEmptySocket:            "No empty sockets",
-  itemNotInLootBag:         "Item not found in loot bag",
-  itemNotInInventory:       "Item not in inventory",
-  nothingEquipped:          "Nothing equipped in that slot",
-  mustProvideId:            "Must provide instanceId or itemId",
-  gemNotOwned:              "You don't have that gem",
-  toolNotFound:             "Tool not found",
+  itemNotInLootBag:         "战利品袋中未找到物品",
+  itemNotInInventory:       "背包中未找到物品",
+  mustProvideId:            "必须提供物品ID",
 
   // ── 战斗 ─────────────────────────────────────────────────────────────────
   dungeonNotFound:          "副本不存在",
@@ -69,9 +65,7 @@ const messages = {
   prayerNotFound:           "祷言不存在",
 
   // ── 前哨站 ──────────────────────────────────────────────────────────────
-  maxOutposts:              "最多5个前哨站",
   outpostExists:            "该区域已有前哨站",
-  explorationLevelLow:      "探索等级不足",
   noOutposts:               "没有前哨站",
 
   // ── 赌博 ─────────────────────────────────────────────────────────────────

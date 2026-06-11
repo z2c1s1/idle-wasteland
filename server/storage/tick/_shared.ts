@@ -73,7 +73,6 @@ export {
   getPlayerDefence,
   getAgilityBonuses,
   getTemperatureMultiplier,
-  getTemperatureHpLoss,
 } from "@shared/game-math";
 
 // ─── State parsing ───────────────────────────────────────────────────────────

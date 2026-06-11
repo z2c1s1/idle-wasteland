@@ -22,16 +22,10 @@ export async function tickActiveAction(
   else if (action.startsWith("dungeon_")) result = await tickDungeon(state, elapsedSeconds);
   else if (action.startsWith("trial_")) result = await tickTrial(state, elapsedSeconds);
   else if (action.startsWith("tower")) result = await tickTower(state, elapsedSeconds);
-  else if (action.startsWith("ranged_")) {
-    const enemyIndex = parseInt(action.split("_")[1]);
-    const enemy = ENEMIES[enemyIndex];
-    if (enemy) result = (await handleTriangleCombat(state, enemy, enemyIndex, "ranged", elapsedSeconds)) ?? state;
-  }
-  else if (action.startsWith("magic_")) {
-    const enemyIndex = parseInt(action.split("_")[1]);
-    const enemy = ENEMIES[enemyIndex];
-    if (enemy) result = (await handleTriangleCombat(state, enemy, enemyIndex, "magic", elapsedSeconds)) ?? state;
-  }
+  // ranged_/magic_ actions are not sent by client (combat uses combat_N_Q for all styles)
+  // Keeping dead code commented for potential future ranged/magic combat UI
+  // else if (action.startsWith("ranged_")) { ... }
+  // else if (action.startsWith("magic_")) { ... }
   else if (action.startsWith("thieve_")) result = await tickThieving(state, elapsedSeconds);
   else if (action.startsWith("smith_") || action.startsWith("leather_") || action.startsWith("jewel_") || action.startsWith("tool_")) {
     result = await tickCrafting(state, elapsedSeconds, now);
