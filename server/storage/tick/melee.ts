@@ -9,7 +9,7 @@ import {
   getAgilityBonuses, getTemperatureMultiplier,
   RARITY_ORDER, DISENCHANT_GOLD, mergeGems,
   COMPANION_NPCS,
-  trackAchievement, getPetBuffs, getTalentBonuses,
+  trackAchievement, getPetBuffs, getTalentBonuses, getActiveBuffs,
   safeJsonRecord, safeJsonArray,
 } from "./_shared";
 import {
@@ -42,6 +42,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
 
   const talentBonuses = getTalentBonuses(state);
   const petBuffs = getPetBuffs(state);
+  const potionBuffs = getActiveBuffs(state);
 
   const eff = computeSkillEffects(equipment);
 
@@ -52,7 +53,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
   const ticks = Math.floor(elapsedSeconds / effectiveCombatSpeed);
   if (ticks <= 0) return state;
 
-  const playerMaxHp = getPlayerMaxHp(state) + talentBonuses.maxHp + petBuffs.maxHp;
+  const playerMaxHp = Math.floor((getPlayerMaxHp(state) + talentBonuses.maxHp + petBuffs.maxHp) * potionBuffs.hpMul);
   let playerHp = state.playerHp < 0 ? playerMaxHp : state.playerHp;
   // World tier scaling
   const tier = (state as any).worldTier ?? 1;
@@ -65,8 +66,8 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
   const aoeList = ['whirlwind','arrow_rain','blizzard','earthquake','wave_slash','blade_storm','hail_arrow','barrage','corpse_boom','poison_cloud','blizzard_m','consecration'];
   const isAoESkill = aoeList.includes(eqSkill);
 
-  const playerAtk = getPlayerAttack(state) + Math.floor(getPlayerAttack(state) * getPrayerBuff(state, 'attack'));
-  const playerDef = getPlayerDefence(state) + Math.floor(getPlayerDefence(state) * getPrayerBuff(state, 'defence'));
+  const playerAtk = Math.floor((getPlayerAttack(state) + Math.floor(getPlayerAttack(state) * getPrayerBuff(state, 'attack'))) * potionBuffs.atkMul);
+  const playerDef = Math.floor((getPlayerDefence(state) + Math.floor(getPlayerDefence(state) * getPrayerBuff(state, 'defence'))) * potionBuffs.defMul);
 
   const weaponItem = equipment.weapon ?? null;
   const hasWeaponRange = weaponItem && (weaponItem.maxDamage ?? 0) > 0;
@@ -137,7 +138,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
 
     enemyHp -= totalDmgToEnemy;
     const towerXpMul = 1 + (homeLv.tower ?? 0) * 0.04;
-    attackXpGained += Math.floor(4 * strikes * (1 + getPrayerBuff(state, 'experience')) * towerXpMul);
+    attackXpGained += Math.floor(4 * strikes * (1 + getPrayerBuff(state, 'experience')) * towerXpMul * potionBuffs.xpMul * potionBuffs.combatXpMul);
 
     // ── Life recovery (shared) ─────────────────────────────────────────────
     playerHp = applyLifeRecovery(playerHp, playerMaxHp, totalDmgToEnemy,

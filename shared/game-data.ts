@@ -2263,6 +2263,7 @@ export const COOKING_RECIPES: { id:string;name:string;emoji:string;inputs:{resou
   { id:'grilled_tadpole', name:'烤蝌蚪', emoji:'🐟', inputs:[{resource:'fish_0',qty:1}], effect:'回复75HP', hpRestore:75 },
   { id:'smoked_eel', name:'熏鳗鱼', emoji:'🐟', inputs:[{resource:'fish_1',qty:1}], effect:'回复125HP', hpRestore:125 },
   { id:'fried_fin', name:'炸鱼鳍', emoji:'🐟', inputs:[{resource:'fish_2',qty:1}], effect:'回复175HP', hpRestore:175 },
+  { id:'spine_soup', name:'刺鳍汤', emoji:'🍲', inputs:[{resource:'fish_3',qty:1}], effect:'回复200HP', hpRestore:200 },
   { id:'catfish_grill', name:'烤鲶鱼', emoji:'🐟', inputs:[{resource:'fish_4',qty:1}], effect:'回复225HP', hpRestore:225 },
   { id:'eel_kabob', name:'鳗鱼串', emoji:'🐟', inputs:[{resource:'fish_5',qty:1}], effect:'回复275HP', hpRestore:275 },
   { id:'armorfish_soup', name:'铁甲鱼汤', emoji:'🍲', inputs:[{resource:'fish_6',qty:1}], effect:'回复325HP', hpRestore:325 },

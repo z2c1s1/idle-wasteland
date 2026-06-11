@@ -228,7 +228,7 @@ export async function synthEquip(state: GameState, instanceIds: string[]): Promi
     return u;
   }
 
-  const rOrder = ['normal','fine','rare','epic','legendary','mythic'];
+  const rOrder = ['common','uncommon','rare','epic','legendary','mythic'];
   const maxRI = Math.max(...items.map(i => rOrder.indexOf(i.rarity)));
   const newRarity = rOrder[Math.min(maxRI + 1, rOrder.length - 1)] as Rarity;
   const sameSlot = items.every(i => i.slot === items[0].slot);

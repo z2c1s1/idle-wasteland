@@ -76,6 +76,7 @@ export const RARITY_ORDER: Record<string, number> = {
   rare: 2,
   epic: 3,
   legendary: 4,
+  mythic: 5,
 };
 
 export const DISENCHANT_GOLD: Record<string, number> = {
@@ -84,4 +85,5 @@ export const DISENCHANT_GOLD: Record<string, number> = {
   rare: 40,
   epic: 100,
   legendary: 0,
+  mythic: 400,
 };

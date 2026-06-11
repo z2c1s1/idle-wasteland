@@ -192,22 +192,31 @@ export function checkMilestones(state: any): number {
 
 // ─── Active buffs ─────────────────────────────────────────────────────────────
 
-export function getActiveBuffs(state: any): { hpMul: number; atkMul: number; defMul: number; xpMul: number; speedMul: number; dropMul: number; critMul: number; leechMul: number } {
+export function getActiveBuffs(state: any) {
   const buffs: any[] = safeJsonArray(state.activeBuffs);
   const now = Date.now();
   const active = buffs.filter((b: any) => b.expiresAt > now);
   let hpMul = 1, atkMul = 1, defMul = 1, xpMul = 1, speedMul = 1, dropMul = 1, critMul = 1, leechMul = 1;
+  let combatXpMul = 1, woodSpeedMul = 1, mineSpeedMul = 1, huntSpeedMul = 1, fishSpeedMul = 1, allMul = 1, magicDmgMul = 1;
   for (const b of active) {
-    if (b.effect === 'hp') hpMul += b.value;
-    if (b.effect === 'atk') atkMul += b.value;
-    if (b.effect === 'def') defMul += b.value;
-    if (b.effect === 'xp') xpMul += b.value;
-    if (b.effect === 'speed') speedMul += b.value;
-    if (b.effect === 'drop') dropMul += b.value;
-    if (b.effect === 'crit') critMul += b.value;
-    if (b.effect === 'leech') leechMul += b.value;
+    const v = b.value ?? 0;
+    if (b.effect === 'hp') hpMul += v;
+    if (b.effect === 'atk') atkMul += v;
+    if (b.effect === 'def') defMul += v;
+    if (b.effect === 'xp') xpMul += v;
+    if (b.effect === 'speed') speedMul += v;
+    if (b.effect === 'drop') dropMul += v;
+    if (b.effect === 'crit') critMul += v;
+    if (b.effect === 'leech') leechMul += v;
+    if (b.effect === 'combatXp') combatXpMul += v;
+    if (b.effect === 'woodSpeed') woodSpeedMul += v;
+    if (b.effect === 'mineSpeed') mineSpeedMul += v;
+    if (b.effect === 'huntSpeed') huntSpeedMul += v;
+    if (b.effect === 'fishSpeed') fishSpeedMul += v;
+    if (b.effect === 'all') { allMul += v; hpMul += v; atkMul += v; defMul += v; xpMul += v; }
+    if (b.effect === 'magicDmg') magicDmgMul += v;
   }
-  return { hpMul: Math.min(hpMul, 2), atkMul: Math.min(atkMul, 2), defMul: Math.min(defMul, 2), xpMul: Math.min(xpMul, 2), speedMul: Math.min(speedMul, 1.5), dropMul: Math.min(dropMul, 1.5), critMul: Math.min(critMul, 1.5), leechMul: Math.min(leechMul, 1.3) };
+  return { hpMul: Math.min(hpMul, 2), atkMul: Math.min(atkMul, 2), defMul: Math.min(defMul, 2), xpMul: Math.min(xpMul, 2), speedMul: Math.min(speedMul, 1.5), dropMul: Math.min(dropMul, 1.5), critMul: Math.min(critMul, 1.5), leechMul: Math.min(leechMul, 1.3), combatXpMul, woodSpeedMul, mineSpeedMul, huntSpeedMul, fishSpeedMul, allMul, magicDmgMul };
 }
 
 // ─── Pet buffs ────────────────────────────────────────────────────────────────
