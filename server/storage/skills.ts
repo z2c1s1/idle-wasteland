@@ -232,10 +232,12 @@ export interface PetBuffs {
   smithSpeed: number; leatherSpeed: number; jewelSpeed: number;
   cookSpeed: number; alchSpeed: number; prayerXp: number;
   meleeDmg: number; rangedDmg: number; magicDmg: number; fireDmg: number;
-  poisonDmg: number; chaosDmg: number;
+  poisonDmg: number; chaosDmg: number; shadowDmg: number; voidDmg: number;
+  dragonDmg: number; bleedDmg: number; frostDmg: number;
   defence: number; maxHp: number; combatXp: number;
   critChance: number; goldDrop: number; dropRate: number;
   lifeLeech: number; thorns: number; dodge: number; crushRate: number;
+  dungeonSpeed: number;
 }
 
 export function getPetBuffs(state: any): PetBuffs {
@@ -245,8 +247,9 @@ export function getPetBuffs(state: any): PetBuffs {
     thiefRate:0,agileSpeed:0,exploreSpeed:0,smithSpeed:0,leatherSpeed:0,
     jewelSpeed:0,cookSpeed:0,alchSpeed:0,prayerXp:0,
     meleeDmg:0,rangedDmg:0,magicDmg:0,fireDmg:0,poisonDmg:0,chaosDmg:0,
+    shadowDmg:0,voidDmg:0,dragonDmg:0,bleedDmg:0,frostDmg:0,
     defence:0,maxHp:0,combatXp:0,critChance:0,goldDrop:0,dropRate:0,
-    lifeLeech:0,thorns:0,dodge:0,crushRate:0,
+    lifeLeech:0,thorns:0,dodge:0,crushRate:0,dungeonSpeed:0,
   };
   const map: Record<string, keyof PetBuffs> = {
     woodSpeed:'woodSpeed',mineSpeed:'mineSpeed',smeltSpeed:'smeltSpeed',
@@ -255,27 +258,41 @@ export function getPetBuffs(state: any): PetBuffs {
     leatherSpeed:'leatherSpeed',jewelSpeed:'jewelSpeed',cookSpeed:'cookSpeed',
     alchSpeed:'alchSpeed',prayerXp:'prayerXp',meleeDmg:'meleeDmg',
     rangedDmg:'rangedDmg',magicDmg:'magicDmg',fireDmg:'fireDmg',
-    poisonDmg:'poisonDmg',chaosDmg:'chaosDmg',defence:'defence',
-    maxHp:'maxHp',combatXp:'combatXp',critChance:'critChance',
-    goldDrop:'goldDrop',dropRate:'dropRate',lifeLeech:'lifeLeech',
-    thorns:'thorns',dodge:'dodge',crushRate:'crushRate',
+    poisonDmg:'poisonDmg',chaosDmg:'chaosDmg',shadowDmg:'shadowDmg',
+    voidDmg:'voidDmg',dragonDmg:'dragonDmg',bleedDmg:'bleedDmg',
+    frostDmg:'frostDmg',defence:'defence',maxHp:'maxHp',
+    combatXp:'combatXp',critChance:'critChance',goldDrop:'goldDrop',
+    dropRate:'dropRate',lifeLeech:'lifeLeech',thorns:'thorns',
+    dodge:'dodge',crushRate:'crushRate',dungeonSpeed:'dungeonSpeed',
   };
+
+  /** Extract numeric value from buffDesc like "+8%火焰伤害" or "+20生命" */
+  function parseBuffValue(desc: string): number {
+    const m = desc.match(/\+(\d+)/);
+    return m ? parseInt(m[1]) : 5;
+  }
+
   for (const petId of pets) {
     const pet = PETS.find(p => p.id === petId);
-    if (pet && map[pet.buff]) {
-      const key = map[pet.buff]!;
-      // Buff amounts: +5/10 for speeds, +5/10% for dmg, +5/10 for defence, +20/50 HP, +5/10/12/25% combatXP
-      if (pet.buff === 'maxHp') buffs[key] += (pet.buffDesc.includes('50') ? 50 : 20);
-      else if (pet.buff === 'defence') buffs[key] += (pet.buffDesc.includes('10') ? 10 : 5);
-      else if (pet.buff === 'combatXp') {
-        if (pet.buffDesc.includes('25')) buffs[key] += 0.25;
-        else if (pet.buffDesc.includes('12')) buffs[key] += 0.12;
-        else if (pet.buffDesc.includes('8')) buffs[key] += 0.08;
-        else buffs[key] += 0.05;
-      } else {
-        // Speed buffs: 5% or 10%
-        buffs[key] += (pet.buffDesc.includes('10') || pet.buffDesc.includes('15') || pet.buffDesc.includes('12') || pet.buffDesc.includes('25') ? 0.10 : 0.05);
-      }
+    if (!pet || !map[pet.buff]) continue;
+    const key = map[pet.buff]!;
+    const val = parseBuffValue(pet.buffDesc);
+
+    if (pet.buff === 'maxHp') {
+      buffs[key] += val; // flat HP
+    } else if (pet.buff === 'defence') {
+      buffs[key] += val; // flat defence
+    } else if (pet.buff === 'combatXp') {
+      buffs[key] += val / 100; // percentage to decimal
+    } else if (pet.buff === 'goldDrop' || pet.buff === 'dropRate' || pet.buff === 'critChance' ||
+               pet.buff === 'lifeLeech' || pet.buff === 'thorns' || pet.buff === 'dodge' ||
+               pet.buff === 'crushRate') {
+      buffs[key] += val / 100; // percentage to decimal
+    } else if (pet.buff === 'prayerXp') {
+      buffs[key] += val / 100;
+    } else {
+      // Speed and damage buffs: percentage to decimal
+      buffs[key] += val / 100;
     }
   }
   return buffs;

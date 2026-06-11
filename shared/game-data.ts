@@ -2296,7 +2296,7 @@ export const POTION_RECIPES: { id:string;name:string;emoji:string;inputs:{resour
   { id:'miner_brew', name:'矿工酿', emoji:'⛏️', inputs:[{resource:'elderberry',qty:3},{resource:'marigold',qty:2}], effect:'-15%采矿时间', durationMin:45 },
   { id:'hunter_brew', name:'猎手酿', emoji:'🏹', inputs:[{resource:'blackberry',qty:3},{resource:'lingzhi',qty:2}], effect:'-15%狩猎时间', durationMin:45 },
   { id:'dragon_elixir', name:'龙息灵药', emoji:'🐲', inputs:[{resource:'dragonblood',qty:2},{resource:'spiritberry',qty:2}], effect:'+10%全属性', durationMin:120 },
-  { id:'feast_of_the_deep', name:'深渊盛宴', emoji:'🦑', inputs:[{resource:'fish_8',qty:3},{resource:'dragonblood',qty:1},{resource:'nightberry',qty:2}], effect:'+20%全属性 +10%掉率', durationMin:120 },
+  { id:'feast_of_the_deep', name:'深渊盛宴', emoji:'🦑', inputs:[{resource:'fish_8',qty:3},{resource:'dragonblood',qty:1},{resource:'nightberry',qty:2}], effect:'+20%全属性', durationMin:120 },
   { id:'magic_brew', name:'魔莓酿', emoji:'🍷', inputs:[{resource:'nightberry',qty:3},{resource:'magicberry',qty:2}], effect:'+25%元素伤害', durationMin:45 },
   { id:'ancient_elixir', name:'远古灵药', emoji:'🧪', inputs:[{resource:'ancientberry',qty:2},{resource:'cranberry',qty:2},{resource:'dragonblood',qty:1}], effect:'+30%全经验获取', durationMin:60 },
 ];

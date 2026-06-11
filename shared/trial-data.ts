@@ -16,7 +16,7 @@ export const TRIAL_BUFFS: TrialBuff[] = [
   { id:'b_regen',name:'快速愈合',emoji:'🩹',effect:'+8回复/回合',attackMul:1,hpMul:1,defMul:1,regenBonus:8 },
   { id:'b_crit',name:'弱点感知',emoji:'🎯',effect:'暴击+20%',attackMul:1.1,hpMul:1,defMul:1,regenBonus:0 },
   { id:'b_gold',name:'物资嗅觉',emoji:'📦',effect:'金币+100%',attackMul:1,hpMul:1,defMul:1,regenBonus:0 },
-  { id:'b_speed',name:'兴奋剂',emoji:'💊',effect:'攻速+30%',attackMul:1.15,hpMul:1,defMul:1,regenBonus:0 },
+  { id:'b_speed',name:'兴奋剂',emoji:'💊',effect:'攻击+15%',attackMul:1.15,hpMul:1,defMul:1,regenBonus:0 },
 ];
 export const TRIAL_CURSES: TrialCurse[] = [
   { id:'c_frail',name:'辐射病',emoji:'☢️',effect:'HP-15%',hpMul:0.85,dmgTakenMul:1 },
