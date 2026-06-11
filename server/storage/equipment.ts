@@ -100,13 +100,21 @@ export async function destroyLoot(state: GameState, instanceId: string): Promise
   return updated;
 }
 
+/** Get effective loot bag size including warehouse building bonus */
+export function getEffectiveLootBagSize(state: GameState): number {
+  const base = state.lootBagSize ?? 50;
+  const homestead: Record<string, number> = (() => { try { return JSON.parse((state as any).homestead ?? '{}'); } catch { return {}; } })();
+  const warehouse = homestead.warehouse ?? 0;
+  return base + warehouse * 2;
+}
+
 export async function expandLootBag(state: GameState): Promise<GameState> {
-  const current = state.lootBagSize ?? 50;
+  const current = getEffectiveLootBagSize(state);
   if (current >= 200) throw new Error(msg("lootBagMax"));
-  const slot = current - 49;
-  const cost = Math.floor(Math.pow(slot, 2) * 100);
+  const slot = (state.lootBagSize ?? 50) - 49; // cost based on raw expansions, not warehouse bonus
+  const cost = Math.floor(Math.pow(Math.max(1, slot), 2) * 100);
   if (state.gold < cost) throw new Error(msg("notEnoughGold", cost));
-  const [u] = await db.update(gameStates).set({ lootBagSize: current + 1, gold: state.gold - cost } as any).where(eq(gameStates.id, state.id)).returning();
+  const [u] = await db.update(gameStates).set({ lootBagSize: (state.lootBagSize ?? 50) + 1, gold: state.gold - cost } as any).where(eq(gameStates.id, state.id)).returning();
   return u;
 }
 
@@ -494,11 +502,18 @@ export async function corruptItem(state: GameState, instanceId: string): Promise
   if (!item) throw new Error("物品不存在");
   if ((item as any).corrupted) throw new Error("该装备已被辐射污染");
 
-  // Roll effect
-  const totalWeight = CORRUPT_EFFECTS.reduce((s, e) => s + e.weight, 0);
+  // Roll effect — radlab building increases positive outcome weights
+  const homestead: Record<string, number> = (() => { try { return JSON.parse((state as any).homestead ?? '{}'); } catch { return {}; } })();
+  const radlabLevel = homestead.radlab ?? 0;
+  const radlabBonus = radlabLevel * 5; // +5% per level
+  const adjustedEffects = CORRUPT_EFFECTS.map(e => ({
+    ...e,
+    weight: e.type === 'buff' || e.type === 'double_buff' ? e.weight + radlabBonus : e.weight
+  }));
+  const totalWeight = adjustedEffects.reduce((s, e) => s + e.weight, 0);
   let roll = Math.random() * totalWeight;
-  let chosen = CORRUPT_EFFECTS[0];
-  for (const e of CORRUPT_EFFECTS) { roll -= e.weight; if (roll <= 0) { chosen = e; break; } }
+  let chosen = adjustedEffects[0];
+  for (const e of adjustedEffects) { roll -= e.weight; if (roll <= 0) { chosen = e; break; } }
 
   if (chosen.type === 'destroy') {
     if (inLoot) lootBag.splice(idx, 1);

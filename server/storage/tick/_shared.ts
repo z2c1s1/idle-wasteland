@@ -99,6 +99,7 @@ export { SKILLS_DATA, RARITY_ORDER, DISENCHANT_GOLD } from "../constants";
 export { handleProductionRecipe, rollGemDropsFromPool, mergeGems } from "../helpers";
 export { handleTriangleCombat } from "../combat";
 export { getPrayerBuff } from "../prayer";
+export { getEffectiveLootBagSize } from "../equipment";
 export { getTalentBonuses } from "./talent-bonuses";
 export { computeSkillEffects, computeEffectiveCombatSpeed, applySkillProcDamage, type SkillProcContext } from "./_combat-shared";
 export { trackAchievement, getPetBuffs, getActiveBuffs } from "../skills";

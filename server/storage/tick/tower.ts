@@ -9,6 +9,7 @@ import {
   type GameItem, ALL_SLOTS, SLOT_BASES, type AffixType, type Rarity,
   getPrayerBuff,
 } from "./_shared";
+import { getEffectiveLootBagSize } from "../equipment";
 
 const calcLevel = calculateLevel;
 
@@ -73,7 +74,7 @@ export async function tickTower(state: GameState, elapsedSeconds: number): Promi
 
   const usedTime = (playerDied || killed) ? elapsedSeconds : ticks * effectiveCombatSpeed;
   const existingLoot = parseLootBag(state.lootBag);
-  const combinedLoot = [...existingLoot, ...newDrops].slice(-(state.lootBagSize ?? 50));
+  const combinedLoot = [...existingLoot, ...newDrops].slice(-getEffectiveLootBagSize(state));
 
   const updates: Partial<GameState> = {
     playerHp: playerDied ? Math.floor(playerMaxHp * 0.5) : playerHp,

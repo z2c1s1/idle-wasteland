@@ -1677,7 +1677,7 @@ export interface Enemy {
 // ═══ Melvor-style: 19 regular + 3 hidden — balanced 1-99 ════════════════════
 export const ENEMIES: Enemy[] = [
   // ── LV 1-15 ──────────────────────────────────────────────────────────────
-  { id:'rad_roach',     name:'变异蟑螂',   nameEn:'Mutant Roach',    emoji:'🪳',  maxHp:12,  attack:1,  defence:0,  xp:8,   drops:{gold:[1,3]},                     reqCombatLevel:1,  combatStyle:'melee',  uniqueDropIds:['storm_bow'] },
+  { id:'rad_roach',     name:'变异蟑螂',   nameEn:'Mutant Roach',    emoji:'🪳',  maxHp:10,  attack:1,  defence:0,  xp:8,   drops:{gold:[1,3]},                     reqCombatLevel:1,  combatStyle:'melee',  uniqueDropIds:['storm_bow'] },
   { id:'rad_rat',       name:'辐射鼠',     nameEn:'Rad Rat',         emoji:'🐀',  maxHp:22,  attack:2,  defence:0,  xp:16,  drops:{gold:[2,4]},                     reqCombatLevel:5,  combatStyle:'melee',  uniqueDropIds:['eagle_eye_crossbow'] },
   { id:'stray_dog',     name:'流浪犬',     nameEn:'Stray Dog',       emoji:'🐕',  maxHp:45,  attack:4,  defence:1,  xp:30,  drops:{gold:[3,6],bones:1},            reqCombatLevel:10, combatStyle:'melee',  uniqueDropIds:['shadow_hunter_bow'] },
   { id:'mutant_spider', name:'变异蜘蛛',   nameEn:'Mutant Spider',   emoji:'🕷️',  maxHp:80,  attack:7,  defence:2,  xp:50,  drops:{gold:[5,10]},                   reqCombatLevel:15, combatStyle:'magic',  uniqueDropIds:['dragon_horn_bow'] },
@@ -2217,7 +2217,7 @@ export const SHELTER_BUILDINGS: HomesteadBuilding[] = [
   { id:'wall', name:'围墙', emoji:'🛡️', maxLevel:10, costWood:150, costStone:50, costGold:0, effect:'防御', effectPerLevel:'+3' },
   { id:'warehouse', name:'仓库', emoji:'📦', maxLevel:5, costWood:200, costStone:100, costGold:0, effect:'背包容量', effectPerLevel:'+2格' },
   { id:'clinic', name:'医疗站', emoji:'🏥', maxLevel:5, costWood:300, costStone:100, costGold:0, effect:'生命回复', effectPerLevel:'+1/回合' },
-  { id:'altar', name:'神秘祭坛', emoji:'🔮', maxLevel:3, costWood:0, costStone:100, costGold:500, effect:'神话掉率', effectPerLevel:'+3%' },
+  { id:'altar', name:'神秘祭坛', emoji:'🔮', maxLevel:3, costWood:0, costStone:100, costGold:500, effect:'独特掉率', effectPerLevel:'+3%' },
   { id:'tower', name:'瞭望塔', emoji:'🗼', maxLevel:5, costWood:0, costStone:400, costGold:0, effect:'战斗经验', effectPerLevel:'+4%' },
   { id:'furnace', name:'火炉', emoji:'🔥', maxLevel:5, costWood:20, costStone:20, costGold:0, effect:'温度衰减', effectPerLevel:'-15% 衰减速度' },
   { id:'recycling', name:'废品回收站', emoji:'♻️', maxLevel:3, costWood:0, costStone:200, costGold:2000, effect:'传奇萃取槽', effectPerLevel:'+1 槽位', reqTier:2 },

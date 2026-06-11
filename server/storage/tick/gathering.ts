@@ -11,6 +11,7 @@ import {
   generateDroppedItem,
   safeJsonRecord, safeJsonArray,
 } from "./_shared";
+import { getEffectiveLootBagSize } from "../equipment";
 
 const calcLevel = calculateLevel;
 
@@ -137,7 +138,7 @@ if (skill === 'hunting') {
 // Fishing: treasure chest (3-8% based on tier, random equipment) + rare ring (0.5% tier 5+)
 if (skill === 'fishing') {
   const fishLevel = calculateLevel(state.fishingXp);
-  const lootBagSize = state.lootBagSize ?? 50;
+  const lootBagSize = getEffectiveLootBagSize(state);
   const treasureChance = index >= 6 ? 0.08 : index >= 4 ? 0.05 : index >= 3 ? 0.03 : 0;
   let lootBag = parseLootBag(state.lootBag);
   let wrote = false;

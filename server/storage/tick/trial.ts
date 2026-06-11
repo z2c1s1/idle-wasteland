@@ -12,6 +12,7 @@ import {
   safeJsonArray,
   getPrayerBuff,
 } from "./_shared";
+import { getEffectiveLootBagSize } from "../equipment";
 
 const calcLevel = calculateLevel;
 
@@ -75,7 +76,7 @@ export async function tickTrial(state: GameState, elapsedSeconds: number): Promi
   }
 
   const usedTime = (died || killed) ? elapsedSeconds : ticks * effSpeed;
-  const combined = [...parseLootBag(state.lootBag), ...drops].slice(-(state.lootBagSize ?? 50));
+  const combined = [...parseLootBag(state.lootBag), ...drops].slice(-getEffectiveLootBagSize(state));
   const updates: any = {
     playerHp: died ? 0 : playerHp, enemyHp: (died || killed) ? -1 : enemyHp,
     gold: state.gold + goldGained,

@@ -12,6 +12,7 @@ import {
   trackAchievement, getPetBuffs, getTalentBonuses, getActiveBuffs,
   safeJsonRecord, safeJsonArray,
 } from "./_shared";
+import { getEffectiveLootBagSize } from "../equipment";
 import {
   computeSkillEffects, computeEffectiveCombatSpeed,
   applySkillProcDamage, applyMortalStrike,
@@ -210,7 +211,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
 
   const usedTime = playerDied ? elapsedSeconds : ticks * effectiveCombatSpeed;
   const existingLoot = parseLootBag(state.lootBag);
-  const combinedLoot = [...existingLoot, ...newDrops].slice(-(state.lootBagSize ?? 50));
+  const combinedLoot = [...existingLoot, ...newDrops].slice(-getEffectiveLootBagSize(state));
   const existingGems = parseGems(state.gems);
 
   Object.assign(updates, {

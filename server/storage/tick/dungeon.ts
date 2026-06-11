@@ -13,6 +13,7 @@ import {
   safeJsonRecord, safeJsonArray,
   getPrayerBuff,
 } from "./_shared";
+import { getEffectiveLootBagSize } from "../equipment";
 
 const calcLevel = calculateLevel;
 
@@ -186,7 +187,7 @@ export async function tickDungeon(state: GameState, elapsedSeconds: number): Pro
 
   const usedTime = (playerDied || bossKilled) ? elapsedSeconds : ticks * effectiveCombatSpeed;
   const existingLoot = parseLootBag(state.lootBag);
-  const combinedLoot = [...existingLoot, ...newDrops].slice(-(state.lootBagSize ?? 50));
+  const combinedLoot = [...existingLoot, ...newDrops].slice(-getEffectiveLootBagSize(state));
   const nextAction = bossKilled ? "idle" : `dungeon_${dungeonIndex}_${waveIndex + 1}`;
 
   // Track dungeon clear stats + tier boss kill
