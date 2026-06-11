@@ -53,9 +53,7 @@ export async function handleTriangleCombat(
     magicFind,
   } = getEquipmentBonuses(equipment);
 
-  const BASE_COMBAT_SPEED = 3;
-  const tempMul = getTemperatureMultiplier(state);
-  const effectiveCombatSpeed = Math.max(1.5, BASE_COMBAT_SPEED * (1 - attackSpeed / 200)) / tempMul;
+  const effectiveCombatSpeed = computeEffectiveCombatSpeed(attackSpeed, getTemperatureMultiplier(state));
 
   const petBuffs = getPetBuffs(state);
   const homeLv: Record<string,number> = (()=>{try{return JSON.parse((state as any).homestead??"{}")}catch{return{}}})();

@@ -39,8 +39,7 @@ export async function tickDungeon(state: GameState, elapsedSeconds: number): Pro
   const playerStyle: CombatStyle = (equipment.weapon as any)?.combatStyle ?? 'melee';
   const homeLv: Record<string, number> = (() => { try { return safeJsonRecord((state as any).homestead); } catch { return {}; } })();
 
-  const BASE_COMBAT_SPEED = 3;
-  const effectiveCombatSpeed = Math.max(1.5, BASE_COMBAT_SPEED * (1 - attackSpeed / 200));
+  const effectiveCombatSpeed = computeEffectiveCombatSpeed(attackSpeed, getTemperatureMultiplier(state));
   const ticks = Math.floor(elapsedSeconds / effectiveCombatSpeed);
   if (ticks <= 0) return state;
 

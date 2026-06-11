@@ -1,5 +1,6 @@
 import { db } from "../db";
 import { gameStates, type GameState } from "@shared/schema";
+import { msg } from "@shared/messages";
 import { safeJsonRecord, safeJsonArray } from "@shared/safe-parse";
 import {
   getEquipmentBonuses, generateDroppedItem,
@@ -15,7 +16,6 @@ import { calculateLevel, getCombatLevel } from "@shared/game-math";
 import { parseEquipment, parseCraftItems, parseLootBag, parseGems } from "@shared/game-state-parse";
 import { getResourceCount, buildResourceUpdates } from "@shared/resources";
 import { DISENCHANT_GOLD } from "./constants";
-import { msg } from "@shared/messages";
 
 const calcLevel = calculateLevel;
 
@@ -30,18 +30,18 @@ export async function equipItem(state: GameState, instanceId?: string, itemId?: 
 
   if (instanceId) {
     const idx = lootBag.findIndex(i => i.instanceId === instanceId);
-    if (idx < 0) throw new Error("Item not found in loot bag");
+    if (idx < 0) throw new Error(msg("itemNotInLootBag"));
     newItem = lootBag[idx];
     lootBag.splice(idx, 1);
   } else if (itemId) {
-    if ((craftItems[itemId] ?? 0) < 1) throw new Error("Item not in inventory");
+    if ((craftItems[itemId] ?? 0) < 1) throw new Error(msg("itemNotInInventory"));
     // Validate item exists BEFORE consuming it (prevents item loss on invalid IDs)
     newItem = (await import("@shared/game-data")).craftedToGameItem(itemId);
-    if (!newItem) throw new Error("Unknown item");
+    if (!newItem) throw new Error(msg("itemNotFound", itemId));
     craftItems[itemId]--;
     if (craftItems[itemId] <= 0) delete craftItems[itemId];
   } else {
-    throw new Error("Must provide instanceId or itemId");
+    throw new Error(msg("mustProvideId"));
   }
 
   const prev = equipment[newItem.slot as EquipmentSlot] ?? null;
