@@ -3,6 +3,7 @@ import { R } from "@/lib/routes";
 import { useUIText } from "@/lib/i18n";
 import { calculateLevel, levelProgress, xpForLevel, formatNumber, getResourceCount, getAgilityBonuses, getTemperatureMultiplier } from "@/lib/game-utils";
 import { useStartAction } from "@/hooks/use-game";
+import { useToast } from "@/hooks/use-toast";
 import type { GameState } from "@shared/schema";
 import type { LucideIcon } from "lucide-react";
 import { ResourceIcon, type ResourceType } from "@/components/sprites";
@@ -48,6 +49,7 @@ interface SkillPageProps {
 export function SkillPage({ skillKey, skillName, skillXp, icon: Icon, iconColor, state, resources }: SkillPageProps) {
   const t = useUIText();
   const { mutate: startAction, isPending } = useStartAction();
+  const { toast } = useToast();
   const level = calculateLevel(skillXp);
   const progress = levelProgress(skillXp);
   const xpCurrent = xpForLevel(level);
@@ -185,12 +187,12 @@ export function SkillPage({ skillKey, skillName, skillXp, icon: Icon, iconColor,
                 {!isUnlocked ? (
                   <span className="px-3 py-1 text-xs text-muted-foreground bg-muted/30 rounded">{t.skillPage.lockedLabel(res.reqLevel)}</span>
                 ) : isActive ? (
-                  <button onClick={() => startAction("idle")} disabled={isPending}
+                  <button onClick={() => startAction("idle", { onError: (e: any) => toast({ title: "操作失败", description: e?.message || String(e), variant: "destructive" }) })} disabled={isPending}
                     className="px-3 py-1 text-xs font-semibold bg-red-600 hover:bg-red-500 text-white rounded">{t.skillPage.stop}</button>
                 ) : (
                   <button onClick={() => {
                     if (res.requiredKey && getResourceCount(state, res.requiredKey) <= 0) return;
-                    startAction(res.actionKey);
+                    startAction(res.actionKey, { onError: (e: any) => toast({ title: "操作失败", description: e?.message || String(e), variant: "destructive" }) });
                   }} disabled={isPending || isOtherActive || !!(res.requiredKey && getResourceCount(state, res.requiredKey) <= 0)}
                     className="px-3 py-1 text-xs font-semibold bg-primary hover:bg-primary/80 text-primary-foreground rounded disabled:opacity-40">
                     {t.skillPage.start}

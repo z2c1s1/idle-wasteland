@@ -17,9 +17,9 @@ export default function Shelter() {
   const { data: state } = useGameState();
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const t = useUIText();
   if (!state) return null;
   const gs = state as GameState;
-  const t = useUIText();
   const homestead: Record<string, number> = safeJsonRecord(gs.homestead);
   const furnaceLevel = homestead['furnace'] ?? 0;
   // 木材 is a separate byproduct from woodcutting, NOT the sum of tiered woods
@@ -110,7 +110,7 @@ export default function Shelter() {
             if (lv('wall') > 0) buffs.push({ label: `+${lv('wall')*3} 防御`, emoji: '🛡️', color: 'text-blue-300' });
             if (lv('warehouse') > 0) buffs.push({ label: `+${lv('warehouse')*2} 背包格`, emoji: '📦', color: 'text-purple-300' });
             if (lv('clinic') > 0) buffs.push({ label: `+${lv('clinic')} HP回复/回合`, emoji: '🏥', color: 'text-green-300' });
-            if (lv('altar') > 0) buffs.push({ label: `+${lv('altar')*3}% 神话掉率`, emoji: '🔮', color: 'text-red-300' });
+            if (lv('altar') > 0) buffs.push({ label: `+${lv('altar')*3}% 独特掉率`, emoji: '🔮', color: 'text-red-300' });
             if (lv('tower') > 0) buffs.push({ label: `+${lv('tower')*4}% 战斗经验`, emoji: '🗼', color: 'text-orange-300' });
             if (lv('furnace') > 0) buffs.push({ label: `-${lv('furnace')*15}% 温度衰减`, emoji: '🔥', color: 'text-orange-300' });
             if (lv('recycling') > 0) buffs.push({ label: `${lv('recycling')} 萃取槽`, emoji: '♻️', color: 'text-amber-300' });
