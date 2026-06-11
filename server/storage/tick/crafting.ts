@@ -9,7 +9,7 @@ import {
 } from "@shared/game-data";
 import { eq } from "drizzle-orm";
 import { handleProductionRecipe } from "../helpers";
-import { getPetBuffs } from "./_shared";
+import { getPetBuffs, trackAchievement } from "./_shared";
 
 export async function tickCrafting(
   state: GameState,
@@ -29,6 +29,7 @@ export async function tickCrafting(
     const recipeIndex = parseInt(action.split("_")[1]);
     const result = await handleProductionRecipe(state, SMITHING_RECIPES, recipeIndex, "smithingXp", now, petSmithMul);
     if (!result) return state;
+    result.updates.achievements = trackAchievement(state, 'skill', 'smithingXp', 1);
     const [updated] = await db.update(gameStates).set(result.updates).where(eq(gameStates.id, state.id)).returning();
     return updated;
   }
@@ -37,6 +38,7 @@ export async function tickCrafting(
     const recipeIndex = parseInt(action.split("_")[1]);
     const result = await handleProductionRecipe(state, LEATHERWORKING_RECIPES, recipeIndex, "leatherworkingXp", now, petLeatherMul);
     if (!result) return state;
+    result.updates.achievements = trackAchievement(state, 'skill', 'leatherworkingXp', 1);
     const [updated] = await db.update(gameStates).set(result.updates).where(eq(gameStates.id, state.id)).returning();
     return updated;
   }
@@ -45,6 +47,7 @@ export async function tickCrafting(
     const recipeIndex = parseInt(action.split("_")[1]);
     const result = await handleProductionRecipe(state, JEWELCRAFTING_RECIPES, recipeIndex, "jewelcraftingXp", now, petJewelMul);
     if (!result) return state;
+    result.updates.achievements = trackAchievement(state, 'skill', 'jewelcraftingXp', 1);
     const [updated] = await db.update(gameStates).set(result.updates).where(eq(gameStates.id, state.id)).returning();
     return updated;
   }

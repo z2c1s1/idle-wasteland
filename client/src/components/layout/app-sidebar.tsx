@@ -89,6 +89,7 @@ export function AppSidebar() {
             <NavItem title={t.sidebar.navTower} url={`${R.combat}#tower`} icon={Gem} level={null} isActive={location === R.combat && hash === '#tower'} color="text-red-400" />
             <NavItem title={t.sidebar.navTrial} url={`${R.combat}#trial`} icon={Radiation} level={null} isActive={location === R.combat && hash === '#trial'} color="text-amber-400" />
             <NavItem title={t.sidebar.navBounties} url={R.bounties} icon={Swords} level={null} isActive={location === R.bounties} color="text-yellow-400" />
+            <NavItem title={t.sidebar.navGamble} url={R.gamble} icon={Gem} level={null} isActive={location === R.gamble} color="text-amber-400" />
           </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup>

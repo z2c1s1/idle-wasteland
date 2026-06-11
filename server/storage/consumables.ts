@@ -30,6 +30,7 @@ export async function cookFood(state: GameState, recipeId: string): Promise<Game
   foods[recipeId] = (foods[recipeId] ?? 0) + 1;
   const [u] = await db.update(gameStates).set({
     foods: JSON.stringify(foods),
+    cookingXp: (state.cookingXp ?? 0) + 10,
     ...resourceUpdates,
   } as any).where(eq(gameStates.id, state.id)).returning();
   return u;
@@ -82,7 +83,7 @@ export async function brewPotion(state: GameState, recipeId: string): Promise<Ga
     activeBuffs.push({ id: recipeId, effect: buff.effect, value: buff.value, expiresAt: Date.now() + recipe.durationMin * 60000 });
     await db.update(gameStates).set({ activeBuffs: JSON.stringify(activeBuffs) } as any).where(eq(gameStates.id, state.id));
   }
-  const [u] = await db.update(gameStates).set({ potions: JSON.stringify(potions), herbs: JSON.stringify(herbs), berries: JSON.stringify(berries), ...resourceUpdates } as any).where(eq(gameStates.id, state.id)).returning();
+  const [u] = await db.update(gameStates).set({ potions: JSON.stringify(potions), herbs: JSON.stringify(herbs), berries: JSON.stringify(berries), alchemyXp: (state.alchemyXp ?? 0) + 15, ...resourceUpdates } as any).where(eq(gameStates.id, state.id)).returning();
   return u;
 }
 

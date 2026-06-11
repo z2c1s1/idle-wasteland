@@ -32,7 +32,7 @@ export function WastelandShell({ children }: WastelandShellProps) {
       <div className="flex min-h-0 flex-1">
         <ZoneNav className="hidden w-[240px] flex-shrink-0 md:flex" />
 
-        <main className="relative min-w-0 flex-1 overflow-y-auto p-2 md:p-4" style={{ zoom: 1.5 }}>
+        <main className="relative min-w-0 flex-1 overflow-y-auto p-2 md:p-4" style={{ transform: 'scale(1.5)', transformOrigin: 'top left', width: '66.67%', height: '66.67%' }}>
           {children}
         </main>
       </div>

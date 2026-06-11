@@ -168,8 +168,13 @@ export function checkMilestones(state: any): number {
       case 'actions': val = state.totalActions ?? 0; break;
       case 'gold': val = state.gold ?? 0; break;
       case 'maxLevel': {
-        const xps = ['woodcuttingXp','miningXp','fishingXp','huntingXp','smeltingXp','smithingXp'];
-        for (const k of xps) { const lvl = Math.floor((state[k] ?? 0) / 100) + 1; if (lvl > val) val = lvl; }
+        const xps = ['woodcuttingXp','miningXp','fishingXp','huntingXp','smeltingXp','smithingXp',
+          'thievingXp','agilityXp','explorationXp','cookingXp','craftingXp','leatherworkingXp',
+          'jewelcraftingXp','attackXp','defenceXp','hitpointsXp'];
+        for (const k of xps) {
+          const lvl = calculateLevel((state[k] ?? 0) as number);
+          if (lvl > val) val = lvl;
+        }
         break;
       }
     }
