@@ -88,7 +88,7 @@ export async function tickDungeon(state: GameState, elapsedSeconds: number): Pro
     const critHit = critRating > 0 && Math.random() * 100 < critRating;
     const critDmg = (200 + (deadlyStrike ?? 0)) / 100;
     const strikes = (doubleStrikePct > 0 && Math.random() * 100 < doubleStrikePct) ? 2 : 1;
-    let totalDmgToEnemy = Math.floor(effAtk * strikes * (critHit ? critDmg : 1)) + poisonDmg;
+    let totalDmgToEnemy = effAtk * strikes * (critHit ? critDmg : 1) + poisonDmg;
     if (bossShieldActive) totalDmgToEnemy = Math.floor(totalDmgToEnemy * 0.5);
 
     if (crushingBlow > 0 && Math.random() * 100 < crushingBlow) {
