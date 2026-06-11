@@ -11,6 +11,7 @@ import {
   trackAchievement,
   computeSkillEffects, applySkillProcDamage, type SkillProcContext,
   safeJsonRecord, safeJsonArray,
+  getPrayerBuff,
 } from "./_shared";
 
 const calcLevel = calculateLevel;
@@ -64,7 +65,7 @@ export async function tickDungeon(state: GameState, elapsedSeconds: number): Pro
   let enemyHp  = state.enemyHp  < 0 ? enemyMaxHp : state.enemyHp;
   const weaponItem = equipment.weapon ?? null;
   const hasWeaponRange = weaponItem && (weaponItem.maxDamage ?? 0) > 0;
-  const levelBaseDmg = Math.max(1, getPlayerAttack(state) - eqAttackBonus);
+  const levelBaseDmg = Math.max(1, getPlayerAttack(state) * (1 + getPrayerBuff(state, "attack")) - eqAttackBonus);
 
   let goldGained = 0, attackXpGained = 0, defenceXpGained = 0, hitpointsXpGained = 0;
   let playerDied = false;
@@ -115,7 +116,8 @@ export async function tickDungeon(state: GameState, elapsedSeconds: number): Pro
       hitpointsXpGained += Math.floor(enemyXp / 3);
       // Boss drops
       if (isBoss) {
-        const drop = generateDungeonDrop(dungeonIndex);
+        const agility = getAgilityBonuses(state);
+        const drop = generateDungeonDrop(dungeonIndex, agility.luckMul);
         if (drop) {
           const filterThreshold = RARITY_ORDER[state.lootFilter ?? 'common'] ?? 0;
           if ((RARITY_ORDER[drop.rarity] ?? 0) >= filterThreshold) {

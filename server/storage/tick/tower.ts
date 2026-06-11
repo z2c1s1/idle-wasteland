@@ -7,6 +7,7 @@ import {
   getResourceCount, buildResourceUpdates,
   SKILLS_DATA, RARITY_ORDER, DISENCHANT_GOLD, mergeGems,
   type GameItem, ALL_SLOTS, SLOT_BASES, type AffixType, type Rarity,
+  getPrayerBuff,
 } from "./_shared";
 
 const calcLevel = calculateLevel;
@@ -40,7 +41,7 @@ export async function tickTower(state: GameState, elapsedSeconds: number): Promi
 
   for (let i = 0; i < ticks; i++) {
     if (lifeRegen > 0) playerHp = Math.min(playerMaxHp, playerHp + lifeRegen);
-    const atk = Math.max(1, getPlayerAttack(state));
+    const atk = Math.max(1, getPlayerAttack(state) * (1 + getPrayerBuff(state, "attack")));
     let dmg = Math.max(1, atk + (attackBonus ?? 0) - (isBoss ? boss.defence : 0));
     if (enhancedDamage) dmg = Math.floor(dmg * (1 + enhancedDamage / 100));
     if (deadlyStrike && Math.random()*100 < deadlyStrike) dmg *= 2;

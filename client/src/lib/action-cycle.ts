@@ -70,12 +70,11 @@ export function getEffectiveCycleTime(action: string, state: GameState): number 
 
   // Prayer speed buff (matches server getPrayerBuff("swiftness"))
   let prayerSpeed = 1;
-  try {
-    const buffs = JSON.parse((state as any).activeBuffs ?? '[]');
-    for (const b of buffs) {
-      if (b.effect === 'speed') prayerSpeed = 1 + (b.value ?? 0);
-    }
-  } catch { /* ignore */ }
+  const activePrayer = (state as any).activePrayer as string | undefined;
+  if (activePrayer === 'swiftness') {
+    const prayerLevel = Math.max(1, Math.floor(((state as any).prayerXp ?? 0) / 100) + 1);
+    prayerSpeed = 1 + (5 + (prayerLevel - 1) * 2) / 100;
+  }
 
   // Building speed multiplier (matches server buildingMul)
   let buildingMul = 1;

@@ -10,6 +10,7 @@ import {
   SKILLS_DATA, RARITY_ORDER, DISENCHANT_GOLD, mergeGems,
   getTemperatureMultiplier, computeEffectiveCombatSpeed,
   safeJsonArray,
+  getPrayerBuff,
 } from "./_shared";
 
 const calcLevel = calculateLevel;
@@ -53,7 +54,7 @@ export async function tickTrial(state: GameState, elapsedSeconds: number): Promi
 
   for (let i = 0; i < ticks; i++) {
     if (effRegen > 0) playerHp = Math.min(playerMaxHp, playerHp + effRegen);
-    const baseAtk = Math.floor(getPlayerAttack(state) * atkMul);
+    const baseAtk = Math.floor(getPlayerAttack(state) * (1 + getPrayerBuff(state, "attack")) * atkMul);
     const defPenalty = Math.floor(bossDef * defMul);
     let dmg = Math.max(1, baseAtk + (attackBonus ?? 0) - defPenalty);
     if (enhancedDamage) dmg = Math.floor(dmg * (1 + enhancedDamage / 100));

@@ -1904,10 +1904,10 @@ for (let i = 0; i < DUNGEONS.length; i++) {
   for (const uid of DUNGEONS[i].uniqueDropIds) DUNGEON_UNIQUE_MAP[uid] = i;
 }
 
-export function generateDungeonDrop(dungeonIndex: number): GameItem | null {
+export function generateDungeonDrop(dungeonIndex: number, luckMultiplier = 1): GameItem | null {
   const dungeon = DUNGEONS[dungeonIndex];
   if (!dungeon) return null;
-  if (Math.random() > dungeon.dropChance) return null;
+  if (Math.random() > dungeon.dropChance * luckMultiplier) return null;
   const id = dungeon.uniqueDropIds[Math.floor(Math.random() * dungeon.uniqueDropIds.length)];
   const def = UNIQUE_ITEMS.find(u => u.id === id);
   if (!def) return null;
@@ -2074,6 +2074,7 @@ export const ALL_TOOLS: GameTool[] = [
   { id:'copper_rod',    name:'铜鱼竿', emoji:'🟠🎣', skill:'fishing', timeMult:0.90, yieldBonus:0 },
   { id:'alum_rod',      name:'铝鱼竿', emoji:'⬜🎣', skill:'fishing', timeMult:0.85, yieldBonus:0 },
   { id:'lead_rod',      name:'铅鱼竿', emoji:'🔘🎣', skill:'fishing', timeMult:0.80, yieldBonus:1 },
+  { id:'uranium_rod',   name:'铀鱼竿', emoji:'🟢🎣', skill:'fishing', timeMult:0.75, yieldBonus:1 },
   { id:'titanium_rod',  name:'钛金竿', emoji:'🔵🎣', skill:'fishing', timeMult:0.70, yieldBonus:2 },
   { id:'iridium_rod',   name:'铱金竿', emoji:'🟣🎣', skill:'fishing', timeMult:0.60, yieldBonus:2 },
   // Hunting knives

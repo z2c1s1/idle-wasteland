@@ -65,7 +65,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
   const aoeList = ['whirlwind','arrow_rain','blizzard','earthquake','wave_slash','blade_storm','hail_arrow','barrage','corpse_boom','poison_cloud','blizzard_m','consecration'];
   const isAoESkill = aoeList.includes(eqSkill);
 
-  const playerAtk = getPlayerAttack(state);
+  const playerAtk = getPlayerAttack(state) + Math.floor(getPlayerAttack(state) * getPrayerBuff(state, 'attack'));
   const playerDef = getPlayerDefence(state) + Math.floor(getPlayerDefence(state) * getPrayerBuff(state, 'defence'));
 
   const weaponItem = equipment.weapon ?? null;
@@ -155,7 +155,7 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
       // Track achievement progress
       state.achievements = trackAchievement(state, 'kill', enemy.id, enemyQty);
       state.achievements = trackAchievement(state, 'kill', '_total', enemyQty);
-      if (Math.random() < (dropChance + petBuffs.dropRate) * agilityLuck * (1 + (enemyQty - 1) * 0.5)) {
+      if (Math.random() < (dropChance + petBuffs.dropRate) * agilityLuck * (1 + getPrayerBuff(state, 'fortune')) * (1 + (enemyQty - 1) * 0.5)) {
         const drop = generateDroppedItem(enemyIndex, magicFind, (enemy as any).uniqueDropIds, homeLv.altar ?? 0);
         const filterThreshold = RARITY_ORDER[state.lootFilter ?? 'common'] ?? 0;
         if ((RARITY_ORDER[drop.rarity] ?? 0) >= filterThreshold) newDrops.push(drop);

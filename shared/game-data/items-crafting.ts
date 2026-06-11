@@ -332,6 +332,7 @@ export const TOOL_RECIPES: CraftingRecipe[] = [
   { id:'tool_copper_rod',   output:'copper_rod',   inputs:[{resource:'wood_1',qty:5}],  reqLevel:6,  xp:25, time:8 },
   { id:'tool_alum_rod',     output:'alum_rod',     inputs:[{resource:'wood_2',qty:4},{resource:'bar_2',qty:1}], reqLevel:16, xp:45, time:10 },
   { id:'tool_lead_rod',     output:'lead_rod',     inputs:[{resource:'wood_3',qty:4},{resource:'bar_3',qty:1}], reqLevel:28, xp:75, time:12 },
+  { id:'tool_uranium_rod',  output:'uranium_rod',  inputs:[{resource:'wood_6',qty:4},{resource:'bar_6',qty:1},{resource:'dragonBones',qty:1}], reqLevel:42, xp:130,time:15 },
   { id:'tool_titanium_rod', output:'titanium_rod', inputs:[{resource:'wood_7',qty:4},{resource:'bar_7',qty:1},{resource:'dragonBones',qty:1}], reqLevel:55, xp:170,time:16 },
   { id:'tool_iridium_rod',  output:'iridium_rod',  inputs:[{resource:'wood_9',qty:4},{resource:'bar_9',qty:1},{resource:'dragonBones',qty:3}], reqLevel:72, xp:250,time:20 },
   // Hunting knives: hide + bars

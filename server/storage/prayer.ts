@@ -30,16 +30,14 @@ export async function deactivatePrayer(state: GameState): Promise<GameState> {
 
 export function applyPrayerTick(state: GameState, elapsedSec: number): Partial<GameState> | null {
   if (!state.activePrayer) return null;
-  const USE_DRAGON_BONES = (state as any).useDragonBones ?? false;
   const boneCost = Math.ceil(elapsedSec);
-  const boneKey = USE_DRAGON_BONES ? 'dragonBones' : 'bones';
-  const boneCount = boneKey === 'dragonBones' ? (state.dragonBones ?? 0) : (state.bones ?? 0);
+  const boneCount = getResourceCount(state, 'bones');
   if (boneCount < boneCost) {
     return { activePrayer: '', prayerStartedAt: null } as any;
   }
-  const xpGain = Math.floor(elapsedSec * (USE_DRAGON_BONES ? 2 : 1));
+  const xpGain = Math.floor(elapsedSec);
   return {
-    [boneKey]: boneCount - boneCost,
+    bones: boneCount - boneCost,
     prayerXp: (state.prayerXp ?? 0) + xpGain,
   } as any;
 }
