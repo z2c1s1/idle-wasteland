@@ -10,7 +10,7 @@ import {
   RARITY_LABEL, RARITY_COLOR,
   ITEM_SETS, UNIQUE_ITEMS,
   ALL_TOOLS, THIEVING_NPCS,
-  HOMESTEAD_BUILDINGS, PRAYERS,
+  SHELTER_BUILDINGS, PRAYERS,
   ALL_CRAFTABLE_ITEMS,
 } from "@shared/game-data";
 import { COMBAT_GEM_POOLS, MINING_GEM_POOLS } from "@shared/game-data";
@@ -173,13 +173,13 @@ describe("THIEVING_NPCS", () => {
 
 // ─── Homestead ─────────────────────────────────────────────────────────────────
 
-describe("HOMESTEAD_BUILDINGS", () => {
+describe("SHELTER_BUILDINGS", () => {
   it("has at least 5 buildings", () => {
-    assert.ok(HOMESTEAD_BUILDINGS.length >= 5);
+    assert.ok(SHELTER_BUILDINGS.length >= 5);
   });
 
   it("every building has required fields", () => {
-    for (const b of HOMESTEAD_BUILDINGS) {
+    for (const b of SHELTER_BUILDINGS) {
       assert.ok(b.id, "building missing id");
       assert.ok(b.name, `building ${b.id} missing name`);
       assert.ok(b.maxLevel >= 1, `building ${b.id} maxLevel < 1`);

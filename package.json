@@ -10,7 +10,7 @@
     "intranet": "npm run build && node scripts/serve-intranet.mjs",
     "intranet:dev": "tsx scripts/serve-intranet-dev.mjs",
     "check": "tsc",
-    "test": "tsx --test shared/game-math.test.ts",
+    "test": "tsx --test shared/game-math.test.ts shared/game-data-integrity.test.ts shared/game-data-functions.test.ts shared/game-state-parse.test.ts shared/resources.test.ts server/storage/helpers.test.ts server/storage/tick/gathering.test.ts server/storage/tick/_combat-shared.test.ts",
     "db:push": "drizzle-kit push"
   },
   "dependencies": {

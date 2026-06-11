@@ -59,7 +59,22 @@ export interface IStorage {
 
 export class DatabaseStorage implements IStorage {
   private playerId: string;
+  private _lock: Promise<void> = Promise.resolve();
+
   constructor(playerId: string) { this.playerId = playerId; }
+
+  /** Serialize mutations to prevent TOCTOU race conditions */
+  private async withLock<T>(fn: () => Promise<T>): Promise<T> {
+    const prev = this._lock;
+    let release: () => void;
+    this._lock = new Promise<void>(resolve => { release = resolve; });
+    await prev;
+    try {
+      return await fn();
+    } finally {
+      release!();
+    }
+  }
 
   async getGameState(): Promise<GameState> {
     const usePlayer = await hasPlayerColumn();
@@ -112,47 +127,47 @@ export class DatabaseStorage implements IStorage {
     return tickActiveAction(state, now, es);
   }
 
-  // ── All action delegates ──────────────────────────────────────────────────
-  async updateAction(a: string) { return skillMod.updateAction(await this.getGameState(), a); }
-  async enterDungeon(i: number) { return caMod.enterDungeon(await this.getGameState(), i); }
-  async startTower() { return caMod.startTower(await this.getGameState()); }
-  async startTrial() { return caMod.startTrial(await this.getGameState()); }
-  async chooseTrialBuff(b: string) { return caMod.chooseTrialBuff(await this.getGameState(), b); }
-  async equipItem(iid?: string, id?: string) { return eqMod.equipItem(await this.getGameState(), iid, id); }
-  async unequipItem(s: string) { return eqMod.unequipItem(await this.getGameState(), s); }
-  async destroyLoot(iid: string) { return eqMod.destroyLoot(await this.getGameState(), iid); }
-  async socketGem(iid: string, gk: string) { return eqMod.socketGem(await this.getGameState(), iid, gk); }
-  async addSocket(iid: string) { return eqMod.addSocket(await this.getGameState(), iid); }
-  async setLootFilter(r: string) { return eqMod.setLootFilter(await this.getGameState(), r); }
-  async equipTool(t: string) { return eqMod.equipTool(await this.getGameState(), t); }
-  async synthEquip(ids: string[]) { return eqMod.synthEquip(await this.getGameState(), ids); }
-  async synthGem(items: {type:string;quality:string}[]) { return eqMod.synthGem(await this.getGameState(), items); }
-  async gambleItem(t: number, s?: string) { return eqMod.gambleItem(await this.getGameState(), t, s); }
-  async expandLootBag() { return eqMod.expandLootBag(await this.getGameState()); }
-  async enhanceItem(iid: string) { return eqMod.enhanceItem(await this.getGameState(), iid); }
-  async gambleSlot(s: string, c: number) { return eqMod.gambleSlot(await this.getGameState(), s, c); }
-  async extractPower(iid: string) { return eqMod.extractPower(await this.getGameState(), iid); }
-  async equipPower(s: number, p: string) { return eqMod.equipPower(await this.getGameState(), s, p); }
-  async corruptItem(iid: string) { return eqMod.corruptItem(await this.getGameState(), iid); }
-  async setWorldTier(t: number) { return skillMod.setWorldTier(await this.getGameState(), t); }
-  async cookFood(r: string) { return consMod.cookFood(await this.getGameState(), r); }
-  async brewPotion(r: string) { return consMod.brewPotion(await this.getGameState(), r); }
-  async farmPlant(s: number, seed: string) { return consMod.farmPlant(await this.getGameState(), s, seed); }
-  async farmHarvest(s: number) { return consMod.farmHarvest(await this.getGameState(), s); }
-  async buildHomestead(b: string) { return homeMod.buildShelter(await this.getGameState(), b); }
-  async addFuel(t: number) { return homeMod.addFuel(await this.getGameState(), t); }
+  // ── All action delegates (serialized to prevent TOCTOU races) ────────────
+  async updateAction(a: string) { return this.withLock(async () => skillMod.updateAction(await this.getGameState(), a)); }
+  async enterDungeon(i: number) { return this.withLock(async () => caMod.enterDungeon(await this.getGameState(), i)); }
+  async startTower() { return this.withLock(async () => caMod.startTower(await this.getGameState())); }
+  async startTrial() { return this.withLock(async () => caMod.startTrial(await this.getGameState())); }
+  async chooseTrialBuff(b: string) { return this.withLock(async () => caMod.chooseTrialBuff(await this.getGameState(), b)); }
+  async equipItem(iid?: string, id?: string) { return this.withLock(async () => eqMod.equipItem(await this.getGameState(), iid, id)); }
+  async unequipItem(s: string) { return this.withLock(async () => eqMod.unequipItem(await this.getGameState(), s)); }
+  async destroyLoot(iid: string) { return this.withLock(async () => eqMod.destroyLoot(await this.getGameState(), iid)); }
+  async socketGem(iid: string, gk: string) { return this.withLock(async () => eqMod.socketGem(await this.getGameState(), iid, gk)); }
+  async addSocket(iid: string) { return this.withLock(async () => eqMod.addSocket(await this.getGameState(), iid)); }
+  async setLootFilter(r: string) { return this.withLock(async () => eqMod.setLootFilter(await this.getGameState(), r)); }
+  async equipTool(t: string) { return this.withLock(async () => eqMod.equipTool(await this.getGameState(), t)); }
+  async synthEquip(ids: string[]) { return this.withLock(async () => eqMod.synthEquip(await this.getGameState(), ids)); }
+  async synthGem(items: {type:string;quality:string}[]) { return this.withLock(async () => eqMod.synthGem(await this.getGameState(), items)); }
+  async gambleItem(t: number, s?: string) { return this.withLock(async () => eqMod.gambleItem(await this.getGameState(), t, s)); }
+  async expandLootBag() { return this.withLock(async () => eqMod.expandLootBag(await this.getGameState())); }
+  async enhanceItem(iid: string) { return this.withLock(async () => eqMod.enhanceItem(await this.getGameState(), iid)); }
+  async gambleSlot(s: string, c: number) { return this.withLock(async () => eqMod.gambleSlot(await this.getGameState(), s, c)); }
+  async extractPower(iid: string) { return this.withLock(async () => eqMod.extractPower(await this.getGameState(), iid)); }
+  async equipPower(s: number, p: string) { return this.withLock(async () => eqMod.equipPower(await this.getGameState(), s, p)); }
+  async corruptItem(iid: string) { return this.withLock(async () => eqMod.corruptItem(await this.getGameState(), iid)); }
+  async setWorldTier(t: number) { return this.withLock(async () => skillMod.setWorldTier(await this.getGameState(), t)); }
+  async cookFood(r: string) { return this.withLock(async () => consMod.cookFood(await this.getGameState(), r)); }
+  async brewPotion(r: string) { return this.withLock(async () => consMod.brewPotion(await this.getGameState(), r)); }
+  async farmPlant(s: number, seed: string) { return this.withLock(async () => consMod.farmPlant(await this.getGameState(), s, seed)); }
+  async farmHarvest(s: number) { return this.withLock(async () => consMod.farmHarvest(await this.getGameState(), s)); }
+  async buildHomestead(b: string) { return this.withLock(async () => homeMod.buildShelter(await this.getGameState(), b)); }
+  async addFuel(t: number) { return this.withLock(async () => homeMod.addFuel(await this.getGameState(), t)); }
   applyTemperatureDecay(state: GameState, now: Date) { return homeMod.applyTemperatureDecay(state, now); }
-  async activatePrayer(p: string) { return prayMod.activatePrayer(await this.getGameState(), p); }
-  async deactivatePrayer() { return prayMod.deactivatePrayer(await this.getGameState()); }
+  async activatePrayer(p: string) { return this.withLock(async () => prayMod.activatePrayer(await this.getGameState(), p)); }
+  async deactivatePrayer() { return this.withLock(async () => prayMod.deactivatePrayer(await this.getGameState())); }
   applyPrayerTick(s: GameState, e: number) { return prayMod.applyPrayerTick(s, e); }
   getPrayerBuff(s: GameState, t: string) { return prayMod.getPrayerBuff(s, t); }
   getTownLevel(s: GameState) { return worldMod.getTownLevel(s); }
   trySpawnNpc(s: GameState) { return worldMod.trySpawnNpc(s); }
-  async npcAction(id: string, a: number) { return worldMod.npcAction(await this.getGameState(), id, a); }
-  async dismissNpc() { return worldMod.dismissNpc(await this.getGameState()); }
-  async establishOutpost(z: number) { return worldMod.establishOutpost(await this.getGameState(), z); }
-  async collectOutposts() { return worldMod.collectOutposts(await this.getGameState()); }
-  async demolishOutpost(z: number) { return worldMod.demolishOutpost(await this.getGameState(), z); }
+  async npcAction(id: string, a: number) { return this.withLock(async () => worldMod.npcAction(await this.getGameState(), id, a)); }
+  async dismissNpc() { return this.withLock(async () => worldMod.dismissNpc(await this.getGameState())); }
+  async establishOutpost(z: number) { return this.withLock(async () => worldMod.establishOutpost(await this.getGameState(), z)); }
+  async collectOutposts() { return this.withLock(async () => worldMod.collectOutposts(await this.getGameState())); }
+  async demolishOutpost(z: number) { return this.withLock(async () => worldMod.demolishOutpost(await this.getGameState(), z)); }
   async importSave(data: any) { return skillMod.importSave(await this.getGameState(), data); }
   async fastForward(s: number) { return skillMod.fastForward(await this.getGameState(), s); }
   async getSlayerTask() { return caMod.getSlayerTask(await this.getGameState()); }
