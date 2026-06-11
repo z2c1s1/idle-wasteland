@@ -47,6 +47,11 @@ export interface SkillEffects {
   lifeStealPct: number;
   vampiricHp: number;
   effectiveResist: number;
+  chainLightningPct: number;
+  shadowClonePct: number;
+  corpseExplosionPct: number;
+  reincarnationPct: number;
+  skillRankBonus: number;
 }
 
 export function computeSkillEffects(equipment: EquipmentState): SkillEffects {
@@ -66,9 +71,14 @@ export function computeSkillEffects(equipment: EquipmentState): SkillEffects {
     avalanchePct:    getSkillChance(allSkills, 'avalanche'),
     divineShieldPct: Math.min(50, getSkillChance(allSkills, 'divine_shield')),
     meteorPct:       getSkillVal(allSkills, 'meteor'),
-    lifeStealPct:    Math.min(50, getSkillVal(allSkills, 'lifesteal')),
-    vampiricHp:      getSkillVal(allSkills, 'vampiric'),
-    effectiveResist: Math.min(50, resistAll),
+    lifeStealPct:       Math.min(50, getSkillVal(allSkills, 'lifesteal')),
+    vampiricHp:         getSkillVal(allSkills, 'vampiric'),
+    effectiveResist:    Math.min(50, resistAll),
+    chainLightningPct:  Math.min(40, getSkillChance(allSkills, 'chain_lightning')),
+    shadowClonePct:     Math.min(30, getSkillChance(allSkills, 'shadow_clone')),
+    corpseExplosionPct: Math.min(40, getSkillChance(allSkills, 'corpse_explosion')),
+    reincarnationPct:   Math.min(30, getSkillChance(allSkills, 'reincarnation')),
+    skillRankBonus:     getSkillVal(allSkills, 'skill_rank'),
   };
 }
 
@@ -134,6 +144,21 @@ export function applySkillProcDamage(
     extraDmg += Math.floor(ctx.perHitBase * getSkillMag(allSkills, 'frenzy') / 100);
   }
 
+  // Chain Lightning: hits up to 3 additional enemies (flat damage)
+  if (eff.chainLightningPct > 0 && rng() * 100 < eff.chainLightningPct) {
+    extraDmg += Math.floor(ctx.perHitBase * 0.8);
+  }
+
+  // Corpse Explosion: deals AoE damage = % of enemy max HP
+  if (eff.corpseExplosionPct > 0 && rng() * 100 < eff.corpseExplosionPct) {
+    extraDmg += Math.floor(ctx.enemyMaxHp * getSkillMag(allSkills, 'corpse_explosion') / 100);
+  }
+
+  // Skill Rank: flat damage bonus per rank
+  if (eff.skillRankBonus > 0) {
+    extraDmg += eff.skillRankBonus;
+  }
+
   // Arcane Barrage
   const arcaneChance = getSkillChance(allSkills, 'arcane_barrage');
   if (arcaneChance > 0 && rng() * 100 < arcaneChance) {
@@ -177,6 +202,12 @@ export function computeIncomingDamage(
   if (eff.frostNovaPct > 0 && rng() * 100 < eff.frostNovaPct) dmgToPlayer = 0;
 
   const dodged = eff.dodgePct > 0 && rng() * 100 < eff.dodgePct;
+
+  // Shadow Clone: additional dodge chance (stacks)
+  if (!dodged && eff.shadowClonePct > 0 && rng() * 100 < eff.shadowClonePct) {
+    // shadow clone absorbs the hit — counts as dodged
+    return { dmgToPlayer: 0, dodged: true, reflectDmg: 0, crit };
+  }
 
   // Divine Shield
   if (eff.divineShieldPct > 0 && !dodged && dmgToPlayer > 0 && rng() * 100 < eff.divineShieldPct) dmgToPlayer = 0;

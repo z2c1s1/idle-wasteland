@@ -193,6 +193,11 @@ export async function tickMeleeCombat(state: GameState, elapsedSeconds: number):
     enemyHp -= inc.reflectDmg;
 
     if (playerHp <= 0) {
+      // Reincarnation: chance to revive with HP instead of dying
+      if (eff.reincarnationPct > 0 && Math.random() * 100 < eff.reincarnationPct) {
+        playerHp = Math.floor(playerMaxHp * 0.5);
+        continue; // survive this hit
+      }
       playerDied = true;
       playerHp = Math.floor(playerMaxHp * 0.5);
       break;
